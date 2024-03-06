@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">EGS</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="report">Report</string>
+    <string name="upload_document">Upload Document</string>
+    <string name="attendence">Attendence</string>
+    <string name="sync">Sync</string>
+</resources>
