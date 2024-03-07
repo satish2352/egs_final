@@ -19,15 +19,15 @@
 
     <activity
         android:id="@+id/navigation_attendence"
-        android:name="com.sumagoinfotech.digicopy.ui.activities.LoginActivity"
+        android:name="com.sumagoinfotech.digicopy.ui.activities.AllocateWorkActivity"
         android:label="@string/title_notifications"
-        tools:layout="@layout/activity_login" />
+        tools:layout="@layout/activity_allocate_work" />
 
     <activity
         android:id="@+id/navigation_upload_document"
-        android:name="com.sumagoinfotech.digicopy.ui.activities.LabourDetailsActivity"
+        android:name="com.sumagoinfotech.digicopy.ui.activities.DocumentPagesActivity"
         android:label="@string/title_notifications"
-        tools:layout="@layout/activity_labour_details" />
+        tools:layout="@layout/activity_document_pages" />
 
     <activity
         android:id="@+id/navigation_report"

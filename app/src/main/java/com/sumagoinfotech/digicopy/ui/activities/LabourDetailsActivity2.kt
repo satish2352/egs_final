@@ -7,9 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetails2Binding
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLabourDataBinding
+import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
 
 class LabourDetailsActivity2 : AppCompatActivity() {
     private lateinit var binding:ActivityLabourDetails2Binding
@@ -19,6 +23,12 @@ class LabourDetailsActivity2 : AppCompatActivity() {
         setContentView(binding.root)
         binding.layoutAdd.setOnClickListener {
             showAddFamilyDetailsDialog()
+        }
+        val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+        binding.recyclerViewFamilyDetails.layoutManager=layoutManager;
+        var adapter=FamilyDetailsAdapter()
+        binding.recyclerViewFamilyDetails.adapter=adapter
+        binding.btnSubmit.setOnClickListener {
         }
     }
 

@@ -13,6 +13,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
 import com.sumagoinfotech.digicopy.ui.activities.LabourDetailsActivity
+import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
 
 class DashboardFragment : Fragment() {
 
@@ -45,6 +46,11 @@ class DashboardFragment : Fragment() {
         binding.layoutRegisterLabour.setOnClickListener {
 
             val intent= Intent(activity,LabourDetailsActivity::class.java)
+            startActivity(intent)
+        }
+        binding.layoutScanQR.setOnClickListener {
+
+            val intent= Intent(activity,ScanBarcodeActivity::class.java)
             startActivity(intent)
         }
 

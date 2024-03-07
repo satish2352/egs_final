@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.sumagoinfotech.digicopy.databinding.FragmentSyncOfflineDataBinding
 import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
 import com.sumagoinfotech.digicopy.ui.activities.SyncLandDocumentsActivity
@@ -53,6 +55,29 @@ class SyncOfflineData : Fragment() {
             val intent=Intent(activity,SyncLabourDataActivity::class.java)
             startActivity(intent)
         }
+
+//        val toggleGroup: MaterialButtonToggleGroup = findViewById(R.id.toggleGroup)
+//        val button1: MaterialButton = bfindViewById(R.id.button1)
+//        val button2: MaterialButton = findViewById(R.id.button2)
+//
+//        // Select the first button by default
+//        toggleGroup.check(button1.id)
+//
+//        // Set listener for button selection change
+//        toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+//            if (isChecked) {
+//                // Handle button selection
+//                when (checkedId) {
+//                    R.id.button1 -> {
+//                        // Button 1 selected
+//                    }
+//                    R.id.button2 -> {
+//                        // Button 2 selected
+//                    }
+//                    // Add more cases for other buttons if needed
+//                }
+//            }
+//        }
         return root
     }
 

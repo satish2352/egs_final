@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:scrollbarSize="0dp"
     tools:context=".ui.activities.AllocateWorkActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView"
@@ -15,7 +21,7 @@
         android:fontFamily="@font/poppins"
         android:text="Allocate Work"
         android:textColor="@color/appBlue"
-        android:textSize="24dp" />
+        android:textSize="10dp" />
 
     <AutoCompleteTextView
         android:hint="Select Project Area"
@@ -23,6 +29,7 @@
         android:paddingRight="15dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
+        android:inputType="none"
         android:id="@+id/projectArea"
         android:drawableEnd="@drawable/arrow_dropdown"
         android:background="@drawable/rounded_background_light_green"
@@ -102,29 +109,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"></Switch>
     </LinearLayout>
-    <LinearLayout
-        android:background="@drawable/rounded_background_light_green"
-        android:layout_marginTop="24dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <com.google.android.material.textfield.TextInputEditText
-            android:layout_weight="1"
-            android:hint="Enter Labour Id"
-            android:paddingLeft="25dp"
-            android:background="@drawable/edittext_background"
-            android:paddingRight="15dp"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"/>
-        <ImageView
-            android:padding="10dp"
-            android:scaleType="fitXY"
-            android:background="@drawable/round_circle"
-            android:layout_gravity="center"
-            android:src="@drawable/search"
-            android:layout_width="36dp"
-            android:layout_height="36dp"></ImageView>
-    </LinearLayout>
+
 
     <LinearLayout
         android:layout_marginTop="24dp"
@@ -133,7 +118,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <ImageView
-            android:src="@drawable/user_icon"
+            android:src="@drawable/user_scan"
             android:padding="10dp"
             android:scaleType="fitXY"
             android:layout_gravity="center"
@@ -156,7 +141,37 @@
             android:layout_width="36dp"
             android:layout_height="36dp"></ImageView>
     </LinearLayout>
+    <TextView
+        android:layout_marginTop="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:text="Enter Labour Id"
+        android:textColor="@color/appBlue"
+        android:textSize="10dp" />
+    <LinearLayout
+        android:background="@drawable/rounded_background_light_green"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_weight="1"
+            android:hint="Enter Labour Id"
+            android:paddingLeft="25dp"
+            android:background="@drawable/edittext_background"
+            android:paddingRight="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"/>
+        <ImageView
+            android:padding="10dp"
+            android:scaleType="fitXY"
+            android:background="@drawable/round_circle"
+            android:layout_gravity="center"
+            android:src="@drawable/search"
+            android:layout_width="42dp"
+            android:layout_height="42dp"></ImageView>
+    </LinearLayout>
 
 
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    app:cardUseCompatPadding="true"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="Select Document Type"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/appBlue"></TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:background="@drawable/rounded_background_light_gray"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:drawableEnd="@drawable/arrow_dropdown"
+                    android:paddingLeft="16dp"
+                    android:layout_weight="1"
+                    android:hint="7 12 Extract"
+                    android:background="@drawable/edittext_background"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"></EditText>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText
+                android:paddingLeft="16dp"
+                android:layout_weight="1"
+                android:hint="Document 2024020202 "
+                android:background="@drawable/edittext_background"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"></EditText>
+            <TextView
+
+                android:layout_marginLeft="16dp"
+                android:padding="10dp"
+                android:textSize="20dp"
+                android:text="+"
+                android:textColor="@color/white"
+                android:background="@drawable/circle_blue_background"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></TextView>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+
+
+</androidx.cardview.widget.CardView>

@@ -20,7 +20,6 @@
             android:text="Family Details"
             android:fontFamily="@font/poppins"
             android:textColor="@color/appBlue"></TextView>
-
         <LinearLayout
             android:layout_marginTop="16dp"
             android:orientation="horizontal"

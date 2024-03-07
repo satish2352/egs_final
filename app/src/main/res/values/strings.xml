@@ -17,4 +17,6 @@
     <string name="documents_saved_offline">Documents saved offline</string>
     <string name="sync_land_documents">Sync Land Documents</string>
     <string name="sync_labour_data">Sync Labour Data</string>
+    <string name="labours_registered_online">Labours Registered Online</string>
+    <string name="allocate_work">Allocate Work</string>
 </resources>

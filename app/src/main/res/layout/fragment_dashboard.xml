@@ -20,6 +20,7 @@
         android:background="@drawable/rounded_background">
 
         <EditText
+            android:paddingLeft="16dp"
             android:background="@drawable/edittext_background"
             android:layout_weight="1"
             android:layout_width="wrap_content"
@@ -33,7 +34,6 @@
             android:background="@drawable/rounded_backgroud_blue"
             android:orientation="horizontal">
             <LinearLayout
-                android:paddingLeft="10dp"
                 android:background="#4529C9"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
@@ -73,9 +73,9 @@
     </LinearLayout>
 
     <LinearLayout
-        android:paddingLeft="13dp"
-        android:paddingRight="3dp"
-        android:layout_alignParentEnd="true"
+        android:paddingRight="13dp"
+        android:paddingLeft="8dp"
+        android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
@@ -84,6 +84,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutScanQR">
 
         <ImageView
             android:src="@drawable/scan_me"
@@ -98,6 +103,7 @@
             android:text="Scan QR \n Code"
             android:textColor="@color/white"
             android:textSize="8dp"></TextView>
+        </LinearLayout>
         <View
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
