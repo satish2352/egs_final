@@ -6,7 +6,7 @@
         android:icon="@drawable/dashboard1"
         android:title="@string/title_dashboard" />
     <item
-        android:id="@+id/navigation_home"
+        android:id="@+id/navigation_sync"
         android:icon="@drawable/sync"
         android:title="@string/sync" />
     <item

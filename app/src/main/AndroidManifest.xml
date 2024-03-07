@@ -13,6 +13,15 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activities.ReportsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SyncLabourDataActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.SyncLandDocumentsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activities.LabourDetailsActivity2"
             android:exported="false" />
         <activity

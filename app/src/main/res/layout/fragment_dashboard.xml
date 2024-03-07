@@ -104,7 +104,12 @@
             android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="1dp"></View>
-
+<LinearLayout
+    android:clickable="true"
+    android:id="@+id/layoutRegisterLabour"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
         <ImageView
             android:src="@drawable/profile"
             android:layout_width="24dp"
@@ -119,7 +124,7 @@
             android:text="Register \n Labour"
             android:textColor="@color/white"
             android:textSize="8dp"></TextView>
-
+</LinearLayout>
     </LinearLayout>
 
 

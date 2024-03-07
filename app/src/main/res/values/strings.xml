@@ -8,4 +8,13 @@
     <string name="upload_document">Upload Document</string>
     <string name="attendence">Attendence</string>
     <string name="sync">Sync</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="sync_offline_data">Sync Offline Data</string>
+    <string name="labour_registration_saved_offline">Labour Registration Saved Offline</string>
+    <string name="one">1</string>
+    <string name="entries_to_sync">Entries to sync</string>
+    <string name="documents_saved_offline">Documents saved offline</string>
+    <string name="sync_land_documents">Sync Land Documents</string>
+    <string name="sync_labour_data">Sync Labour Data</string>
 </resources>

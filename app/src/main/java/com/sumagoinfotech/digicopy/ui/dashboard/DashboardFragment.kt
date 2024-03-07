@@ -1,5 +1,6 @@
 package com.sumagoinfotech.digicopy.ui.dashboard
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
+import com.sumagoinfotech.digicopy.ui.activities.LabourDetailsActivity
 
 class DashboardFragment : Fragment() {
 
@@ -40,6 +42,11 @@ class DashboardFragment : Fragment() {
 //        childFragmentManager.beginTransaction()
 //            .replace(R.id.map_container, mapFragment)
 //            .commit()
+        binding.layoutRegisterLabour.setOnClickListener {
+
+            val intent= Intent(activity,LabourDetailsActivity::class.java)
+            startActivity(intent)
+        }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map_container) as SupportMapFragment
 
