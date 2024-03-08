@@ -6,20 +6,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
+import com.sumagoinfotech.digicopy.model.FamilyDetails
 
-class FamilyDetailsAdapter : RecyclerView.Adapter<FamilyDetailsAdapter.ViewHolder>() {
+class FamilyDetailsAdapter(var familyDetailsList: ArrayList<FamilyDetails>) : RecyclerView.Adapter<FamilyDetailsAdapter.ViewHolder>() {
 
 
-    // Adding elements to the ArrayList
-    val stringList = ArrayList<String>()
 
-    init {
-        // Adding elements to the ArrayList
-        stringList.add("Apple")
-        stringList.add("Banana")
-        stringList.add("Orange")
-
-    }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageViewDelete = itemView.findViewById<ImageView>(R.id.imageViewDelete)
 
@@ -37,12 +29,12 @@ class FamilyDetailsAdapter : RecyclerView.Adapter<FamilyDetailsAdapter.ViewHolde
 
         holder.imageViewDelete.setOnClickListener {
             notifyItemRemoved(position)
-            stringList.remove(stringList.get(position))
+            familyDetailsList.remove(familyDetailsList.get(position))
         }
 
     }
 
     override fun getItemCount(): Int {
-        return stringList.size
+        return familyDetailsList.size
     }
 }

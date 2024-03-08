@@ -5,6 +5,10 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        tools:ignore="CoarseFineLocation"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"></uses-permission>
 
     <uses-permission android:name="android.permission.CAMERA" />
 
@@ -18,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.activities.ImageCaptureActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.activities.ScannerActivity"
             android:exported="false" />
@@ -82,6 +89,16 @@
         <meta-data
             android:name="com.google.mlkit.vision.DEPENDENCIES"
             android:value="barcode" />
+
+        <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="com.sumagoinfotech.digicopy.provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+    </provider>
     </application>
 
 </manifest>

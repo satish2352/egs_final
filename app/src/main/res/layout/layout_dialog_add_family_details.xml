@@ -27,10 +27,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:id="@+id/etFullName"
                 android:layout_weight="1"
                 android:paddingLeft="16dp"
                 android:hint="Full Name"
-                android:inputType="phone"
+                android:inputType="text"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"></EditText>
@@ -54,14 +55,17 @@
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <EditText
+                <AutoCompleteTextView
+                    android:editable="false"
+                    android:inputType="none"
+                    android:id="@+id/etDob"
                     android:drawableEnd="@drawable/arrow_dropdown"
                     android:paddingLeft="16dp"
                     android:layout_weight="1"
                     android:hint="Date Of Birth "
                     android:background="@drawable/edittext_background"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"></EditText>
+                    android:layout_height="48dp"></AutoCompleteTextView>
 <!--                <ImageView-->
 <!--                    android:layout_marginRight="10dp"-->
 <!--                    android:layout_gravity="center"-->
@@ -79,14 +83,16 @@
             android:background="@drawable/rounded_background_light_gray"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <EditText
+            <AutoCompleteTextView
+                android:inputType="none"
+                android:id="@+id/actRelationShip"
                 android:drawableEnd="@drawable/arrow_dropdown"
                 android:paddingLeft="16dp"
                 android:layout_weight="1"
                 android:hint="Relationship "
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"></AutoCompleteTextView>
             <!--                <ImageView-->
             <!--                    android:layout_marginRight="10dp"-->
             <!--                    android:layout_gravity="center"-->
@@ -101,14 +107,16 @@
             android:background="@drawable/rounded_background_light_gray"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <EditText
+            <AutoCompleteTextView
+                android:inputType="none"
+                android:id="@+id/actMaritalStatus"
                 android:drawableEnd="@drawable/arrow_dropdown"
                 android:paddingLeft="16dp"
                 android:layout_weight="1"
                 android:hint="Maritial Status "
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"></AutoCompleteTextView>
             <!--                <ImageView-->
             <!--                    android:layout_marginRight="10dp"-->
             <!--                    android:layout_gravity="center"-->
@@ -119,6 +127,7 @@
 
         <Button
 
+            android:id="@+id/btnSubmit"
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"

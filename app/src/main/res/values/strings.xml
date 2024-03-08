@@ -19,4 +19,15 @@
     <string name="sync_labour_data">Sync Labour Data</string>
     <string name="labours_registered_online">Labours Registered Online</string>
     <string name="allocate_work">Allocate Work</string>
+    <string name="full_name_required">Full Name Required</string>
+    <string name="enter_valid_mobile">Enter Valid Mobile Number</string>
+    <string name="select_duration">Select Gender\n</string>
+    <string name="select_date_of_birth">Select Date Of Birth</string>
+    <string name="select_district">Select District</string>
+    <string name="select_village">Select Village</string>
+    <string name="select_taluka">Select taluka</string>
+    <string name="enter_valid_email">Enter Valid Mobile Number</string>
+    <string name="enter_valid_id_card_number">Enter MGNREGA ID Card Number</string>
+    <string name="select_relationship">Select Relationship</string>
+    <string name="select_marital_status">Select Marital Status</string>
 </resources>
