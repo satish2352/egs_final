@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetailsBinding
+import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewModel
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
 import java.text.SimpleDateFormat
@@ -18,13 +20,12 @@ class LabourDetailsActivity : AppCompatActivity() {
     lateinit var binding: ActivityLabourDetailsBinding
     private lateinit var districts: List<String>
     private lateinit var labourInputData: LabourInputData
-
+    private lateinit var registrationViewModel: RegistrationViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-
+        registrationViewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
         initializeFields()
 
 
@@ -42,6 +43,16 @@ class LabourDetailsActivity : AppCompatActivity() {
                 labourInputData.landline= binding.etLandLine.text.toString()
                 labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
 
+                registrationViewModel.setData(labourInputData)
+                registrationViewModel.fullName= "binding.etFullName.text.toString()"
+                registrationViewModel.dateOfBirth= binding.etDob.text.toString()
+                registrationViewModel.gender= binding.actGender.text.toString()
+                registrationViewModel.district= binding.actDistrict.text.toString()
+                registrationViewModel.village= binding.actVillage.text.toString()
+                registrationViewModel.taluka= binding.actTaluka.text.toString()
+                registrationViewModel.mobile= binding.etMobileNumber.text.toString()
+                registrationViewModel.landline= binding.etLandLine.text.toString()
+                registrationViewModel.idCard= binding.etMgnregaIdNumber.text.toString()
 
                 val intent = Intent(this, LabourDetailsActivity2::class.java)
                 intent.putExtra("LabourInputData", labourInputData)

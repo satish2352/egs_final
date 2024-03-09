@@ -22,6 +22,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,6 +37,7 @@ import com.sumagoinfotech.digicopy.database.UserDao
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetails2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
+import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewModel
 import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.LabourInputDataObject
@@ -71,20 +73,25 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
     private lateinit var aadharIdImagePath:String
     private lateinit var photoImagePath:String
     private lateinit var mgnregaIdImagePath:String
-
+    private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var labourInputData: LabourInputData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityLabourDetails2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        registrationViewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
+        registrationViewModel.dataObject.observe(this) { labourData ->
+            Log.d("mytag", "labourData.mobile")
+            Log.d("mytag", labourData.mobile)
+        }
         binding.layoutAdd.setOnClickListener {
             showAddFamilyDetailsDialog()
         }
         database= AppDatabase.getDatabase(this)
         userDao=database.userDao()
         labourInputData = intent.getSerializableExtra("LabourInputData") as LabourInputData
-        Log.d("mytag",labourInputData.fullName)
+        Log.d("mytag",registrationViewModel.fullName)
         val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         binding.recyclerViewFamilyDetails.layoutManager=layoutManager;
         adapter=FamilyDetailsAdapter(familyDetailsList,this)
