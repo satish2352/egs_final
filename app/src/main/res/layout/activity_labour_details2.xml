@@ -100,7 +100,7 @@
         android:background="@drawable/rounded_background_light_gray"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/etLocation"
             android:inputType="none"
             android:drawableEnd="@drawable/arrow_dropdown"
@@ -109,7 +109,7 @@
             android:hint="Location"
             android:background="@drawable/edittext_background"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"></EditText>
+            android:layout_height="48dp"></AutoCompleteTextView>
         <ImageView
             android:layout_marginRight="10dp"
             android:layout_gravity="center"
@@ -142,6 +142,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
     <FrameLayout
+        android:id="@+id/layoutAadharCard"
         android:background="@color/white"
         android:layout_marginTop="16dp"
         android:layout_gravity="center"
@@ -167,9 +168,11 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <ImageView
+                    android:scaleType="fitXY"
+                    android:id="@+id/ivAadhar"
                     android:layout_gravity="center"
                     android:src="@drawable/document"
-                    android:layout_width="80dp"
+                    android:layout_width="150dp"
                     android:layout_height="80dp"></ImageView>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -192,6 +195,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
         <FrameLayout
+            android:id="@+id/layoutMgnregaCard"
             android:background="@color/white"
             android:layout_marginTop="16dp"
             android:layout_gravity="center"
@@ -217,9 +221,11 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageView
+                        android:id="@+id/ivMgnregaCard"
                         android:layout_gravity="center"
                         android:src="@drawable/document"
-                        android:layout_width="80dp"
+                        android:scaleType="fitXY"
+                        android:layout_width="120dp"
                         android:layout_height="80dp"></ImageView>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -230,14 +236,73 @@
             android:textStyle="bold"
             android:layout_gravity="center|bottom"
             android:textColor="@color/black"
-            android:text="Aadhar Card"
+            android:text="MGNREGA Card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"></TextView>
     </LinearLayout>
 
 </LinearLayout>
+    <LinearLayout
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:id="@+id/layoutVoterId"
+                android:background="@color/white"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:background="@drawable/rounded_backgroud_blue"
+                    android:elevation="20dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/add"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"></ImageView>
+                <androidx.cardview.widget.CardView
+                    android:background="@color/white"
+                    app:cardElevation="3dp"
+                    app:cardUseCompatPadding="true"
+                    app:cardPreventCornerOverlap="true"
+                    app:cardCornerRadius="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <ImageView
+                            android:scaleType="fitXY"
+                            android:id="@+id/ivVoterId"
+                            android:layout_gravity="center"
+                            android:src="@drawable/document"
+                            android:layout_width="150dp"
+                            android:layout_height="80dp"></ImageView>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </FrameLayout>
+            <TextView
+
+                android:textStyle="bold"
+                android:elevation="5dp"
+                android:layout_gravity="center|bottom"
+                android:textColor="@color/black"
+                android:text="Voter Id Card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></TextView>
+        </LinearLayout>
+
+    </LinearLayout>
 
     <FrameLayout
+        android:id="@+id/layoutPhoto"
         android:background="@color/white"
         android:layout_marginTop="16dp"
         android:layout_gravity="center"
@@ -262,12 +327,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivPhoto"
                     android:layout_gravity="center"
                     android:src="@drawable/user_icon"
                     android:layout_width="150dp"
-                    android:layout_height="150dp"></ImageView>
+                    android:layout_height="150dp"></de.hdodenhof.circleimageview.CircleImageView>
                 <TextView
+
 
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center"

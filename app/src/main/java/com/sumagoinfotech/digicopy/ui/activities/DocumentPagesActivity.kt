@@ -19,7 +19,7 @@ class DocumentPagesActivity : AppCompatActivity() {
         binding = ActivityDocumentPagesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title=resources.getString(R.string.sync_labour_data)
+        supportActionBar?.title=resources.getString(R.string.upload_document)
         val layoutManager= GridLayoutManager(this,2, RecyclerView.VERTICAL,false)
         binding.recyclerViewDocumentPages.layoutManager=layoutManager;
         var adapter= DocumentPagesAdapter()

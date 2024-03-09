@@ -2,16 +2,14 @@ package com.sumagoinfotech.digicopy.ui.activities
 
 import android.app.DatePickerDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetailsBinding
-import com.sumagoinfotech.digicopy.databinding.ActivityMainBinding
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
-import org.checkerframework.framework.qual.DefaultQualifier
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -19,6 +17,8 @@ import java.util.Locale
 class LabourDetailsActivity : AppCompatActivity() {
     lateinit var binding: ActivityLabourDetailsBinding
     private lateinit var districts: List<String>
+    private lateinit var labourInputData: LabourInputData
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourDetailsBinding.inflate(layoutInflater)
@@ -30,23 +30,26 @@ class LabourDetailsActivity : AppCompatActivity() {
 
         binding.btnNext.setOnClickListener {
 
-            //if (validateFieldsX()) {
-            if (true) {
+            if (validateFieldsX()) {
+                labourInputData=LabourInputData()
+                labourInputData.fullName= binding.etFullName.text.toString()
+                labourInputData.dateOfBirth= binding.etDob.text.toString()
+                labourInputData.gender= binding.actGender.text.toString()
+                labourInputData.district= binding.actDistrict.text.toString()
+                labourInputData.village= binding.actVillage.text.toString()
+                labourInputData.taluka= binding.actTaluka.text.toString()
+                labourInputData.mobile= binding.etMobileNumber.text.toString()
+                labourInputData.landline= binding.etLandLine.text.toString()
+                labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
 
-                LabourInputData.fullName= binding.etFullName.text.toString()
-                LabourInputData.dateOfBirth= binding.etDob.text.toString()
-                LabourInputData.gender= binding.actGender.text.toString()
-                LabourInputData.district= binding.actDistrict.text.toString()
-                LabourInputData.village= binding.actVillage.text.toString()
-                LabourInputData.taluka= binding.actTaluka.text.toString()
-                LabourInputData.mobile= binding.etMobileNumber.text.toString()
-                LabourInputData.landline= binding.etLandLine.text.toString()
-                LabourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
 
                 val intent = Intent(this, LabourDetailsActivity2::class.java)
+                intent.putExtra("LabourInputData", labourInputData)
                 startActivity(intent)
             } else {
 
+                val toast = Toast.makeText(applicationContext, "Please enter all data", Toast.LENGTH_SHORT)
+                toast.show()
             }
 
         }
@@ -69,6 +72,7 @@ class LabourDetailsActivity : AppCompatActivity() {
 
             showDatePicker()
         }
+
 
         districts = listOf(
             "Ahmednagar",

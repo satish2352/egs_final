@@ -8,9 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.sumagoinfotech.digicopy.database.AppDatabase
+import com.sumagoinfotech.digicopy.database.UserDao
 import com.sumagoinfotech.digicopy.databinding.FragmentSyncOfflineDataBinding
 import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
 import com.sumagoinfotech.digicopy.ui.activities.SyncLandDocumentsActivity
+import com.sumagoinfotech.digicopy.ui.adapters.LabourReportsAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,6 +34,9 @@ class SyncOfflineData : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var _binding: FragmentSyncOfflineDataBinding? = null
+
+    lateinit var appDatabase: AppDatabase
+    lateinit var userDao: UserDao
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -54,6 +64,16 @@ class SyncOfflineData : Fragment() {
         binding.layoutLabourRegistrationsOffline.setOnClickListener {
             val intent=Intent(activity,SyncLabourDataActivity::class.java)
             startActivity(intent)
+        }
+        appDatabase=AppDatabase.getDatabase(requireActivity().applicationContext)
+        userDao=appDatabase.userDao()
+
+        CoroutineScope(Dispatchers.IO).launch{
+            val list=userDao.getAllUsers();
+
+            withContext(Dispatchers.Main) {
+                binding.tvRegistrationCount.setText("${list.size}")
+            }
         }
 
 //        val toggleGroup: MaterialButtonToggleGroup = findViewById(R.id.toggleGroup)

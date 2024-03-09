@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.databinding.ActivityMainBinding
+import com.sumagoinfotech.digicopy.ui.dashboard.DashboardFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -56,7 +57,9 @@ class MainActivity : AppCompatActivity() {
             }
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
-                    Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                    //val dashboardFragment=DashboardFragment();
+                    //dashboardFragment.updateMarker()
                 } else {
                     Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
                 }

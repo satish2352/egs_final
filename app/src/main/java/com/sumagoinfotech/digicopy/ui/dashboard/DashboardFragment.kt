@@ -142,4 +142,54 @@ class DashboardFragment : Fragment(), OnMapReadyCallback  {
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
     }
+
+    public fun updateMarker(){
+        if (isAdded && ActivityCompat.checkSelfPermission(
+                requireActivity().applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireActivity().applicationContext,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                location?.let {
+                    val currentLatLng = LatLng(it.latitude, it.longitude)
+
+                    // Move camera to current location
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+
+                    // Add marker for current location
+                    if (currentLocationMarker == null) {
+                        // If marker doesn't exist, create a new one
+                        currentLocationMarker = map.addMarker(
+                            MarkerOptions()
+                                .position(currentLatLng)
+                                .title("You are here")
+                                .snippet("${it.latitude}, ${it.longitude}")
+                        )
+                        currentLocationMarker?.showInfoWindow()
+                    } else {
+                        // If marker already exists, update its position
+                        currentLocationMarker?.position = currentLatLng
+                    }
+                } ?: run {
+                    Toast.makeText(
+                        requireContext(),
+                        "Unable to retrieve location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
 }
