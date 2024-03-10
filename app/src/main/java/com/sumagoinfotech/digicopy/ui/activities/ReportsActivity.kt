@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.User
-import com.sumagoinfotech.digicopy.database.UserDao
+import com.sumagoinfotech.digicopy.database.entity.User
+import com.sumagoinfotech.digicopy.database.dao.UserDao
 import com.sumagoinfotech.digicopy.databinding.ActivityReportsBinding
 import com.sumagoinfotech.digicopy.ui.adapters.LabourReportsAdapter
 import kotlinx.coroutines.CoroutineScope

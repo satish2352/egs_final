@@ -31,4 +31,5 @@
     <string name="select_relationship">Select Relationship</string>
     <string name="select_marital_status">Select Marital Status</string>
     <string name="select_all_fields">Select All Fields</string>
+    <string name="select_document">Select Document</string>
 </resources>

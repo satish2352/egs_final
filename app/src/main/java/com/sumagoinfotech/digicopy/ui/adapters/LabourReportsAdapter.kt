@@ -7,10 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
-import com.sumagoinfotech.digicopy.database.User
+import com.sumagoinfotech.digicopy.database.entity.User
 
 class LabourReportsAdapter(var list: List<User>) : RecyclerView.Adapter<LabourReportsAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

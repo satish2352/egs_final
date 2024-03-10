@@ -1,4 +1,4 @@
-package com.sumagoinfotech.digicopy.database
+package com.sumagoinfotech.digicopy.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

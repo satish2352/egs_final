@@ -32,15 +32,14 @@ import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.User
-import com.sumagoinfotech.digicopy.database.UserDao
+import com.sumagoinfotech.digicopy.database.entity.User
+import com.sumagoinfotech.digicopy.database.dao.UserDao
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetails2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
 import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewModel
 import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
 import com.sumagoinfotech.digicopy.utils.LabourInputData
-import com.sumagoinfotech.digicopy.utils.LabourInputDataObject
 import com.sumagoinfotech.digicopy.utils.MyValidator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

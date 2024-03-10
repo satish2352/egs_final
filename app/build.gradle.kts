@@ -77,6 +77,8 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+
 
 
 

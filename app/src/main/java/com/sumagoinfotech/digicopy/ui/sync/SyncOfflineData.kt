@@ -6,14 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.button.MaterialButtonToggleGroup
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.UserDao
+import com.sumagoinfotech.digicopy.database.dao.UserDao
 import com.sumagoinfotech.digicopy.databinding.FragmentSyncOfflineDataBinding
 import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
 import com.sumagoinfotech.digicopy.ui.activities.SyncLandDocumentsActivity
-import com.sumagoinfotech.digicopy.ui.adapters.LabourReportsAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

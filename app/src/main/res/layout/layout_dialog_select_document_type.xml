@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <TextView
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
@@ -32,42 +32,49 @@
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <EditText
+                <AutoCompleteTextView
+                    android:inputType="none"
+                    android:id="@+id/actDocumentType"
                     android:drawableEnd="@drawable/arrow_dropdown"
                     android:paddingLeft="16dp"
                     android:layout_weight="1"
-                    android:hint="7 12 Extract"
+                    android:hint="Select Document"
                     android:background="@drawable/edittext_background"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"></EditText>
+                    android:layout_height="48dp"></AutoCompleteTextView>
 
             </LinearLayout>
 
 
         </LinearLayout>
         <LinearLayout
+            android:gravity="end"
+            android:layout_gravity="end|right"
             android:layout_weight="1"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:visibility="gone"
+                android:id="@+id/etDocumentName"
                 android:paddingLeft="16dp"
                 android:layout_weight="1"
                 android:hint="Document 2024020202 "
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"></EditText>
-            <TextView
-
-                android:layout_marginLeft="16dp"
+            <ImageView
+                android:id="@+id/ivAddDocument"
+                android:src="@drawable/add"
+                android:layout_marginLeft="48dp"
                 android:padding="10dp"
                 android:textSize="20dp"
-                android:text="+"
+                android:gravity="center"
                 android:textColor="@color/white"
                 android:background="@drawable/circle_blue_background"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></TextView>
+                android:layout_width="50dp"
+                android:layout_height="50dp"></ImageView>
         </LinearLayout>
 
     </LinearLayout>
