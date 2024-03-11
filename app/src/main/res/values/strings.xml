@@ -32,4 +32,8 @@
     <string name="select_marital_status">Select Marital Status</string>
     <string name="select_all_fields">Select All Fields</string>
     <string name="select_document">Select Document</string>
+    <string name="edit_details">Edit Details</string>
+    <string name="registration_step_1">Registration Step 1</string>
+    <string name="registration_step_2">Registration Step 2</string>
+    <string name="select_gender">Select Gender</string>
 </resources>

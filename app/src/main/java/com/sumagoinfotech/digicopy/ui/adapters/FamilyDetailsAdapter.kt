@@ -19,6 +19,7 @@ class FamilyDetailsAdapter(var familyDetailsList: ArrayList<FamilyDetails>,var d
         val tvDob=itemView.findViewById<TextView>(R.id.tvDob)
         val tvRelationship=itemView.findViewById<TextView>(R.id.tvRelationship)
         val tvMaritalStatus=itemView.findViewById<TextView>(R.id.tvMaritalStatus)
+        val tvGender=itemView.findViewById<TextView>(R.id.tvGender)
 
     }
 
@@ -26,7 +27,7 @@ class FamilyDetailsAdapter(var familyDetailsList: ArrayList<FamilyDetails>,var d
         parent: ViewGroup,
         viewType: Int
     ): FamilyDetailsAdapter.ViewHolder {
-        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_row_family_details_2,parent,false)
+        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_row_family_details,parent,false)
         return ViewHolder(view)
     }
 
@@ -37,6 +38,7 @@ class FamilyDetailsAdapter(var familyDetailsList: ArrayList<FamilyDetails>,var d
         holder.tvDob.setText(familyDetailsList.get(position).dob)
         holder.tvRelationship.setText(familyDetailsList.get(position).relationship)
         holder.tvMaritalStatus.setText(familyDetailsList.get(position).maritalStatus)
+        holder.tvGender.setText(familyDetailsList.get(position).gender)
 
         holder.imageViewDelete.setOnClickListener {
             deleteListener.onDelete(position)

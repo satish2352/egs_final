@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.entity.User
-import com.sumagoinfotech.digicopy.database.dao.UserDao
+import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLabourDataBinding
 import com.sumagoinfotech.digicopy.ui.adapters.LabourReportsAdapter
 import kotlinx.coroutines.CoroutineScope
@@ -21,8 +21,8 @@ import kotlinx.coroutines.withContext
 class SyncLabourDataActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySyncLabourDataBinding
     private lateinit var database: AppDatabase
-    private lateinit var userDao: UserDao
-    lateinit var userList:List<User>
+    private lateinit var labourDao: LabourDao
+    lateinit var labourList:List<Labour>
     lateinit var  adapter:LabourReportsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,24 +33,24 @@ class SyncLabourDataActivity : AppCompatActivity() {
         val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         binding.recyclerViewSyncLabourData.layoutManager=layoutManager
         database= AppDatabase.getDatabase(this)
-        userDao=database.userDao()
-        userList=ArrayList<User>()
-        adapter= LabourReportsAdapter(userList)
+        labourDao=database.labourDao()
+        labourList=ArrayList<Labour>()
+        adapter= LabourReportsAdapter(labourList)
         CoroutineScope(Dispatchers.IO).launch{
-             userList=userDao.getAllUsers()
-            Log.d("mytag","=>"+userList.size)
-            adapter=LabourReportsAdapter(userList)
+             labourList=labourDao.getAllLabour()
+            Log.d("mytag","=>"+labourList.size)
+            adapter=LabourReportsAdapter(labourList)
 //            binding.recyclerViewSyncLabourData.adapter=adapter
 //            adapter.notifyDataSetChanged()
 
             withContext(Dispatchers.Main) {
                 // Add the fetched data to the list
-                adapter=LabourReportsAdapter(userList)
+                adapter=LabourReportsAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
         }
-        Log.d("mytag",""+userList.size)
+        Log.d("mytag",""+labourList.size)
 
         adapter.notifyDataSetChanged()
     }

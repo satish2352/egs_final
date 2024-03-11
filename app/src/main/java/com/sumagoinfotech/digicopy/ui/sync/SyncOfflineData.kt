@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.dao.UserDao
+import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.databinding.FragmentSyncOfflineDataBinding
 import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
 import com.sumagoinfotech.digicopy.ui.activities.SyncLandDocumentsActivity
@@ -33,7 +33,7 @@ class SyncOfflineData : Fragment() {
     private var _binding: FragmentSyncOfflineDataBinding? = null
 
     lateinit var appDatabase: AppDatabase
-    lateinit var userDao: UserDao
+    lateinit var LabourDao: LabourDao
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -63,10 +63,10 @@ class SyncOfflineData : Fragment() {
             startActivity(intent)
         }
         appDatabase=AppDatabase.getDatabase(requireActivity().applicationContext)
-        userDao=appDatabase.userDao()
+        LabourDao=appDatabase.labourDao()
 
         CoroutineScope(Dispatchers.IO).launch{
-            val list=userDao.getAllUsers();
+            val list=LabourDao.getAllLabour();
 
             withContext(Dispatchers.Main) {
                 binding.tvRegistrationCount.setText("${list.size}")

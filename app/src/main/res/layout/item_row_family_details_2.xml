@@ -54,8 +54,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TextView
+
+                    android:textSize="9dp"
+                    android:fontFamily="@font/poppins"
+                    android:text="gender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:id="@+id/tvGender"
                     android:textSize="9dp"
                     android:layout_marginLeft="8dp"
+                    android:fontFamily="@font/poppins"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="9dp"
                     android:fontFamily="@font/poppins"
                     android:text="DOB "
                     android:layout_width="wrap_content"
@@ -63,7 +82,6 @@
                 <TextView
                     android:id="@+id/tvDob"
                     android:textSize="9dp"
-                    android:layout_marginLeft="8dp"
                     android:fontFamily="@font/poppins"
                     android:text="01/01/0000"
                     android:layout_width="wrap_content"
@@ -76,7 +94,6 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:textSize="9dp"
-                    android:layout_marginLeft="8dp"
                     android:fontFamily="@font/poppins"
                     android:text="Relationship"
                     android:layout_width="wrap_content"
@@ -98,7 +115,6 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:textSize="9dp"
-                    android:layout_marginLeft="8dp"
                     android:fontFamily="@font/poppins"
                     android:text="Marital Status"
                     android:layout_width="wrap_content"

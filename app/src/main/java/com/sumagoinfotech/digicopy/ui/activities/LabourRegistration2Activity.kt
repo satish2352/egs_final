@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
@@ -29,11 +30,12 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
+import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.entity.User
-import com.sumagoinfotech.digicopy.database.dao.UserDao
+import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetails2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
@@ -50,19 +52,20 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
+class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private lateinit var binding:ActivityLabourDetails2Binding
     lateinit var  etDob:AutoCompleteTextView
     lateinit var  etFullName:EditText
     lateinit var  actMaritalStatus:AutoCompleteTextView
     lateinit var  actRelationship:AutoCompleteTextView
+    lateinit var  actGenderFamily:AutoCompleteTextView
     lateinit var  btnSubmit:Button
     var validationResults = mutableListOf<Boolean>()
     var familyDetailsList=ArrayList<FamilyDetails>()
     lateinit var adapter:FamilyDetailsAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var database: AppDatabase
-    private lateinit var userDao: UserDao
+    private lateinit var LabourDao: LabourDao
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
     private val REQUEST_CODE_AADHAR_CARD = 100
     private  val REQUEST_CODE_PHOTO = 200
@@ -79,16 +82,19 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
         super.onCreate(savedInstanceState)
         binding= ActivityLabourDetails2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title=resources.getString(R.string.registration_step_2)
         registrationViewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
         registrationViewModel.dataObject.observe(this) { labourData ->
             Log.d("mytag", "labourData.mobile")
             Log.d("mytag", labourData.mobile)
         }
+        requestThePermissions()
         binding.layoutAdd.setOnClickListener {
             showAddFamilyDetailsDialog()
         }
         database= AppDatabase.getDatabase(this)
-        userDao=database.userDao()
+        LabourDao=database.labourDao()
         labourInputData = intent.getSerializableExtra("LabourInputData") as LabourInputData
         Log.d("mytag",registrationViewModel.fullName)
         val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
@@ -99,10 +105,11 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
         photoImagePath=""
         aadharIdImagePath=""
         mgnregaIdImagePath=""
+
         binding.btnSubmit.setOnClickListener {
             if(validateFormFields()){
                 val familyDetails=Gson().toJson(familyDetailsList).toString()
-                val user = User(
+                val labour = Labour(
                     fullName = labourInputData.fullName,
                     gender = labourInputData.gender,
                     dob = labourInputData.dateOfBirth,
@@ -121,22 +128,20 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
                     isSynced = false)
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val rows=userDao.insertUser(user)
+                        val rows=LabourDao.insertLabour(labour)
                         if(rows>0){
 
                             runOnUiThread {
-                                val toast=Toast.makeText(this@LabourDetailsActivity2,"Labour record added successfully",Toast.LENGTH_SHORT)
+                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour record added successfully",Toast.LENGTH_SHORT)
                                 toast.show()
                             }
 
-                            val intent= Intent(this@LabourDetailsActivity2,MainActivity::class.java)
-                            intent.flags=Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            intent.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            intent.flags=Intent.FLAG_ACTIVITY_NEW_TASK
+                            val intent= Intent(this@LabourRegistration2Activity,MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                             startActivity(intent)
                         }else{
                             runOnUiThread {
-                                val toast=Toast.makeText(this@LabourDetailsActivity2,"Something went wrong",Toast.LENGTH_SHORT)
+                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Something went wrong",Toast.LENGTH_SHORT)
                                 toast.show()
                             }
                         }
@@ -147,7 +152,7 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
                     }
                 }
             }else{
-                Toast.makeText(this@LabourDetailsActivity2,resources.getString(R.string.select_all_fields),Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.select_all_fields),Toast.LENGTH_SHORT).show()
             }
 
         }
@@ -219,6 +224,12 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
         binding.layoutMgnregaCard.setOnClickListener {
             captureImage(REQUEST_CODE_MGNREGA_CARD)
         }
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId==android.R.id.home){
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun validateFormFields(): Boolean {
@@ -308,7 +319,7 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
                     binding.etLocation.setText("${it.latitude},${it.longitude}")
                 } ?: run {
                     Toast.makeText(
-                        this@LabourDetailsActivity2,
+                        this@LabourRegistration2Activity,
                         "Unable to retrieve location",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -317,7 +328,7 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
     }
 
     private fun showAddFamilyDetailsDialog() {
-        val dialog=Dialog(this@LabourDetailsActivity2)
+        val dialog=Dialog(this@LabourRegistration2Activity)
         dialog.setContentView(R.layout.layout_dialog_add_family_details)
         val width = ViewGroup.LayoutParams.MATCH_PARENT
         val height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -330,6 +341,7 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
          etDob=dialog.findViewById<AutoCompleteTextView>(R.id.etDob)
          actRelationship=dialog.findViewById<AutoCompleteTextView>(R.id.actRelationShip)
          actMaritalStatus=dialog.findViewById<AutoCompleteTextView>(R.id.actMaritalStatus)
+        actGenderFamily=dialog.findViewById<AutoCompleteTextView>(R.id.actGenderFamily)
          btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
 
 
@@ -370,17 +382,32 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
         actMaritalStatus.setOnFocusChangeListener {abaad, asd ->
             actMaritalStatus.showDropDown()
         }
+        val names = listOf("MALE", "FEMALE")
+        val genderAdapter1 = ArrayAdapter(
+            this, android.R.layout.simple_list_item_1, names
+        )
+     actGenderFamily.setAdapter(genderAdapter1)
+        actGenderFamily.setOnFocusChangeListener { abaad, asd ->
+            actGenderFamily.showDropDown()
+        }
+        actGenderFamily.setOnClickListener {
+            actGenderFamily.showDropDown()
+        }
         btnSubmit.setOnClickListener {
-
             if(validateFields())
             {
-                val familyMember=FamilyDetails(fullName = etFullName.text.toString(), dob = etDob.text.toString(), relationship = actRelationship.text.toString(), maritalStatus = actMaritalStatus.text.toString())
-                familyDetailsList.add(familyMember)
-                adapter.notifyDataSetChanged()
-                dialog.dismiss()
+                try {
+                    val familyMember=FamilyDetails(fullName = etFullName.text.toString(), dob = etDob.text.toString(), relationship = actRelationship.text.toString(), maritalStatus = actMaritalStatus.text.toString(), gender = actGenderFamily.text.toString())
+                    familyDetailsList.add(familyMember)
+                    adapter.notifyDataSetChanged()
+                    dialog.dismiss()
+                } catch (e: Exception) {
+                    Log.d("mytag",""+e.message)
+                    e.printStackTrace()
+                }
 
             }else{
-
+                Log.d("mytag","Validation Error")
             }
         }
         etDob.setOnClickListener {
@@ -390,38 +417,58 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
 
     }
     private fun validateFields():Boolean{
+        var validationResults= mutableListOf<Boolean>()
         // Full Name
         if (MyValidator.isValidName(etFullName.text.toString())) {
             etFullName.error = null
             validationResults.add(true)
+            Log.d("mytag","Validation isValidName "+true)
         } else {
             etFullName.error = resources.getString(R.string.full_name_required)
             validationResults.add(false)
+            Log.d("mytag","Validation isValidName "+false)
         }
         // DOB
         if (etDob.text.toString().length > 0 && !etDob.text.isNullOrBlank()) {
             etDob.error = null
             validationResults.add(true)
+            Log.d("mytag","Validation dob "+true)
         } else {
             etDob.error = resources.getString(R.string.select_date_of_birth)
             validationResults.add(false)
+            Log.d("mytag","Validation dob "+false)
         }
         // Relationship
         if (actMaritalStatus.enoughToFilter()) {
             actMaritalStatus.error = null
             validationResults.add(true)
+            Log.d("mytag","Validation actMaritalStatus "+true)
         } else {
             actMaritalStatus.error = resources.getString(R.string.select_marital_status)
             validationResults.add(false)
+            Log.d("mytag","Validation actMaritalStatus "+false)
         }
 
         // Relationship
         if (actRelationship.enoughToFilter()) {
             actRelationship.error = null
             validationResults.add(true)
+            Log.d("mytag","Validation actRelationship "+true)
         } else {
             actRelationship.error = resources.getString(R.string.select_relationship)
             validationResults.add(false)
+            Log.d("mytag","Validation actRelationship "+false)
+        }
+        // Relationship
+
+        if (actGenderFamily.enoughToFilter()) {
+            actGenderFamily.error = null
+            validationResults.add(true)
+            Log.d("mytag","Validation actGenderFamily "+true)
+        } else {
+            actGenderFamily.error = resources.getString(R.string.select_gender)
+            validationResults.add(false)
+            Log.d("mytag","Validation actGenderFamily "+false)
         }
         return !validationResults.contains(false);
     }
@@ -457,5 +504,25 @@ class LabourDetailsActivity2 : AppCompatActivity(),OnDeleteListener {
         super.onSaveInstanceState(outState, outPersistentState)
         outState.putSerializable("LabourInputData",labourInputData     )
 
+    }
+    private fun requestThePermissions() {
+
+        PermissionX.init(this@LabourRegistration2Activity)
+            .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
+            }
+            .onForwardToSettings { scope, deniedList ->
+                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+            }
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+                    //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                    //val dashboardFragment=DashboardFragment();
+                    //dashboardFragment.updateMarker()
+                } else {
+                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 }

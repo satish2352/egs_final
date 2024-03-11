@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityScanBarcodeBinding
 import java.util.concurrent.Executors
@@ -37,11 +39,32 @@ class ScanBarcodeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityScanBarcodeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        requestThePermissions()
         binding.buttonOpenScanner.setOnClickListener {
             requestCameraAndStartScanner()
             startScanner()
         }
+    }
+
+    private fun requestThePermissions() {
+
+        PermissionX.init(this@ScanBarcodeActivity)
+            .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
+            }
+            .onForwardToSettings { scope, deniedList ->
+                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+            }
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+                    //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                    //val dashboardFragment=DashboardFragment();
+                    //dashboardFragment.updateMarker()
+                } else {
+                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

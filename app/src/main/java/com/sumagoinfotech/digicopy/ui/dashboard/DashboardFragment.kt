@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -24,7 +23,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
-import com.sumagoinfotech.digicopy.ui.activities.LabourDetailsActivity
+import com.sumagoinfotech.digicopy.ui.activities.LabourRegistration1Activity
 import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
 
 class DashboardFragment : Fragment(), OnMapReadyCallback  {
@@ -61,7 +60,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback  {
 //            .commit()
         binding.layoutRegisterLabour.setOnClickListener {
 
-            val intent= Intent(activity,LabourDetailsActivity::class.java)
+            val intent= Intent(activity,LabourRegistration1Activity::class.java)
             startActivity(intent)
         }
         binding.layoutScanQR.setOnClickListener {

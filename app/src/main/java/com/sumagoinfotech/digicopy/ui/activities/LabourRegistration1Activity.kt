@@ -3,6 +3,7 @@ package com.sumagoinfotech.digicopy.ui.activities
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class LabourDetailsActivity : AppCompatActivity() {
+class LabourRegistration1Activity : AppCompatActivity() {
     lateinit var binding: ActivityLabourDetailsBinding
     private lateinit var districts: List<String>
     private lateinit var labourInputData: LabourInputData
@@ -25,6 +26,8 @@ class LabourDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title=resources.getString(R.string.registration_step_1)
         registrationViewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
         initializeFields()
 
@@ -54,7 +57,7 @@ class LabourDetailsActivity : AppCompatActivity() {
                 registrationViewModel.landline= binding.etLandLine.text.toString()
                 registrationViewModel.idCard= binding.etMgnregaIdNumber.text.toString()
 
-                val intent = Intent(this, LabourDetailsActivity2::class.java)
+                val intent = Intent(this, LabourRegistration2Activity::class.java)
                 intent.putExtra("LabourInputData", labourInputData)
                 startActivity(intent)
             } else {
@@ -62,8 +65,13 @@ class LabourDetailsActivity : AppCompatActivity() {
                 val toast = Toast.makeText(applicationContext, "Please enter all data", Toast.LENGTH_SHORT)
                 toast.show()
             }
-
         }
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId==android.R.id.home){
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun initializeFields() {
