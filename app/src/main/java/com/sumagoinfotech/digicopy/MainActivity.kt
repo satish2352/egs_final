@@ -5,6 +5,8 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -15,6 +17,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.databinding.ActivityMainBinding
+import com.sumagoinfotech.digicopy.ui.activities.LoginActivity
 import com.sumagoinfotech.digicopy.ui.dashboard.DashboardFragment
 
 class MainActivity : AppCompatActivity() {
@@ -85,5 +88,21 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         checkAndPromptGps()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.options_menu_home,menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if(item.itemId==R.id.action_logout)
+        {
+            val intent=Intent(this@MainActivity,LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

@@ -14,7 +14,11 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
+import com.sumagoinfotech.digicopy.database.dao.DocumentDao
+import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDao
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
+import com.sumagoinfotech.digicopy.database.dao.UserDao
+import com.sumagoinfotech.digicopy.database.entity.Document
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetailsBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit1Binding
@@ -89,10 +93,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
 
                     CoroutineScope(Dispatchers.IO).launch {
-                       // labour=labourDao.updateLabour(labour)
-                        /*runOnUiThread {
-                            initializeFields()
-                        }*/
+                       labourDao.updateLabour(labour)
                     }
 
 //                    val intent = Intent(this, LabourRegistrationEdit2::class.java)
