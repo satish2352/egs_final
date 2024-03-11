@@ -29,6 +29,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
@@ -239,7 +240,15 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         binding.ivMgnregaCard.setImageURI(Uri.parse(labour.mgnregaIdImage))
         binding.ivPhoto.setImageURI(Uri.parse(labour.photo))
         binding.ivVoterId.setImageURI(Uri.parse(labour.voterIdImage))
+        val gson=Gson()
+        val familyList: ArrayList<FamilyDetails> = gson.fromJson(labour.familyDetails, object : TypeToken<ArrayList<FamilyDetails>>() {}.type)
+
+        familyDetailsList=familyList
+        adapter=FamilyDetailsAdapter(familyList,this)
+        binding.recyclerViewFamilyDetails.adapter=adapter
+        adapter.notifyDataSetChanged()
         Log.d("mytag",labour.familyDetails)
+        Log.d("mytag",""+familyList.size)
 
     }
 

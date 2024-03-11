@@ -77,7 +77,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 toast.show()
             }
             binding.btnUpdate.setOnClickListener {
-
+                Log.d("mytag","vvvvvvvvvvvvvvvvvv")
                 if (validateFieldsX()) {
 
 
@@ -91,10 +91,12 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     labour.mobile= binding.etMobileNumber.text.toString()
                     labour.landline= binding.etLandLine.text.toString()
                     labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
-
+                    Log.d("mytag","Before")
                     CoroutineScope(Dispatchers.IO).launch {
-                       labourDao.updateLabour(labour)
+                       var row=labourDao.updateLabour(labour)
+                        Log.d("mytag",""+row)
                     }
+                    Log.d("mytag","After")
 
 //                    val intent = Intent(this, LabourRegistrationEdit2::class.java)
 //                    intent.putExtra("id",labour.id.toString())

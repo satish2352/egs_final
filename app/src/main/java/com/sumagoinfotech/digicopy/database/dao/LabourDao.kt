@@ -13,7 +13,7 @@ interface LabourDao {
     suspend fun insertLabour(labour: Labour) : Long
 
     @Update
-    suspend fun updateLabour(labour: Labour)
+    suspend fun updateLabour(labour: Labour):Int
 
     @Delete
     suspend fun deleteLabour(labour: Labour)
