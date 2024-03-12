@@ -12,7 +12,7 @@ import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLabourDataBinding
-import com.sumagoinfotech.digicopy.ui.adapters.LabourReportsAdapter
+import com.sumagoinfotech.digicopy.ui.adapters.LabourListAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
     lateinit var labourList:List<Labour>
-    lateinit var  adapter:LabourReportsAdapter
+    lateinit var  adapter:LabourListAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivitySyncLabourDataBinding.inflate(layoutInflater)
@@ -35,7 +35,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
         database= AppDatabase.getDatabase(this)
         labourDao=database.labourDao()
         labourList=ArrayList<Labour>()
-        adapter= LabourReportsAdapter(labourList)
+        adapter= LabourListAdapter(labourList)
         adapter.notifyDataSetChanged()
 
 
@@ -60,7 +60,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
             labourList=labourDao.getAllLabour()
             Log.d("mytag","=>"+labourList.size)
             withContext(Dispatchers.Main) {
-                adapter=LabourReportsAdapter(labourList)
+                adapter=LabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }

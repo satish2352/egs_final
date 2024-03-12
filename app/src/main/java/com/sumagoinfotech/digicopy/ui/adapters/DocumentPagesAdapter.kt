@@ -37,6 +37,7 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
 
     override fun onBindViewHolder(holder: DocumentPagesAdapter.ViewHolder, position: Int)
     {
+        Log.d("mytag","onBindViewHolder=>"+documentList.get(position).documentName)
         holder.tvDocumentName.text=documentList.get(position).documentName
         holder.ivThumb.setOnClickListener {
 
@@ -45,7 +46,7 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
         }
         holder.textViewPageCount.text= documentList[position].pageCount
         holder.ivDeleteDocument.setOnClickListener {
-            Log.d("mytag","deleteHere")
+
             updateDocumentTypeListener.onUpdateDocumentType(documentList.get(position))
         }
 

@@ -39,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
                         if(user!==null){
                             Log.d("mytag","found "+user.email)
                             runOnUiThread {
-                                val toast= Toast.makeText(this@LoginActivity,"Login  successful",
+                                val toast= Toast.makeText(this@LoginActivity,"Login successful",
                                     Toast.LENGTH_SHORT)
                                 toast.show()
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
                             }
                         }else{
                             runOnUiThread {
-                                val toast= Toast.makeText(this@LoginActivity,"No record  found",
+                                val toast= Toast.makeText(this@LoginActivity,"Please enter correct details",
                                     Toast.LENGTH_SHORT)
                                 toast.show()
                             }

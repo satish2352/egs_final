@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -51,6 +52,7 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
     private lateinit var binding:ActivityDocumentPagesBinding
     private lateinit var actDocumentType:AutoCompleteTextView
     private lateinit var ivAddDocument:ImageView
+    private lateinit var etDocumentName:EditText
     private lateinit var documentName:String
     private lateinit var database: AppDatabase
     private lateinit var documentDao:DocumentDao
@@ -157,9 +159,10 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
         dialog.show()
         actDocumentType=dialog.findViewById<AutoCompleteTextView>(R.id.actDocumentType)
         ivAddDocument=dialog.findViewById<ImageView>(R.id.ivAddDocument)
+        etDocumentName=dialog.findViewById<EditText>(R.id.etDocumentName)
         var documentTypeList:List<DocumentType> = ArrayList()
         CoroutineScope(Dispatchers.IO).launch{
-            documentTypeList=documentTypeDao.getDocumentsNotAdded()
+            documentTypeList=documentTypeDao.getDocuments()
             Log.d("mytag","=>"+documentTypeList.size)
             adapter= DocumentPagesAdapter(documentList,this@DocumentPagesActivity)
              adapter.notifyDataSetChanged()
@@ -198,7 +201,16 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
 
             if(validateFields())
             {
-                documentName = actDocumentType.text.toString()
+                val calendar = Calendar.getInstance()
+                val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
+                if(etDocumentName.text.length>0 && !etDocumentName.text.isNullOrEmpty()) {
+                    documentName =
+                        "${actDocumentType.text.toString()}_${etDocumentName.text.toString()}_${timeInMillis}"
+                }else{
+                    documentName =
+                        "${actDocumentType.text.toString()}_${timeInMillis}"
+                }
+                Log.d("mytag", "Document Name >$documentName")
                 launchScanner()
                 dialog.dismiss()
             }else{
@@ -232,7 +244,7 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             }
     }
     private fun saveRecordToDatabase(pdfUri: Uri, documentName: String,pageCount:String) {
-
+        Log.d("mytag","------>"+documentName)
         val document = Document(
             documentName=documentName,
             pageCount = pageCount,
@@ -248,12 +260,12 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
                 }
                 if(rows>0){
                     runOnUiThread {
-                        val toast= Toast.makeText(this@DocumentPagesActivity,"Document record added successfully",Toast.LENGTH_SHORT)
+                        val toast= Toast.makeText(this@DocumentPagesActivity,"Document added successfully",Toast.LENGTH_SHORT)
                         toast.show()
                     }
                 }else{
                     runOnUiThread {
-                        val toast=Toast.makeText(this@DocumentPagesActivity,"Something went wrong",Toast.LENGTH_SHORT)
+                        val toast=Toast.makeText(this@DocumentPagesActivity,"Document not added please try again",Toast.LENGTH_SHORT)
                         toast.show()
                     }
                 }

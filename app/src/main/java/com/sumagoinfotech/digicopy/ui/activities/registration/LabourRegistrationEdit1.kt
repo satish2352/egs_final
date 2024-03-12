@@ -12,6 +12,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.DocumentDao
@@ -75,7 +76,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 startActivity(intent)
             } else {
 
-                val toast = Toast.makeText(applicationContext, "Please enter all data", Toast.LENGTH_SHORT)
+                val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
                 toast.show()
             }
 
@@ -83,11 +84,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
         }
         binding.btnUpdateLabour.setOnClickListener {
-            Log.d("mytag","vvvvvvvvvvvvvvvvvv")
             if (validateFieldsX()) {
-
-
-
                 labour.fullName= binding.etFullName.text.toString()
                 labour.dob= binding.etDob.text.toString()
                 labour.gender= binding.actGender.text.toString()
@@ -101,6 +98,19 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 CoroutineScope(Dispatchers.IO).launch {
                     var row=labourDao.updateLabour(labour)
                     Log.d("mytag",""+row)
+                    if(row>0){
+                        runOnUiThread {
+                            val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour updated successfully",
+                                Toast.LENGTH_SHORT)
+                            toast.show()
+                        }
+                    }else{
+                        runOnUiThread {
+                            val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour not updated please try again ",
+                                Toast.LENGTH_SHORT)
+                            toast.show()
+                        }
+                    }
                 }
                 Log.d("mytag","After")
 
@@ -110,7 +120,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 //                    startActivity(intent)
             } else {
 
-                val toast = Toast.makeText(applicationContext, "Please enter all data", Toast.LENGTH_SHORT)
+                val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
                 toast.show()
             }
         }

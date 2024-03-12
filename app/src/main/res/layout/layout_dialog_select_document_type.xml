@@ -55,15 +55,19 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <EditText
-                android:visibility="gone"
+            <com.google.android.material.textfield.TextInputEditText
+
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:imeOptions="actionDone"
+                android:visibility="visible"
                 android:id="@+id/etDocumentName"
                 android:paddingLeft="16dp"
                 android:layout_weight="1"
-                android:hint="Document 2024020202 "
-                android:background="@drawable/edittext_background"
+                android:hint="@string/enter_document_name"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"></com.google.android.material.textfield.TextInputEditText>
             <ImageView
                 android:id="@+id/ivAddDocument"
                 android:src="@drawable/add"

@@ -132,7 +132,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                         if(rows>0){
 
                             runOnUiThread {
-                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour record added successfully",Toast.LENGTH_SHORT)
+                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour added successfully",Toast.LENGTH_SHORT)
                                 toast.show()
                             }
 
@@ -141,7 +141,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                             startActivity(intent)
                         }else{
                             runOnUiThread {
-                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Something went wrong",Toast.LENGTH_SHORT)
+                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour not added please try again",Toast.LENGTH_SHORT)
                                 toast.show()
                             }
                         }
@@ -152,7 +152,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     }
                 }
             }else{
-                Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.select_all_fields),Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.select_all_documents),Toast.LENGTH_SHORT).show()
             }
 
         }

@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
@@ -42,10 +41,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
         requestThePermissions()
-
-
     }
 
     private fun requestThePermissions() {
@@ -63,6 +59,7 @@ class MainActivity : AppCompatActivity() {
                     //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
                     //val dashboardFragment=DashboardFragment();
                     //dashboardFragment.updateMarker()
+
                 } else {
                     Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
                 }

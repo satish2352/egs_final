@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardUseCompatPadding="true"
-    app:cardCornerRadius="16dp"
     android:layout_height="wrap_content">
     <FrameLayout
         android:gravity="center"
@@ -13,6 +12,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/imageViewDelete"
             android:layout_marginRight="16dp"
             android:layout_marginBottom="16dp"
@@ -33,17 +33,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:textSize="9dp"
-                    android:layout_marginLeft="8dp"
                     android:textColor="@color/black"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
                     android:text="Name : "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
                 <TextView
                     android:id="@+id/tvFullName"
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
-
                     android:text="Vishvambhar Gore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
@@ -54,14 +53,15 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
+
                     android:text="DOB :"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
                 <TextView
                     android:id="@+id/tvDob"
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
                     android:text=""
                     android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:textColor="@color/black"
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
 
                     android:text="Gender :"
@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"></TextView>
                 <TextView
                     android:id="@+id/tvGender"
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
 
                     android:text=""
@@ -95,15 +95,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:textSize="9dp"
-                    android:layout_marginLeft="8dp"
                     android:textColor="@color/black"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+
                     android:text="Relationship : "
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
                 <TextView
                     android:id="@+id/tvRelationship"
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
 
                     android:text="Son"
@@ -116,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
                     android:textColor="@color/black"
                     android:text="Marital Status :"
@@ -124,7 +125,7 @@
                     android:layout_height="wrap_content"></TextView>
                 <TextView
                     android:id="@+id/tvMaritalStatus"
-                    android:textSize="9dp"
+                    android:textSize="11dp"
                     android:layout_marginLeft="8dp"
 
                     android:text="Single"

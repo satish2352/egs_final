@@ -36,8 +36,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback  {
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentLocationMarker: Marker? = null // Reference to the current location marker
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

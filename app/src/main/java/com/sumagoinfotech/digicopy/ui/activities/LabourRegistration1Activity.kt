@@ -62,7 +62,7 @@ class LabourRegistration1Activity : AppCompatActivity() {
                 startActivity(intent)
             } else {
 
-                val toast = Toast.makeText(applicationContext, "Please enter all data", Toast.LENGTH_SHORT)
+                val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
                 toast.show()
             }
         }

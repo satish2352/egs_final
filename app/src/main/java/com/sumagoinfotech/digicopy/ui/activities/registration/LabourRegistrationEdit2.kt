@@ -42,6 +42,7 @@ import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
+import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
 import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
@@ -130,16 +131,16 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                         val rows=labourDao.updateLabour(labour)
                         if(rows>0){
                             runOnUiThread {
-                                val toast= Toast.makeText(this@LabourRegistrationEdit2,"Labour record updated successfully",
+                                val toast= Toast.makeText(this@LabourRegistrationEdit2,"Labour updated successfully",
                                     Toast.LENGTH_SHORT)
                                 toast.show()
                             }
-                            val intent= Intent(this@LabourRegistrationEdit2, MainActivity::class.java)
+                            val intent= Intent(this@LabourRegistrationEdit2, SyncLabourDataActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                             startActivity(intent)
                         }else{
                             runOnUiThread {
-                                val toast= Toast.makeText(this@LabourRegistrationEdit2,"Something went wrong",
+                                val toast= Toast.makeText(this@LabourRegistrationEdit2,"Labour not updated please try again",
                                     Toast.LENGTH_SHORT)
                                 toast.show()
                             }
@@ -151,7 +152,7 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                     }
                 }
             }else{
-                Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.select_all_fields),
+                Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.select_all_documents),
                     Toast.LENGTH_SHORT).show()
             }
         }
@@ -423,7 +424,7 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
 
             if(validateFields())
             {
-                val familyMember=FamilyDetails(fullName = etFullName.text.toString(), dob = etDob.text.toString(), relationship = actRelationship.text.toString(), maritalStatus = actMaritalStatus.text.toString(), gender = "")
+                val familyMember=FamilyDetails(fullName = etFullName.text.toString(), dob = etDob.text.toString(), relationship = actRelationship.text.toString(), maritalStatus = actMaritalStatus.text.toString(), gender = actGenderFamily.text.toString())
                 familyDetailsList.add(familyMember)
                 adapter.notifyDataSetChanged()
                 dialog.dismiss()
@@ -439,6 +440,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
 
     }
     private fun validateFields():Boolean{
+
+        val validationResults= mutableListOf<Boolean>()
         // Full Name
         if (MyValidator.isValidName(etFullName.text.toString())) {
             etFullName.error = null

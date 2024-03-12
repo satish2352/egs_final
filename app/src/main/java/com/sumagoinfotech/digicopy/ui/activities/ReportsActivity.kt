@@ -11,7 +11,8 @@ import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.databinding.ActivityReportsBinding
-import com.sumagoinfotech.digicopy.ui.adapters.LabourReportsAdapter
+import com.sumagoinfotech.digicopy.ui.adapters.LabourListAdapter
+import com.sumagoinfotech.digicopy.ui.adapters.LabourListInReportsAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +24,7 @@ class ReportsActivity : AppCompatActivity() {
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
     lateinit var labourList:List<Labour>
-    lateinit var  adapter:LabourReportsAdapter
+    lateinit var  adapter:LabourListInReportsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityReportsBinding.inflate(layoutInflater)
@@ -35,17 +36,17 @@ class ReportsActivity : AppCompatActivity() {
         database= AppDatabase.getDatabase(this)
         labourDao=database.labourDao()
         labourList=ArrayList<Labour>()
-        adapter= LabourReportsAdapter(labourList)
+        adapter= LabourListInReportsAdapter(labourList)
         CoroutineScope(Dispatchers.IO).launch{
             labourList=labourDao.getAllLabour()
             Log.d("mytag","=>"+labourList.size)
-            adapter=LabourReportsAdapter(labourList)
+            adapter=LabourListInReportsAdapter(labourList)
 //            binding.recyclerViewSyncLabourData.adapter=adapter
 //            adapter.notifyDataSetChanged()
 
             withContext(Dispatchers.Main) {
                 // Add the fetched data to the list
-                adapter=LabourReportsAdapter(labourList)
+                adapter=LabourListInReportsAdapter(labourList)
                 binding.recyclerViewReports.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }

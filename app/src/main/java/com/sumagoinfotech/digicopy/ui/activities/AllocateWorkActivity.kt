@@ -77,7 +77,7 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
                                     adapter= AttendanceAdapter(labourList,this@AllocateWorkActivity)
                                     binding.recyclerViewAttendance.adapter=adapter;
                                     adapter.notifyDataSetChanged()
-                                    val toast= Toast.makeText(this@AllocateWorkActivity,"Labour data not found",
+                                    val toast= Toast.makeText(this@AllocateWorkActivity,"Labour not found",
                                         Toast.LENGTH_SHORT)
                                     toast.show()
                                 }
@@ -88,7 +88,7 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
                                 adapter= AttendanceAdapter(labourList,this@AllocateWorkActivity)
                                 binding.recyclerViewAttendance.adapter=adapter;
                                 adapter.notifyDataSetChanged()
-                                val toast= Toast.makeText(this@AllocateWorkActivity,"Labour data not found",
+                                val toast= Toast.makeText(this@AllocateWorkActivity,"Labour not found",
                                     Toast.LENGTH_SHORT)
                                 toast.show()
 
@@ -100,7 +100,7 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
                     }
                 }
                 }else{
-                    val toast= Toast.makeText(this@AllocateWorkActivity,"Please select all fields",
+                    val toast= Toast.makeText(this@AllocateWorkActivity,"Please enter details",
                         Toast.LENGTH_SHORT)
                     toast.show()
                 }
@@ -167,7 +167,7 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
         tvFullName.text = fullName
         val btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
         btnSubmit.setOnClickListener {
-            val toast= Toast.makeText(this@AllocateWorkActivity,"Attendance Marked Successfully",
+            val toast= Toast.makeText(this@AllocateWorkActivity,"Attendance marked successfully",
                 Toast.LENGTH_SHORT)
             toast.show()
             dialog.dismiss()

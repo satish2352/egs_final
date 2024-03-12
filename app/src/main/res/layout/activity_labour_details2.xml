@@ -334,12 +334,10 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"></de.hdodenhof.circleimageview.CircleImageView>
                 <TextView
-
-
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center"
                     android:textColor="@color/black"
-                    android:text="Add Image"
+                    android:text="@string/labor_photo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
             </LinearLayout>
