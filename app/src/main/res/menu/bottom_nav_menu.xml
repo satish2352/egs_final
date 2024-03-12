@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/dashboard1"
+        android:title="@string/title_dashboard" />
+    <item
+        android:id="@+id/navigation_sync"
+        android:icon="@drawable/sync"
+        android:title="@string/sync" />
+    <item
+        android:id="@+id/navigation_attendence"
+        android:icon="@drawable/attendence"
+        android:title="@string/attendence" />
+    <item
+        android:id="@+id/navigation_upload_document"
+        android:icon="@drawable/upload"
+        android:title="@string/upload_document" />
+    <item
+        android:id="@+id/navigation_report"
+        android:icon="@drawable/report"
+        android:title="@string/report" />
+
+</menu>

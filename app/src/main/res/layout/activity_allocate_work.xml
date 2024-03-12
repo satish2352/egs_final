@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:scrollbarSize="0dp"
+    tools:context=".ui.activities.AllocateWorkActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:text="Allocate Work"
+        android:textColor="@color/appBlue"
+        android:textSize="10dp" />
+
+    <AutoCompleteTextView
+        android:hint="Select Project Area"
+        android:paddingLeft="25dp"
+        android:paddingRight="15dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:inputType="none"
+        android:id="@+id/projectArea"
+        android:drawableEnd="@drawable/arrow_dropdown"
+        android:background="@drawable/rounded_background_light_green"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"/>
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:text="Select Project Area"
+        android:textColor="@color/appBlue"
+        android:textSize="10dp" />
+
+    <LinearLayout
+        android:layout_marginTop="16sp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Project - "
+             />
+        <TextView
+            android:id="@+id/tvProjectName"
+            android:layout_marginLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text=""
+            android:textColor="@color/black"
+             />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Project Duration - "
+            />
+        <TextView
+            android:layout_marginLeft="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text=""
+            android:textColor="@color/black"
+             />
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_marginTop="24dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="Mark Attendance with face"
+            android:textColor="@color/black"
+            />
+        <View
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"></View>
+
+        <Switch
+            android:thumbTint="@color/appBlue"
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></Switch>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_marginTop="24dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ImageView
+            android:src="@drawable/user_scan"
+            android:padding="10dp"
+            android:scaleType="fitXY"
+            android:layout_gravity="center"
+            android:layout_width="200dp"
+            android:layout_height="200dp"></ImageView>
+        <TextView
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:text="Click to capture user photo"
+            android:textSize="10dp" />
+        <ImageView
+            android:padding="10dp"
+            android:scaleType="fitXY"
+            android:layout_gravity="center"
+            android:src="@drawable/image"
+            android:layout_width="36dp"
+            android:layout_height="36dp"></ImageView>
+    </LinearLayout>
+    <TextView
+        android:layout_marginTop="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins"
+        android:text="Enter Labour Id"
+        android:textColor="@color/appBlue"
+        android:textSize="10dp" />
+    <LinearLayout
+        android:background="@drawable/rounded_background_light_green"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etLabourId"
+            android:layout_weight="1"
+            android:hint="Enter Labour Id"
+            android:paddingLeft="25dp"
+            android:background="@drawable/edittext_background"
+            android:paddingRight="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"/>
+        <ImageView
+            android:id="@+id/ivSearchByLabourId"
+            android:padding="10dp"
+            android:scaleType="fitXY"
+            android:background="@drawable/round_circle"
+            android:layout_gravity="center"
+            android:src="@drawable/search"
+            android:layout_width="42dp"
+            android:layout_height="42dp"></ImageView>
+    </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="16dp"
+            android:id="@+id/recyclerViewAttendance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+
+    </LinearLayout>
+</ScrollView>
