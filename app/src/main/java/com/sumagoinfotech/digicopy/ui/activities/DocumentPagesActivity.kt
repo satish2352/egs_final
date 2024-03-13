@@ -25,6 +25,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -41,12 +42,18 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
 import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.colors.ColorConstants
+import com.itextpdf.kernel.colors.DeviceRgb
+import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfReader
 import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas
 import com.itextpdf.layout.element.Image
 import com.itextpdf.layout.element.Paragraph
+import com.itextpdf.layout.property.TextAlignment
+import com.itextpdf.layout.property.VerticalAlignment
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
@@ -60,7 +67,6 @@ import com.sumagoinfotech.digicopy.ui.adapters.DocumentPagesAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -148,28 +154,28 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
                 }
                 val calendar = Calendar.getInstance()
                 val time = convertTimeToCustomString(calendar.timeInMillis)
-                val pdfFileName = time+".pdf"
-                // Create the file for the image
-                val outputFile = File.createTempFile(pdfFileName, ".pdf", myAppFolder)
-                val fileOutputStream: FileOutputStream = FileOutputStream(outputFile)
-                val resultPdf = PdfDocument(PdfWriter(fileOutputStream))
+                val outputFile = File.createTempFile("egs", ".pdf", myAppFolder)
+                val fileOutputStream = FileOutputStream(outputFile)
                 val pdfDocument = PdfDocument(PdfWriter(fileOutputStream))
                 val resultDocument = com.itextpdf.layout.Document(pdfDocument)
                 val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+                val job= CoroutineScope(Dispatchers.IO).launch{
                 result?.getPages()?.let { pages ->
-                    val uriList= mutableListOf<String>()
                     for (page in pages) {
-                        val imageUri = page.imageUri
-                        CoroutineScope(Dispatchers.IO).launch {
-                                val savedImageUri=saveImageToStorage(this@DocumentPagesActivity, uriToBitmap(imageUri)!!)
-                                val latestUri=uriStringToBitmap(this@DocumentPagesActivity,savedImageUri.toString(),"HEYYYY","ZZZZZZZZZZZZZZZZ")
-                                Log.d("mytag","Latest generated image uri => "+latestUri.toString())
-
-
+                        try {
+//                            val imageUri = page.imageUri
+//                            val savedImageUri=saveImageToStorage(this@DocumentPagesActivity, uriToBitmap(imageUri)!!)
+//                            val latestUri=uriStringToBitmap(this@DocumentPagesActivity,savedImageUri.toString(),"HEYYYY","ZZZZZZZZZZZZZZZZ")
+//                            Log.d("mytag","Latest generated image uri => "+latestUri.toString())
+//                            val bitmap= uriToBitmapByGlide(this@DocumentPagesActivity, latestUri!!)
+//                            resultDocument.add(Image(ImageDataFactory.create(bitmapToByteArray(bitmap!!))))
+                        } catch (e: Exception) {
+                            Log.d("mytag","CoroutineScope : "+e.message)
+                            e.printStackTrace()
                         }
                     }
+                    }
                 }
-
                 result?.getPdf()?.let { pdf ->
                     val pdfUri = pdf.getUri()
                     val pageCount = pdf.getPageCount()
@@ -177,13 +183,27 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
                     val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
                     saveFile1(pdfUri,pageCount.toString(),timeInMillis)
                 }
-
-
+               /* CoroutineScope(Dispatchers.IO).launch {
+                    job.join()
+                    resultDocument.close()
+                }*/
             }
         }
-
         requestThePermissions()
 
+    }
+
+    fun bitmapToByteArray(bitmap: Bitmap): ByteArray? {
+        val outputStream = ByteArrayOutputStream()
+        return try {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            outputStream.toByteArray()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        } finally {
+            outputStream.close()
+        }
     }
     fun fileToByteArray(file: File): ByteArray? {
         var fis: FileInputStream? = null
@@ -398,38 +418,85 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
 
     }
     fun saveFile1(uri: Uri?,pageCount: String,documentId: String) {
-        try {
-            val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
-            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-                Log.e("Error", "Directory not created")
-                return
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
+                if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
+                    Log.e("Error", "Directory not created")
+                }
+                val calendar = Calendar.getInstance()
+                val customFileName = convertTimeToCustomString(calendar.timeInMillis);
+                val myFile = File(mediaStorageDir, "$customFileName.pdf")
+                val fileOutputStream = FileOutputStream(myFile)
+
+                // Get the InputStream from the Uri
+                val inputStream = contentResolver.openInputStream(uri!!)
+
+                // Read content from the InputStream and write it to the FileOutputStream
+
+
+                // Log the URI of the saved file
+                val savedFileUri = Uri.fromFile(myFile)
+                val calendar2 = Calendar.getInstance()
+                val customFileName2 = convertTimeToCustomString(calendar2.timeInMillis);
+                val myFile2 = File(mediaStorageDir, "$customFileName2.pdf")
+                val reader = PdfReader(inputStream)
+                val writer = PdfWriter(fileOutputStream)
+                val pdfDoc = PdfDocument(reader, writer)
+                val pageSize = pdfDoc.getFirstPage().getPageSize()
+                val a4PageSize = PageSize.A4
+                for (pageNum in 1..pdfDoc.numberOfPages) {
+                    Log.d("mytag","here---->"+pageNum)
+
+                    val page = pdfDoc.getPage(pageNum)
+    //                val pdfCanvas = PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdfDoc)
+    //
+    //                val canvas = com.itextpdf.layout.Canvas(pdfCanvas, a4PageSize)
+    //                canvas
+    //                    .setFontSize(12f)
+    //                    .showTextAligned("overlayText--------------->", pageSize.width / 2, pageSize.height - 50, TextAlignment.CENTER)
+    //                    .showTextAligned("Additional Text", pageSize.width / 2, 50f, TextAlignment.CENTER)
+    //                val paragraph = Paragraph("This is a paragraph of text.")
+    //                canvas.add(paragraph.setFontSize(10f).setMargin(20f))
+    //                val redColor = DeviceRgb(255, 0, 0)
+    //                canvas.setFontColor(redColor)
+    //                    .showTextAligned("Red Colored Text", a4PageSize.width / 2, a4PageSize.height / 2, TextAlignment.CENTER)
+
+                    val document = com.itextpdf.layout.Document(pdfDoc, PageSize.A4)
+                    val paragraph = Paragraph("dfgfdgdgdfgdfgdfgdfgdfgfdgfdgdfgdfgdfgdf")
+                        .setFontSize(18f)
+                        .setFontColor(ColorConstants.RED)
+                        .setTextAlignment(TextAlignment.CENTER)
+                    val bottomMargin = 50f // Adjust this value as needed
+                   // val yPos = bottomMargin + paragraph.height
+                    val fontSize = 18f // Adjust this value to match the font size of your paragraph
+                    val lineSpacing = 1.2f // Adjust this value to match the line spacing of your paragraph
+
+                    val yPos = bottomMargin + 50f
+
+                    document.showTextAligned(paragraph, pageSize.width / 2, yPos, pageNum, TextAlignment.CENTER, VerticalAlignment.BOTTOM, 0f)
+
+                    document.showTextAligned(paragraph, pageSize.width / 2, pageSize.height / 2, pageNum, TextAlignment.CENTER, VerticalAlignment.BOTTOM, 0f)
+                }
+
+                pdfDoc.close()
+
+                val buffer = ByteArray(1024)
+                var bytesRead: Int
+                while (inputStream!!.read(buffer).also { bytesRead = it } != -1) {
+                    fileOutputStream.write(buffer, 0, bytesRead)
+                }
+                // Close the InputStream and FileOutputStream
+                inputStream.close()
+                fileOutputStream.close()
+
+
+                Log.d("mytag", "#######################=>"+savedFileUri.toString())
+                saveRecordToDatabase(savedFileUri,documentName,pageCount, documentId =documentId )
+            } catch (e: IOException) {
+                e.printStackTrace()
+                // Handle the IOException
             }
-            val calendar = Calendar.getInstance()
-            val customFileName = convertTimeToCustomString(calendar.timeInMillis);
-            val myFile = File(mediaStorageDir, "$customFileName.pdf")
-            val fileOutputStream = FileOutputStream(myFile)
-
-            // Get the InputStream from the Uri
-            val inputStream = contentResolver.openInputStream(uri!!)
-
-            // Read content from the InputStream and write it to the FileOutputStream
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-            while (inputStream!!.read(buffer).also { bytesRead = it } != -1) {
-                fileOutputStream.write(buffer, 0, bytesRead)
-            }
-
-            // Close the InputStream and FileOutputStream
-            inputStream.close()
-            fileOutputStream.close()
-
-            // Log the URI of the saved file
-            val savedFileUri = Uri.fromFile(myFile)
-            Log.d("mytag", savedFileUri.toString())
-            saveRecordToDatabase(savedFileUri,documentName,pageCount, documentId =documentId )
-        } catch (e: IOException) {
-            e.printStackTrace()
-            // Handle the IOException
         }
     }
     fun saveImage(uri: Uri?,pageCount: String,documentId: String) {
@@ -647,5 +714,18 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             e.printStackTrace()
         }
         return null
+    }
+    suspend fun uriToBitmapByGlide(context: Context, uri: Uri): Bitmap? {
+        return try {
+            Glide.with(context)
+                .asBitmap()
+                .load(uri)
+                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
+                .submit()
+                .get()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 }
