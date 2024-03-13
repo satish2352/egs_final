@@ -87,6 +87,9 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
         binding.tvTaluka.text=labour.taluka
         binding.tvVillage.text=labour.village
         binding.tvMobile.text=labour.mobile
+        if(labour.landline.length<1){
+            binding.tvLandline.text="-"
+        }
         binding.tvLandline.text=labour.landline
         binding.tvDob.text=labour.dob
         binding.tvMnregaId.text=labour.mgnregaId

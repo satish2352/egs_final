@@ -81,6 +81,10 @@ dependencies {
 
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation("io.getstream:photoview:1.0.1")
+    kapt ("com.github.bumptech.glide:compiler:4.12.0")
+    //implementation ("com.itextpdf:itextg:5.5.10")
+    implementation ("com.itextpdf:itext7-core:7.2.0")
+
 
 
 

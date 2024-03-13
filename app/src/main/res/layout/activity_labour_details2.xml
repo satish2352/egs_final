@@ -103,7 +103,6 @@
         <AutoCompleteTextView
             android:id="@+id/etLocation"
             android:inputType="none"
-            android:drawableEnd="@drawable/arrow_dropdown"
             android:paddingLeft="16dp"
             android:layout_weight="1"
             android:hint="Location"
@@ -236,7 +235,7 @@
             android:textStyle="bold"
             android:layout_gravity="center|bottom"
             android:textColor="@color/black"
-            android:text="MGNREGA Card"
+            android:text="@string/mgnrega_card"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"></TextView>
     </LinearLayout>
@@ -307,7 +306,7 @@
         android:layout_marginTop="16dp"
         android:layout_gravity="center"
         android:layout_width="200dp"
-        android:layout_height="200dp">
+        android:layout_height="220dp">
         <ImageView
             android:background="@drawable/rounded_backgroud_blue"
             android:elevation="20dp"
@@ -334,6 +333,8 @@
                     android:layout_width="150dp"
                     android:layout_height="150dp"></de.hdodenhof.circleimageview.CircleImageView>
                 <TextView
+                    android:layout_marginBottom="10dp"
+                    android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center"
                     android:textColor="@color/black"

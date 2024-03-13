@@ -20,8 +20,17 @@
         android:text="Labour Details"
         android:textColor="@color/appBlue"
         android:textSize="18dp" />
-        <LinearLayout
+        <TextView
             android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/full_name"
+            android:textSize="10dp"
+            android:textColor="@color/appBlue"
+            />
+        <LinearLayout
+            android:layout_marginTop="5dp"
             android:orientation="horizontal"
             android:background="@drawable/rounded_background_light_gray"
             android:layout_width="match_parent"
@@ -45,9 +54,17 @@
                 android:layout_height="24dp">
             </ImageView>
         </LinearLayout>
-
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/select_gender"
+            android:textSize="10dp"
+            android:textColor="@color/appBlue"
+            />
     <LinearLayout
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:background="@drawable/rounded_background_light_gray"
         android:layout_width="match_parent"
@@ -69,9 +86,17 @@
             android:layout_width="24dp"
             android:layout_height="24dp"></ImageView>
     </LinearLayout>
-
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/select_date_of_birth"
+            android:textSize="10dp"
+            android:textColor="@color/appBlue"
+            />
     <LinearLayout
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:background="@drawable/rounded_background_light_gray"
         android:layout_width="match_parent"
@@ -186,8 +211,17 @@
             android:layout_width="24dp"
             android:layout_height="24dp"></ImageView>
     </LinearLayout>
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/mobile_number"
+            android:textSize="10dp"
+            android:textColor="@color/appBlue"
+            />
     <LinearLayout
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:background="@drawable/rounded_background_light_gray"
         android:layout_width="match_parent"
@@ -214,8 +248,17 @@
             android:layout_height="24dp">
         </ImageView>
     </LinearLayout>
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/landline_number"
+            android:textSize="10dp"
+            android:textColor="@color/appBlue"
+            />
     <LinearLayout
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:background="@drawable/rounded_background_light_gray"
         android:layout_width="match_parent"
@@ -237,6 +280,15 @@
             android:layout_height="24dp">
         </ImageView>
     </LinearLayout>
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/mgnrega_id_card_number"
+            android:textSize="10dp"
+            android:textColor="@color/appBlue"
+            />
     <LinearLayout
         android:layout_marginTop="16dp"
         android:orientation="horizontal"

@@ -3,14 +3,24 @@ package com.sumagoinfotech.digicopy.ui.activities
 import android.Manifest
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.os.PersistableBundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -26,6 +36,8 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.FutureTarget
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -46,7 +58,10 @@ import com.sumagoinfotech.digicopy.utils.MyValidator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -77,6 +92,9 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private lateinit var mgnregaIdImagePath:String
     private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var labourInputData: LabourInputData
+    private  var latitude:Double=0.0
+    private  var longitude:Double=0.0
+    private  var addressFromLatLong:String=""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -162,50 +180,78 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         try {
             cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
                 if (success) {
-                    Log.d("myatg", "Success => ${uriMap.values}")
+                    Log.d("mytag", "Success => ${uriMap.values}")
 
                     // Retrieve URI for Aadhar Card
                     val uriAadhar = uriMap[REQUEST_CODE_AADHAR_CARD]
                     if (uriAadhar != null) {
-                        Log.d("myatg", "URI for Aadhar Card: $uriAadhar")
+                        Log.d("mytag", "URI for Aadhar Card: $uriAadhar")
                         binding.ivAadhar.setImageURI(uriAadhar)
                         aadharIdImagePath= uriAadhar.toString()
-                    } else {
-                        Log.d("myatg", "URI for Aadhar Card is null")
-                    }
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriAadhar.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                          withContext(Dispatchers.Main){
+                             // binding.ivPhoto.setImageBitmap(bitmap)
+                          }
 
+                        }
+
+                    } else {
+                        Log.d("mytag", "URI for Aadhar Card is null")
+                    }
                     // Retrieve URI for MGNREGA Card
                     val uriMgnregaCard = uriMap[REQUEST_CODE_MGNREGA_CARD]
                     if (uriMgnregaCard != null) {
-                        Log.d("myatg", "URI for MGNREGA Card: $uriMgnregaCard")
+                        Log.d("mytag", "URI for MGNREGA Card: $uriMgnregaCard")
                         binding.ivMgnregaCard.setImageURI(uriMgnregaCard)
                         mgnregaIdImagePath= uriMgnregaCard.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriMgnregaCard.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+
+                        }
                     } else {
-                        Log.d("myatg", "URI for MGNREGA Card is null")
+                        Log.d("mytag", "URI for MGNREGA Card is null")
                     }
 
                     // Retrieve URI for Photo
                     val uriPhoto = uriMap[REQUEST_CODE_PHOTO]
                     if (uriPhoto != null) {
-                        Log.d("myatg", "URI for Photo: $uriPhoto")
+                        Log.d("mytag", "URI for Photo: $uriPhoto")
                         binding.ivPhoto.setImageURI(uriPhoto)
                         photoImagePath= uriPhoto.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriPhoto.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+
+                        }
                     } else {
-                        Log.d("myatg", "URI for Photo is null")
+                        Log.d("mytag", "URI for Photo is null")
                     }
 
                     // Retrieve URI for Voter ID
                     val uriVoterId = uriMap[REQUEST_CODE_VOTER_ID]
                     if (uriVoterId != null) {
-                        Log.d("myatg", "URI for Voter ID: $uriVoterId")
+                        Log.d("mytag", "URI for Voter ID: $uriVoterId")
                         binding.ivVoterId.setImageURI(uriVoterId)
                         voterIdImagePath= uriVoterId.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriVoterId.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+                        }
+
                     } else {
-                        Log.d("myatg", "URI for Voter ID is null")
+                        Log.d("mytag", "URI for Voter ID is null")
                     }
                 } else {
                     // Image capture failed or was canceled
-                    Log.d("myatg", "Failed")
+                    Log.d("mytag", "Failed")
                 }
             }
         } catch (e: Exception) {
@@ -223,6 +269,69 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         }
         binding.layoutMgnregaCard.setOnClickListener {
             captureImage(REQUEST_CODE_MGNREGA_CARD)
+        }
+    }
+    suspend fun uriStringToBitmap(context: Context, uriString: String): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val uri = Uri.parse(uriString)
+                val futureTarget = Glide.with(context)
+                    .asBitmap()
+                    .load(uri)
+                    .submit()
+                futureTarget.get()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    suspend fun uriStringToBitmap(context: Context, uriString: String, text: String,addressText: String): Uri? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val uri = Uri.parse(uriString)
+                val futureTarget = Glide.with(context)
+                    .asBitmap()
+                    .load(uri)
+                    .submit()
+                val bitmap = futureTarget.get()
+
+                // Add text overlay to the bitmap
+                val canvas = Canvas(bitmap)
+                val paint = Paint().apply {
+                    color = Color.RED
+                    textSize = 50f // Text size in pixels
+                    isAntiAlias = true
+                    style = Paint.Style.FILL
+                }
+                val x = 50f // Adjust the x-coordinate as needed
+                val y = bitmap.height.toFloat() - 50f // Adjust the y-coordinate as needed
+                val xAddress = 50f // Adjust the x-coordinate as needed
+                val yAddress = bitmap.height.toFloat() - 100f
+                canvas.drawText(text, x, y, paint)
+                canvas.drawText(addressText, xAddress, yAddress, paint)
+
+                // Save the modified bitmap back to the same location
+                saveBitmapToFile(context, bitmap, uri)
+
+                uri // Return the URI of the modified bitmap
+            } catch (e: Exception) {
+                Log.d("mytag","Exception => "+e.message)
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    private fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
+        try {
+            val outputStream = context.contentResolver.openOutputStream(uri)
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+            outputStream?.flush()
+            outputStream?.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -282,6 +391,15 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             val outputFile = File.createTempFile(fileName, ".jpg", myAppFolder)
             val uri = FileProvider.getUriForFile(this, "com.sumagoinfotech.digicopy.provider", outputFile)
 
+            val file=File(myAppFolder,fileName+".jpg")
+            if(file!=null){
+
+                Log.d("mytag","filecreated")
+
+            }else{
+                Log.d("mytag","Failed to create file")
+            }
+
             // Store the URI in the map with the corresponding request code
             uriMap[requestCode] = uri
 
@@ -292,6 +410,35 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             e.printStackTrace()
         }
     }
+    private fun addTextOverlay(file: File, text: String) {
+        try {
+            val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+            if (bitmap == null) {
+                Log.d("mytag", "addTextOverlay=>Exception=>Bitmap is null")
+                return
+            }
+
+            val canvas = Canvas(bitmap)
+            val paint = Paint()
+            paint.color = Color.WHITE
+            paint.textSize = 24f
+            paint.isAntiAlias = true
+            val bounds = Rect()
+            paint.getTextBounds(text, 0, text.length, bounds)
+            val x = (bitmap.width - bounds.width()) / 2f
+            val y = (bitmap.height - bounds.height()) / 2f
+            canvas.drawText(text, x, y, paint)
+            val outputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+            outputStream.flush()
+            outputStream.close()
+            Log.d("mytag", "Text overlay added successfully")
+        } catch (e: Exception) {
+            Log.d("mytag", "addTextOverlay=>Exception=>" + e.message)
+            e.printStackTrace()
+        }
+    }
+
 
     private fun getTheLocation() {
 
@@ -316,7 +463,10 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             .addOnSuccessListener { location ->
                 location?.let {
                     val currentLatLng = LatLng(it.latitude, it.longitude)
+                    latitude=it.latitude
+                    longitude=it.longitude
                     binding.etLocation.setText("${it.latitude},${it.longitude}")
+                    addressFromLatLong=getAddressFromLatLong()
                 } ?: run {
                     Toast.makeText(
                         this@LabourRegistration2Activity,
@@ -525,4 +675,35 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 }
             }
     }
+    private fun getAddressFromLatLong():String{
+        val geocoder: Geocoder
+        val addresses: List<Address>?
+        geocoder = Geocoder(this, Locale.getDefault())
+        addresses = geocoder.getFromLocation(
+            latitude, longitude,
+            1) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+        var fullAddress=""
+        if (addresses != null) {
+            if(addresses.size>0){
+                fullAddress= addresses!![0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                val city: String = addresses!![0].locality
+                val state: String = addresses!![0].adminArea
+                val country: String = addresses!![0].countryName
+                val postalCode: String = addresses!![0].postalCode
+                val knownName: String = addresses!![0].featureName
+
+                Log.d("mytag",fullAddress)
+                Log.d("mytag",city)
+                Log.d("mytag",state)
+                Log.d("mytag",country)
+                Log.d("mytag",postalCode)
+                Log.d("mytag",knownName)
+            }
+        }
+        return fullAddress
+
+    }
+
 }

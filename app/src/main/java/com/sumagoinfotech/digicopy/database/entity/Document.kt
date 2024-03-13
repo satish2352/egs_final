@@ -9,5 +9,6 @@ data class Document(
     val documentName: String,
     val documentUri: String,
     val pageCount:String,
-    val isSynced: Boolean
+    val isSynced: Boolean,
+    val documentId: String,
 )

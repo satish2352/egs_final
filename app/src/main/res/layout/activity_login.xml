@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="72dp"
-        android:text="Sign In to"
+        android:text=""
         android:textColor="@color/white"></TextView>
 
     <TextView
@@ -72,7 +72,7 @@
                     android:id="@+id/txLayoutEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter Email Id"
+                    android:hint="@string/enter_email_id"
 
                     >
                 <com.google.android.material.textfield.TextInputEditText
@@ -90,7 +90,6 @@
                     app:boxCornerRadiusTopEnd="8dp"
                     app:boxCornerRadiusBottomStart="8dp"
                     app:boxCornerRadiusTopStart="8dp"
-                    android:text="grampanchayat1@egs.com"
                     android:background="@drawable/rounded_background_light_green"
                     android:paddingLeft="16dp"/>
                 </com.google.android.material.textfield.TextInputLayout>
@@ -100,12 +99,10 @@
                     android:id="@+id/txLayoutPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Enter Password"
+                    android:hint="@string/enter_password"
                     app:passwordToggleEnabled="true">
 
                     <com.google.android.material.textfield.TextInputEditText
-
-                        android:text="12345678"
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -126,6 +123,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
+                    android:textAllCaps="false"
                     android:id="@+id/btnLogin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -134,7 +132,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginRight="16dp"
                     android:fontFamily="@font/poppins"
-                    android:text="Sign In"></Button>
+                    android:text="@string/login"></Button>
 
                 <ImageView
                     android:layout_width="match_parent"

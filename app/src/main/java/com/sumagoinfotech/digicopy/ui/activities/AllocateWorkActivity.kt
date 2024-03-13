@@ -14,10 +14,12 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
@@ -155,7 +157,7 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
         }
         return super.onOptionsItemSelected(item)
     }
-    private fun showAttendanceDialog(fullName:String) {
+    private fun showAttendanceDialog(fullName:String,labourImage:String) {
         val dialog= Dialog(this@AllocateWorkActivity)
         dialog.setContentView(R.layout.layout_dialog_mark_attendence)
         val width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -164,7 +166,9 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
         dialog.window?.setLayout(width, height)
         dialog.show()
         val tvFullName=dialog.findViewById<TextView>(R.id.tvFullName)
+        val ivPhoto=dialog.findViewById<ImageView>(R.id.ivPhoto)
         tvFullName.text = fullName
+        Glide.with(this@AllocateWorkActivity).load(labourImage).into(ivPhoto)
         val btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
         btnSubmit.setOnClickListener {
             val toast= Toast.makeText(this@AllocateWorkActivity,"Attendance marked successfully",
@@ -174,7 +178,7 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
         }
     }
     override fun markAttendance(labour: Labour) {
-        showAttendanceDialog(labour.fullName)
+        showAttendanceDialog(labour.fullName,labour.photo)
         (labourList as ArrayList<Labour>).clear()
         adapter.notifyDataSetChanged()
         binding.etLabourId.setText("")

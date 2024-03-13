@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.sumagoinfotech.digicopy.databinding.ActivityImageCaptureBinding
 import java.io.File
+import java.io.FileDescriptor
 import java.io.FileOutputStream
 import java.io.IOException
 
@@ -60,7 +61,6 @@ class ImageCaptureActivity : AppCompatActivity() {
 
     fun saveImageToDownloads(context: Context, uri: Uri, text: String): File? {
         val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-
         val bitmap = BitmapFactory.decodeStream(inputStream)
         val mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true)
 
@@ -94,4 +94,5 @@ class ImageCaptureActivity : AppCompatActivity() {
             inputStream.close()
         }
     }
+
 }

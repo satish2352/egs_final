@@ -39,7 +39,7 @@
     <string name="aadhar_card">Aadhar Card</string>
     <string name="mgnrega_card">Mnrega Card</string>
     <string name="voter_id">Voter Id Card</string>
-    <string name="labor_photo">Labor Photo</string>
+    <string name="labor_photo">Labour Photo</string>
     <string name="location">Location</string>
     <string name="add_documents">Add Documents</string>
     <string name="family_details">Family Details</string>
@@ -60,7 +60,10 @@
     <string name="gender">Gender</string>
     <string name="landline">Landline</string>
     <string name="mgnrega_id">Mnrega Id</string>
-    <string name="labour_details">Labor Details</string>
+    <string name="labour_details">Labour Details</string>
     <string name="select_all_documents">Select All Documents</string>
     <string name="enter_document_name">Enter document name</string>
+    <string name="enter_email_id">Enter Email Id</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="login">Login</string>
 </resources>

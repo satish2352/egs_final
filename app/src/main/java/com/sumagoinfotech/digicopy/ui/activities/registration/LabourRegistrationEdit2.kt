@@ -3,10 +3,16 @@ package com.sumagoinfotech.digicopy.ui.activities.registration
 import android.Manifest
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -34,7 +40,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.permissionx.guolindev.PermissionX
-import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
@@ -51,11 +56,13 @@ import io.getstream.photoview.PhotoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+
 
 class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     private lateinit var binding: ActivityLabourRegistrationEdit2Binding
@@ -83,6 +90,9 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     private lateinit var labourInputData: LabourInputData
     lateinit var labour:Labour
     private lateinit var labourDao: LabourDao
+    private  var latitude:Double=0.0
+    private  var longitude:Double=0.0
+    private  var addressFromLatLong:String=""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -168,6 +178,13 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                         Log.d("myatg", "URI for Aadhar Card: $uriAadhar")
                         binding.ivAadhar.setImageURI(uriAadhar)
                         aadharIdImagePath= uriAadhar.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriAadhar.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+
+                        }
                     } else {
                         Log.d("myatg", "URI for Aadhar Card is null")
                     }
@@ -177,6 +194,14 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                         Log.d("myatg", "URI for MGNREGA Card: $uriMgnregaCard")
                         binding.ivMgnregaCard.setImageURI(uriMgnregaCard)
                         mgnregaIdImagePath= uriMgnregaCard.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriMgnregaCard.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            getAddressFromLatLong()
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+
+                        }
                     } else {
                         Log.d("myatg", "URI for MGNREGA Card is null")
                     }
@@ -186,6 +211,13 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                         Log.d("myatg", "URI for Photo: $uriPhoto")
                         binding.ivPhoto.setImageURI(uriPhoto)
                         photoImagePath= uriPhoto.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriPhoto.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+
+                        }
                     } else {
                         Log.d("myatg", "URI for Photo is null")
                     }
@@ -195,6 +227,14 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                         Log.d("myatg", "URI for Voter ID: $uriVoterId")
                         binding.ivVoterId.setImageURI(uriVoterId)
                         voterIdImagePath= uriVoterId.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriVoterId.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+
+                        }
+
                     } else {
                         Log.d("myatg", "URI for Voter ID is null")
                     }
@@ -343,7 +383,10 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
             .addOnSuccessListener { location ->
                 location?.let {
                     val currentLatLng = LatLng(it.latitude, it.longitude)
+                    latitude=it.latitude
+                    longitude=it.longitude
                     binding.etLocation.setText("${it.latitude},${it.longitude}")
+                    addressFromLatLong=getAddressFromLatLong()
                 } ?: run {
                     Toast.makeText(
                         this@LabourRegistrationEdit2,
@@ -557,6 +600,85 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         ivClose.setOnClickListener {
             dialog.dismiss()
         }
+    }
+
+    suspend fun uriStringToBitmap(context: Context, uriString: String, text: String,addressText: String): Uri? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val uri = Uri.parse(uriString)
+                val futureTarget = Glide.with(context)
+                    .asBitmap()
+                    .load(uri)
+                    .submit()
+                val bitmap = futureTarget.get()
+
+                // Add text overlay to the bitmap
+                val canvas = Canvas(bitmap)
+                val paint = Paint().apply {
+                    color = Color.RED
+                    textSize = 50f // Text size in pixels
+                    isAntiAlias = true
+                    style = Paint.Style.FILL
+                }
+                val x = 50f // Adjust the x-coordinate as needed
+                val y = bitmap.height.toFloat() - 50f // Adjust the y-coordinate as needed
+                val xAddress = 50f // Adjust the x-coordinate as needed
+                val yAddress = bitmap.height.toFloat() - 100f
+                canvas.drawText(text, x, y, paint)
+                canvas.drawText(addressText, xAddress, yAddress, paint)
+
+                // Save the modified bitmap back to the same location
+                saveBitmapToFile(context, bitmap, uri)
+
+                uri // Return the URI of the modified bitmap
+            } catch (e: Exception) {
+                Log.d("mytag","Exception => "+e.message)
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    private fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
+        try {
+            val outputStream = context.contentResolver.openOutputStream(uri)
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+            outputStream?.flush()
+            outputStream?.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun getAddressFromLatLong():String{
+        val geocoder: Geocoder
+        val addresses: List<Address>?
+        geocoder = Geocoder(this, Locale.getDefault())
+        addresses = geocoder.getFromLocation(
+            latitude, longitude,
+            1) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+        var fullAddress=""
+        if (addresses != null) {
+            if(addresses.size>0){
+                fullAddress= addresses!![0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                val city: String = addresses!![0].locality
+                val state: String = addresses!![0].adminArea
+                val country: String = addresses!![0].countryName
+                val postalCode: String = addresses!![0].postalCode
+                val knownName: String = addresses!![0].featureName
+
+                Log.d("mytag",fullAddress)
+                Log.d("mytag",city)
+                Log.d("mytag",state)
+                Log.d("mytag",country)
+                Log.d("mytag",postalCode)
+                Log.d("mytag",knownName)
+            }
+        }
+        return fullAddress
+
     }
 
 }
