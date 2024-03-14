@@ -16,6 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.entity.Document
 import com.sumagoinfotech.digicopy.interfaces.UpdateDocumentTypeListener
@@ -51,6 +52,8 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
         holder.ivDeleteDocument.setOnClickListener {
             updateDocumentTypeListener.onUpdateDocumentType(documentList.get(position))
         }
+        val bitmap=generateThumbnailFromPDF(documentList[position].documentUri,holder.itemView.context)
+        Glide.with(holder.itemView.context).load(bitmap).into(holder.ivThumb)
     }
     override fun getItemCount(): Int {
         return documentList.size
@@ -106,5 +109,6 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
         return null
 
     }
+
 
 }

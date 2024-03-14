@@ -158,8 +158,9 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                             }*/
                     }
                     result?.getPdf()?.let { pdf ->
-                        val pdfUri = pdf.getUri()
-                        val pageCount = pdf.getPageCount()
+                        val pdfUri = pdf.uri
+                        var pageCount = pdf.pageCount
+                        pageCount += 1
                         val calendar = Calendar.getInstance()
                         val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
                         savePdfFileToStorage(pdfUri, pageCount.toString(), timeInMillis)
