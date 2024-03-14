@@ -305,12 +305,16 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     isAntiAlias = true
                     style = Paint.Style.FILL
                 }
+                val currentDateTime = Date()
+                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                val formattedDateTime = formatter.format(currentDateTime)
                 val x = 50f // Adjust the x-coordinate as needed
                 val y = bitmap.height.toFloat() - 50f // Adjust the y-coordinate as needed
                 val xAddress = 50f // Adjust the x-coordinate as needed
                 val yAddress = bitmap.height.toFloat() - 100f
                 canvas.drawText(text, x, y, paint)
                 canvas.drawText(addressText, xAddress, yAddress, paint)
+                canvas.drawText(formattedDateTime, xAddress, yAddress-50, paint)
 
                 // Save the modified bitmap back to the same location
                 saveBitmapToFile(context, bitmap, uri)

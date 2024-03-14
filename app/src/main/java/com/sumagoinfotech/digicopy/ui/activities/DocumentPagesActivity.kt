@@ -10,6 +10,8 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
+import android.location.Address
+import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -76,23 +78,27 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 
-class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
-    private lateinit var binding:ActivityDocumentPagesBinding
-    private lateinit var actDocumentType:AutoCompleteTextView
-    private lateinit var ivAddDocument:ImageView
-    private lateinit var etDocumentName:EditText
-    private lateinit var documentName:String
+class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
+    private lateinit var binding: ActivityDocumentPagesBinding
+    private lateinit var actDocumentType: AutoCompleteTextView
+    private lateinit var ivAddDocument: ImageView
+    private lateinit var etDocumentName: EditText
+    private lateinit var documentName: String
     private lateinit var database: AppDatabase
-    private lateinit var documentDao:DocumentDao
-    private lateinit var documentTypeDao:DocumentTypeDao
-    private lateinit var scannerLauncher:ActivityResultLauncher<IntentSenderRequest>
-    private lateinit var scanner:GmsDocumentScanner
-    private lateinit var documentList:List<Document>
-    private lateinit var adapter:DocumentPagesAdapter
+    private lateinit var documentDao: DocumentDao
+    private lateinit var documentTypeDao: DocumentTypeDao
+    private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private lateinit var scanner: GmsDocumentScanner
+    private lateinit var documentList: List<Document>
+    private lateinit var adapter: DocumentPagesAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private  var latitude:Double=0.0
+    private  var longitude:Double=0.0
+    private  var addressFromLatLong:String=""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,35 +107,19 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
         binding = ActivityDocumentPagesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title=resources.getString(R.string.upload_document)
-        val layoutManager= GridLayoutManager(this,2, RecyclerView.VERTICAL,false)
-        binding.recyclerViewDocumentPages.layoutManager=layoutManager
-        documentList=ArrayList()
-        adapter= DocumentPagesAdapter(documentList,this)
-        binding.recyclerViewDocumentPages.adapter=adapter
-        documentName=""
-        database= AppDatabase.getDatabase(this)
-        documentDao=database.documentDao()
-        documentTypeDao=database.documentTypeDao()
+        supportActionBar?.title = resources.getString(R.string.upload_document)
+        val layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
+        binding.recyclerViewDocumentPages.layoutManager = layoutManager
+        documentList = ArrayList()
+        adapter = DocumentPagesAdapter(documentList, this)
+        binding.recyclerViewDocumentPages.adapter = adapter
+        documentName = ""
+        database = AppDatabase.getDatabase(this)
+        documentDao = database.documentDao()
+        documentTypeDao = database.documentTypeDao()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getTheLocation()
-
-//        CoroutineScope(Dispatchers.IO).launch{
-//            documentList=documentDao.getAllUsers()
-//            Log.d("mytag","=>"+documentList.size)
-//            adapter= DocumentPagesAdapter(documentList)
-////            binding.recyclerViewSyncLabourData.adapter=adapter
-////            adapter.notifyDataSetChanged()
-//
-//            withContext(Dispatchers.Main) {
-//                // Add the fetched data to the list
-//                adapter= DocumentPagesAdapter(documentList)
-//                binding.recyclerViewDocumentPages.adapter=adapter
-//                adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
-//            }
-//        }
         binding.fabAddDocument.setOnClickListener {
-
             showDialog()
         }
         val options = GmsDocumentScannerOptions.Builder()
@@ -138,57 +128,26 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
             .setScannerMode(SCANNER_MODE_FULL)
             .build()
-         scanner = GmsDocumentScanning.getClient(options)
-         scannerLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) {
-                result ->
-            if (result.resultCode == RESULT_OK) {
-
-                val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
-                if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-                    Log.e("Error", "Directory not created")
-                }
-                val uri = Uri.parse(mediaStorageDir.absolutePath)
-                val myAppFolder = File(uri.toString())
-                if (!myAppFolder.exists()) {
-                    myAppFolder.mkdirs()
-                }
-                val calendar = Calendar.getInstance()
-                val time = convertTimeToCustomString(calendar.timeInMillis)
-                val outputFile = File.createTempFile("egs", ".pdf", myAppFolder)
-                val fileOutputStream = FileOutputStream(outputFile)
-                val pdfDocument = PdfDocument(PdfWriter(fileOutputStream))
-                val resultDocument = com.itextpdf.layout.Document(pdfDocument)
-                val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-                val job= CoroutineScope(Dispatchers.IO).launch{
-                result?.getPages()?.let { pages ->
-                    for (page in pages) {
-                        try {
-//                            val imageUri = page.imageUri
-//                            val savedImageUri=saveImageToStorage(this@DocumentPagesActivity, uriToBitmap(imageUri)!!)
-//                            val latestUri=uriStringToBitmap(this@DocumentPagesActivity,savedImageUri.toString(),"HEYYYY","ZZZZZZZZZZZZZZZZ")
-//                            Log.d("mytag","Latest generated image uri => "+latestUri.toString())
-//                            val bitmap= uriToBitmapByGlide(this@DocumentPagesActivity, latestUri!!)
-//                            resultDocument.add(Image(ImageDataFactory.create(bitmapToByteArray(bitmap!!))))
-                        } catch (e: Exception) {
-                            Log.d("mytag","CoroutineScope : "+e.message)
-                            e.printStackTrace()
-                        }
+        scanner = GmsDocumentScanning.getClient(options)
+        scannerLauncher =
+            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+                    val job = CoroutineScope(Dispatchers.IO).launch {
+                        /*result?.getPages()?.let { pages ->
+                            for (page in pages) {
+                            }
+                            }*/
                     }
+                    result?.getPdf()?.let { pdf ->
+                        val pdfUri = pdf.getUri()
+                        val pageCount = pdf.getPageCount()
+                        val calendar = Calendar.getInstance()
+                        val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
+                        savePdfFileToStorage(pdfUri, pageCount.toString(), timeInMillis)
                     }
                 }
-                result?.getPdf()?.let { pdf ->
-                    val pdfUri = pdf.getUri()
-                    val pageCount = pdf.getPageCount()
-                    val calendar = Calendar.getInstance()
-                    val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
-                    saveFile1(pdfUri,pageCount.toString(),timeInMillis)
-                }
-               /* CoroutineScope(Dispatchers.IO).launch {
-                    job.join()
-                    resultDocument.close()
-                }*/
             }
-        }
         requestThePermissions()
 
     }
@@ -205,6 +164,7 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             outputStream.close()
         }
     }
+
     fun fileToByteArray(file: File): ByteArray? {
         var fis: FileInputStream? = null
         return try {
@@ -219,6 +179,7 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             fis?.close()
         }
     }
+
     suspend fun uriToFileByGlide(context: Context, uri: String): File? {
         return try {
             Glide.with(context)
@@ -228,93 +189,84 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
                 .submit()
                 .get()
         } catch (e: Exception) {
-            Log.d("mytag","uriToFile : "+e.message)
+            Log.d("mytag", "uriToFile : " + e.message)
             e.printStackTrace()
             null
         }
     }
-    fun createPdfWithImagesAndText(filePath: String, imageUris: List<String>, text: String) {
-        // Create a new PDF document
-        val writer = PdfWriter(filePath)
-        val pdfDoc = PdfDocument(writer)
-        val document = com.itextpdf.layout.Document(pdfDoc, PageSize.A4)
 
-        // Add images to the document
-        for (imageUri in imageUris) {
-            val image = Image(ImageDataFactory.create(imageUri))
-            image.scaleToFit(500f, 500f)
-            document.add(image)
-            document.add(Paragraph("\n")) // Add some space between images
-        }
-
-        // Add text to each page of the document
-        for (i in 1..pdfDoc.numberOfPages) {
-            val currentPage = pdfDoc.getPage(i)
-            val canvas = PdfCanvas(currentPage)
-            var x = document.leftMargin.toFloat()
-            var y = document.bottomMargin.toFloat()
-            val paragraph = Paragraph(text)
-            paragraph.setFixedPosition(x, y, PageSize.A4.width - document.leftMargin - document.rightMargin)
-            canvas.beginText().setFontAndSize(null, 12f)
-                .moveText(x.toDouble(), y.toDouble())
-                .showText(text)
-                .endText()
-        }
-
-        // Close the document
-        document.close()
-    }
     private fun requestThePermissions() {
 
         PermissionX.init(this@DocumentPagesActivity)
-            .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION)
+            .permissions(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
             .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
+                scope.showRequestReasonDialog(
+                    deniedList,
+                    "Core fundamental are based on these permissions",
+                    "OK",
+                    "Cancel"
+                )
             }
             .onForwardToSettings { scope, deniedList ->
-                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+                scope.showForwardToSettingsDialog(
+                    deniedList,
+                    "You need to allow necessary permissions in Settings manually",
+                    "OK",
+                    "Cancel"
+                )
             }
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
                     getTheLocation()
                 } else {
-                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "These permissions are denied: $deniedList",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId==android.R.id.home){
+        if (item.itemId == android.R.id.home) {
             finish()
         }
         return super.onOptionsItemSelected(item)
     }
+
     private fun showDialog() {
-        val dialog= Dialog(this@DocumentPagesActivity)
+        val dialog = Dialog(this@DocumentPagesActivity)
         dialog.setContentView(R.layout.layout_dialog_select_document_type)
         val width = ViewGroup.LayoutParams.MATCH_PARENT
         val height = ViewGroup.LayoutParams.WRAP_CONTENT
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.window?.setLayout(width, height)
         dialog.show()
-        actDocumentType=dialog.findViewById<AutoCompleteTextView>(R.id.actDocumentType)
-        ivAddDocument=dialog.findViewById<ImageView>(R.id.ivAddDocument)
-        etDocumentName=dialog.findViewById<EditText>(R.id.etDocumentName)
-        var documentTypeList:List<DocumentType> = ArrayList()
-        CoroutineScope(Dispatchers.IO).launch{
-            documentTypeList=documentTypeDao.getDocuments()
-            Log.d("mytag","=>"+documentTypeList.size)
-            adapter= DocumentPagesAdapter(documentList,this@DocumentPagesActivity)
-             adapter.notifyDataSetChanged()
+        actDocumentType = dialog.findViewById<AutoCompleteTextView>(R.id.actDocumentType)
+        ivAddDocument = dialog.findViewById<ImageView>(R.id.ivAddDocument)
+        etDocumentName = dialog.findViewById<EditText>(R.id.etDocumentName)
+        var documentTypeList: List<DocumentType> = ArrayList()
+        CoroutineScope(Dispatchers.IO).launch {
+            documentTypeList = documentTypeDao.getDocuments()
+            Log.d("mytag", "=>" + documentTypeList.size)
+            adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
+            adapter.notifyDataSetChanged()
 
-            var documentNamesList= mutableListOf<String>()
+            var documentNamesList = mutableListOf<String>()
 
-            for(i in documentTypeList.indices){
+            for (i in documentTypeList.indices) {
                 documentNamesList.add(documentTypeList[i].documentName)
-         }
+            }
             withContext(Dispatchers.Main) {
                 // Add the fetched data to the list
                 val documentAdapter = ArrayAdapter(
-                    this@DocumentPagesActivity, android.R.layout.simple_list_item_1, documentNamesList
+                    this@DocumentPagesActivity,
+                    android.R.layout.simple_list_item_1,
+                    documentNamesList
                 )
                 actDocumentType.setAdapter(documentAdapter)
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
@@ -330,21 +282,20 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
 
         ivAddDocument.setOnClickListener {
 
-            if(validateFields())
-            {
+            if (validateFields()) {
                 val calendar = Calendar.getInstance()
                 val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
-                if(etDocumentName.text.length>0 && !etDocumentName.text.isNullOrEmpty()) {
+                if (etDocumentName.text.length > 0 && !etDocumentName.text.isNullOrEmpty()) {
                     documentName =
                         "${actDocumentType.text.toString()}_${etDocumentName.text.toString()}_${timeInMillis}"
-                }else{
+                } else {
                     documentName =
                         "${actDocumentType.text.toString()}_${timeInMillis}"
                 }
                 Log.d("mytag", "Document Name >$documentName")
                 launchScanner()
                 dialog.dismiss()
-            }else{
+            } else {
 
             }
         }
@@ -364,123 +315,113 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
         return !validationResults.contains(false)
     }
 
-    private fun  launchScanner()
-    {
+    private fun launchScanner() {
         scanner.getStartScanIntent(this@DocumentPagesActivity)
             .addOnSuccessListener { intentSender ->
                 scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
             }
             .addOnFailureListener {
-                Log.d("mytag","onFailure : "+it.message)
+                Log.d("mytag", "onFailure : " + it.message)
             }
     }
-    private fun saveRecordToDatabase(pdfUri: Uri, documentName: String,pageCount:String,documentId:String) {
-        Log.d("mytag","------>"+documentName)
+
+    private fun saveRecordToDatabase(
+        pdfUri: Uri,
+        documentName: String,
+        pageCount: String,
+        documentId: String
+    ) {
+        Log.d("mytag", "------>" + documentName)
         val document = Document(
-            documentName=documentName,
+            documentName = documentName,
             pageCount = pageCount,
             documentUri = pdfUri.toString(),
             isSynced = false,
-            documentId = documentId)
+            documentId = documentId
+        )
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val rows=documentDao.insertDocument(document)
+                val rows = documentDao.insertDocument(document)
                 val documentType = documentTypeDao.getDocumentByName(documentName)
                 if (documentType != null) {
                     documentType.isAdded = true
                     documentTypeDao.updateDocumentType(documentType)
                 }
-                if(rows>0){
+                if (rows > 0) {
                     runOnUiThread {
-                        val toast= Toast.makeText(this@DocumentPagesActivity,"Document added successfully",Toast.LENGTH_SHORT)
+                        val toast = Toast.makeText(
+                            this@DocumentPagesActivity,
+                            "Document added successfully",
+                            Toast.LENGTH_SHORT
+                        )
                         toast.show()
+                        Log.d("mytag", "Document added successfully : $rows")
                     }
-                }else{
+                } else {
                     runOnUiThread {
-                        val toast=Toast.makeText(this@DocumentPagesActivity,"Document not added please try again",Toast.LENGTH_SHORT)
+                        val toast = Toast.makeText(
+                            this@DocumentPagesActivity,
+                            "Document not added please try again",
+                            Toast.LENGTH_SHORT
+                        )
                         toast.show()
+                        Log.d("mytag", "Document not added please try again : $rows")
                     }
                 }
-                documentList=documentDao.getAllUsers()
+                documentList = documentDao.getAllUsers()
                 withContext(Dispatchers.Main) {
-                    adapter= DocumentPagesAdapter(documentList,this@DocumentPagesActivity)
-                    binding.recyclerViewDocumentPages.adapter=adapter
+                    adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
+                    binding.recyclerViewDocumentPages.adapter = adapter
                     adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
                 }
-                Log.d("mytag","Document Inserted : $rows")
-
-
+                Log.d("mytag", "Document Inserted : $rows")
             } catch (e: Exception) {
-                Log.d("mytag","Exception Inserted : ${e.message}")
+                Log.d("mytag", "Exception saveRecordToDatabase : ${e.message}")
                 e.printStackTrace()
             }
         }
-
     }
-    fun saveFile1(uri: Uri?,pageCount: String,documentId: String) {
+    private fun savePdfFileToStorage(uri: Uri?, pageCount: String, documentId: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
                 if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
                     Log.e("Error", "Directory not created")
                 }
-                val calendar = Calendar.getInstance()
-                val customFileName = convertTimeToCustomString(calendar.timeInMillis);
-                val myFile = File(mediaStorageDir, "$customFileName.pdf")
+                val myFile = File(mediaStorageDir, "egs_$documentId.pdf")
                 val fileOutputStream = FileOutputStream(myFile)
-
-                // Get the InputStream from the Uri
                 val inputStream = contentResolver.openInputStream(uri!!)
-
-                // Read content from the InputStream and write it to the FileOutputStream
-
-
+                val currentDateTime = Date()
+                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                val formattedDateTime = formatter.format(currentDateTime)
                 // Log the URI of the saved file
                 val savedFileUri = Uri.fromFile(myFile)
-                val calendar2 = Calendar.getInstance()
-                val customFileName2 = convertTimeToCustomString(calendar2.timeInMillis);
-                val myFile2 = File(mediaStorageDir, "$customFileName2.pdf")
                 val reader = PdfReader(inputStream)
                 val writer = PdfWriter(fileOutputStream)
                 val pdfDoc = PdfDocument(reader, writer)
                 val pageSize = pdfDoc.getFirstPage().getPageSize()
-                val a4PageSize = PageSize.A4
-                for (pageNum in 1..pdfDoc.numberOfPages) {
-                    Log.d("mytag","here---->"+pageNum)
-
+                for (pageNum in 1..pdfDoc.numberOfPages)
+                {
                     val page = pdfDoc.getPage(pageNum)
-    //                val pdfCanvas = PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdfDoc)
-    //
-    //                val canvas = com.itextpdf.layout.Canvas(pdfCanvas, a4PageSize)
-    //                canvas
-    //                    .setFontSize(12f)
-    //                    .showTextAligned("overlayText--------------->", pageSize.width / 2, pageSize.height - 50, TextAlignment.CENTER)
-    //                    .showTextAligned("Additional Text", pageSize.width / 2, 50f, TextAlignment.CENTER)
-    //                val paragraph = Paragraph("This is a paragraph of text.")
-    //                canvas.add(paragraph.setFontSize(10f).setMargin(20f))
-    //                val redColor = DeviceRgb(255, 0, 0)
-    //                canvas.setFontColor(redColor)
-    //                    .showTextAligned("Red Colored Text", a4PageSize.width / 2, a4PageSize.height / 2, TextAlignment.CENTER)
-
                     val document = com.itextpdf.layout.Document(pdfDoc, PageSize.A4)
-                    val paragraph = Paragraph("dfgfdgdgdfgdfgdfgdfgdfgfdgfdgdfgdfgdfgdf")
+                    val paragraph = Paragraph("$latitude,$longitude \n $addressFromLatLong \n $formattedDateTime")
                         .setFontSize(18f)
                         .setFontColor(ColorConstants.RED)
-                        .setTextAlignment(TextAlignment.CENTER)
+                        .setTextAlignment(TextAlignment.LEFT)
                     val bottomMargin = 50f // Adjust this value as needed
-                   // val yPos = bottomMargin + paragraph.height
-                    val fontSize = 18f // Adjust this value to match the font size of your paragraph
-                    val lineSpacing = 1.2f // Adjust this value to match the line spacing of your paragraph
-
-                    val yPos = bottomMargin + 50f
-
-                    document.showTextAligned(paragraph, pageSize.width / 2, yPos, pageNum, TextAlignment.CENTER, VerticalAlignment.BOTTOM, 0f)
-
-                    document.showTextAligned(paragraph, pageSize.width / 2, pageSize.height / 2, pageNum, TextAlignment.CENTER, VerticalAlignment.BOTTOM, 0f)
+                    val yPos = bottomMargin
+                    document.showTextAligned(
+                        paragraph,
+                        50f,
+                        yPos,
+                        pageNum,
+                        TextAlignment.LEFT,
+                        VerticalAlignment.BOTTOM,
+                        0f
+                    )
                 }
 
                 pdfDoc.close()
-
                 val buffer = ByteArray(1024)
                 var bytesRead: Int
                 while (inputStream!!.read(buffer).also { bytesRead = it } != -1) {
@@ -489,50 +430,14 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
                 // Close the InputStream and FileOutputStream
                 inputStream.close()
                 fileOutputStream.close()
-
-
-                Log.d("mytag", "#######################=>"+savedFileUri.toString())
-                saveRecordToDatabase(savedFileUri,documentName,pageCount, documentId =documentId )
-            } catch (e: IOException) {
+                saveRecordToDatabase(savedFileUri, documentName, pageCount, documentId = documentId)
+            } catch (e: Exception) {
                 e.printStackTrace()
-                // Handle the IOException
+                Log.d("mytag","SavePdfException : "+e.message)
             }
         }
     }
-    fun saveImage(uri: Uri?,pageCount: String,documentId: String) {
-        try {
-            val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
-            if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-                Log.e("Error", "Directory not created")
-                return
-            }
-            val calendar = Calendar.getInstance()
-            val customFileName = convertTimeToCustomString(calendar.timeInMillis);
-            val myFile = File(mediaStorageDir, "$customFileName.jpeg")
-            val fileOutputStream = FileOutputStream(myFile)
 
-            // Get the InputStream from the Uri
-            val inputStream = contentResolver.openInputStream(uri!!)
-
-            // Read content from the InputStream and write it to the FileOutputStream
-            val buffer = ByteArray(1024)
-            var bytesRead: Int
-            while (inputStream!!.read(buffer).also { bytesRead = it } != -1) {
-                fileOutputStream.write(buffer, 0, bytesRead)
-            }
-
-            // Close the InputStream and FileOutputStream
-            inputStream.close()
-            fileOutputStream.close()
-            // Log the URI of the saved file
-            val savedFileUri = Uri.fromFile(myFile)
-            Log.d("mytag", savedFileUri.toString())
-            saveRecordToDatabase(savedFileUri,documentName,pageCount,documentId)
-        } catch (e: IOException) {
-            e.printStackTrace()
-            // Handle the IOException
-        }
-    }
 
     private fun convertTimeToCustomString(timeInMillis: Long): String {
         val dateFormat = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault())
@@ -543,28 +448,17 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
 
     override fun onResume() {
         super.onResume()
-        /*CoroutineScope(Dispatchers.IO).launch{
-            documentList=documentDao.getAllUsers()
-            Log.d("mytag","=>"+documentList.size)
-            adapter= DocumentPagesAdapter(documentList,this@DocumentPagesActivity)
-            withContext(Dispatchers.Main) {
-                // Add the fetched data to the list
-                adapter= DocumentPagesAdapter(documentList,this@DocumentPagesActivity)
-                binding.recyclerViewDocumentPages.adapter=adapter
-                adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
-            }
-        }*/
         updateDocumentList()
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("mytag","onPause=>"+documentList.size)
+        Log.d("mytag", "onPause=>" + documentList.size)
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d("mytag","onStop=>"+documentList.size)
+        Log.d("mytag", "onStop=>" + documentList.size)
     }
 
     override fun onRestart() {
@@ -572,25 +466,25 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
     }
 
     override fun onUpdateDocumentType(document: Document) {
-        Log.d("mytag",""+documentName)
-        CoroutineScope(Dispatchers.IO).launch{
-            var documentType=documentTypeDao.getDocumentByName(documentName)
-            documentType?.isAdded=false
+        Log.d("mytag", "" + documentName)
+        CoroutineScope(Dispatchers.IO).launch {
+            var documentType = documentTypeDao.getDocumentByName(documentName)
+            documentType?.isAdded = false
             documentTypeDao.updateDocumentType(documentType!!)
             documentDao.deleteDocument(document)
 
         }
     }
 
-    private fun updateDocumentList(){
-        CoroutineScope(Dispatchers.IO).launch{
-            documentList=documentDao.getAllUsers()
-            Log.d("mytag","=>"+documentList.size)
-            adapter= DocumentPagesAdapter(documentList,this@DocumentPagesActivity)
+    private fun updateDocumentList() {
+        CoroutineScope(Dispatchers.IO).launch {
+            documentList = documentDao.getAllUsers()
+            Log.d("mytag", "=>" + documentList.size)
+            adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
             withContext(Dispatchers.Main) {
                 // Add the fetched data to the list
-                adapter= DocumentPagesAdapter(documentList,this@DocumentPagesActivity)
-                binding.recyclerViewDocumentPages.adapter=adapter
+                adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
+                binding.recyclerViewDocumentPages.adapter = adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
         }
@@ -614,7 +508,9 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             .addOnSuccessListener { location ->
                 location?.let {
                     val currentLatLng = LatLng(it.latitude, it.longitude)
-                    //binding.etLocation.setText("${it.latitude},${it.longitude}")
+                    latitude=it.latitude
+                    longitude=it.longitude
+                    addressFromLatLong=getAddressFromLatLong()
                 } ?: run {
                     Toast.makeText(
                         this@DocumentPagesActivity,
@@ -624,8 +520,14 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
                 }
             }
     }
-    suspend fun uriStringToBitmap(context: Context, uriString: String, text: String, addressText: String): Uri? {
-        Log.d("mytag","uriStringToBitmap=>")
+
+    suspend fun uriStringToBitmap(
+        context: Context,
+        uriString: String,
+        text: String,
+        addressText: String
+    ): Uri? {
+        Log.d("mytag", "uriStringToBitmap=>")
         return withContext(Dispatchers.IO) {
             try {
                 val uri = Uri.parse(uriString)
@@ -653,7 +555,7 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
                 saveBitmapToFile(context, bitmap, uri)
                 uri // Return the URI of the modified bitmap
             } catch (e: Exception) {
-                Log.d("mytag","uriStringToBitmap => "+e.message)
+                Log.d("mytag", "uriStringToBitmap => " + e.message)
                 e.printStackTrace()
                 null
             }
@@ -667,54 +569,11 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             outputStream?.flush()
             outputStream?.close()
         } catch (e: Exception) {
-            Log.d("mytag","saveBitmapToFile => "+e.message)
+            Log.d("mytag", "saveBitmapToFile => " + e.message)
             e.printStackTrace()
         }
     }
 
-    fun saveImageToStorage(context: Context, bitmap: Bitmap): Uri? {
-
-        val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
-        if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
-            Log.e("Error", "Directory not created")
-            return null
-        }
-        val imageFile = File(mediaStorageDir, "egs_${System.currentTimeMillis()}.jpg")
-        try {
-            val fos = FileOutputStream(imageFile)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            fos.close()
-            return Uri.fromFile(imageFile)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
-        return null
-    }
-
-    // Function to draw text overlay on the bitmap
-    fun drawTextOverlay(bitmap: Bitmap, text: String): Bitmap {
-        val canvas = Canvas(bitmap)
-        val paint = Paint().apply {
-            color = Color.RED
-            textSize = 50f
-            isAntiAlias = true
-        }
-        canvas.drawText(text, 100f, 100f, paint)
-        return bitmap
-    }
-    private fun uriToBitmap(selectedFileUri: Uri): Bitmap? {
-        try {
-            val parcelFileDescriptor = contentResolver.openFileDescriptor(selectedFileUri, "r")
-            val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-            val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-            parcelFileDescriptor.close()
-            return image
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return null
-    }
     suspend fun uriToBitmapByGlide(context: Context, uri: Uri): Bitmap? {
         return try {
             Glide.with(context)
@@ -727,5 +586,35 @@ class DocumentPagesActivity : AppCompatActivity(),UpdateDocumentTypeListener {
             e.printStackTrace()
             null
         }
+    }
+    private fun getAddressFromLatLong():String{
+        val geocoder: Geocoder
+        val addresses: List<Address>?
+        geocoder = Geocoder(this, Locale.getDefault())
+        addresses = geocoder.getFromLocation(
+            latitude, longitude,
+            1) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+
+        var fullAddress=""
+        if (addresses != null) {
+            if(addresses.size>0){
+                fullAddress= addresses!![0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+
+                val city: String = addresses!![0].locality
+                val state: String = addresses!![0].adminArea
+                val country: String = addresses!![0].countryName
+                val postalCode: String = addresses!![0].postalCode
+                val knownName: String = addresses!![0].featureName
+
+                Log.d("mytag",fullAddress)
+                Log.d("mytag",city)
+                Log.d("mytag",state)
+                Log.d("mytag",country)
+                Log.d("mytag",postalCode)
+                Log.d("mytag",knownName)
+            }
+        }
+        return fullAddress
+
     }
 }
