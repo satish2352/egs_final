@@ -12,6 +12,8 @@ import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
@@ -26,6 +28,8 @@ import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit1Bi
 import com.sumagoinfotech.digicopy.ui.activities.LabourRegistration2Activity
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,6 +45,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
     lateinit var labour:Labour
+    private  var isInternetAvailable=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourRegistrationEdit1Binding.inflate(layoutInflater)
@@ -57,9 +62,20 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 initializeFields()
             }
         }
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                } else {
+                    isInternetAvailable = false
+                }
+            }) { throwable: Throwable? -> }
         binding.btnNext.setOnClickListener {
             if (validateFieldsX()) {
-
                 labourInputData=LabourInputData()
                 labour.fullName= binding.etFullName.text.toString()
                 labourInputData.dateOfBirth= binding.etDob.text.toString()
@@ -85,6 +101,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         }
         binding.btnUpdateLabour.setOnClickListener {
             if (validateFieldsX()) {
+
                 labour.fullName= binding.etFullName.text.toString()
                 labour.dob= binding.etDob.text.toString()
                 labour.gender= binding.actGender.text.toString()

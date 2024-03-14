@@ -80,17 +80,17 @@
                 android:text="0"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
+
             <TextView
-                android:layout_weight="6"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp"
+                android:layout_width="238dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textColor="@color/white"
+                android:layout_marginRight="16dp"
+                android:layout_weight="6"
                 android:fontFamily="@font/poppins"
-                android:textSize="16dp"
                 android:text="@string/entries_to_sync"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></TextView>
+                android:textColor="@color/white"
+                android:textSize="16dp"></TextView>
 
 
             <androidx.cardview.widget.CardView
@@ -109,7 +109,8 @@
                         android:layout_gravity="center_horizontal"
                         android:src="@drawable/arrow_right"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"></ImageView>
+                        android:layout_height="wrap_content"
+                        android:contentDescription="TODO"></ImageView>
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -164,6 +165,7 @@
 
                 <TextView
                     android:layout_weight="1"
+                    android:id="@+id/tvDocumentsCount"
                     android:layout_marginRight="16dp"
                     android:layout_marginLeft="16dp"
                     android:layout_gravity="center"
@@ -174,7 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
                 <TextView
-                    android:layout_weight="1"
+                    android:layout_weight="6"
                     android:layout_marginRight="16dp"
                     android:layout_gravity="center"
                     android:textColor="@color/white"

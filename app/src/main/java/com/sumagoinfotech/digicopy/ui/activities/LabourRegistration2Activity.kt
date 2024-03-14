@@ -38,6 +38,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.FutureTarget
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -55,6 +57,8 @@ import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewMo
 import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -95,7 +99,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private  var latitude:Double=0.0
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
-
+    private  var isInternetAvailable=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityLabourDetails2Binding.inflate(layoutInflater)
@@ -107,6 +111,18 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             Log.d("mytag", "labourData.mobile")
             Log.d("mytag", labourData.mobile)
         }
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                } else {
+                    isInternetAvailable = false
+                }
+            }) { throwable: Throwable? -> }
         requestThePermissions()
         binding.layoutAdd.setOnClickListener {
             showAddFamilyDetailsDialog()
@@ -144,31 +160,35 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     voterIdImage = voterIdImagePath,
                     photo = photoImagePath,
                     isSynced = false)
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val rows=LabourDao.insertLabour(labour)
-                        if(rows>0){
 
-                            runOnUiThread {
-                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour added successfully",Toast.LENGTH_SHORT)
-                                toast.show()
-                            }
+                if(isInternetAvailable){
 
-                            val intent= Intent(this@LabourRegistration2Activity,MainActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                            startActivity(intent)
-                        }else{
-                            runOnUiThread {
-                                val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour not added please try again",Toast.LENGTH_SHORT)
-                                toast.show()
+                }else{
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val rows=LabourDao.insertLabour(labour)
+                            if(rows>0){
+                                runOnUiThread {
+                                    val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour added successfully",Toast.LENGTH_SHORT)
+                                    toast.show()
+                                }
+                                val intent= Intent(this@LabourRegistration2Activity,MainActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                            }else{
+                                runOnUiThread {
+                                    val toast=Toast.makeText(this@LabourRegistration2Activity,"Labour not added please try again",Toast.LENGTH_SHORT)
+                                    toast.show()
+                                }
                             }
+                            Log.d("mytag","Rows Inserted : $rows")
+                        } catch (e: Exception) {
+                            Log.d("mytag","Exception Inserted : ${e.message}")
+                            e.printStackTrace()
                         }
-                        Log.d("mytag","Rows Inserted : $rows")
-                    } catch (e: Exception) {
-                        Log.d("mytag","Exception Inserted : ${e.message}")
-                        e.printStackTrace()
                     }
                 }
+
             }else{
                 Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.select_all_documents),Toast.LENGTH_SHORT).show()
             }

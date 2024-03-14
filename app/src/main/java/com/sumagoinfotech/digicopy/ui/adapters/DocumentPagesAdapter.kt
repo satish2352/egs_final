@@ -3,7 +3,10 @@ package com.sumagoinfotech.digicopy.ui.adapters
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.pdf.PdfRenderer
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -46,12 +49,9 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
         }
         holder.textViewPageCount.text= documentList[position].pageCount
         holder.ivDeleteDocument.setOnClickListener {
-
             updateDocumentTypeListener.onUpdateDocumentType(documentList.get(position))
         }
-
     }
-
     override fun getItemCount(): Int {
         return documentList.size
     }
@@ -66,6 +66,45 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
             // Handle scenario where PDF viewer application is not found
             Toast.makeText(context, "No PDF viewer application found", Toast.LENGTH_SHORT).show()
         }
+    }
+    fun generateThumbnailFromPDF(pdfUriStr: String?,context: Context): Bitmap? {
+        var pdfRenderer: PdfRenderer? = null;
+        var pdfFileDescriptor: ParcelFileDescriptor? = null;
+        try {
+            //Open the PDF file descriptor
+            //here "r" = read.
+            pdfFileDescriptor =
+                context.contentResolver.openFileDescriptor(Uri.parse(pdfUriStr), "r")
+            if (pdfFileDescriptor != null) {
+                // Create a PdfRenderer from the file descriptor
+                pdfRenderer = PdfRenderer(pdfFileDescriptor)
+                // Ensure the page index is within bounds
+                // i want to create page 0 thumbnail so given 0 if you want  other you can give according to you
+                val pageIndex = 1;
+                if (pageIndex < pdfRenderer.pageCount) {
+                    val page = pdfRenderer.openPage(pageIndex)
+                    // Create a bitmap for the thumbnail
+                    val thumbnail = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888)
+                    // Render the page to the bitmap
+                    page.render(thumbnail, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+                    // Close the page and renderer
+                    page.close()
+                    pdfRenderer.close()
+                    return thumbnail
+
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            try {
+                pdfFileDescriptor?.close()
+            } catch (e: Exception) {
+
+            }
+        }
+        return null
+
     }
 
 }

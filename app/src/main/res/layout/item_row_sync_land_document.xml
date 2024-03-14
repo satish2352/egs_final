@@ -19,12 +19,18 @@
             android:layout_width="match_parent"
             android:layout_height="150dp">
             <ImageView
-                android:src="@drawable/imagedocument"
+                android:src="@drawable/document1"
+                android:id="@+id/ivDocumentThumb"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"></ImageView>
         </androidx.cardview.widget.CardView>
 
         <TextView
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:id="@+id/tvDocumentName"
             android:textSize="16dp"
             android:layout_marginTop="10dp"
             android:layout_gravity="center_horizontal"
@@ -46,6 +52,7 @@
                 android:layout_height="16dp"></ImageView>
 
             <TextView
+                android:id="@+id/tvDocumentDate"
                 android:gravity="center"
                 android:textSize="8dp"
                 android:textColor="#1B1536"
@@ -57,6 +64,7 @@
                 android:layout_height="wrap_content"></TextView>
         </LinearLayout>
         <TextView
+            android:visibility="gone"
             android:lines="1"
             android:maxLines="1"
             android:ellipsize="end"
@@ -72,6 +80,7 @@
 
 
         <TextView
+            android:id="@+id/tvPageCount"
             android:textSize="12dp"
             android:layout_marginTop="5dp"
             android:paddingTop="5dp"

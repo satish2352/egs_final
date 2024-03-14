@@ -30,4 +30,7 @@ interface LabourDao {
     @Query("SELECT * FROM labours WHERE mgnregaId like '%' || :searchQuery || '%'")
     suspend fun getLabourByMgnregaIdLike(searchQuery: String): List<Labour>
 
+    @Query("SELECT COUNT(*) FROM labours")
+    suspend fun getLaboursCount(): Int
+
 }

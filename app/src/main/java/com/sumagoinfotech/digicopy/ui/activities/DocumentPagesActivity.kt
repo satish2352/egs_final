@@ -3,17 +3,19 @@ package com.sumagoinfotech.digicopy.ui.activities
 import android.Manifest
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -25,14 +27,16 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -43,16 +47,11 @@ import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.RESULT_
 import com.google.mlkit.vision.documentscanner.GmsDocumentScannerOptions.SCANNER_MODE_FULL
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanning
 import com.google.mlkit.vision.documentscanner.GmsDocumentScanningResult
-import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.colors.ColorConstants
-import com.itextpdf.kernel.colors.DeviceRgb
-import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.PageSize
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.kernel.pdf.PdfReader
 import com.itextpdf.kernel.pdf.PdfWriter
-import com.itextpdf.kernel.pdf.canvas.PdfCanvas
-import com.itextpdf.layout.element.Image
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.property.TextAlignment
 import com.itextpdf.layout.property.VerticalAlignment
@@ -66,13 +65,14 @@ import com.sumagoinfotech.digicopy.database.entity.DocumentType
 import com.sumagoinfotech.digicopy.databinding.ActivityDocumentPagesBinding
 import com.sumagoinfotech.digicopy.interfaces.UpdateDocumentTypeListener
 import com.sumagoinfotech.digicopy.ui.adapters.DocumentPagesAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
@@ -80,7 +80,13 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.qrcode.QRCodeWriter
+import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.pdf.PdfPage
+import com.itextpdf.layout.element.Image
+import java.util.Hashtable
 
 class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private lateinit var binding: ActivityDocumentPagesBinding
@@ -99,7 +105,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private  var latitude:Double=0.0
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
-
+    private  var isInternetAvailable=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,6 +128,18 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         binding.fabAddDocument.setOnClickListener {
             showDialog()
         }
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                } else {
+                    isInternetAvailable = false
+                }
+            }) { throwable: Throwable? -> }
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(false)
             .setPageLimit(20)
@@ -342,11 +360,11 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val rows = documentDao.insertDocument(document)
-                val documentType = documentTypeDao.getDocumentByName(documentName)
+               /* val documentType = documentTypeDao.getDocumentByName(documentName)
                 if (documentType != null) {
                     documentType.isAdded = true
                     documentTypeDao.updateDocumentType(documentType)
-                }
+                }*/
                 if (rows > 0) {
                     runOnUiThread {
                         val toast = Toast.makeText(
@@ -368,7 +386,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                         Log.d("mytag", "Document not added please try again : $rows")
                     }
                 }
-                documentList = documentDao.getAllUsers()
+                documentList = documentDao.getAllDocuments()
                 withContext(Dispatchers.Main) {
                     adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
                     binding.recyclerViewDocumentPages.adapter = adapter
@@ -388,11 +406,11 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
                     Log.e("Error", "Directory not created")
                 }
-                val myFile = File(mediaStorageDir, "egs_$documentId.pdf")
+                val myFile = File(mediaStorageDir, "$documentName.pdf")
                 val fileOutputStream = FileOutputStream(myFile)
                 val inputStream = contentResolver.openInputStream(uri!!)
                 val currentDateTime = Date()
-                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                val formatter = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
                 val formattedDateTime = formatter.format(currentDateTime)
                 // Log the URI of the saved file
                 val savedFileUri = Uri.fromFile(myFile)
@@ -420,7 +438,18 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                         0f
                     )
                 }
-
+                val imageQr=Image(ImageDataFactory.create(generateQRCodeByteArray("filedownload/$documentName",500,500)))
+//                val pageWidth = pdfDoc.defaultPageSize.width
+//                val pageHeight = pdfDoc.defaultPageSize.height
+//                val imageWidth = imageQr.imageScaledWidth
+//                val imageHeight = imageQr.imageScaledHeight
+//                val xPos = (pageWidth - imageWidth) / 2
+//                val yPos = (pageHeight - imageHeight) / 2
+//                // Add image to the center of the page
+//                imageQr.setFixedPosition(xPos, yPos)
+                pdfDoc.addNewPage(1, PageSize.A4)
+                val resultDocument=com.itextpdf.layout.Document(pdfDoc)
+                resultDocument.add(imageQr)
                 pdfDoc.close()
                 val buffer = ByteArray(1024)
                 var bytesRead: Int
@@ -430,7 +459,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 // Close the InputStream and FileOutputStream
                 inputStream.close()
                 fileOutputStream.close()
-                saveRecordToDatabase(savedFileUri, documentName, pageCount, documentId = documentId)
+                saveRecordToDatabase(savedFileUri, documentName, pageCount, documentId = formattedDateTime)
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d("mytag","SavePdfException : "+e.message)
@@ -449,6 +478,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     override fun onResume() {
         super.onResume()
         updateDocumentList()
+        checkAndPromptGps()
     }
 
     override fun onPause() {
@@ -478,7 +508,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
 
     private fun updateDocumentList() {
         CoroutineScope(Dispatchers.IO).launch {
-            documentList = documentDao.getAllUsers()
+            documentList = documentDao.getAllDocuments()
             Log.d("mytag", "=>" + documentList.size)
             adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
             withContext(Dispatchers.Main) {
@@ -617,4 +647,79 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         return fullAddress
 
     }
+    private fun checkAndPromptGps() {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            // GPS is not enabled, prompt the user to enable it
+            AlertDialog.Builder(this)
+                .setMessage(" Please enable GPS on your device")
+                .setPositiveButton("Yes") { _, _ ->
+                    // Open the location settings to enable GPS
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                    // Handle the case when the user chooses not to enable GPS
+                }
+                .show()
+        }
+    }
+    private fun generateQRCodeBitmap(
+        text: String,
+        width: Int,
+        height: Int
+    ): Bitmap? {
+        try {
+            val hints: MutableMap<EncodeHintType, Any> = Hashtable()
+            hints[EncodeHintType.CHARACTER_SET] = "UTF-8"
+
+            // Use ZXing QRCodeWriter to generate BitMatrix
+            val writer = QRCodeWriter()
+            val bitMatrix = writer.encode(text, BarcodeFormat.QR_CODE, width, height, hints)
+
+            // Create Bitmap from BitMatrix
+            val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    bmp.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                }
+            }
+
+            return bmp
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+    private fun generateQRCodeByteArray(
+        text: String,
+        width: Int,
+        height: Int
+    ): ByteArray? {
+        try {
+            val hints: MutableMap<EncodeHintType, Any> = Hashtable()
+            hints[EncodeHintType.CHARACTER_SET] = "UTF-8"
+
+            // Use ZXing QRCodeWriter to generate BitMatrix
+            val writer = QRCodeWriter()
+            val bitMatrix = writer.encode(text, BarcodeFormat.QR_CODE, width, height, hints)
+
+            // Create Bitmap from BitMatrix
+            val bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+            for (x in 0 until width) {
+                for (y in 0 until height) {
+                    bmp.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                }
+            }
+
+            // Convert Bitmap to byte array
+            val outputStream = ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            return outputStream.toByteArray()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
 }
+

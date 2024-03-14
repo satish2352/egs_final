@@ -3,25 +3,32 @@ package com.sumagoinfotech.digicopy.ui.activities
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetailsBinding
 import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewModel
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
 
 class LabourRegistration1Activity : AppCompatActivity() {
     lateinit var binding: ActivityLabourDetailsBinding
     private lateinit var districts: List<String>
     private lateinit var labourInputData: LabourInputData
     private lateinit var registrationViewModel: RegistrationViewModel
+    private  var isInternetAvailable=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourDetailsBinding.inflate(layoutInflater)
@@ -30,8 +37,18 @@ class LabourRegistration1Activity : AppCompatActivity() {
         supportActionBar?.title=resources.getString(R.string.registration_step_1)
         registrationViewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
         initializeFields()
-
-
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                } else {
+                    isInternetAvailable = false
+                }
+            }) { throwable: Throwable? -> }
         binding.btnNext.setOnClickListener {
 
             if (validateFieldsX()) {
@@ -45,7 +62,6 @@ class LabourRegistration1Activity : AppCompatActivity() {
                 labourInputData.mobile= binding.etMobileNumber.text.toString()
                 labourInputData.landline= binding.etLandLine.text.toString()
                 labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
-
                 registrationViewModel.setData(labourInputData)
                 registrationViewModel.fullName= "binding.etFullName.text.toString()"
                 registrationViewModel.dateOfBirth= binding.etDob.text.toString()
@@ -56,7 +72,6 @@ class LabourRegistration1Activity : AppCompatActivity() {
                 registrationViewModel.mobile= binding.etMobileNumber.text.toString()
                 registrationViewModel.landline= binding.etLandLine.text.toString()
                 registrationViewModel.idCard= binding.etMgnregaIdNumber.text.toString()
-
                 val intent = Intent(this, LabourRegistration2Activity::class.java)
                 intent.putExtra("LabourInputData", labourInputData)
                 startActivity(intent)
@@ -73,6 +88,8 @@ class LabourRegistration1Activity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+
 
     private fun initializeFields() {
 

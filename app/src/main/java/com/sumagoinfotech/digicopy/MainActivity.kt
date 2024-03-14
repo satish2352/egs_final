@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -23,6 +24,7 @@ import com.sumagoinfotech.digicopy.ui.dashboard.DashboardFragment
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navController:NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +32,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val navView: BottomNavigationView = binding.navView
-
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+         navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
@@ -41,7 +42,14 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
         requestThePermissions()
+    }
+
+    private fun refreshCurrentFragment(){
+        val id = navController.currentDestination?.id
+        navController.popBackStack(id!!,true)
+        navController.navigate(id)
     }
 
     private fun requestThePermissions() {
@@ -56,10 +64,7 @@ class MainActivity : AppCompatActivity() {
             }
             .request { allGranted, grantedList, deniedList ->
                 if (allGranted) {
-                    //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
-                    //val dashboardFragment=DashboardFragment();
-                    //dashboardFragment.updateMarker()
-
+                    refreshCurrentFragment()
                 } else {
                     Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
                 }
@@ -70,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             // GPS is not enabled, prompt the user to enable it
             AlertDialog.Builder(this)
-                .setMessage("GPS is not enabled. Do you want to enable it?")
+                .setMessage(" Please enable GPS on your device")
                 .setPositiveButton("Yes") { _, _ ->
                     // Open the location settings to enable GPS
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
