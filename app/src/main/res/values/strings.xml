@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">EGS</string>
-    <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_maps">MapsActivity</string>
@@ -9,10 +8,8 @@
     <string name="attendence">Attendence</string>
     <string name="sync">Sync</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sync_offline_data">Sync Offline Data</string>
     <string name="labour_registration_saved_offline">Labour Registration Saved Offline</string>
-    <string name="one">1</string>
     <string name="entries_to_sync">Entries To Sync</string>
     <string name="documents_saved_offline">Documents Saved Offline</string>
     <string name="sync_land_documents">Sync Land Documents</string>
@@ -26,13 +23,10 @@
     <string name="select_district">Select District</string>
     <string name="select_village">Select Village</string>
     <string name="select_taluka">Select taluka</string>
-    <string name="enter_valid_email">Enter Valid Mobile Number</string>
     <string name="enter_valid_id_card_number">Enter MNREGA ID Card Number</string>
     <string name="select_relationship">Select Relationship</string>
     <string name="select_marital_status">Select Marital Status</string>
-    <string name="select_all_fields">Select All Fields</string>
     <string name="select_document">Select Document</string>
-    <string name="edit_details">Edit Details</string>
     <string name="registration_step_1">Registration Step 1</string>
     <string name="registration_step_2">Registration Step 2</string>
     <string name="select_gender">Select Gender</string>
@@ -44,7 +38,6 @@
     <string name="add_documents">Add Documents</string>
     <string name="family_details">Family Details</string>
     <string name="add">Add</string>
-    <string name="update_record">Update Record</string>
     <string name="update">Update</string>
     <string name="district">District</string>
     <string name="taluka">Taluka</string>
@@ -66,4 +59,8 @@
     <string name="enter_email_id">Enter Email Id</string>
     <string name="enter_password">Enter Password</string>
     <string name="login">Login</string>
+    <string name="half_day">Half Day</string>
+    <string name="full_day">Full Day</string>
+    <string name="error_while_login">Error while login</string>
+    <string name="login_successful">Login successful</string>
 </resources>

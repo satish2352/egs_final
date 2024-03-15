@@ -53,7 +53,7 @@ dependencies {
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
     implementation("com.google.firebase:firebase-firestore-ktx:24.10.3")
     implementation("com.google.android.gms:play-services-location:21.2.0")
     testImplementation("junit:junit:4.13.2")

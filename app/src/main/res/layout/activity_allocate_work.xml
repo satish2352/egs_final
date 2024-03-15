@@ -15,7 +15,6 @@
         android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins"
@@ -107,7 +106,6 @@
 
         <Switch
             android:thumbTint="@color/appBlue"
-            android:id="@+id/switch1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"></Switch>
     </LinearLayout>

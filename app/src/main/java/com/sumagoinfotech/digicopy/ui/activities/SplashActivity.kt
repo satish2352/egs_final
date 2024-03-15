@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
+import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.AppDatabase.Companion.getDatabase
@@ -16,8 +17,10 @@ import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDao
 import com.sumagoinfotech.digicopy.database.dao.UserDao
 import com.sumagoinfotech.digicopy.database.entity.AreaItem
 import com.sumagoinfotech.digicopy.databinding.ActivitySplashBinding
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -31,41 +34,56 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var userDao: UserDao
     private lateinit var documentTypeDao: DocumentTypeDao
     private lateinit var areaDao: AreaDao
+    private lateinit var mySharedPref:MySharedPref
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        mySharedPref = MySharedPref(this)
         appDatabase=AppDatabase.getDatabase(this)
         userDao=appDatabase.userDao()
         documentTypeDao=appDatabase.documentTypeDao()
         areaDao=appDatabase.areaDao()
         binding.progressBar.visibility = View.VISIBLE
+           CoroutineScope(Dispatchers.IO).launch {
+               userDao.insertInitialRecords()
+               documentTypeDao.insertInitialRecords()
+               if(!mySharedPref.getAllAreaEntries())
+                   if(areaDao.getAllArea().isEmpty())
+                   {
+                       val items = readJsonFromAssets(this@SplashActivity, "address.json")
+                       areaDao.insertInitialRecords(items)
+                       val size=areaDao.getAllArea().size;
+                       Log.d("mytag","Area Entries $size")
+                       if(size==44342){
+                           mySharedPref.setAllAreaEntries(true)
+                       }else{
+                           mySharedPref.setAllAreaEntries(false)
+                       }
+                   }else{
+                       Log.d("mytag","Not empty")
+                   }
+               withContext(Dispatchers.Main) {
+                   val mySharedPref=MySharedPref(this@SplashActivity)
+                   if(mySharedPref.getIsLoggedIn()){
+                       binding.progressBar.visibility = View.GONE
+                       val intent= Intent(this@SplashActivity,MainActivity::class.java)
+                       intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                       startActivity(intent)
+                       finish()
+                   }else{
+                       binding.progressBar.visibility = View.GONE
+                       val intent= Intent(this@SplashActivity,LoginActivity::class.java)
+                       intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                       startActivity(intent)
+                       finish()
+                   }
 
-        // Execute database insertion in a background thread
-        Executors.newSingleThreadExecutor().execute {
-            // Insert initial records
-            CoroutineScope(Dispatchers.IO).launch {
-                userDao.insertInitialRecords()
-                documentTypeDao.insertInitialRecords()
-                val items = readJsonFromAssets(this@SplashActivity, "address.json")
-                areaDao.insertAll(items)
-
-                val list=areaDao.getAllDistrict();
-                Log.d("mytag","list"+list.size)
-                withContext(Dispatchers.Main) {
-                    binding.progressBar.visibility = View.GONE
-                    val intent= Intent(this@SplashActivity,LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    finish()
-
-                    // Start next activity or perform other operations
-                }
-            }
-        }
+               }
+       }
     }
-    fun readJsonFromAssets(context: Context, fileName: String): List<AreaItem> {
+    private  fun readJsonFromAssets(context: Context, fileName: String): List<AreaItem> {
         val items: MutableList<AreaItem> = mutableListOf()
         try {
             // Step 3: Open and read the JSON file using the AssetManager
@@ -84,6 +102,7 @@ class SplashActivity : AppCompatActivity() {
             inputStream.close()
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d("mytag","readJsonFromAssets "+e.message)
         }
         return items
     }

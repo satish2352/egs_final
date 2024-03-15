@@ -10,7 +10,7 @@ import com.sumagoinfotech.digicopy.database.entity.User
 interface UserDao {
 
     @Query("SELECT * FROM users")
-    fun getAllUsers(): List<User>
+    suspend fun getAllUsers(): List<User>
     @Insert
     suspend fun insertUser(user: User)
 

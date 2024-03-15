@@ -5,6 +5,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -19,7 +20,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.databinding.ActivityMainBinding
 import com.sumagoinfotech.digicopy.ui.activities.LoginActivity
-import com.sumagoinfotech.digicopy.ui.dashboard.DashboardFragment
+import com.sumagoinfotech.digicopy.ui.fragments.dashboard.DashboardFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,21 +30,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        val navView: BottomNavigationView = binding.navView
-         navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_sync, R.id.navigation_dashboard, R.id.navigation_attendence
+        try {
+            binding = ActivityMainBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+            val navView: BottomNavigationView = binding.navView
+            navController = findNavController(R.id.nav_host_fragment_activity_main)
+            // Passing each menu ID as a set of Ids because each
+            // menu should be considered as top level destinations.
+            val appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.navigation_sync, R.id.navigation_dashboard, R.id.navigation_attendence,R.id.navigation_document,R.id.navigation_reports
+                )
             )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+            setupActionBarWithNavController(navController, appBarConfiguration)
+            navView.setupWithNavController(navController)
 
-        requestThePermissions()
+            requestThePermissions()
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message)
+        }
     }
 
     private fun refreshCurrentFragment(){

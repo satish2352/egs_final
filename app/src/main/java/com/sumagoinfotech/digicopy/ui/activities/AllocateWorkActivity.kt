@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -167,14 +168,23 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
         dialog.show()
         val tvFullName=dialog.findViewById<TextView>(R.id.tvFullName)
         val ivPhoto=dialog.findViewById<ImageView>(R.id.ivPhoto)
+        val radioGroupAttendance=dialog.findViewById<RadioGroup>(R.id.radioGroupAttendance)
         tvFullName.text = fullName
         Glide.with(this@AllocateWorkActivity).load(labourImage).into(ivPhoto)
         val btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
         btnSubmit.setOnClickListener {
-            val toast= Toast.makeText(this@AllocateWorkActivity,"Attendance marked successfully",
-                Toast.LENGTH_SHORT)
-            toast.show()
-            dialog.dismiss()
+            if(radioGroupAttendance.checkedRadioButtonId==R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId==R.id.radioButtonHalfDay )
+            {
+                val toast= Toast.makeText(this@AllocateWorkActivity,"Attendance marked successfully",
+                    Toast.LENGTH_SHORT)
+                toast.show()
+                dialog.dismiss()
+            }else{
+                val toast= Toast.makeText(this@AllocateWorkActivity,"Select Day",
+                    Toast.LENGTH_SHORT)
+                toast.show()
+            }
+
         }
     }
     override fun markAttendance(labour: Labour) {

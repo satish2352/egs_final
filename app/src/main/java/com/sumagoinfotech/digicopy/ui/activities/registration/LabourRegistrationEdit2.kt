@@ -520,20 +520,18 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         }
         return !validationResults.contains(false);
     }
-
     private fun showDatePicker() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
-
         val datePickerDialog = DatePickerDialog(
             this, { view, year, monthOfYear, dayOfMonth ->
                 val selectedDate = formatDate(dayOfMonth, monthOfYear, year)
                 etDob.setText(selectedDate)
             }, year, month, day
         )
-
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
         datePickerDialog.show()
     }
 

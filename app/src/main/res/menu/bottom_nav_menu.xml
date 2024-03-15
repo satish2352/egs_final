@@ -14,11 +14,11 @@
         android:icon="@drawable/attendence"
         android:title="@string/attendence" />
     <item
-        android:id="@+id/navigation_upload_document"
+        android:id="@+id/navigation_document"
         android:icon="@drawable/upload"
         android:title="@string/upload_document" />
     <item
-        android:id="@+id/navigation_report"
+        android:id="@+id/navigation_reports"
         android:icon="@drawable/report"
         android:title="@string/report" />
 

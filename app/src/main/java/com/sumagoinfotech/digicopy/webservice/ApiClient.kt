@@ -1,19 +1,28 @@
 package com.sumagoinfotech.digicopy.webservice
 
+import android.content.Context
+import com.sumagoinfotech.digicopy.utils.MySharedPref
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitClient {
-    private const val BASE_URL = "https://jsonplaceholder.typicode.com/"
-    val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
+object ApiClient {
+    private const val BASE_URL = "https://egswebfinal.sumagotest.in/api/"
+    private fun getAuthInterceptor(context: Context): AuthInterceptor {
+        return AuthInterceptor(context)
+    }
+
+    fun create(context: Context): ApiService {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(getAuthInterceptor(context))
+            .build()
+
+        val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
-}
-object ApiClient {
-    val apiService: ApiService by lazy {
-        RetrofitClient.retrofit.create(ApiService::class.java)
+
+        return retrofit.create(ApiService::class.java)
     }
 }

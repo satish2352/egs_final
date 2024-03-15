@@ -17,10 +17,12 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
+import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDao
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.database.dao.UserDao
+import com.sumagoinfotech.digicopy.database.entity.AreaItem
 import com.sumagoinfotech.digicopy.database.entity.Document
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetailsBinding
@@ -33,6 +35,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -42,26 +45,72 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     private lateinit var districts: List<String>
     private lateinit var labourInputData: LabourInputData
     private lateinit var registrationViewModel: RegistrationViewModel
-    private lateinit var database: AppDatabase
+    private lateinit var appDatabase: AppDatabase
     private lateinit var labourDao: LabourDao
     lateinit var labour:Labour
     private  var isInternetAvailable=false
+    private lateinit var areaDao: AreaDao
+    private lateinit var districtList:List<AreaItem>
+    private lateinit var villageList:List<AreaItem>
+    private lateinit var talukaList:List<AreaItem>
+    private var districtNames= mutableListOf<String>()
+    private var villageNames= mutableListOf<String>()
+    private var talukaNames= mutableListOf<String>()
+    private var districtId=""
+    private var villageId=""
+    private var talukaId=""
+    private lateinit var prevselectedDistrict:AreaItem
+    private lateinit var prevSelectedVillage:AreaItem
+    private lateinit var prevSelectedTaluka:AreaItem
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourRegistrationEdit1Binding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.update_details_step_1)
+        appDatabase=AppDatabase.getDatabase(this)
+        areaDao=appDatabase.areaDao()
         var labourId=intent.extras?.getString("id")
-        database= AppDatabase.getDatabase(this)
-        labourDao=database.labourDao()
+        labourDao=appDatabase.labourDao()
         CoroutineScope(Dispatchers.IO).launch {
             labour=labourDao.getLabourById(Integer.parseInt(labourId))
+            prevselectedDistrict=areaDao.getAreaByLocationId(labour.district)
+            prevSelectedTaluka=areaDao.getAreaByLocationId(labour.taluka)
+            prevSelectedVillage=areaDao.getAreaByLocationId(labour.village)
+            talukaList=areaDao.getAllTalukas(labour.district)
+            villageList=areaDao.getVillageByTaluka(labour.taluka)
+            withContext(Dispatchers.Main){
+                binding.actVillage.setText(prevSelectedVillage.name)
+                binding.actTaluka.setText(prevSelectedTaluka.name)
+                binding.actDistrict.setText(prevselectedDistrict.name)
+                for (taluka in talukaList){
+                    talukaNames.add(taluka.name)
+                }
+                Log.d("mytag",""+talukaNames.size);
+                val talukaAdapter = ArrayAdapter(
+                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, talukaNames
+                )
+                binding.actTaluka.setAdapter(talukaAdapter)
 
-            runOnUiThread {
+                for (village in villageList){
+                    villageNames.add(village.name)
+                }
+                Log.d("mytag",""+villageNames.size);
+                val villageAdapter = ArrayAdapter(
+                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, villageNames
+                )
+                binding.actVillage.setAdapter(villageAdapter)
                 initializeFields()
             }
         }
+        districtList=ArrayList<AreaItem>()
+        CoroutineScope(Dispatchers.IO).launch {
+            districtList=areaDao.getAllDistrict()
+            for (district in districtList){
+                districtNames.add(district.name)
+            }
+        }
+
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
             .subscribeOn(Schedulers.io())
@@ -101,13 +150,12 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         }
         binding.btnUpdateLabour.setOnClickListener {
             if (validateFieldsX()) {
-
                 labour.fullName= binding.etFullName.text.toString()
                 labour.dob= binding.etDob.text.toString()
                 labour.gender= binding.actGender.text.toString()
-                labour.district= binding.actDistrict.text.toString()
-                labour.village= binding.actVillage.text.toString()
-                labour.taluka= binding.actTaluka.text.toString()
+                labour.district= districtId
+                labour.village= villageId
+                labour.taluka= talukaId
                 labour.mobile= binding.etMobileNumber.text.toString()
                 labour.landline= binding.etLandLine.text.toString()
                 labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
@@ -152,25 +200,17 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         if(item.itemId==android.R.id.home){
             finish()
         }
-        if(item.itemId==R.id.action_edit){
-
-
-        }
         return super.onOptionsItemSelected(item)
     }
 
 
     private fun initializeFields() {
-
         binding.etFullName.setText(labour.fullName)
         binding.etDob.setText(labour.dob)
         binding.etMobileNumber.setText(labour.mobile)
         binding.etLandLine.setText(labour.landline)
-        binding.etMgnregaIdNumber.setText(labour.mgnregaId)
-        binding.actDistrict.setText(labour.district)
         binding.actGender.setText(labour.gender)
-        binding.actTaluka.setText(labour.taluka)
-        binding.actVillage.setText(labour.village)
+        binding.etMgnregaIdNumber.setText(labour.mgnregaId)
         val names = listOf("MALE", "FEMALE")
         val genderAdapter = ArrayAdapter(
             this, android.R.layout.simple_list_item_1, names
@@ -184,60 +224,60 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         }
         binding.etDob.setOnClickListener {
 
-            showDatePicker()
+            showDatePickerDialog()
+            //showDatePicker()
         }
-
-
-        districts = listOf(
-            "Ahmednagar",
-            "Akola",
-            "Amravati",
-            "Aurangabad",
-            "Beed",
-            "Bhandara",
-            "Buldhana",
-            "Chandrapur",
-            "Dhule",
-            "Gadchiroli",
-            "Gondia",
-            "Hingoli",
-            "Jalgaon",
-            "Jalna",
-            "Kolhapur",
-            "Latur",
-            "Mumbai City",
-            "Mumbai Suburban",
-            "Nagpur",
-            "Nanded",
-            "Nandurbar",
-            "Nashik",
-            "Osmanabad",
-            "Palghar",
-            "Parbhani",
-            "Pune",
-            "Raigad",
-            "Ratnagiri",
-            "Sangli",
-            "Satara",
-            "Sindhudurg",
-            "Solapur",
-            "Thane",
-            "Wardha",
-            "Washim",
-            "Yavatmal"
-        )
+        binding.actVillage.setOnFocusChangeListener { abaad, asd ->
+            binding.actVillage.showDropDown()
+        }
+        binding.actVillage.setOnClickListener {
+            binding.actVillage.showDropDown()
+        }
         val districtAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, districts
+            this, android.R.layout.simple_list_item_1, districtNames
         )
         binding.actDistrict.setAdapter(districtAdapter)
-        val talukaAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, talukas
-        )
-        binding.actTaluka.setAdapter(talukaAdapter)
-        val villageAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, villages
-        )
-        binding.actVillage.setAdapter(villageAdapter)
+        binding.actDistrict.setOnItemClickListener { parent, view, position, id ->
+            districtId=districtList[position].location_id
+            binding.actTaluka.setText("")
+            binding.actVillage.setText("")
+            CoroutineScope(Dispatchers.IO).launch {
+                talukaNames.clear();
+                talukaList=areaDao.getAllTalukas(districtList[position].location_id)
+                for (taluka in talukaList){
+                    talukaNames.add(taluka.name)
+                }
+                val talukaAdapter = ArrayAdapter(
+                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, talukaNames
+                )
+                withContext(Dispatchers.Main){
+                    binding.actTaluka.setAdapter(talukaAdapter)
+                }
+            }
+        }
+        binding.actTaluka.setOnItemClickListener { parent, view, position, id ->
+            CoroutineScope(Dispatchers.IO).launch {
+                talukaId=talukaList[position].location_id
+                villageNames.clear();
+                binding.actVillage.setText("")
+                villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
+                for (village in villageList){
+                    villageNames.add(village.name)
+                }
+                val villageAdapter = ArrayAdapter(
+                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, villageNames
+                )
+                Log.d("mytag",""+villageNames.size)
+                withContext(Dispatchers.Main){
+                    binding.actVillage.setAdapter(villageAdapter)
+
+                }
+            }
+        }
+
+        binding.actVillage.setOnItemClickListener { parent, view, position, id ->
+            villageId=villageList[position].location_id
+        }
 
         binding.actDistrict.setOnFocusChangeListener { abaad, asd ->
             binding.actDistrict.showDropDown()
@@ -352,489 +392,23 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         }
         return !validationResults.contains(false)
     }
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val minCalendar = Calendar.getInstance().apply {
+            set(Calendar.YEAR, 1900) // Set the minimum year to 1900
+        }
 
-    val talukas = listOf(
-        // Sindhudurg District
-        "Vaibhavwadi",
-        "Devgad",
-        "Malwan",
-        "Sawantwadi",
-        "Kudal",
-        "Vengurla",
-        "Dodamarg",
-
-        // Ratnagiri District
-        "Ratnagiri",
-        "Sangameshwar",
-        "Lanja",
-        "Rajapur",
-        "Chiplun",
-        "Guhagar",
-        "Dapoli",
-        "Mandangad",
-        "Khed",
-
-        // Raigad District
-        "Pen",
-        "Alibag",
-        "Murud",
-        "Panvel",
-        "Uran",
-        "Karjat",
-        "Khalapur",
-        "Mangaon",
-        "Tala",
-        "Roha",
-        "Sudhagad-Pali",
-        "Mahad",
-        "Poladpur",
-        "Shrivardhan",
-        "Mhasala",
-
-        // Mumbai City and Suburban
-        "Kurla",
-        "Andheri",
-        "Borivali",
-        "Thane",
-        "Kalyan",
-        "Murbad",
-        "Bhiwandi",
-        "Shahapur",
-        "Ulhasnagar",
-        "Ambarnath",
-        "Palghar",
-        "Vasai",
-        "Dahanu",
-        "Talasari",
-        "Jawhar",
-        "Mokhada",
-        "Vada",
-        "Vikramgad",
-
-        // Nashik District
-        "Nashik",
-        "Igatpuri",
-        "Dindori",
-        "Peth",
-        "Trimbakeshwar",
-        "Kalwan",
-        "Deola",
-        "Surgana",
-        "Baglan",
-        "Malegaon",
-        "Nandgaon",
-        "Chandwad",
-        "Niphad",
-        "Sinnar",
-        "Yeola",
-
-        // Nandurbar District
-        "Nandurbar",
-        "Navapur",
-        "Shahada",
-        "Talode",
-        "Akkalkuwa",
-        "Dhadgaon",
-
-        // Dhule District
-        "Dhule",
-        "Sakri",
-        "Sindkheda",
-        "Shirpur",
-        "Jalgaon",
-        "Jamner",
-        "Erandol",
-        "Dharangaon",
-        "Bhusawal",
-        "Raver",
-        "Muktainagar",
-        "Bodwad",
-        "Yawal",
-        "Amalner",
-        "Parola",
-        "Chopda",
-        "Pachora",
-        "Bhadgaon",
-        "Chalisgaon",
-
-        // Jalgaon District
-        "Buldhana",
-        "Chikhli",
-        "Deulgaon Raja",
-        "Jalgaon Jamod",
-        "Sangrampur",
-        "Malkapur",
-        "Motala",
-        "Nandura",
-        "Khamgaon",
-        "Shegaon",
-        "Mehkar",
-        "Sindkhed Raja",
-        "Lonar",
-
-        // Akola District
-        "Akola",
-        "Akot",
-        "Telhara",
-        "Balapur",
-        "Patur",
-        "Murtajapur",
-        "Barshitakli",
-        "Washim",
-        "Malegaon",
-        "Risod",
-        "Mangrulpir",
-        "Karanja",
-        "Manora",
-
-        // Amravati District
-        "Amravati",
-        "Bhatukali",
-        "Nandgaon Khandeshwar",
-        "Dharni",
-        "Chikhaldara",
-        "Achalpur",
-        "Chandurbazar",
-        "Morshi",
-        "Warud",
-        "Daryapur",
-        "Anjangaon-Surji",
-        "Chandur",
-        "Dhamangaon",
-        "Tiosa",
-
-        // Wardha District
-        "Wardha",
-        "Deoli",
-        "Seloo",
-        "Arvi",
-        "Ashti",
-        "Karanja",
-        "Hinganghat",
-        "Samudrapur",
-
-        // Nagpur District
-        "Nagpur Urban",
-        "Nagpur Rural",
-        "Kamptee",
-        "Hingna",
-        "Katol",
-        "Narkhed",
-        "Savner",
-        "Kalameshwar",
-        "Ramtek",
-        "Mouda",
-        "Parseoni",
-        "Umred",
-        "Kuhi",
-        "Bhiwapur",
-
-        // Bhandara District
-        "Bhandara",
-        "Tumsar",
-        "Pauni",
-        "Mohadi",
-        "Sakoli",
-        "Lakhani",
-        "Lakhandur",
-        "Gondia",
-        "Goregaon",
-        "Salekasa",
-        "Tiroda",
-        "Amgaon",
-        "Deori",
-        "Arjuni-Morgaon",
-        "Sadak-Arjuni",
-
-        // Gadchiroli District
-        "Gadchiroli",
-        "Dhanora",
-        "Chamorshi",
-        "Mulchera",
-        "Desaiganj",
-        "Armori",
-        "Kurkheda",
-        "Korchi",
-        "Aheri",
-        "Etapalli",
-        "Bhamragad",
-        "Sironcha",
-
-        // Chandrapur District
-        "Chandrapur",
-        "Saoli",
-        "Mul",
-        "Ballarpur",
-        "Pombhurna",
-        "Gondpimpri",
-        "Warora",
-        "Chimur",
-        "Bhadravati",
-        "Bramhapuri",
-        "Nagbhid",
-        "Sindewahi",
-        "Rajura",
-        "Korpana",
-        "Jiwati",
-
-        // Yavatmal District
-        "Yavatmal",
-        "Arni",
-        "Babhulgaon",
-        "Kalamb",
-        "Darwha",
-        "Digras",
-        "Ner",
-        "Pusad",
-        "Umarkhed",
-        "Mahagaon",
-        "Kelapur",
-        "Ralegaon",
-        "Ghatanji",
-        "Wani",
-        "Maregaon",
-        "Zari Jamani",
-
-        // Nanded District
-        "Nanded",
-        "Ardhapur",
-        "Mudkhed",
-        "Bhokar",
-        "Umri",
-        "Loha",
-        "Kandhar",
-        "Kinwat",
-        "Himayatnagar",
-        "Hadgaon",
-        "Mahur",
-        "Deglur",
-        "Mukhed",
-        "Dharmabad",
-        "Biloli",
-        "Naigaon",
-
-        // Hingoli District
-        "Hingoli",
-        "Sengaon",
-        "Kalamnuri",
-        "Basmath",
-        "Aundha Nagnath",
-
-        // Parbhani District
-        "Parbhani",
-        "Sonpeth",
-        "Gangakhed",
-        "Palam",
-        "Purna",
-        "Sailu",
-        "Jintur",
-        "Manwath",
-        "Pathri",
-
-        // Jalna District
-        "Jalna",
-        "Bhokardan",
-        "Jafrabad",
-        "Badnapur",
-        "Ambad",
-        "Ghansawangi",
-        "Partur",
-        "Mantha",
-
-        // Aurangabad District
-        "Aurangabad",
-        "Kannad",
-        "Soegaon",
-        "Sillod",
-        "Phulambri",
-        "Khuldabad",
-        "Vaijapur",
-        "Gangapur",
-        "Paithan",
-
-        // Beed District
-        "Beed",
-        "Ashti",
-        "Patoda",
-        "Shirur-Kasar",
-        "Georai",
-        "Majalgaon",
-        "Wadwani",
-        "Kaij",
-        "Dharur",
-        "Parli",
-        "Ambajogai",
-
-        // Latur District
-        "Latur",
-        "Renapur",
-        "Ausa",
-        "Ahmedpur",
-        "Jalkot",
-        "Chakur",
-        "Shirur Anantpal",
-        "Nilanga",
-        "Deoni",
-        "Udgir",
-
-        // Osmanabad District
-        "Osmanabad",
-        "Tuljapur",
-        "Bhum",
-        "Paranda",
-        "Washi",
-        "Kalamb",
-        "Lohara",
-        "Umarga",
-
-        // Solapur District
-        "Solapur North",
-        "Barshi",
-        "Solapur South",
-        "Akkalkot",
-        "Madha",
-        "Karmala",
-        "Pandharpur",
-        "Mohol",
-        "Malshiras",
-        "Sangole",
-        "Mangalvedhe",
-        "Nagar",
-        "Shevgaon",
-        "Pathardi",
-        "Parner",
-        "Sangamner",
-        "Kopargaon",
-        "Akole",
-        "Shrirampur",
-        "Nevasa",
-        "Rahata",
-        "Rahuri",
-        "Shrigonda",
-        "Karjat",
-        "Jamkhed",
-        "Pune City",
-        "Haveli",
-        "Khed",
-        "Junnar",
-        "Ambegaon",
-        "Maval",
-        "Mulshi",
-        "Shirur",
-        "Purandhar (Saswad)",
-        "Velhe",
-        "Bhor",
-        "Baramati",
-        "Indapur",
-        "Daund",
-
-        // Satara District
-        "Satara",
-        "Jaoli",
-        "Koregaon",
-    )
-
-    val villages = listOf(
-        "Ambegaon",
-        "Ambejogai",
-        "Anjangaon",
-        "Ashti",
-        "Babulgaon",
-        "Badnapur",
-        "Balapur",
-        "Bhoom",
-        "Bhor",
-        "Biloli",
-        "Brahmapuri",
-        "Chandwad",
-        "Chopda",
-        "Dahiwadi",
-        "Deolali",
-        "Devrukh",
-        "Gondia",
-        "Hinganghat",
-        "Ichalkaranji",
-        "Indapur",
-        "Jamkhed",
-        "Jalna",
-        "Jath",
-        "Jaysingpur",
-        "Junnar",
-        "Kalamb",
-        "Karjat",
-        "Khamgaon",
-        "Khuldabad",
-        "Kolhapur",
-        "Kopargaon",
-        "Koregaon",
-        "Kudal",
-        "Kusumba",
-        "Lanja",
-        "Latur",
-        "Lonar",
-        "Mahad",
-        "Malkapur",
-        "Malsiras",
-        "Manmad",
-        "Mhasla",
-        "Mudkhed",
-        "Mumbai",
-        "Murtijapur",
-        "Nanded",
-        "Nandgaon",
-        "Nashik",
-        "Nashirabad",
-        "Navapur",
-        "Neral",
-        "Nilanga",
-        "Osmanabad",
-        "Pachora",
-        "Paithan",
-        "Palghar",
-        "Pandharpur",
-        "Paranda",
-        "Parbhani",
-        "Pathardi",
-        "Pune",
-        "Purna",
-        "Rajura",
-        "Ralegaon",
-        "Ratnagiri",
-        "Sakri",
-        "Sangamner",
-        "Satana",
-        "Shahapur",
-        "Shendurjana",
-        "Shirpur",
-        "Shrivardhan",
-        "Solapur",
-        "Sinnar",
-        "Sangli",
-        "Sangamner",
-        "Satara",
-        "Shahapur",
-        "Shrigonda",
-        "Shrirampur",
-        "Sindhudurg",
-        "Sinnar",
-        "Taloda",
-        "Tasgaon",
-        "Tuljapur",
-        "Tumsar",
-        "Uran",
-        "Umarkhed",
-        "Umarga",
-        "Vaijapur",
-        "Vaduj",
-        "Vaijapur",
-        "Vasai",
-        "Wada",
-        "Wai",
-        "Wardha",
-        "Warora",
-        "Washim",
-        "Yawal",
-        "Yavatmal",
-        "Zari"
-    )
+        val eighteenYearsAgo = Calendar.getInstance().apply {
+            add(Calendar.YEAR, -18)
+        }
+        val datePickerDialog = DatePickerDialog(
+            this, { view, year, monthOfYear, dayOfMonth ->
+                val selectedDate = formatDate(dayOfMonth, monthOfYear, year)
+                binding.etDob.setText(selectedDate)
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.datePicker.minDate = minCalendar.timeInMillis // Set minimum date
+        datePickerDialog.datePicker.maxDate = eighteenYearsAgo.timeInMillis //
+        datePickerDialog.show()
+    }
 }

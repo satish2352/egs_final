@@ -20,13 +20,13 @@ interface DocumentTypeDao {
     suspend fun deleteDocumentType(documentType: DocumentType)
 
     @Query("SELECT * FROM document_type")
-    fun getDocuments(): List<DocumentType>
+    suspend fun getDocuments(): List<DocumentType>
 
     @Query("SELECT * FROM document_type WHERE id = :id")
     suspend fun getUserById(id: Int): DocumentType
 
     @Query("SELECT * FROM document_type WHERE isAdded = 0")
-    fun getDocumentsNotAdded(): List<DocumentType>
+   suspend fun getDocumentsNotAdded(): List<DocumentType>
 
     @Query("SELECT * FROM document_type WHERE documentName = :name")
     suspend fun getDocumentByName(name: String): DocumentType?

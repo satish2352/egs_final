@@ -161,9 +161,6 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     photo = photoImagePath,
                     isSynced = false)
 
-                if(isInternetAvailable){
-
-                }else{
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val rows=LabourDao.insertLabour(labour)
@@ -188,10 +185,6 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                         }
                     }
                 }
-
-            }else{
-                Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.select_all_documents),Toast.LENGTH_SHORT).show()
-            }
 
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -659,7 +652,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 etDob.setText(selectedDate)
             }, year, month, day
         )
-
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
         datePickerDialog.show()
     }
 

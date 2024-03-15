@@ -28,7 +28,7 @@
             android:text="QR Type" />
 
         <TextView
-            android:id="@+id/text_view_qr_type"
+            android:id="@+id/textViewQrType"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,7 +42,7 @@
             android:text="QR Content" />
 
         <TextView
-            android:id="@+id/text_view_qr_content"
+            android:id="@+id/textViewQrContent"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
