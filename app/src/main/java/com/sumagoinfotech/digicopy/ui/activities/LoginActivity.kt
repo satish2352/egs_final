@@ -50,7 +50,8 @@ class LoginActivity : AppCompatActivity() {
                                 call: Call<LoginModel>,
                                 response: Response<LoginModel>
                             ) {
-                                if(response.isSuccessful){
+                                if(response.isSuccessful)
+                                {
                                     val loginModel=response.body()
                                     val mySharedPref=MySharedPref(this@LoginActivity)
                                     mySharedPref.setIsLoggedIn(true)
@@ -58,6 +59,7 @@ class LoginActivity : AppCompatActivity() {
                                     mySharedPref.setEmail(loginModel?.data?.email!!)
                                     mySharedPref.setRememberToken(loginModel?.data?.remember_token!!)
                                     Log.d("mytag",""+loginModel?.data?.remember_token!!)
+                                    Log.d("mytag","User_ID"+loginModel?.data?.id!!)
                                     runOnUiThread {
                                         customProgressDialog.dismiss()
                                         val toast= Toast.makeText(this@LoginActivity,
@@ -69,7 +71,6 @@ class LoginActivity : AppCompatActivity() {
                                         startActivity(intent)
                                         finish()
                                     }
-
                                 }else{
                                     runOnUiThread {
                                         customProgressDialog.dismiss()
@@ -77,11 +78,9 @@ class LoginActivity : AppCompatActivity() {
                                             getString(R.string.error_while_login),
                                             Toast.LENGTH_SHORT)
                                         toast.show()
-
                                     }
                                 }
                             }
-
                             override fun onFailure(call: Call<LoginModel>, t: Throwable) {
                                 runOnUiThread {
                                     customProgressDialog.dismiss()
@@ -89,11 +88,9 @@ class LoginActivity : AppCompatActivity() {
                                         getString(R.string.error_while_login),
                                         Toast.LENGTH_SHORT)
                                     toast.show()
-
                                 }
                             }
                         })
-
                         /*if(user!==null){
                             Log.d("mytag","found "+user.email)
                             runOnUiThread {

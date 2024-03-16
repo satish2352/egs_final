@@ -1,4 +1,4 @@
-package com.sumagoinfotech.digicopy.ui.activities
+package com.sumagoinfotech.digicopy.ui.activities.registration
 
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -16,7 +16,6 @@ import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.entity.AreaItem
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetailsBinding
-import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewModel
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
 import io.reactivex.android.schedulers.AndroidSchedulers

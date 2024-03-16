@@ -1,4 +1,4 @@
-package com.sumagoinfotech.digicopy.ui.activities
+package com.sumagoinfotech.digicopy.ui.activities.registration
 
 import android.Manifest
 import android.app.DatePickerDialog
@@ -18,9 +18,7 @@ import android.location.Geocoder
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
 import android.os.PersistableBundle
-import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -37,7 +35,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.FutureTarget
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -53,7 +50,6 @@ import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetails2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
-import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewModel
 import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
@@ -65,7 +61,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date

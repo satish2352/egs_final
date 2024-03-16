@@ -5,9 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,21 +26,31 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectMarkerData
-import com.sumagoinfotech.digicopy.ui.activities.LabourRegistration1Activity
+import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.LabourData
+import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
+import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
+import com.sumagoinfotech.digicopy.ui.activities.LabourListByProjectActivity
+import com.sumagoinfotech.digicopy.ui.activities.registration.LabourRegistration1Activity
 import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
+import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
+import com.sumagoinfotech.digicopy.utils.CustomInfoWindowAdapter
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListener  {
+class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListener,
+    GoogleMap.OnInfoWindowClickListener {
 
     private var _binding: FragmentDashboardBinding? = null
     private var markersList= mutableListOf<ProjectMarkerData>()
+    private var labourData= mutableListOf<LabourData>()
+    private var projectData= mutableListOf<ProjectData>()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -51,6 +58,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentLocationMarker: Marker? = null // Reference to the current location marker
+    private var isCurrentMarkerVisible=true
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,7 +71,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
         val root: View = binding.root
         try {
             binding.layoutRegisterLabour.setOnClickListener {
-                val intent= Intent(activity,LabourRegistration1Activity::class.java)
+                val intent= Intent(activity, LabourRegistration1Activity::class.java)
                 startActivity(intent)
             }
             binding.layoutScanQR.setOnClickListener {
@@ -72,22 +80,19 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
             }
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
             val mapFragment = childFragmentManager.findFragmentById(R.id.map_container) as SupportMapFragment
-
-
-            // Obtain the GoogleMap object
-            //mapFragment.getMapAsync { googleMap -> }
             mapFragment.getMapAsync(this)
             binding.layoutByProjectId.setOnClickListener {
-
-                fetchDataAndShowMarkers()
+                fetchProjectDataForMarker(binding.etInput.text.toString())
+                Log.d("mytag",binding.etInput.text.toString())
+            }
+            binding.layoutByLabourId.setOnClickListener {
+                fetchLabourDataForMarker(binding.etInput.text.toString())
             }
         } catch (e: Exception) {
            Log.d("mytag","Exception "+e.message)
         }
-
         return root
     }
-
     private fun fetchDataAndShowMarkers() {
 
         val apiService=ApiClient.create(requireContext())
@@ -100,26 +105,113 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                 if(response.isSuccessful){
                     Log.d("mytag",""+response.body()?.data?.get(0)?.latitude)
                     markersList= response.body()?.data as MutableList<ProjectMarkerData>
+                    isCurrentMarkerVisible=false
                     addMarkersToMap()
                 }else{
-
                 }
             }
-
             override fun onFailure(call: Call<ProjectListModel>, t: Throwable) {
-
             }
         })
+    }
+    private fun fetchLabourDataForMarker( mgnregaId: String){
+        val apiService=ApiClient.create(requireContext())
+        apiService.getLabourForMarker(mgnregaId).enqueue(object : Callback<ProjectLabourListForMarker>{
+            override fun onResponse(
+                call: Call<ProjectLabourListForMarker>,
+                response: Response<ProjectLabourListForMarker>
+            ) {
+
+                if(response.isSuccessful){
+                    if(!response.body()?.labour_data.isNullOrEmpty()) {
+                        Log.d("mytag", Gson().toJson(response.body()))
+                        labourData = response.body()?.labour_data as MutableList<LabourData>
+                        if (labourData.size > 0) {
+                            showLabourMakkers(labourData)
+                        }
+                    }else {
+                        Toast.makeText(requireContext(), "No records found", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                } else{
+                    Toast.makeText(requireContext(), "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+            override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun showLabourMakkers(labourData: MutableList<LabourData>) {
+        labourData.forEach { marker ->
+            val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
+            val myMarker=map.addMarker(
+                MarkerOptions()
+                    .position(position)
+                    .title(marker.full_name).snippet(marker.district_id+" "+marker.taluka_id+" "+marker.village_id)
+            )
+            myMarker?.tag=marker.mgnrega_card_id
+            myMarker?.showInfoWindow()
+        }
+        // Move camera to the first marker
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(labourData[0].latitude.toDouble(), labourData[0].longitude.toDouble()), 15f))
+
+    }
+
+    private fun fetchProjectDataForMarker( projectName: String){
+        val apiService=ApiClient.create(requireContext())
+        apiService.getProjectListForMarker(projectName).enqueue(object : Callback<ProjectLabourListForMarker>{
+            override fun onResponse(
+                call: Call<ProjectLabourListForMarker>,
+                response: Response<ProjectLabourListForMarker>
+            ) {
+
+                if(response.isSuccessful){
+                    Log.d("mytag",Gson().toJson(response.body()))
+                    if(!response.body()?.project_data.isNullOrEmpty()){
+                        projectData= response.body()?.project_data as MutableList<ProjectData>
+                        if(projectData.size>0){
+                            showProjectMarkers(projectData)
+                        }
+                    }else{
+                        Toast.makeText(requireContext(), "No records found", Toast.LENGTH_SHORT).show()
+                    }
+                }else{
+                    Toast.makeText(requireContext(), "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun showProjectMarkers(projectData: MutableList<ProjectData>) {
+        map.clear()
+        projectData.forEach { marker ->
+            val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
+            val myMarker=map.addMarker(
+                MarkerOptions()
+                    .position(position)
+                    .title("Project : "+marker.project_name).snippet(marker.district)
+            )
+            myMarker?.tag=marker.id
+            myMarker?.showInfoWindow()
+        }
+        // Move camera to the first marker
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(projectData[0].latitude.toDouble(), projectData[0].longitude.toDouble()), 15f))
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
-
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setOnMarkerClickListener(this)
+        map.setOnInfoWindowClickListener(this)
         // Check location permission
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -168,6 +260,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                 REQUEST_LOCATION_PERMISSION
             )
         }
+        map.setInfoWindowAdapter(CustomInfoWindowAdapter(layoutInflater))
     }
 
     companion object {
@@ -222,34 +315,29 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                     ).show()
                 }
             }
-        /*map.setOnMapLoadedCallback {
-            markersList.forEachIndexed { index, _ ->
-                map.addMarker(MarkerOptions().position(LatLng(markersList[index].latitude.toDouble(), markersList[index].longitude.toDouble())))
-                    ?.showInfoWindow()
-            }
-        }*/
     }
 
-    private fun addMarkersToMap() {
-        val icon = bitmapDescriptorFromVector( R.drawable.ic_marker, R.color.appBlue)
+    private  fun addMarkersToMap() {
+        //val icon = bitmapDescriptorFromVector( R.drawable.ic_marker, R.color.appBlue)
         markersList.forEach { marker ->
             val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
-            map.addMarker(
-                MarkerOptions().icon(icon)
+            val myMarker=map.addMarker(
+                MarkerOptions()
                     .position(position)
-                    .title(marker.project_name)
-                    .snippet(marker.district)
-            )?.showInfoWindow()
+                    .title(marker.project_name).snippet(marker.district)
+            )
+
+            myMarker?.showInfoWindow()
         }
         // Move camera to the first marker
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(markersList[0].latitude.toDouble(), markersList[0].longitude.toDouble()), 16f))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(markersList[0].latitude.toDouble(), markersList[0].longitude.toDouble()), 15f))
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
         Log.d("mytag","onMarkerClick"+marker.title)
         val toast=Toast.makeText(activity,""+marker.title+ " "+marker.snippet+" "+marker.position,Toast.LENGTH_SHORT)
         toast.show()
-        return true
+        return false
     }
     private fun bitmapDescriptorFromVector(
         drawableId: Int,
@@ -263,6 +351,17 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
         drawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
+    override fun onInfoWindowClick(marker: Marker) {
 
-
+        if(marker.title?.startsWith("Project :")!!){
+            val intent=Intent(context,LabourListByProjectActivity::class.java)
+            intent.putExtra("id",""+marker.tag)
+            context?.startActivity(intent)
+        }else{
+            val intent=Intent(context,ViewLabourFromMarkerClick::class.java)
+            intent.putExtra("id",""+marker.tag)
+            context?.startActivity(intent)
+        }
+        //Toast.makeText(requireContext(), "${marker.tag}Info window clicked: ${marker.title}", Toast.LENGTH_SHORT).show()
+    }
 }

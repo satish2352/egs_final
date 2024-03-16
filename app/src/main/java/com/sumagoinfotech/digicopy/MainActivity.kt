@@ -21,6 +21,7 @@ import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.databinding.ActivityMainBinding
 import com.sumagoinfotech.digicopy.ui.activities.LoginActivity
 import com.sumagoinfotech.digicopy.ui.fragments.dashboard.DashboardFragment
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 
 class MainActivity : AppCompatActivity() {
 
@@ -106,6 +107,8 @@ class MainActivity : AppCompatActivity() {
 
         if(item.itemId==R.id.action_logout)
         {
+            val mySharedPref=MySharedPref(this@MainActivity)
+            mySharedPref.clearAll()
             val intent=Intent(this@MainActivity,LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)

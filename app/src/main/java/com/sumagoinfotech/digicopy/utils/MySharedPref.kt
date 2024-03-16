@@ -250,4 +250,8 @@ class MySharedPref(context: Context) {
     fun getIsActive(): Int {
         return sharedPreferences.getInt(KEY_IS_ACTIVE, 0)
     }
+
+    fun clearAll(){
+        sharedPreferences.edit().clear().commit()
+    }
 }

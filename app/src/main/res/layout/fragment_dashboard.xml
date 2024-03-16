@@ -17,103 +17,80 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_background">
+        >
 
         <EditText
+            android:background="@drawable/rounded_background"
+            android:id="@+id/etInput"
+            android:textSize="10dp"
+            android:hint="Enter Project Id / MGNREGA Id"
             android:paddingLeft="16dp"
-            android:background="@drawable/edittext_background"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="48dp"></EditText>
-        <com.sumagoinfotech.digicopy.utils.CustomClickableLayout
-            android:layout_gravity="center"
-            android:background="@drawable/rounded_backgroud_blue"
-            android:id="@+id/customLayout"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:backgroundColorNormal="@color/black"
-            app:backgroundColorPressed="@color/white"
-            android:padding="8dp"
-            android:clickable="true"
-            android:focusable="true">
-
-            <TextView
-                android:id="@+id/textView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Text 1"
-                android:textColor="@android:color/holo_red_dark"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:id="@+id/textViewSeparator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="|"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"/>
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Text 2"
-                android:textColor="@android:color/holo_red_light"
-                android:textSize="16sp"
-                android:layout_marginEnd="8dp"/>
-
-        </com.sumagoinfotech.digicopy.utils.CustomClickableLayout>
-
         <LinearLayout
-            android:visibility="visible"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@drawable/rounded_backgroud_blue"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
             <LinearLayout
-                android:id="@+id/layoutByProjectId"
-                android:background="#4529C9"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="Work Area ID"
-                    android:textColor="@color/white"
-                    android:textSize="12dp"></TextView>
-            </LinearLayout>
-            <TextView
-                android:background="#4529C9"
+                android:visibility="visible"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text=" | "
-                android:textColor="@color/white"
-                ></TextView>
-
-            <LinearLayout
-                android:id="@+id/layoutByLabourId"
-                android:background="#4529C9"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent">
+                android:background="@drawable/rounded_backgroud_blue"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/layoutByProjectId"
+                    android:background="#4529C9"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="Project Id "
+                        android:textColor="@color/white"
+                        android:textSize="12dp"></TextView>
+                </LinearLayout>
                 <TextView
+                    android:visibility="gone"
+                    android:background="#4529C9"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_gravity="center"
                     android:gravity="center"
-                    android:text="Labour ID"
+                    android:text=" | "
                     android:textColor="@color/white"
-                    android:textSize="12dp"></TextView>
+                    ></TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginLeft="16dp"
+                android:visibility="visible"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_backgroud_blue"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/layoutByLabourId"
+                    android:background="#4529C9"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="MGNREGA Id"
+                        android:textColor="@color/white"
+                        android:textSize="12dp"></TextView>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
