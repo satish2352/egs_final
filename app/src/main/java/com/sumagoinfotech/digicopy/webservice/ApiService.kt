@@ -3,6 +3,7 @@ package com.sumagoinfotech.digicopy.webservice
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusModel
+import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.model.apis.skills.SkillsModel
@@ -14,11 +15,8 @@ import retrofit2.http.Query
 interface ApiService {
 
     // masters initial
-    @GET("auth/list-skills")
-    fun getSkills(): Call<SkillsModel>
-
-    @GET("auth/list-maritalstatus")
-    fun getMaritalStatus(): Call<MaritalStatusModel>
+    @POST("list-masters")
+    fun getAllMasters(): Call<MastersModel>
 
 
     @POST("login")
@@ -39,6 +37,8 @@ interface ApiService {
     fun getLaboursByProject(@Query("user_id")user_id:String): Call<LabourByMgnregaId>
 
 
+    @POST("auth/filter-project-labour-list")
+    fun getProjectList(): Call<ProjectLabourListForMarker>
 
 
 }

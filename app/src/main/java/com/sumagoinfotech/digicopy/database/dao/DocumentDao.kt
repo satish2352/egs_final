@@ -22,7 +22,7 @@ interface DocumentDao {
     @Delete
     suspend fun deleteDocument(document: Document)
 
-    @Query("SELECT * FROM documents")
+    @Query("SELECT * FROM documents ORDER BY id DESC")
     fun getAllDocuments(): List<Document>
 
     @Query("SELECT * FROM documents WHERE id = :id")

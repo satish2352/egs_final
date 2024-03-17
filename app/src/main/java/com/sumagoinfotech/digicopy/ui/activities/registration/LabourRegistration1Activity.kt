@@ -14,8 +14,12 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
+import com.sumagoinfotech.digicopy.database.dao.GenderDao
+import com.sumagoinfotech.digicopy.database.dao.SkillsDao
 import com.sumagoinfotech.digicopy.database.entity.AreaItem
-import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetailsBinding
+import com.sumagoinfotech.digicopy.database.entity.Gender
+import com.sumagoinfotech.digicopy.database.entity.Skills
+import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistration1Binding
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -30,30 +34,40 @@ import java.util.Locale
 
 
 class LabourRegistration1Activity : AppCompatActivity() {
-    lateinit var binding: ActivityLabourDetailsBinding
+    lateinit var binding: ActivityLabourRegistration1Binding
     private lateinit var districts: List<String>
     private lateinit var labourInputData: LabourInputData
     private lateinit var registrationViewModel: RegistrationViewModel
     private  var isInternetAvailable=false
     private lateinit var appDatabase: AppDatabase
     private lateinit var areaDao: AreaDao
+    private lateinit var genderDao: GenderDao
+    private lateinit var skillsDao: SkillsDao
     private lateinit var districtList:List<AreaItem>
     private lateinit var villageList:List<AreaItem>
     private lateinit var talukaList:List<AreaItem>
+    private lateinit var genderList:List<Gender>
+    private lateinit var skillsList:List<Skills>
     private var districtNames= mutableListOf<String>()
     private var villageNames= mutableListOf<String>()
     private var talukaNames= mutableListOf<String>()
+    private var genderNames= mutableListOf<String>()
+    private var skillsNames= mutableListOf<String>()
     private var districtId=""
     private var villageId=""
     private var talukaId=""
+    private var genderId=""
+    private var skillId=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLabourDetailsBinding.inflate(layoutInflater)
+        binding = ActivityLabourRegistration1Binding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.registration_step_1)
         appDatabase=AppDatabase.getDatabase(this)
         areaDao=appDatabase.areaDao()
+        skillsDao=appDatabase.skillsDao()
+        genderDao=appDatabase.genderDao()
         registrationViewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
         initializeFields()
         ReactiveNetwork
@@ -74,12 +88,10 @@ class LabourRegistration1Activity : AppCompatActivity() {
                 labourInputData=LabourInputData()
                 labourInputData.fullName= binding.etFullName.text.toString()
                 labourInputData.dateOfBirth= binding.etDob.text.toString()
-                labourInputData.gender= binding.actGender.text.toString()
-                //labourInputData.district= binding.actDistrict.text.toString()
                 labourInputData.district=districtId
-                //labourInputData.village= binding.actVillage.text.toString()
                 labourInputData.village= villageId
-                //labourInputData.village= binding.actVillage.text.toString()
+                labourInputData.skill=skillId
+                labourInputData.gender=genderId
                 labourInputData.taluka= talukaId
                 labourInputData.mobile= binding.etMobileNumber.text.toString()
                 labourInputData.landline= binding.etLandLine.text.toString()
@@ -98,7 +110,6 @@ class LabourRegistration1Activity : AppCompatActivity() {
                 intent.putExtra("LabourInputData", labourInputData)
                 startActivity(intent)
             } else {
-
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
                 toast.show()
             }
@@ -117,17 +128,31 @@ class LabourRegistration1Activity : AppCompatActivity() {
         districtList=ArrayList<AreaItem>()
         CoroutineScope(Dispatchers.IO).launch {
             districtList=areaDao.getAllDistrict()
+            genderList=genderDao.getAllGenders();
+            skillsList=skillsDao.getAllSkills()
             for (district in districtList){
                 districtNames.add(district.name)
+            }
+            for(skill in skillsList){
+                skillsNames.add(skill.skills)
+            }
+            for(gender in genderList){
+                genderNames.add(gender.gender_name)
             }
         }
         talukaList=ArrayList<AreaItem>()
         villageList=ArrayList<AreaItem>()
-
-        val names = listOf("MALE", "FEMALE")
         val genderAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, names
+            this, android.R.layout.simple_list_item_1, genderNames
         )
+        val skillsAdapter=ArrayAdapter(this,android.R.layout.simple_list_item_1,skillsNames)
+        binding.actSkill.setAdapter(skillsAdapter)
+        binding.actSkill.setOnFocusChangeListener { v, hasFocus ->
+            binding.actSkill.showDropDown()
+        }
+        binding.actSkill.setOnClickListener {
+            binding.actSkill.showDropDown()
+        }
         binding.actGender.setAdapter(genderAdapter)
         binding.actGender.setOnFocusChangeListener { abaad, asd ->
             binding.actGender.showDropDown()
@@ -135,6 +160,14 @@ class LabourRegistration1Activity : AppCompatActivity() {
         binding.actGender.setOnClickListener {
             binding.actGender.showDropDown()
         }
+        binding.actGender.setOnItemClickListener { parent, view, position, id ->
+            genderId=genderList[position].id.toString()
+        }
+        binding.actSkill.setOnItemClickListener { parent, view, position, id ->
+            skillId=skillsList[position].id.toString()
+        }
+
+
         binding.etDob.setOnClickListener {
             //showDatePicker()
             showDatePickerDialog()
@@ -296,6 +329,14 @@ class LabourRegistration1Activity : AppCompatActivity() {
         } else {
             binding.etMgnregaIdNumber.error =
                 resources.getString(R.string.enter_valid_id_card_number)
+            validationResults.add(false)
+        }
+        if (binding.actSkill.enoughToFilter()) {
+            binding.actSkill.error = null
+            validationResults.add(true)
+        } else {
+            binding.actSkill.error =
+                resources.getString(R.string.select_skills)
             validationResults.add(false)
         }
         return !validationResults.contains(false)

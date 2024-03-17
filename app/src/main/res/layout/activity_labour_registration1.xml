@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.activities.registration.LabourRegistration1Activity">
-
     <LinearLayout
         android:layout_margin="16dp"
         android:layout_width="match_parent"
@@ -106,7 +105,7 @@
             android:drawableEnd="@drawable/arrow_dropdown"
             android:paddingLeft="16dp"
             android:layout_weight="1"
-            android:hint="Date Of Birth "
+            android:hint="@string/date_of_birth"
             android:background="@drawable/edittext_background"
             android:layout_width="wrap_content"
             android:layout_height="48dp"></AutoCompleteTextView>
@@ -117,6 +116,40 @@
             android:layout_width="24dp"
             android:layout_height="24dp"></ImageView>
     </LinearLayout>
+
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            android:text="@string/select_skills"
+            android:textSize="10dp"
+            android:textColor="@color/appBlue"
+            />
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_background_light_gray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <AutoCompleteTextView
+                android:inputType="none"
+                android:id="@+id/actSkill"
+                android:drawableEnd="@drawable/arrow_dropdown"
+                android:paddingLeft="16dp"
+                android:layout_weight="1"
+                android:hint="@string/select_skills"
+                android:background="@drawable/edittext_background"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"></AutoCompleteTextView>
+            <ImageView
+                android:visibility="gone"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/dob"
+                android:layout_width="24dp"
+                android:layout_height="24dp"></ImageView>
+        </LinearLayout>
     <TextView
         android:layout_marginTop="16dp"
         android:layout_width="wrap_content"

@@ -21,4 +21,10 @@ interface MaritalStatusDao {
         deleteAllMaritalSkills()
         insertAll(items)
     }
+
+    @Query("SELECT * FROM marital_status ORDER BY maritalstatus ASC")
+    suspend fun getAllMaritalStatus(): List<MaritalStatus>
+
+    @Query("SELECT * FROM marital_status WHERE id = :id")
+    suspend fun getMaritalStatusById(id: String): MaritalStatus
 }

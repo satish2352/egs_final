@@ -16,7 +16,6 @@ import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
@@ -29,6 +28,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
@@ -45,9 +45,15 @@ import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.dao.GenderDao
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
-import com.sumagoinfotech.digicopy.databinding.ActivityLabourDetails2Binding
+import com.sumagoinfotech.digicopy.database.dao.MaritalStatusDao
+import com.sumagoinfotech.digicopy.database.dao.RelationDao
+import com.sumagoinfotech.digicopy.database.entity.Gender
+import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.entity.MaritalStatus
+import com.sumagoinfotech.digicopy.database.entity.Relation
+import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistration2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
 import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
@@ -67,7 +73,7 @@ import java.util.Date
 import java.util.Locale
 
 class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
-    private lateinit var binding:ActivityLabourDetails2Binding
+    private lateinit var binding:ActivityLabourRegistration2Binding
     lateinit var  etDob:AutoCompleteTextView
     lateinit var  etFullName:EditText
     lateinit var  actMaritalStatus:AutoCompleteTextView
@@ -95,9 +101,21 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
     private  var isInternetAvailable=false
+    private  lateinit var genderDao: GenderDao
+    private lateinit var maritalStatusDao: MaritalStatusDao
+    private lateinit var relationDao: RelationDao
+    private lateinit var genderList:List<Gender>
+    private lateinit var relationList:List<Relation>
+    private lateinit var maritalStatusList:List<MaritalStatus>
+    private var genderNames= mutableListOf<String>()
+    private var relationNames= mutableListOf<String>()
+    private var maritalStatusNames= mutableListOf<String>()
+    private var genderId=""
+    private var relationId=""
+    private var maritalStatusId=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityLabourDetails2Binding.inflate(layoutInflater)
+        binding= ActivityLabourRegistration2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.registration_step_2)
@@ -106,6 +124,11 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             Log.d("mytag", "labourData.mobile")
             Log.d("mytag", labourData.mobile)
         }
+        database= AppDatabase.getDatabase(this)
+        LabourDao=database.labourDao()
+        genderDao=database.genderDao()
+        relationDao=database.relationDao()
+        maritalStatusDao=database.martialStatusDao()
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
             .subscribeOn(Schedulers.io())
@@ -119,11 +142,24 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 }
             }) { throwable: Throwable? -> }
         requestThePermissions()
+        CoroutineScope(Dispatchers.IO).launch{
+            genderList=genderDao.getAllGenders()
+            relationList=relationDao.getAllRelation()
+            maritalStatusList=maritalStatusDao.getAllMaritalStatus()
+            for(gender in genderList){
+                genderNames.add(gender.gender_name)
+            }
+            for(status in maritalStatusList){
+                maritalStatusNames.add(status.maritalstatus)
+            }
+            for(relation in relationList){
+                relationNames.add(relation.relation_title)
+            }
+        }
         binding.layoutAdd.setOnClickListener {
             showAddFamilyDetailsDialog()
         }
-        database= AppDatabase.getDatabase(this)
-        LabourDao=database.labourDao()
+
         labourInputData = intent.getSerializableExtra("LabourInputData") as LabourInputData
         Log.d("mytag",registrationViewModel.fullName)
         val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
@@ -154,7 +190,9 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     mgnregaIdImage = mgnregaIdImagePath,
                     voterIdImage = voterIdImagePath,
                     photo = photoImagePath,
-                    isSynced = false)
+                    isSynced = false,
+                    skilled = false,
+                    skill = labourInputData.skill)
 
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
@@ -506,28 +544,12 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         actGenderFamily=dialog.findViewById<AutoCompleteTextView>(R.id.actGenderFamily)
          btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
 
-
-        var relationshipList = listOf(
-            "Son",
-            "Daughter",
-            "Wife",
-            "Husband",
-            "Father",
-            "Mother",
-            )
-
-        var maritalStatusList = listOf(
-            "Single",
-            "Married",
-            "Divorced"
-        )
-
         val relationshipAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, relationshipList
+            this, android.R.layout.simple_list_item_1, relationNames
         )
         actRelationship.setAdapter(relationshipAdapter)
         val maritalStatusAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, maritalStatusList
+            this, android.R.layout.simple_list_item_1, maritalStatusNames
         )
         actMaritalStatus.setAdapter(maritalStatusAdapter)
 
@@ -544,9 +566,8 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         actMaritalStatus.setOnFocusChangeListener {abaad, asd ->
             actMaritalStatus.showDropDown()
         }
-        val names = listOf("MALE", "FEMALE")
         val genderAdapter1 = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, names
+            this, android.R.layout.simple_list_item_1, genderNames
         )
      actGenderFamily.setAdapter(genderAdapter1)
         actGenderFamily.setOnFocusChangeListener { abaad, asd ->
@@ -559,7 +580,16 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             if(validateFields())
             {
                 try {
-                    val familyMember=FamilyDetails(fullName = etFullName.text.toString(), dob = etDob.text.toString(), relationship = actRelationship.text.toString(), maritalStatus = actMaritalStatus.text.toString(), gender = actGenderFamily.text.toString())
+                    val familyMember=FamilyDetails(
+                        fullName = etFullName.text.toString(),
+                        dob = etDob.text.toString(),
+                        relationship = actRelationship.text.toString(),
+                        maritalStatus = actMaritalStatus.text.toString(),
+                        gender = actGenderFamily.text.toString(),
+                        genderId=genderId,
+                        maritalStatusId=maritalStatusId,
+                        relationId = relationId
+                    )
                     familyDetailsList.add(familyMember)
                     adapter.notifyDataSetChanged()
                     dialog.dismiss()
@@ -575,8 +605,15 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         etDob.setOnClickListener {
             showDatePicker()
         }
-
-
+        actGenderFamily.setOnItemClickListener { parent, view, position, id ->
+            genderId=genderList[position].id.toString()
+        }
+        actRelationship.setOnItemClickListener { parent, view, position, id ->
+            relationId=relationList[position].id.toString()
+        }
+        actMaritalStatus.setOnItemClickListener { parent, view, position, id ->
+            maritalStatusId=maritalStatusList[position].id.toString()
+        }
     }
     private fun validateFields():Boolean{
         var validationResults= mutableListOf<Boolean>()

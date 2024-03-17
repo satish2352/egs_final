@@ -13,9 +13,13 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
+import com.sumagoinfotech.digicopy.database.dao.GenderDao
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
+import com.sumagoinfotech.digicopy.database.dao.SkillsDao
 import com.sumagoinfotech.digicopy.database.entity.AreaItem
+import com.sumagoinfotech.digicopy.database.entity.Gender
 import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.entity.Skills
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit1Binding
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
@@ -51,6 +55,17 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     private lateinit var prevselectedDistrict:AreaItem
     private lateinit var prevSelectedVillage:AreaItem
     private lateinit var prevSelectedTaluka:AreaItem
+    private lateinit var prevSelectedGender:Gender
+    private lateinit var prevSelectedSkill:Skills
+    private lateinit var skillsDao: SkillsDao
+    private lateinit var genderDao: GenderDao
+    private lateinit var genderList:List<Gender>
+    private lateinit var skillsList:List<Skills>
+    private var genderNames= mutableListOf<String>()
+    private var skillsNames= mutableListOf<String>()
+    private var genderId=""
+    private var skillId=""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourRegistrationEdit1Binding.inflate(layoutInflater)
@@ -61,17 +76,31 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         areaDao=appDatabase.areaDao()
         var labourId=intent.extras?.getString("id")
         labourDao=appDatabase.labourDao()
+        genderDao=appDatabase.genderDao()
+        skillsDao=appDatabase.skillsDao()
         CoroutineScope(Dispatchers.IO).launch {
             labour=labourDao.getLabourById(Integer.parseInt(labourId))
+            Log.d("mytag","Skills->"+labour.skill)
+            Log.d("mytag","Skills->"+labour.gender)
+            Log.d("mytag","Skills->"+labour.district)
+            Log.d("mytag","Skills->"+labour.village)
+            Log.d("mytag","Skills->"+labour.taluka)
             prevselectedDistrict=areaDao.getAreaByLocationId(labour.district)
             prevSelectedTaluka=areaDao.getAreaByLocationId(labour.taluka)
             prevSelectedVillage=areaDao.getAreaByLocationId(labour.village)
+            prevSelectedGender=genderDao.getGenderById(labour.gender)
+            prevSelectedSkill=skillsDao.getSkillById(labour.skill)
+
             talukaList=areaDao.getAllTalukas(labour.district)
             villageList=areaDao.getVillageByTaluka(labour.taluka)
+            skillsList=skillsDao.getAllSkills()
+            genderList=genderDao.getAllGenders()
             withContext(Dispatchers.Main){
                 binding.actVillage.setText(prevSelectedVillage.name)
                 binding.actTaluka.setText(prevSelectedTaluka.name)
                 binding.actDistrict.setText(prevselectedDistrict.name)
+                binding.actGender.setText(prevSelectedGender.gender_name)
+                binding.actSkill.setText(prevSelectedSkill.skills)
                 for (taluka in talukaList){
                     talukaNames.add(taluka.name)
                 }
@@ -80,7 +109,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, talukaNames
                 )
                 binding.actTaluka.setAdapter(talukaAdapter)
-
                 for (village in villageList){
                     villageNames.add(village.name)
                 }
@@ -89,6 +117,20 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, villageNames
                 )
                 binding.actVillage.setAdapter(villageAdapter)
+                for (skill in skillsList){
+                    skillsNames.add(skill.skills)
+                }
+                val skillsAdapter = ArrayAdapter(
+                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, skillsNames
+                )
+                binding.actSkill.setAdapter(skillsAdapter)
+                for (gender in genderList){
+                    genderNames.add(gender.gender_name)
+                }
+                val genderAdapter = ArrayAdapter(
+                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, genderNames
+                )
+                binding.actGender.setAdapter(genderAdapter)
                 initializeFields()
             }
         }
@@ -139,16 +181,26 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         }
         binding.btnUpdateLabour.setOnClickListener {
             if (validateFieldsX()) {
+
+
+
+                Log.d("mytag","gender Id "+genderId)
+                Log.d("mytag","skill Id "+skillId)
+                Log.d("mytag","dist Id "+districtId)
+                Log.d("mytag","taluka Id "+talukaId)
+                Log.d("mytag","Village Id "+villageId)
+
                 labour.fullName= binding.etFullName.text.toString()
                 labour.dob= binding.etDob.text.toString()
-                labour.gender= binding.actGender.text.toString()
                 labour.district= districtId
                 labour.village= villageId
                 labour.taluka= talukaId
+                labour.gender=genderId
+                labour.skill=skillId
                 labour.mobile= binding.etMobileNumber.text.toString()
                 labour.landline= binding.etLandLine.text.toString()
                 labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
-                Log.d("mytag","Before")
+
                 CoroutineScope(Dispatchers.IO).launch {
                     var row=labourDao.updateLabour(labour)
                     Log.d("mytag",""+row)
@@ -198,18 +250,29 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         binding.etDob.setText(labour.dob)
         binding.etMobileNumber.setText(labour.mobile)
         binding.etLandLine.setText(labour.landline)
-        binding.actGender.setText(labour.gender)
         binding.etMgnregaIdNumber.setText(labour.mgnregaId)
-        val names = listOf("MALE", "FEMALE")
-        val genderAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, names
-        )
-        binding.actGender.setAdapter(genderAdapter)
+        genderId=prevSelectedGender.id.toString()
+        villageId=prevSelectedVillage.id.toString()
+        skillId=prevSelectedSkill.id.toString()
+        districtId=prevselectedDistrict.id.toString()
+        talukaId=prevSelectedTaluka.id.toString()
         binding.actGender.setOnFocusChangeListener { abaad, asd ->
             binding.actGender.showDropDown()
         }
         binding.actGender.setOnClickListener {
             binding.actGender.showDropDown()
+        }
+        binding.actGender.setOnItemClickListener { parent, view, position, id ->
+            genderId=genderList[position].id.toString()
+        }
+        binding.actSkill.setOnItemClickListener { parent, view, position, id ->
+            skillId=skillsList[position].id.toString()
+        }
+        binding.actSkill.setOnClickListener {
+            binding.actSkill.showDropDown()
+        }
+        binding.actSkill.setOnFocusChangeListener { v, hasFocus ->
+            binding.actSkill.showDropDown()
         }
         binding.etDob.setOnClickListener {
 

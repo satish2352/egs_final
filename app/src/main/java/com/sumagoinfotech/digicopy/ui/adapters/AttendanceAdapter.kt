@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.interfaces.MarkAttendanceListener
+import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourInfo
 
-class AttendanceAdapter(var list: List<Labour>, var markAttendanceListener: MarkAttendanceListener): RecyclerView.Adapter<AttendanceAdapter.ViewHolder>() {
+class AttendanceAdapter(var list: List<LabourInfo>, var markAttendanceListener: MarkAttendanceListener): RecyclerView.Adapter<AttendanceAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
         val tvFullName=itemView.findViewById<TextView>(R.id.tvFullName)
         val tvAddress=itemView.findViewById<TextView>(R.id.tvAddress)
@@ -29,15 +30,15 @@ class AttendanceAdapter(var list: List<Labour>, var markAttendanceListener: Mark
     }
 
     override fun onBindViewHolder(holder: AttendanceAdapter.ViewHolder, position: Int) {
-        holder.ivPhoto.setImageURI(Uri.parse(list[position].photo))
-        holder.tvFullName.text = list[position]?.fullName ?: "Default"
-        holder.tvMobile.text = list[position]?.mobile ?: "Default"
-        val address="${list[position].district} ->${list[position].taluka} ->${list[position].village}"
+        holder.ivPhoto.setImageURI(Uri.parse(list[position].profile_image))
+        holder.tvFullName.text = list[position]?.full_name ?: "Default"
+        holder.tvMobile.text = list[position]?.mobile_number ?: "Default"
+        val address="${list[position].district_id} ->${list[position].taluka_id} ->${list[position].village_id}"
         holder.tvAddress.text = address
-        holder.tvMgnregaId.text= list[position].mgnregaId
+        holder.tvMgnregaId.text= list[position].mgnrega_card_id
         holder.itemView.setOnClickListener{
 
-            markAttendanceListener.markAttendance(list[position])
+            //markAttendanceListener.markAttendance(list[position])
         }
     }
 

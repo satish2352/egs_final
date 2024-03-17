@@ -11,5 +11,6 @@ data class LabourInputData(
     var village: String = "",
     var mobile: String = "",
     var landline: String = "",
-    var idCard: String = ""
+    var idCard: String = "",
+    var skill: String = ""
 ):Serializable

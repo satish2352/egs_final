@@ -39,6 +39,7 @@ import com.sumagoinfotech.digicopy.ui.activities.registration.LabourRegistration
 import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
 import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
 import com.sumagoinfotech.digicopy.utils.CustomInfoWindowAdapter
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -51,6 +52,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
     private var markersList= mutableListOf<ProjectMarkerData>()
     private var labourData= mutableListOf<LabourData>()
     private var projectData= mutableListOf<ProjectData>()
+    lateinit var dialog:CustomProgressDialog
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -66,7 +68,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
     ): View {
         val dashboardViewModel =
             ViewModelProvider(this).get(DashboardViewModel::class.java)
-
+            dialog= CustomProgressDialog(requireContext())
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
         try {
@@ -115,6 +117,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
         })
     }
     private fun fetchLabourDataForMarker( mgnregaId: String){
+        dialog.show()
         val apiService=ApiClient.create(requireContext())
         apiService.getLabourForMarker(mgnregaId).enqueue(object : Callback<ProjectLabourListForMarker>{
             override fun onResponse(
@@ -122,6 +125,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                 response: Response<ProjectLabourListForMarker>
             ) {
 
+                dialog.dismiss()
                 if(response.isSuccessful){
                     if(!response.body()?.labour_data.isNullOrEmpty()) {
                         Log.d("mytag", Gson().toJson(response.body()))
@@ -140,6 +144,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
             }
             override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
                 Toast.makeText(requireContext(), "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
             }
         })
     }
@@ -161,13 +166,14 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
     }
 
     private fun fetchProjectDataForMarker( projectName: String){
+        dialog.show()
         val apiService=ApiClient.create(requireContext())
         apiService.getProjectListForMarker(projectName).enqueue(object : Callback<ProjectLabourListForMarker>{
             override fun onResponse(
                 call: Call<ProjectLabourListForMarker>,
                 response: Response<ProjectLabourListForMarker>
             ) {
-
+                dialog.dismiss()
                 if(response.isSuccessful){
                     Log.d("mytag",Gson().toJson(response.body()))
                     if(!response.body()?.project_data.isNullOrEmpty()){
@@ -184,6 +190,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
             }
             override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
                 Toast.makeText(requireContext(), "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
             }
         })
     }
@@ -357,7 +364,9 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
             val intent=Intent(context,LabourListByProjectActivity::class.java)
             intent.putExtra("id",""+marker.tag)
             context?.startActivity(intent)
-        }else{
+        }else if(marker.title?.startsWith("You")!!){
+        }
+        else{
             val intent=Intent(context,ViewLabourFromMarkerClick::class.java)
             intent.putExtra("id",""+marker.tag)
             context?.startActivity(intent)

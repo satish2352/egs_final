@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.model.LabourWithAreaNames
 
 @Dao
 interface LabourDao {
@@ -33,4 +34,19 @@ interface LabourDao {
     @Query("SELECT COUNT(*) FROM labours")
     suspend fun getLaboursCount(): Int
 
+    @Query("SELECT l.*, village.name AS villageName, district.name AS districtName, taluka.name AS talukaName " +
+            "FROM labours l " +
+            "LEFT JOIN area AS village ON l.village = village.location_id " +
+            "LEFT JOIN area AS district ON l.district = district.location_id " +
+            "LEFT JOIN area AS taluka ON l.taluka = taluka.location_id ORDER BY id DESC")
+    suspend fun getLabourWithAreaNames(): List<LabourWithAreaNames>
+
+
+    @Query("SELECT l.*, village.name AS villageName, district.name AS districtName, taluka.name AS talukaName " +
+            "FROM labours l " +
+            "LEFT JOIN area AS village ON l.village = village.location_id " +
+            "LEFT JOIN area AS district ON l.district = district.location_id " +
+            "LEFT JOIN area AS taluka ON l.taluka = taluka.location_id " +
+            "WHERE l.id = :labourId")
+    suspend fun getLabourWithAreaNamesById(labourId: Int): LabourWithAreaNames?
 }

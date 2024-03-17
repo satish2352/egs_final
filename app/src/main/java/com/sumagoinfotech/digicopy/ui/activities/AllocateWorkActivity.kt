@@ -12,7 +12,6 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RadioGroup
@@ -21,16 +20,25 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.databinding.ActivityAllocateWorkBinding
 import com.sumagoinfotech.digicopy.interfaces.MarkAttendanceListener
+import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
+import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourInfo
+import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
+import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.ui.adapters.AttendanceAdapter
+import com.sumagoinfotech.digicopy.webservice.ApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
     private lateinit var binding:ActivityAllocateWorkBinding
@@ -38,6 +46,9 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
     private lateinit var labourDao: LabourDao
     private lateinit var adapter: AttendanceAdapter
     private lateinit var labourList:List<Labour>
+    private lateinit var listProject:List<ProjectData>
+    private lateinit var labourDataList:List<LabourInfo>
+    private var selectedProjectId=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityAllocateWorkBinding.inflate(layoutInflater)
@@ -46,24 +57,22 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
         labourDao=database.labourDao()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.allocate_work)
+        getProjectFromServer()
         labourList=ArrayList<Labour>()
-        adapter= AttendanceAdapter(labourList,this)
+        labourDataList=ArrayList<LabourInfo>()
+        adapter= AttendanceAdapter(labourDataList,this)
         binding.recyclerViewAttendance.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         val names = listOf("Nashik I", "Pune II ", "Mumbai")
         val atvNamesAdapter = ArrayAdapter(
             this, android.R.layout.simple_list_item_1, names
         )
-        val projectArea:AutoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.projectArea)
-        projectArea.setAdapter(atvNamesAdapter)
-        projectArea.setOnFocusChangeListener{abaad,asd ->
-            projectArea.showDropDown()
+
+        binding.projectArea.setOnFocusChangeListener{abaad,asd ->
+            binding.projectArea.showDropDown()
         }
-        projectArea.setOnClickListener{
-            projectArea.showDropDown()
+        binding.projectArea.setOnClickListener{
+            binding.projectArea.showDropDown()
         }
-
-
-
             binding.ivSearchByLabourId.setOnClickListener {
                 if(validateFields()){
                 CoroutineScope(Dispatchers.IO).launch {
@@ -72,7 +81,7 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
                         if(labourList!==null){
                             Log.d("mytag","userListSize=>"+labourList.size)
                             runOnUiThread {
-                                if(labourList.size>0){
+                               /* if(labourList.size>0){
                                     adapter= AttendanceAdapter(labourList,this@AllocateWorkActivity)
                                     binding.recyclerViewAttendance.adapter=adapter;
                                     adapter.notifyDataSetChanged()
@@ -83,17 +92,17 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
                                     val toast= Toast.makeText(this@AllocateWorkActivity,"Labour not found",
                                         Toast.LENGTH_SHORT)
                                     toast.show()
-                                }
+                                }*/
                             }
                         }else{
                             runOnUiThread {
                                 Log.d("mytag",""+labourList.size)
-                                adapter= AttendanceAdapter(labourList,this@AllocateWorkActivity)
+                               /* adapter= AttendanceAdapter(labourList,this@AllocateWorkActivity)
                                 binding.recyclerViewAttendance.adapter=adapter;
                                 adapter.notifyDataSetChanged()
                                 val toast= Toast.makeText(this@AllocateWorkActivity,"Labour not found",
                                     Toast.LENGTH_SHORT)
-                                toast.show()
+                                toast.show()*/
 
                             }
                         }
@@ -111,8 +120,10 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
 
 
         binding.projectArea.onItemClickListener=AdapterView.OnItemClickListener { parent, view, position, id ->
-            val selectedItem = parent.getItemAtPosition(position) as String
-            binding.tvProjectName.text=selectedItem
+            Log.d("mytag",""+position)
+            binding.tvProjectAddress.setText(listProject.get(position).district+" -> "+listProject.get(position).taluka+" -> "+listProject.get(position).village)
+            binding.tvProjectDuration.setText(listProject.get(position).start_date+" To "+listProject.get(position).end_date)
+            selectedProjectId=listProject.get(position).id.toString()
         }
 
         binding.etLabourId.addTextChangedListener(object :TextWatcher{
@@ -192,8 +203,83 @@ class AllocateWorkActivity : AppCompatActivity(),MarkAttendanceListener {
         (labourList as ArrayList<Labour>).clear()
         adapter.notifyDataSetChanged()
         binding.etLabourId.setText("")
-        binding.tvProjectName.setText("")
+        binding.tvProjectAddress.setText("")
         binding.projectArea.clearListSelection()
         binding.projectArea.setText("")
+    }
+
+    private fun getProjectFromServer(){
+
+        val apiService=ApiClient.create(this@AllocateWorkActivity)
+        val call=apiService.getProjectList()
+        call.enqueue(object : Callback<ProjectLabourListForMarker>{
+            override fun onResponse(
+                call: Call<ProjectLabourListForMarker>,
+                response: Response<ProjectLabourListForMarker>
+            ) {
+                Log.d("mytag",Gson().toJson(response.body()))
+                if(response.isSuccessful) {
+                    if (!response.body()?.project_data.isNullOrEmpty()) {
+                        listProject = response.body()?.project_data!!
+                        val projectNames = mutableListOf<String>()
+                        for (project in listProject) {
+                            projectNames.add(project.project_name)
+                        }
+                        val projectNamesAdapter = ArrayAdapter(
+                            this@AllocateWorkActivity,
+                            android.R.layout.simple_list_item_1,
+                            projectNames
+                        )
+                        binding.projectArea.setAdapter(projectNamesAdapter)
+                    } else {
+
+                        val toast = Toast.makeText(
+                            this@AllocateWorkActivity, "No data found",
+                            Toast.LENGTH_SHORT
+                        )
+                        toast.show()
+
+                    }
+                }else{
+                    Toast.makeText(this@AllocateWorkActivity, "response unsuccessful", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
+                Log.d("mytag","onFailure getProjectFromServer "+t.message)
+                Toast.makeText(this@AllocateWorkActivity, "Error occured during api unsuccessful", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+    private fun getLabourByIdFromServer(mgnregaId: String){
+
+        val apiService=ApiClient.create(this@AllocateWorkActivity)
+        val call=apiService.getLabourDataById(mgnregaId)
+        call.enqueue(object : Callback< LabourByMgnregaId>{
+            override fun onResponse(
+                call: Call< LabourByMgnregaId>,
+                response: Response< LabourByMgnregaId>
+            ) {
+                Log.d("mytag",Gson().toJson(response.body()))
+                if(response.isSuccessful) {
+                    if (!response.body()?.data.isNullOrEmpty()) {
+                        labourDataList = response.body()?.data!!
+                        adapter.notifyDataSetChanged()
+                    } else {
+                        val toast = Toast.makeText(
+                            this@AllocateWorkActivity, "No data found",
+                            Toast.LENGTH_SHORT
+                        )
+                        toast.show()
+
+                    }
+                }else{
+                    Toast.makeText(this@AllocateWorkActivity, "response unsuccessful", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call< LabourByMgnregaId>, t: Throwable) {
+                Log.d("mytag","onFailure getLabourByIdFromServer "+t.message)
+                Toast.makeText(this@AllocateWorkActivity, "Error occured during api unsuccessful", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

@@ -42,8 +42,14 @@ import com.google.gson.reflect.TypeToken
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
+import com.sumagoinfotech.digicopy.database.dao.GenderDao
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
+import com.sumagoinfotech.digicopy.database.dao.MaritalStatusDao
+import com.sumagoinfotech.digicopy.database.dao.RelationDao
+import com.sumagoinfotech.digicopy.database.entity.Gender
 import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.entity.MaritalStatus
+import com.sumagoinfotech.digicopy.database.entity.Relation
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
@@ -93,6 +99,18 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     private  var latitude:Double=0.0
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
+    private  lateinit var genderDao: GenderDao
+    private lateinit var maritalStatusDao: MaritalStatusDao
+    private lateinit var relationDao: RelationDao
+    private lateinit var genderList:List<Gender>
+    private lateinit var relationList:List<Relation>
+    private lateinit var maritalStatusList:List<MaritalStatus>
+    private var genderNames= mutableListOf<String>()
+    private var relationNames= mutableListOf<String>()
+    private var maritalStatusNames= mutableListOf<String>()
+    private var genderId=""
+    private var relationId=""
+    private var maritalStatusId=""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,10 +128,25 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         }
         database= AppDatabase.getDatabase(this)
         labourDao=database.labourDao()
+        genderDao=database.genderDao()
+        relationDao=database.relationDao()
+        maritalStatusDao=database.martialStatusDao()
         var labourId=intent.extras?.getString("id")
         CustomProgressDialog.show(this)
         CoroutineScope(Dispatchers.IO).launch {
             labour=labourDao.getLabourById(Integer.parseInt(labourId))
+            genderList=genderDao.getAllGenders()
+            relationList=relationDao.getAllRelation()
+            maritalStatusList=maritalStatusDao.getAllMaritalStatus()
+            for(gender in genderList){
+                genderNames.add(gender.gender_name)
+            }
+            for(status in maritalStatusList){
+                maritalStatusNames.add(status.maritalstatus)
+            }
+            for(relation in relationList){
+                relationNames.add(relation.relation_title)
+            }
             runOnUiThread {
                 initializeFields();
             }
@@ -415,27 +448,12 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
 
 
-        var relationshipList = listOf(
-            "Son",
-            "Daughter",
-            "Wife",
-            "Husband",
-            "Father",
-            "Mother",
-        )
-
-        var maritalStatusList = listOf(
-            "Single",
-            "Married",
-            "Divorced"
-        )
-
         val relationshipAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, relationshipList
+            this, android.R.layout.simple_list_item_1, relationNames
         )
         actRelationship.setAdapter(relationshipAdapter)
         val maritalStatusAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, maritalStatusList
+            this, android.R.layout.simple_list_item_1, maritalStatusNames
         )
         actMaritalStatus.setAdapter(maritalStatusAdapter)
 
@@ -452,9 +470,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         actMaritalStatus.setOnFocusChangeListener {abaad, asd ->
             actMaritalStatus.showDropDown()
         }
-        val names = listOf("MALE", "FEMALE")
         val genderAdapter1 = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, names
+            this, android.R.layout.simple_list_item_1, genderNames
         )
         actGenderFamily.setAdapter(genderAdapter1)
         actGenderFamily.setOnFocusChangeListener { abaad, asd ->
@@ -464,14 +481,21 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
             actGenderFamily.showDropDown()
         }
         btnSubmit.setOnClickListener {
-
             if(validateFields())
             {
-                val familyMember=FamilyDetails(fullName = etFullName.text.toString(), dob = etDob.text.toString(), relationship = actRelationship.text.toString(), maritalStatus = actMaritalStatus.text.toString(), gender = actGenderFamily.text.toString())
+                val familyMember=FamilyDetails(
+                    fullName = etFullName.text.toString(),
+                    dob = etDob.text.toString(),
+                    relationship = actRelationship.text.toString(),
+                    maritalStatus = actMaritalStatus.text.toString(),
+                    gender = actGenderFamily.text.toString(),
+                    genderId=genderId,
+                    maritalStatusId=maritalStatusId,
+                    relationId = relationId
+                )
                 familyDetailsList.add(familyMember)
                 adapter.notifyDataSetChanged()
                 dialog.dismiss()
-
             }else{
 
             }
@@ -479,7 +503,15 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         etDob.setOnClickListener {
             showDatePicker()
         }
-
+        actGenderFamily.setOnItemClickListener { parent, view, position, id ->
+            genderId=genderList[position].id.toString()
+        }
+        actRelationship.setOnItemClickListener { parent, view, position, id ->
+            relationId=relationList[position].id.toString()
+        }
+        actMaritalStatus.setOnItemClickListener { parent, view, position, id ->
+            maritalStatusId=maritalStatusList[position].id.toString()
+        }
 
     }
     private fun validateFields():Boolean{

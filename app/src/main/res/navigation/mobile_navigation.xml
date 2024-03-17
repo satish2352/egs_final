@@ -29,7 +29,7 @@
         android:id="@+id/navigation_reports"
         android:name="com.sumagoinfotech.digicopy.ui.activities.ReportsActivity"
         android:label="@string/title_notifications"
-        tools:layout="@layout/activity_labour_details" />
+        tools:layout="@layout/activity_labour_registration1" />
 
 
 </navigation>

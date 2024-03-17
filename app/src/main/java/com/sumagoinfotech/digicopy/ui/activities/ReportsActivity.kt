@@ -37,7 +37,7 @@ class ReportsActivity : AppCompatActivity() {
         labourDao=database.labourDao()
         labourList=ArrayList<Labour>()
         adapter= LabourListInReportsAdapter(labourList)
-        CoroutineScope(Dispatchers.IO).launch{
+        /*CoroutineScope(Dispatchers.IO).launch{
             labourList=labourDao.getAllLabour()
             Log.d("mytag","=>"+labourList.size)
             adapter=LabourListInReportsAdapter(labourList)
@@ -50,7 +50,7 @@ class ReportsActivity : AppCompatActivity() {
                 binding.recyclerViewReports.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
-        }
+        }*/
 
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

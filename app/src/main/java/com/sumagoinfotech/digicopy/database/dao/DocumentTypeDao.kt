@@ -19,7 +19,7 @@ interface DocumentTypeDao {
     @Delete
     suspend fun deleteDocumentType(documentType: DocumentType)
 
-    @Query("SELECT * FROM document_type")
+    @Query("SELECT * FROM document_type ORDER BY documentName DESC")
     suspend fun getDocuments(): List<DocumentType>
 
     @Query("SELECT * FROM document_type WHERE id = :id")

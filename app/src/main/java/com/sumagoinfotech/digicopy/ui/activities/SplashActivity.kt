@@ -10,29 +10,33 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.MainActivity
-import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.AppDatabase.Companion.getDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDao
+import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
+import com.sumagoinfotech.digicopy.database.dao.GenderDao
 import com.sumagoinfotech.digicopy.database.dao.MaritalStatusDao
+import com.sumagoinfotech.digicopy.database.dao.RelationDao
 import com.sumagoinfotech.digicopy.database.dao.SkillsDao
 import com.sumagoinfotech.digicopy.database.dao.UserDao
 import com.sumagoinfotech.digicopy.database.entity.AreaItem
+import com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown
 import com.sumagoinfotech.digicopy.database.entity.MaritalStatus
 import com.sumagoinfotech.digicopy.database.entity.Skills
 import com.sumagoinfotech.digicopy.databinding.ActivitySplashBinding
 import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusData
-import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusModel
-import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.LabourData
-import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
+import com.sumagoinfotech.digicopy.model.apis.masters.Documenttype
+import com.sumagoinfotech.digicopy.model.apis.masters.Gender
+import com.sumagoinfotech.digicopy.model.apis.masters.Maritalstatu
+import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
+import com.sumagoinfotech.digicopy.model.apis.masters.Relation
+import com.sumagoinfotech.digicopy.model.apis.masters.Skill
 import com.sumagoinfotech.digicopy.model.apis.skills.SkillsData
 import com.sumagoinfotech.digicopy.model.apis.skills.SkillsModel
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -40,7 +44,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.concurrent.Executors
 
 class SplashActivity : AppCompatActivity() {
 
@@ -50,6 +53,9 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var documentTypeDao: DocumentTypeDao
     private lateinit var areaDao: AreaDao
     private lateinit var skillsDao: SkillsDao
+    private lateinit var genderDao: GenderDao
+    private lateinit var relationDao: RelationDao
+    private lateinit var documentTypeDropDownDao: DocumentTypeDropDownDao
     private lateinit var maritalStatusDao: MaritalStatusDao
     private lateinit var mySharedPref:MySharedPref
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +69,9 @@ class SplashActivity : AppCompatActivity() {
         userDao=appDatabase.userDao()
         skillsDao=appDatabase.skillsDao()
         areaDao=appDatabase.areaDao()
+        genderDao=appDatabase.genderDao()
+        relationDao=appDatabase.relationDao()
+        documentTypeDropDownDao=appDatabase.documentDropDownDao()
         maritalStatusDao=appDatabase.martialStatusDao()
         binding.progressBar.visibility = View.VISIBLE
            CoroutineScope(Dispatchers.IO).launch {
@@ -83,6 +92,7 @@ class SplashActivity : AppCompatActivity() {
                    }else{
                        Log.d("mytag","Not empty")
                    }
+               fetchMastersFromServer()
                withContext(Dispatchers.Main) {
                    val mySharedPref=MySharedPref(this@SplashActivity)
                    if(mySharedPref.getIsLoggedIn()){
@@ -98,13 +108,8 @@ class SplashActivity : AppCompatActivity() {
                        startActivity(intent)
                        finish()
                    }
-
                }
        }
-        CoroutineScope(Dispatchers.IO).launch {
-            fetchSkillsFromServer()
-            fetchMaritalStatusFromServer()
-        }
     }
     private  fun readJsonFromAssets(context: Context, fileName: String): List<AreaItem> {
         val items: MutableList<AreaItem> = mutableListOf()
@@ -130,38 +135,47 @@ class SplashActivity : AppCompatActivity() {
         return items
     }
 
-    private fun fetchSkillsFromServer(){
+    private fun fetchMastersFromServer(){
         val apiService= ApiClient.create(this@SplashActivity)
-        apiService.getSkills().enqueue(object :
-            Callback<SkillsModel> {
+        apiService.getAllMasters().enqueue(object :
+            Callback<MastersModel> {
             override fun onResponse(
-                call: Call<SkillsModel>,
-                response: Response<SkillsModel>
+                call: Call<MastersModel>,
+                response: Response<MastersModel>
             ) {
-
                 if(response.isSuccessful){
-                    if(!response.body()?.data.isNullOrEmpty()) {
-                        val skillList=response.body()?.data
-                        val convertedSkillsList=mapApiResponseListToRoomEntitySkillsList(skillList!!)
+                    if(response.body()?.status.equals("success")) {
+                        val skillsConverted=mapToSkills(response?.body()?.data?.skills!!)
+                        val maritalStatusConverted=mapToMaritalStatus(response?.body()?.data?.maritalstatus!!)
+                        val genderConverted=mapToMaritalGender(response?.body()?.data?.gender!!)
+                        val relationConverted=mapToRelation(response?.body()?.data?.relation!!)
+                        val documentTypeConverted=mapToDocumentType(response?.body()?.data?.documenttype!!)
                         CoroutineScope(Dispatchers.IO).launch {
-                            skillsDao.insertInitialRecords(convertedSkillsList)
+                            skillsDao.insertInitialRecords(skillsConverted)
+                            maritalStatusDao.insertInitialRecords(maritalStatusConverted)
+                            genderDao.insertInitialRecords(genderConverted)
+                            relationDao.insertInitialRecords(relationConverted)
+                            documentTypeDropDownDao.insertInitialRecords(documentTypeConverted)
                         }
                     }else {
+                        Log.d("mytag","fetchMastersFromServer:Response Not success")
                         Toast.makeText(this@SplashActivity, "No records found", Toast.LENGTH_SHORT)
                             .show()
                     }
                 } else{
+                    Log.d("mytag","fetchMastersFromServer:Response unsuccessful")
                     Toast.makeText(this@SplashActivity, "Response unsuccessful", Toast.LENGTH_SHORT).show()
                 }
 
             }
-            override fun onFailure(call: Call<SkillsModel>, t: Throwable) {
+            override fun onFailure(call: Call<MastersModel>, t: Throwable) {
+                Log.d("mytag","fetchMastersFromServer:onFailure ${t.message}")
                 Toast.makeText(this@SplashActivity, "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    fun mapApiResponseListToRoomEntitySkillsList(apiResponseList: List<SkillsData>): List<Skills> {
+    fun mapToSkills(apiResponseList: List<Skill>): List<Skills> {
         return apiResponseList.map { apiResponse ->
             Skills(
                 id = apiResponse.id,
@@ -172,7 +186,7 @@ class SplashActivity : AppCompatActivity() {
             )
         }
     }
-    fun mapToMaritalStatus(apiResponseList: List<MaritalStatusData>): List<MaritalStatus> {
+    fun mapToMaritalStatus(apiResponseList: List<Maritalstatu>): List<MaritalStatus> {
         return apiResponseList.map { apiResponse ->
             MaritalStatus(
                 id = apiResponse.id,
@@ -183,36 +197,42 @@ class SplashActivity : AppCompatActivity() {
             )
         }
     }
-    private fun fetchMaritalStatusFromServer(){
-        val apiService= ApiClient.create(this@SplashActivity)
-        apiService.getMaritalStatus().enqueue(object :
-            Callback<MaritalStatusModel> {
-            override fun onResponse(
-                call: Call<MaritalStatusModel>,
-                response: Response<MaritalStatusModel>
-            ) {
-
-                if(response.isSuccessful){
-                    if(!response.body()?.data.isNullOrEmpty()) {
-                        val list=response.body()?.data
-                        val convertedList=mapToMaritalStatus(list!!)
-                        CoroutineScope(Dispatchers.IO).launch {
-                            maritalStatusDao.insertInitialRecords(convertedList)
-                        }
-                    }else {
-                        Toast.makeText(this@SplashActivity, "No records found", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                } else{
-                    Toast.makeText(this@SplashActivity, "Response unsuccessful", Toast.LENGTH_SHORT).show()
-                }
-
-            }
-            override fun onFailure(call: Call<MaritalStatusModel>, t: Throwable) {
-                Toast.makeText(this@SplashActivity, "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
-            }
-        })
-
+    fun mapToMaritalGender(apiResponseList: List<Gender>): List<com.sumagoinfotech.digicopy.database.entity.Gender> {
+        return apiResponseList.map { apiResponse ->
+            com.sumagoinfotech.digicopy.database.entity.Gender(
+                id = apiResponse.id,
+                gender_name = apiResponse.gender_name,
+                is_active = apiResponse.is_active,
+                created_at = apiResponse.created_at,
+                updated_at = apiResponse.updated_at
+            )
+        }
     }
+
+    fun mapToRelation(apiResponseList: List<Relation>): List<com.sumagoinfotech.digicopy.database.entity.Relation> {
+        return apiResponseList.map { apiResponse ->
+            com.sumagoinfotech.digicopy.database.entity.Relation(
+                id = apiResponse.id,
+                relation_title = apiResponse.relation_title,
+                is_active = apiResponse.is_active,
+                created_at = apiResponse.created_at,
+                updated_at = apiResponse.updated_at
+            )
+        }
+    }
+
+    fun mapToDocumentType(apiResponseList: List<Documenttype>): List<com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown> {
+        return apiResponseList.map { apiResponse ->
+            com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown(
+                id = apiResponse.id,
+                documenttype = apiResponse.documenttype,
+                is_deleted =apiResponse.is_deleted,
+                is_active = apiResponse.is_active,
+                created_at = apiResponse.created_at,
+                updated_at = apiResponse.updated_at
+            )
+        }
+    }
+
 
 }

@@ -21,5 +21,7 @@ data class Labour(
     var mgnregaIdImage: String,
     var voterIdImage: String,
     var photo: String,
-    var isSynced: Boolean
+    var isSynced: Boolean,
+    var skilled:Boolean,
+    var skill:String
 )

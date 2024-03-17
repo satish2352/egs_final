@@ -7,12 +7,15 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
+import com.sumagoinfotech.digicopy.database.model.LabourWithAreaNames
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLabourDataBinding
 import com.sumagoinfotech.digicopy.ui.adapters.LabourListAdapter
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,19 +25,22 @@ class SyncLabourDataActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySyncLabourDataBinding
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
-    lateinit var labourList:List<Labour>
+    lateinit var labourList:List<LabourWithAreaNames>
     lateinit var  adapter:LabourListAdapter
+    private lateinit var dialog:CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivitySyncLabourDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.sync_labour_data)
+        dialog=CustomProgressDialog(this)
+        dialog.show()
         val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         binding.recyclerViewSyncLabourData.layoutManager=layoutManager
         database= AppDatabase.getDatabase(this)
         labourDao=database.labourDao()
-        labourList=ArrayList<Labour>()
+        labourList=ArrayList<LabourWithAreaNames>()
         adapter= LabourListAdapter(labourList)
         adapter.notifyDataSetChanged()
 
@@ -57,9 +63,17 @@ class SyncLabourDataActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         CoroutineScope(Dispatchers.IO).launch{
-            labourList=labourDao.getAllLabour()
+            labourList=labourDao.getLabourWithAreaNames()
             Log.d("mytag","=>"+labourList.size)
+            val listWithName=labourDao.getLabourWithAreaNames()
+            if(!listWithName.isNullOrEmpty()){
+
+                Log.d("mytag",""+Gson().toJson(listWithName))
+            }else{
+                Log.d("mytag","Empty Or Nukk ")
+            }
             withContext(Dispatchers.Main) {
+                dialog.dismiss()
                 adapter=LabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
@@ -73,4 +87,21 @@ class SyncLabourDataActivity : AppCompatActivity() {
         super.onPostResume()
     }
 
+
+    override fun onRestart() {
+        super.onRestart()
+        dialog.show()
+        CoroutineScope(Dispatchers.IO).launch{
+            labourList=labourDao.getLabourWithAreaNames()
+            Log.d("mytag","=>"+labourList.size)
+
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
+                adapter=LabourListAdapter(labourList)
+                binding.recyclerViewSyncLabourData.adapter=adapter
+                adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
+            }
+        }
+        Log.d("mytag",""+labourList.size)
+    }
 }

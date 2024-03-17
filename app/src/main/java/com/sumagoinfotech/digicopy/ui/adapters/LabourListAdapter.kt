@@ -10,10 +10,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.model.LabourWithAreaNames
 import com.sumagoinfotech.digicopy.ui.activities.ViewLabourDetailsActivity
 import com.sumagoinfotech.digicopy.ui.activities.registration.LabourRegistrationEdit1
 
-class LabourListAdapter(var list: List<Labour>) : RecyclerView.Adapter<LabourListAdapter.ViewHolder>() {
+class LabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerView.Adapter<LabourListAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val tvFullName=itemView.findViewById<TextView>(R.id.tvFullName)
@@ -37,7 +38,7 @@ class LabourListAdapter(var list: List<Labour>) : RecyclerView.Adapter<LabourLis
         holder.ivPhoto.setImageURI(Uri.parse(list[position].photo))
         holder.tvFullName.text = list[position]?.fullName ?: "Default"
         holder.tvMobile.text = list[position]?.mobile ?: "Default"
-        val address="${list[position].district} ->${list[position].taluka} ->${list[position].village}"
+        val address="${list[position].districtName} ->${list[position].talukaName} ->${list[position].villageName}"
         holder.tvAddress.text = address
         holder.tvMgnregaId.text= list[position].mgnregaId
         holder.ivEdit.setOnClickListener {

@@ -86,6 +86,9 @@ import com.google.zxing.qrcode.QRCodeWriter
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.pdf.PdfPage
 import com.itextpdf.layout.element.Image
+import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
+import com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import java.util.Hashtable
 
 class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
@@ -96,7 +99,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private lateinit var documentName: String
     private lateinit var database: AppDatabase
     private lateinit var documentDao: DocumentDao
-    private lateinit var documentTypeDao: DocumentTypeDao
+    private lateinit var documentTypeDao: DocumentTypeDropDownDao
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
     private lateinit var scanner: GmsDocumentScanner
     private lateinit var documentList: List<Document>
@@ -106,7 +109,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
     private  var isInternetAvailable=false
-
+    private lateinit var dialog:CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_pages)
@@ -117,12 +120,13 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         val layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
         binding.recyclerViewDocumentPages.layoutManager = layoutManager
         documentList = ArrayList()
+        dialog=CustomProgressDialog(this)
         adapter = DocumentPagesAdapter(documentList, this)
         binding.recyclerViewDocumentPages.adapter = adapter
         documentName = ""
         database = AppDatabase.getDatabase(this)
         documentDao = database.documentDao()
-        documentTypeDao = database.documentTypeDao()
+        documentTypeDao = database.documentDropDownDao()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getTheLocation()
         binding.fabAddDocument.setOnClickListener {
@@ -268,7 +272,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         actDocumentType = dialog.findViewById<AutoCompleteTextView>(R.id.actDocumentType)
         ivAddDocument = dialog.findViewById<ImageView>(R.id.ivAddDocument)
         etDocumentName = dialog.findViewById<EditText>(R.id.etDocumentName)
-        var documentTypeList: List<DocumentType> = ArrayList()
+        var documentTypeList: List<DocumentTypeDropDown> = ArrayList()
         CoroutineScope(Dispatchers.IO).launch {
             documentTypeList = documentTypeDao.getDocuments()
             Log.d("mytag", "=>" + documentTypeList.size)
@@ -278,7 +282,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             var documentNamesList = mutableListOf<String>()
 
             for (i in documentTypeList.indices) {
-                documentNamesList.add(documentTypeList[i].documentName)
+                documentNamesList.add(documentTypeList[i].documenttype)
             }
             withContext(Dispatchers.Main) {
                 // Add the fetched data to the list
@@ -358,6 +362,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             isSynced = false,
             documentId = documentId
         )
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val rows = documentDao.insertDocument(document)
@@ -368,6 +373,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 }*/
                 if (rows > 0) {
                     runOnUiThread {
+                        dialog.dismiss()
                         val toast = Toast.makeText(
                             this@DocumentPagesActivity,
                             "Document added successfully",
@@ -401,6 +407,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         }
     }
     private fun savePdfFileToStorage(uri: Uri?, pageCount: String, documentId: String) {
+        dialog.show()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
@@ -496,16 +503,6 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         super.onRestart()
     }
 
-    override fun onUpdateDocumentType(document: Document) {
-        Log.d("mytag", "" + documentName)
-        CoroutineScope(Dispatchers.IO).launch {
-            var documentType = documentTypeDao.getDocumentByName(documentName)
-            documentType?.isAdded = false
-            documentTypeDao.updateDocumentType(documentType!!)
-            documentDao.deleteDocument(document)
-
-        }
-    }
 
     private fun updateDocumentList() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -721,6 +718,9 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             e.printStackTrace()
         }
         return null
+    }
+
+    override fun onUpdateDocumentType(documentName: Document) {
     }
 }
 

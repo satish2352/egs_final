@@ -19,6 +19,7 @@ import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.database.entity.Labour
+import com.sumagoinfotech.digicopy.database.model.LabourWithAreaNames
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit1Binding
 import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourDetailsBinding
 import com.sumagoinfotech.digicopy.model.FamilyDetails
@@ -37,7 +38,7 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewLabourDetailsBinding
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
-    lateinit var labour: Labour
+    lateinit var labour: LabourWithAreaNames
     private var familyDetailsList=ArrayList<FamilyDetails>()
     lateinit var adapter: FamilyDetailsListAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +54,7 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
         binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this@ViewLabourDetailsActivity,RecyclerView.VERTICAL,false)
         labourDao=database.labourDao()
         CoroutineScope(Dispatchers.IO).launch {
-            labour=labourDao.getLabourById(Integer.parseInt(labourId))
+            labour= labourDao.getLabourWithAreaNamesById(Integer.parseInt(labourId))!!
             runOnUiThread {
                 initializeFields()
             }
@@ -83,9 +84,9 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
 
         binding.tvFullName.text=labour.fullName
         binding.tvGender.text=labour.gender
-        binding.tvDistritct.text=labour.district
-        binding.tvTaluka.text=labour.taluka
-        binding.tvVillage.text=labour.village
+        binding.tvDistritct.text=labour.districtName
+        binding.tvTaluka.text=labour.talukaName
+        binding.tvVillage.text=labour.villageName
         binding.tvMobile.text=labour.mobile
         if(labour.landline.length<1){
             binding.tvLandline.text="-"
