@@ -44,7 +44,7 @@
     <string name="village">Village</string>
     <string name="mobile_number">Mobile Number</string>
     <string name="landline_number">Landline Number ( Optional )</string>
-    <string name="mgnrega_id_card_number">MNREGA Id Card Number</string>
+    <string name="mgnrega_id_card_number">MGNREGA Id Card Number</string>
     <string name="full_name">Full Name</string>
     <string name="enter_full_name">Enter Full Name</string>
     <string name="date_of_birth">Date Of Birth</string>
@@ -68,4 +68,5 @@
     <string name="address">Address -</string>
     <string name="project_duration">Project Duration -</string>
     <string name="select_skills">Select Skill</string>
+    <string name="enter_mgnrega_id_1">Enter MGNREGA Id</string>
 </resources>

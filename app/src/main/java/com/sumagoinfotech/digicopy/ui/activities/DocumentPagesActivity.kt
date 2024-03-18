@@ -384,6 +384,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                     }
                 } else {
                     runOnUiThread {
+                        dialog.dismiss()
                         val toast = Toast.makeText(
                             this@DocumentPagesActivity,
                             "Document not added please try again",

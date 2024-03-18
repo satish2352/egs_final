@@ -1,8 +1,10 @@
 package com.sumagoinfotech.digicopy.ui.activities
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +25,7 @@ import io.getstream.photoview.PhotoView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 
 class ViewLabourFromMarkerClick : AppCompatActivity() {
     private lateinit var binding:ActivityViewLabourFromMarkerClickBinding
@@ -127,4 +130,5 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
             dialog.dismiss()
         }
     }
+
 }

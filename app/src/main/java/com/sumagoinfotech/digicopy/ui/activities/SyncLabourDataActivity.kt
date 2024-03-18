@@ -1,25 +1,42 @@
 package com.sumagoinfotech.digicopy.ui.activities
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
-import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
+import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.model.LabourWithAreaNames
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLabourDataBinding
+import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.ui.adapters.LabourListAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import com.sumagoinfotech.digicopy.webservice.FileInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
 
 class SyncLabourDataActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySyncLabourDataBinding
@@ -43,11 +60,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
         labourList=ArrayList<LabourWithAreaNames>()
         adapter= LabourListAdapter(labourList)
         adapter.notifyDataSetChanged()
-
-
-
     }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_sync,menu)
         return true
@@ -57,7 +70,79 @@ class SyncLabourDataActivity : AppCompatActivity() {
         if(item.itemId==android.R.id.home){
             finish()
         }
+        if(item.itemId==R.id.navigation_sync){
+
+            //UploadManager.startUploadTask(this@SyncLabourDataActivity)
+            //syncLabourData()
+            CoroutineScope(Dispatchers.IO).launch {
+                uploadLabourOnline()
+            }
+
+        }
+
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun syncLabourData() {
+        val apiService = ApiClient.create(this@SyncLabourDataActivity)
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val laborRegistrations = getLaborRegistrationsFromDatabase()
+            try {
+                laborRegistrations.forEach { laborRegistration ->
+                    Log.d("mytag", "Inside dowork 2")
+
+
+                    //val addNameToFile = addNamesToUri(laborRegistration)
+
+                 /*   val fileAadhar=createFilePart(FileInfo("aadhar_image",laborRegistration.aadharImage))
+                    val voter_image=createFilePart(FileInfo("voter_image",laborRegistration.aadharImage))
+                    val profile_image=createFilePart(FileInfo("profile_image",laborRegistration.aadharImage))
+                    val mgnrega_image=createFilePart(FileInfo("mgnrega_image",laborRegistration.aadharImage))*/
+                    //val files = createFileParts(addNameToFile)
+                   val response = apiService.uploadLaborInfoNew(
+                        full_name = laborRegistration.fullName,
+                        gender_id = laborRegistration.gender,
+                        date_of_birth = laborRegistration.dob,
+                        skill_id = laborRegistration.skill,
+                        district_id = laborRegistration.district,
+                        taluka_id = laborRegistration.taluka,
+                        village_id = laborRegistration.village,
+                        mobile_number = laborRegistration.mobile,
+                        mgnrega_card_id = laborRegistration.mgnregaId,
+                        landline_number = "12345678",
+                        family = laborRegistration.familyDetails,
+                        longitude = laborRegistration.location,
+                        latitude = laborRegistration.location
+                     /*  file1 = fileAadhar!!,
+                       file2 = voter_image!!,
+                       file3 = profile_image!!,
+                       file4 = mgnrega_image!!*/
+                   )
+
+                    val myrespo=response.execute()
+                    Log.d("mytag","------>"+ myrespo.toString())
+                  /*response.enqueue(object : Callback<String> {
+                      override fun onResponse(
+                          call: Call<String>,
+                          response: retrofit2.Response<String>
+                      ) {
+                          Log.d("mytag", " syncLabourData onResponse ===> ")
+                      }
+
+                      override fun onFailure(call: Call<String>, t: Throwable) {
+                          Log.d("mytag", " syncLabourData onFailure ===> " + t.message)
+                      }
+                  })*/
+
+
+                }
+            } catch (e: Exception) {
+                Log.d("mytag", " SyncLabourDataActivity syncLabourData() Exception ===> " + e.message)
+                e.printStackTrace()
+            }
+        }
+
     }
 
     override fun onResume() {
@@ -82,11 +167,9 @@ class SyncLabourDataActivity : AppCompatActivity() {
         Log.d("mytag",""+labourList.size)
 
     }
-
     override fun onPostResume() {
         super.onPostResume()
     }
-
 
     override fun onRestart() {
         super.onRestart()
@@ -104,4 +187,116 @@ class SyncLabourDataActivity : AppCompatActivity() {
         }
         Log.d("mytag",""+labourList.size)
     }
+
+
+
+
+    private suspend fun getLaborRegistrationsFromDatabase(): List<Labour> {
+        val list = AppDatabase.getDatabase(applicationContext).labourDao().getAllLabour()
+        return list
+    }
+    private suspend fun createFileParts(fileInfo: List<FileInfo>): List<MultipartBody.Part> {
+        val fileParts = mutableListOf<MultipartBody.Part>()
+        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+        fileInfo.forEach { fileItem ->
+            val file: File? = uriToFile(applicationContext, fileItem.fileUri)
+            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file!!)
+            requestBody.addFormDataPart(fileItem.fileName, file?.name, requestFile)
+        }
+        return fileParts
+    }
+    private suspend fun addNamesToUri(labour: Labour): List<FileInfo> {
+        val fileInfo = mutableListOf<FileInfo>()
+        fileInfo.add(FileInfo("aadhar_image", labour.aadharImage))
+        fileInfo.add(FileInfo("mgnrega_image", labour.mgnregaIdImage))
+        fileInfo.add(FileInfo("profile_image", labour.photo))
+        fileInfo.add(FileInfo("voter_image", labour.voterIdImage))
+        return fileInfo
+    }
+
+    suspend fun uriToFile(context: Context, uri: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val requestOptions = RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Don't cache to avoid reading from cache
+                    .skipMemoryCache(true) // Skip memory cache
+                val bitmap = Glide.with(context)
+                    .asBitmap()
+                    .load(uri)
+                    .apply(requestOptions)
+                    .submit()
+                    .get()
+
+                // Create a temporary file to store the bitmap
+                val file = File(context.cacheDir, "temp_image.jpg")
+                val outputStream = FileOutputStream(file)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                file // Return the temporary file
+            } catch (e: Exception) {
+                Log.d("mytag", "Exception uriToFile: ${e.message}")
+                null // Return null if there's an error
+            }
+        }
+    }
+    private suspend fun createFilePart(fileInfo: FileInfo): MultipartBody.Part? {
+        val file: File? = uriToFile(applicationContext, fileInfo.fileUri)
+        return file?.let {
+            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+            MultipartBody.Part.createFormData(fileInfo.fileName, it.name, requestFile)
+        }
+    }
+
+    private suspend fun uploadLabourOnline(){
+        val apiService = ApiClient.create(this@SyncLabourDataActivity)
+        CoroutineScope(Dispatchers.IO).launch {
+            val laborRegistrations = getLaborRegistrationsFromDatabase()
+            try {
+                laborRegistrations.forEach { laborRegistration ->
+                    val fileAadhar =
+                        createFilePart(FileInfo("aadhar_image", laborRegistration.aadharImage))
+                    val voter_image =
+                        createFilePart(FileInfo("voter_image", laborRegistration.aadharImage))
+                    val profile_image =
+                        createFilePart(FileInfo("profile_image", laborRegistration.aadharImage))
+                    val mgnrega_image =
+                        createFilePart(FileInfo("mgnrega_image", laborRegistration.aadharImage))
+                    val response= apiService.uploadLaborInfo(
+                        fullName = laborRegistration.fullName,
+                        genderId = laborRegistration.gender,
+                        dateOfBirth = laborRegistration.dob,
+                        skillId = laborRegistration.skill,
+                        districtId = laborRegistration.district,
+                        talukaId = laborRegistration.taluka,
+                        villageId = laborRegistration.village,
+                        mobileNumber = laborRegistration.mobile,
+                        mgnregaId = laborRegistration.mgnregaId,
+                        landLineNumber = laborRegistration.landline,
+                        family = laborRegistration.familyDetails,
+                        longitude = laborRegistration.location,
+                        latitude = laborRegistration.location,
+                        file1 = fileAadhar!!,
+                        file2 = profile_image!!,
+                        file3 = mgnrega_image!!,
+                        file4 = voter_image!!)
+
+                    if(response.isSuccessful){
+                        Log.d("mytag",""+response.body()?.message)
+                        Log.d("mytag",""+response.body()?.status)
+                    }else{
+                        Log.d("mytag","Not Successful ")
+                    }
+
+                }
+
+            } catch (e: Exception) {
+                Log.d("mytag","Exception "+e.message)
+            }
+        }
+
+
+    }
+
 }

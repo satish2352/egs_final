@@ -118,6 +118,11 @@ class LoginActivity : AppCompatActivity() {
 
             }
         }
+        binding.ivHome.setOnClickListener {
+
+            val intent=Intent(this,MainActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun validateFields(): Boolean {
