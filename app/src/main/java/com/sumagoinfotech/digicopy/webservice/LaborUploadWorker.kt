@@ -35,40 +35,43 @@ class LaborUploadWorker(
         Log.d("mytag","Inside dowork")
         return try {
             val laborRegistrations = getLaborRegistrationsFromDatabase()
-            laborRegistrations.forEach { laborRegistration ->
-                Log.d("mytag","Inside dowork 2")
-                val addNameToFile = addNamesToUri(laborRegistration)
-                val files = createFileParts(addNameToFile)
-              /*  val response = apiService.uploadLaborInfo(
-                    full_name = laborRegistration.fullName,
-                    gender_id = laborRegistration.fullName,
-                    date_of_birth = laborRegistration.fullName,
-                    skill_id = laborRegistration.fullName,
-                    district_id = laborRegistration.fullName,
-                    taluka_id = laborRegistration.fullName,
-                    village_id = laborRegistration.fullName,
-                    mobile_number = laborRegistration.fullName,
-                    mgnrega_card_id = laborRegistration.mgnregaId,
-                    landline_number = laborRegistration.landline,
-                    family = laborRegistration.familyDetails,
-                    longitude = laborRegistration.location,
-                    latitude = laborRegistration.location,
-                    files = files
-                )*/
-                /*response.enqueue(object : Callback<String>{
-                    override fun onResponse(
-                        call: Call<String>,
-                        response: retrofit2.Response<String>
-                    ) {
-                        Log.d("mytag"," Response ===> "+Gson().toJson(response))
+                laborRegistrations.forEach { laborRegistration ->
+                    val fileAadhar =
+                        createFilePart(FileInfo("aadhar_image", laborRegistration.aadharImage))
+                    val voter_image =
+                        createFilePart(FileInfo("voter_image", laborRegistration.aadharImage))
+                    val profile_image =
+                        createFilePart(FileInfo("profile_image", laborRegistration.aadharImage))
+                    val mgnrega_image =
+                        createFilePart(FileInfo("mgnrega_image", laborRegistration.aadharImage))
+                    val response = apiService.uploadLaborInfo(
+                        fullName = laborRegistration.fullName,
+                        genderId = laborRegistration.gender,
+                        dateOfBirth = laborRegistration.dob,
+                        skillId = laborRegistration.skill,
+                        districtId = laborRegistration.district,
+                        talukaId = laborRegistration.taluka,
+                        villageId = laborRegistration.village,
+                        mobileNumber = laborRegistration.mobile,
+                        mgnregaId = laborRegistration.mgnregaId,
+                        landLineNumber = laborRegistration.landline,
+                        family = laborRegistration.familyDetails,
+                        longitude = laborRegistration.location,
+                        latitude = laborRegistration.location,
+                        file1 = fileAadhar!!,
+                        file2 = profile_image!!,
+                        file3 = mgnrega_image!!,
+                        file4 = voter_image!!
+                    )
+
+                    if (response.isSuccessful) {
+                        Log.d("mytag", "" + response.body()?.message)
+                        Log.d("mytag", "" + response.body()?.status)
+                    } else {
+                        Log.d("mytag", "Not Successful ")
                     }
 
-                    override fun onFailure(call: Call<String>, t: Throwable) {
-                        Log.d("mytag"," onFailure ===> "+Gson().toJson(response))
-                    }
-                })*/
-
-            }
+                }
 
             Result.success()
         } catch (e: Exception) {
@@ -134,4 +137,11 @@ class LaborUploadWorker(
             }
         }
     }
+        private suspend fun createFilePart(fileInfo: FileInfo): MultipartBody.Part? {
+            val file: File? = uriToFile(applicationContext, fileInfo.fileUri)
+            return file?.let {
+                val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+                MultipartBody.Part.createFormData(fileInfo.fileName, it.name, requestFile)
+            }
+        }
 }

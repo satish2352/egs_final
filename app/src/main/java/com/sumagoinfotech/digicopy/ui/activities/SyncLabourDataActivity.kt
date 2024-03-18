@@ -24,6 +24,7 @@ import com.sumagoinfotech.digicopy.ui.adapters.LabourListAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.FileInfo
+import com.sumagoinfotech.digicopy.webservice.UploadManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,68 +82,6 @@ class SyncLabourDataActivity : AppCompatActivity() {
         }
 
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun syncLabourData() {
-        val apiService = ApiClient.create(this@SyncLabourDataActivity)
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val laborRegistrations = getLaborRegistrationsFromDatabase()
-            try {
-                laborRegistrations.forEach { laborRegistration ->
-                    Log.d("mytag", "Inside dowork 2")
-
-
-                    //val addNameToFile = addNamesToUri(laborRegistration)
-
-                 /*   val fileAadhar=createFilePart(FileInfo("aadhar_image",laborRegistration.aadharImage))
-                    val voter_image=createFilePart(FileInfo("voter_image",laborRegistration.aadharImage))
-                    val profile_image=createFilePart(FileInfo("profile_image",laborRegistration.aadharImage))
-                    val mgnrega_image=createFilePart(FileInfo("mgnrega_image",laborRegistration.aadharImage))*/
-                    //val files = createFileParts(addNameToFile)
-                   val response = apiService.uploadLaborInfoNew(
-                        full_name = laborRegistration.fullName,
-                        gender_id = laborRegistration.gender,
-                        date_of_birth = laborRegistration.dob,
-                        skill_id = laborRegistration.skill,
-                        district_id = laborRegistration.district,
-                        taluka_id = laborRegistration.taluka,
-                        village_id = laborRegistration.village,
-                        mobile_number = laborRegistration.mobile,
-                        mgnrega_card_id = laborRegistration.mgnregaId,
-                        landline_number = "12345678",
-                        family = laborRegistration.familyDetails,
-                        longitude = laborRegistration.location,
-                        latitude = laborRegistration.location
-                     /*  file1 = fileAadhar!!,
-                       file2 = voter_image!!,
-                       file3 = profile_image!!,
-                       file4 = mgnrega_image!!*/
-                   )
-
-                    val myrespo=response.execute()
-                    Log.d("mytag","------>"+ myrespo.toString())
-                  /*response.enqueue(object : Callback<String> {
-                      override fun onResponse(
-                          call: Call<String>,
-                          response: retrofit2.Response<String>
-                      ) {
-                          Log.d("mytag", " syncLabourData onResponse ===> ")
-                      }
-
-                      override fun onFailure(call: Call<String>, t: Throwable) {
-                          Log.d("mytag", " syncLabourData onFailure ===> " + t.message)
-                      }
-                  })*/
-
-
-                }
-            } catch (e: Exception) {
-                Log.d("mytag", " SyncLabourDataActivity syncLabourData() Exception ===> " + e.message)
-                e.printStackTrace()
-            }
-        }
-
     }
 
     override fun onResume() {

@@ -43,12 +43,8 @@ interface ApiService {
     @POST("auth/list-user-labours")
     fun getLaboursByProject(@Query("user_id")user_id:String): Call<LabourByMgnregaId>
 
-
     @POST("auth/filter-project-labour-list")
     fun getProjectList(): Call<ProjectLabourListForMarker>
-
-
-
 
     @Multipart
     @POST("auth/add-labour")
@@ -71,29 +67,8 @@ interface ApiService {
         @Part file3: MultipartBody.Part,
         @Part file4: MultipartBody.Part
     ):Response<MastersModel>
+    
 
-
-    @POST("auth/add-labour")
-    suspend fun uploadLaborInfo2(): Call<ApiResponse<Any>>
-
-
-
-    @POST("auth/add-labour")
-    suspend fun uploadLaborInfoNew(
-        @Query("full_name") full_name: String,
-        @Query("gender_id") gender_id: String,
-        @Query("date_of_birth") date_of_birth: String,
-        @Query("skill_id") skill_id: String,
-        @Query("village_id") village_id: String,
-        @Query("taluka_id") taluka_id: String,
-        @Query("district_id") district_id: String,
-        @Query("mobile_number") mobile_number: String,
-        @Query("mgnrega_card_id") mgnrega_card_id: String,
-        @Query("landline_number") landline_number: String,
-        @Query("family") family: String,
-        @Query("longitude") longitude: String,
-        @Query("latitude") latitude: String,
-    ):Call<MastersModel>
 
 
 
