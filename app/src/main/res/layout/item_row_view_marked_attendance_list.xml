@@ -60,10 +60,25 @@
                         android:layout_gravity="center"
                         android:id="@+id/tvMobile"
                         android:textSize="13dp"
-                        android:layout_marginLeft="8dp"
                         android:textColor="@color/black"
                         android:fontFamily="@font/poppins_regular"
                         android:text="9876543210"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"></TextView>
+                    <ImageView
+                        android:layout_marginLeft="24dp"
+                        android:src="@drawable/ic_calendar2"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"/>
+                    <TextView
+                        android:textStyle="bold"
+                        android:layout_gravity="center"
+                        android:id="@+id/tvAttendance"
+                        android:textSize="13dp"
+                        android:layout_marginLeft="8dp"
+                        android:textColor="@color/black"
+                        android:fontFamily="@font/poppins_regular"
+                        android:text=""
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"></TextView>
                 </LinearLayout>

@@ -9,15 +9,15 @@
     tools:context=".ui.activities.ViewAttendanceActivity">
 
     <LinearLayout
-        android:layout_marginTop="5dp"
         android:orientation="horizontal"
-        android:background="@drawable/rounded_background_light_gray"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.google.android.material.textfield.TextInputLayout
-            app:endIconMode="clear_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    <LinearLayout
+        android:background="@drawable/rounded_background_light_gray"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
         <AutoCompleteTextView
             android:id="@+id/actSelectProject"
             android:inputType="none"
@@ -27,14 +27,16 @@
             android:background="@drawable/edittext_background"
             android:layout_width="match_parent"
             android:layout_height="48dp"></AutoCompleteTextView>
-        </com.google.android.material.textfield.TextInputLayout>
         <ImageView
-            android:layout_marginRight="10dp"
+            android:id="@+id/btnClose"
+            android:layout_marginRight="16dp"
             android:layout_gravity="center"
-            android:src="@drawable/gender"
+            android:src="@drawable/ic_close"
             android:layout_width="24dp"
             android:layout_height="24dp"></ImageView>
     </LinearLayout>
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="24dp"
         android:layout_width="match_parent"

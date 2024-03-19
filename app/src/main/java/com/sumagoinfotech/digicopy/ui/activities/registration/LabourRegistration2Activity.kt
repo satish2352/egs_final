@@ -195,7 +195,6 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     latitude = latitude.toString(),
                     longitude = longitude.toString(),
                     skill = labourInputData.skill)
-
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             val rows=LabourDao.insertLabour(labour)

@@ -59,7 +59,9 @@ interface ApiService {
 
     // get list attendance marked
     @POST("auth/list-attendance-marked")
-    fun getListOfMarkedAttendance():Call<AttendanceModel>
+    fun getListOfMarkedAttendance(
+        @Query("project_id") projectId: String,
+    ):Call<AttendanceModel>
 
 
     @Multipart

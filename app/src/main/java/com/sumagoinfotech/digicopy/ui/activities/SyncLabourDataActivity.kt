@@ -127,6 +127,21 @@ class SyncLabourDataActivity : AppCompatActivity() {
         Log.d("mytag",""+labourList.size)
     }
 
+    fun fetchUserList(){
+        CoroutineScope(Dispatchers.IO).launch{
+            labourList=labourDao.getLabourWithAreaNames()
+            Log.d("mytag","=>"+labourList.size)
+
+            withContext(Dispatchers.Main) {
+                dialog.dismiss()
+                adapter=LabourListAdapter(labourList)
+                binding.recyclerViewSyncLabourData.adapter=adapter
+                adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
+            }
+        }
+        Log.d("mytag",""+labourList.size)
+    }
+
 
 
 
@@ -189,6 +204,10 @@ class SyncLabourDataActivity : AppCompatActivity() {
     }
 
     private suspend fun uploadLabourOnline(){
+       runOnUiThread {
+           dialog.show()
+       }
+
         val apiService = ApiClient.create(this@SyncLabourDataActivity)
         CoroutineScope(Dispatchers.IO).launch {
             val laborRegistrations = getLaborRegistrationsFromDatabase()
@@ -234,8 +253,10 @@ class SyncLabourDataActivity : AppCompatActivity() {
                         Log.d("mytag","Labour upload failed  "+laborRegistration.fullName)
                     }
                 }
-
+                    runOnUiThread {dialog.dismiss()  }
+                fetchUserList()
             } catch (e: Exception) {
+              runOnUiThread { dialog.dismiss() }
                 Log.d("mytag","uploadLabourOnline "+e.message)
             }
         }

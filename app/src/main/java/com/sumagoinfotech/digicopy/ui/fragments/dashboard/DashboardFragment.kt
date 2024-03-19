@@ -151,11 +151,9 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
 
     private fun showLabourMakkers(labourData: MutableList<LabourData>) {
         try {
+            Log.d("mytag","=>"+Gson().toJson(labourData))
             labourData.forEach { marker ->
-                val latLongArray = marker.latitude.split(",")
-                val latitude = latLongArray[0].toDouble()
-                val longitude = latLongArray[1].toDouble()
-                //val position = LatLng(latitude.toDouble(), longitude.toDouble())
+                Log.d("mytag","showLabourMakkers: ${marker.latitude},${marker.latitude}")
                 val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
                 val myMarker=map.addMarker(
                     MarkerOptions()
@@ -168,6 +166,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
             // Move camera to the first marker
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(labourData[0].latitude.toDouble(), labourData[0].longitude.toDouble()), 15f))
         } catch (e: Exception) {
+            Log.d("mytag","showLabourMakkers: Exception "+e.message)
+            e.printStackTrace()
         }
 
     }
@@ -207,10 +207,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
 
         try {
             projectData.forEach { marker ->
-                /*val latLongArray = marker.latitude.split(",")
-                val latitude = latLongArray[0].toDouble()
-                val longitude = latLongArray[1].toDouble()*/
-
+                Log.d("mytag","showProjectMarkers: ${marker.latitude},${marker.latitude}")
                 val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
                 val myMarker=map.addMarker(
                     MarkerOptions()
@@ -223,7 +220,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
             // Move camera to the first marker
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(projectData[0].latitude.toDouble(), projectData[0].longitude.toDouble()), 15f))
         } catch (e: Exception) {
-
+            Log.d("mytag","showProjectMarkers: Exception "+e.message)
+            e.printStackTrace()
         }
     }
 

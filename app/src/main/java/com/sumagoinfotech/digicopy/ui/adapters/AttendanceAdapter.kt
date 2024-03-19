@@ -1,12 +1,14 @@
 package com.sumagoinfotech.digicopy.ui.adapters
 
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.interfaces.MarkAttendanceListener
@@ -30,7 +32,7 @@ class AttendanceAdapter(var list: List<LabourInfo>, var markAttendanceListener: 
     }
 
     override fun onBindViewHolder(holder: AttendanceAdapter.ViewHolder, position: Int) {
-        holder.ivPhoto.setImageURI(Uri.parse(list[position].profile_image))
+
         holder.tvFullName.text = list[position]?.full_name ?: "Default"
         holder.tvMobile.text = list[position]?.mobile_number ?: "Default"
         val address="${list[position].district_id} ->${list[position].taluka_id} ->${list[position].village_id}"
@@ -40,6 +42,8 @@ class AttendanceAdapter(var list: List<LabourInfo>, var markAttendanceListener: 
 
             markAttendanceListener.markAttendance(list[position])
         }
+        Glide.with(holder.itemView.context).load(list[position].profile_image).into(holder.ivPhoto)
+        Log.d("mytag",list.get(position).profile_image)
     }
 
     override fun getItemCount(): Int {

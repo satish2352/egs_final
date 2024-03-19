@@ -83,6 +83,10 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                         photo= list?.get(0)?.profile_image.toString()
                         mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                         aadharImage= list?.get(0)?.aadhar_image.toString()
+                        Glide.with(this@ViewLabourFromMarkerClick).load(mgnregaIdImage).into(binding.ivMnregaCard)
+                        Glide.with(this@ViewLabourFromMarkerClick).load(photo).into(binding.ivPhoto)
+                        Glide.with(this@ViewLabourFromMarkerClick).load(aadharImage).into(binding.ivAadhar)
+                        Glide.with(this@ViewLabourFromMarkerClick).load(voterIdImage).into(binding.ivVoterId)
                         val familyList=response.body()?.data?.get(0)?.family_details
                         Log.d("mytag",""+familyList?.size);
                         var adapterFamily=FamilyDetailsListOnlineAdapter(familyList)
@@ -95,7 +99,6 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                 } else{
                     Toast.makeText(this@ViewLabourFromMarkerClick, "Response unsuccessful", Toast.LENGTH_SHORT).show()
                 }
-
             }
             override fun onFailure(call: Call<LabourByMgnregaId>, t: Throwable) {
                 Toast.makeText(this@ViewLabourFromMarkerClick, "Error Ocuured during api call", Toast.LENGTH_SHORT).show()

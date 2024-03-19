@@ -49,9 +49,9 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
     private lateinit var adapter: AttendanceAdapter
-    private lateinit var labourList: List<Labour>
+    private lateinit var labourList: ArrayList<Labour>
     private lateinit var listProject: List<ProjectData>
-    private lateinit var labourDataList: List<LabourInfo>
+    private lateinit var labourDataList: ArrayList<LabourInfo>
     private var selectedProjectId = ""
     private lateinit var apiService: ApiService
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,12 +87,12 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                             ) {
 
                                 if (response.isSuccessful) {
-
+                                    (labourDataList as ArrayList<LabourInfo>).clear()
                                     if (response.body()?.status.equals("success")) {
-                                        labourDataList = response.body()?.data!!
+                                        labourDataList = (response.body()?.data as ArrayList<LabourInfo>?)!!
                                         Log.d("mytag", "userListSize=>" + labourDataList.size)
                                         runOnUiThread {
-                                            if (labourList.size > 0) {
+                                            if (labourDataList.size > 0) {
                                                 adapter = AttendanceAdapter(
                                                     labourDataList,
                                                     this@AllocateWorkActivity
@@ -234,9 +234,9 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
 
                 var dayType = ""
                 if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
-                    dayType = "half_day"
+                    dayType = "Half Day"
                 } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
-                    dayType = "full_day"
+                    dayType = "Full Day"
                 }
                 val call =
                     apiService.markAttendance(selectedProjectId, mgnregaId = mgnregaId, dayType)
@@ -254,12 +254,26 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                     Toast.LENGTH_SHORT
                                 )
                                 toast.show()
+                                labourDataList.clear()
+                                binding.recyclerViewAttendance.adapter=adapter
+                                adapter.notifyDataSetChanged()
+                                binding.etLabourId.setText("")
+                                binding.tvProjectAddress.setText("")
+                                binding.projectArea.clearListSelection()
+                                binding.projectArea.setText("")
                             }else{
                                 val toast = Toast.makeText(
                                     this@AllocateWorkActivity, "Attendance marking failed",
                                     Toast.LENGTH_SHORT
                                 )
                                 toast.show()
+                                labourDataList.clear()
+                                binding.recyclerViewAttendance.adapter=adapter
+                                adapter.notifyDataSetChanged()
+                                binding.etLabourId.setText("")
+                                binding.tvProjectAddress.setText("")
+                                binding.projectArea.clearListSelection()
+                                binding.projectArea.setText("")
                             }
                         }
                     }
@@ -358,7 +372,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                 Log.d("mytag", Gson().toJson(response.body()))
                 if (response.isSuccessful) {
                     if (!response.body()?.data.isNullOrEmpty()) {
-                        labourDataList = response.body()?.data!!
+                        labourDataList = (response.body()?.data as ArrayList<LabourInfo>?)!!
                         adapter.notifyDataSetChanged()
                     } else {
                         val toast = Toast.makeText(

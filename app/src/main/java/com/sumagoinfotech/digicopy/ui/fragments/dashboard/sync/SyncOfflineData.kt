@@ -2,6 +2,7 @@ package com.sumagoinfotech.digicopy.ui.fragments.dashboard.sync
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -121,4 +122,18 @@ class SyncOfflineData : Fragment() {
                 }
             }
     }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("mytag","OnResume Fragment")
+        CoroutineScope(Dispatchers.IO).launch{
+            val labourCount=labourDao.getLaboursCount();
+            val documentCount=documentDao.getDocumentsCount();
+            withContext(Dispatchers.Main) {
+                binding.tvRegistrationCount.setText("${labourCount}")
+                binding.tvDocumentsCount.setText("${documentCount}")
+            }
+        }
+    }
+
 }
