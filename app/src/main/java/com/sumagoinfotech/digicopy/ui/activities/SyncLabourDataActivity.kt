@@ -194,13 +194,13 @@ class SyncLabourDataActivity : AppCompatActivity() {
             val laborRegistrations = getLaborRegistrationsFromDatabase()
             try {
                 laborRegistrations.forEach { laborRegistration ->
-                    val fileAadhar =
+                    val aadharCardImage =
                         createFilePart(FileInfo("aadhar_image", laborRegistration.aadharImage))
-                    val voter_image =
+                    val voterIdImage =
                         createFilePart(FileInfo("voter_image", laborRegistration.aadharImage))
-                    val profile_image =
+                    val profileImage =
                         createFilePart(FileInfo("profile_image", laborRegistration.aadharImage))
-                    val mgnrega_image =
+                    val mgnregaIdImage =
                         createFilePart(FileInfo("mgnrega_image", laborRegistration.aadharImage))
                     val response= apiService.uploadLaborInfo(
                         fullName = laborRegistration.fullName,
@@ -214,27 +214,31 @@ class SyncLabourDataActivity : AppCompatActivity() {
                         mgnregaId = laborRegistration.mgnregaId,
                         landLineNumber = laborRegistration.landline,
                         family = laborRegistration.familyDetails,
-                        longitude = laborRegistration.location,
-                        latitude = laborRegistration.location,
-                        file1 = fileAadhar!!,
-                        file2 = profile_image!!,
-                        file3 = mgnrega_image!!,
-                        file4 = voter_image!!)
+                        longitude = laborRegistration.latitude,
+                        latitude = laborRegistration.longitude,
+                        file1 = aadharCardImage!!,
+                        file2 = voterIdImage!!,
+                        file3 = profileImage!!,
+                        file4 = mgnregaIdImage!!)
 
                     if(response.isSuccessful){
+                        if(response.body()?.status.equals("True")){
+                            laborRegistration.isSynced=true
+                            labourDao.updateLabour(laborRegistration)
+                        }else{
+
+                        }
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)
                     }else{
-                        Log.d("mytag","Not Successful ")
+                        Log.d("mytag","Labour upload failed  "+laborRegistration.fullName)
                     }
-
                 }
 
             } catch (e: Exception) {
-                Log.d("mytag","Exception "+e.message)
+                Log.d("mytag","uploadLabourOnline "+e.message)
             }
         }
-
 
     }
 

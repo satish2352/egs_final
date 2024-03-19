@@ -19,7 +19,7 @@ interface LabourDao {
     @Delete
     suspend fun deleteLabour(labour: Labour)
 
-    @Query("SELECT * FROM labours")
+    @Query("SELECT * FROM labours WHERE isSynced=false")
     fun getAllLabour(): List<Labour>
 
     @Query("SELECT * FROM labours WHERE id = :id")
@@ -31,7 +31,7 @@ interface LabourDao {
     @Query("SELECT * FROM labours WHERE mgnregaId like '%' || :searchQuery || '%'")
     suspend fun getLabourByMgnregaIdLike(searchQuery: String): List<Labour>
 
-    @Query("SELECT COUNT(*) FROM labours")
+    @Query("SELECT COUNT(*) FROM labours WHERE isSynced=false")
     suspend fun getLaboursCount(): Int
 
     @Query("SELECT l.*, village.name AS villageName, district.name AS districtName, taluka.name AS talukaName " +

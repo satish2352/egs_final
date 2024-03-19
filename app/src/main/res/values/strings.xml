@@ -69,4 +69,6 @@
     <string name="project_duration">Project Duration -</string>
     <string name="select_skills">Select Skill</string>
     <string name="enter_mgnrega_id_1">Enter MGNREGA Id</string>
+    <string name="view_attendance">View Attendance</string>
+    <string name="select_project">Select Project</string>
 </resources>

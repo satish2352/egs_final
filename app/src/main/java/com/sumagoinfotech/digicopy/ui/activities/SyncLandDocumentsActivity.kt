@@ -1,12 +1,19 @@
 package com.sumagoinfotech.digicopy.ui.activities
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.net.toFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.DocumentDao
@@ -14,10 +21,17 @@ import com.sumagoinfotech.digicopy.database.entity.Document
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLandDocumentsBinding
 import com.sumagoinfotech.digicopy.ui.adapters.DocumentPagesAdapter
 import com.sumagoinfotech.digicopy.ui.adapters.SyncLandDocumentsAdapter
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import com.sumagoinfotech.digicopy.webservice.FileInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import java.io.FileOutputStream
 
 class SyncLandDocumentsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySyncLandDocumentsBinding
@@ -50,7 +64,41 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
         if(item.itemId==android.R.id.home){
             finish()
         }
+        if(item.itemId==R.id.navigation_sync){
+
+            uploadDocuments()
+        }
+
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun uploadDocuments() {
+        val apiService = ApiClient.create(this@SyncLandDocumentsActivity)
+        CoroutineScope(Dispatchers.IO).launch {
+            val documents = documentDao.getAllDocuments()
+            try {
+                documents.forEach { document ->
+                    val filePart = createFilePart(FileInfo("file", document.documentUri))
+                    val response=apiService.UploadDocument(filePart!!)
+                    if(response.isSuccessful){
+                        Log.d("mytag",""+response.body()?.message)
+                        Log.d("mytag",""+response.body()?.status)
+                        if(response.body()?.status.equals("True")){
+                            document.isSynced=true
+                            documentDao.updateDocument(document)
+                        }else{
+
+                        }
+                    }else{
+                        Log.d("mytag","Document upload failed  "+document.id)
+                    }
+                }
+
+            } catch (e: Exception) {
+                Log.d("mytag","Upload Document Online "+e.message)
+            }
+        }
+
     }
 
     override fun onResume() {
@@ -68,5 +116,25 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
                 adapter.notifyDataSetChanged()
             }
         }
+    }
+
+    private suspend fun createFilePart(fileInfo: FileInfo): MultipartBody.Part? {
+        //val file: File? = uriToFile(applicationContext, fileInfo.fileUri)
+        try {
+            val file=fileInfo.fileUri.toFile()
+            return file?.let {
+                val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+                MultipartBody.Part.createFormData(fileInfo.fileName, it.name, requestFile)
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SyncLandDocumentsActivity::createFilePart() Exception "+e.message)
+            e.printStackTrace()
+            return null
+
+        }
+    }
+    private fun String.toFile(): File? {
+        val uri = Uri.parse(this)
+        return uri.toFile()
     }
 }

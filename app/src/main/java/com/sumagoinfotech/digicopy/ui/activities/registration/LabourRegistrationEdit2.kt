@@ -132,7 +132,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         relationDao=database.relationDao()
         maritalStatusDao=database.martialStatusDao()
         var labourId=intent.extras?.getString("id")
-        CustomProgressDialog.show(this)
+        val dialog=CustomProgressDialog(this)
+        dialog.show()
         CoroutineScope(Dispatchers.IO).launch {
             labour=labourDao.getLabourById(Integer.parseInt(labourId))
             genderList=genderDao.getAllGenders()
@@ -169,6 +170,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                 labour.voterIdImage=voterIdImagePath
                 labour.photo=photoImagePath
                 labour.mgnregaIdImage=mgnregaIdImagePath
+                labour.latitude=latitude.toString()
+                labour.longitude=longitude.toString()
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val rows=labourDao.updateLabour(labour)
@@ -307,7 +310,7 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     }
     private fun initializeFields() {
         Log.d("mytag","initializeFields "+labour.familyDetails)
-        CustomProgressDialog.dismiss()
+        val dialog=
         binding.etLocation.setText(labour.location)
         loadWithGlideFromUri(labour.aadharImage,binding.ivAadhar)
         loadWithGlideFromUri(labour.mgnregaIdImage,binding.ivMgnregaCard)

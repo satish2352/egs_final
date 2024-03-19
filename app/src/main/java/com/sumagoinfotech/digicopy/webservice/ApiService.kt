@@ -1,5 +1,6 @@
 package com.sumagoinfotech.digicopy.webservice
 
+import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusModel
@@ -37,14 +38,29 @@ interface ApiService {
     @POST("auth/filter-project-labour-list")
     fun getLabourForMarker(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<ProjectLabourListForMarker>
 
+    // Search Labour By MGNREGA ID
+
     @POST("auth/list-labour")
     fun getLabourDataById(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
 
     @POST("auth/list-user-labours")
     fun getLaboursByProject(@Query("user_id")user_id:String): Call<LabourByMgnregaId>
 
+    // GET project list for attendance page
     @POST("auth/filter-project-labour-list")
     fun getProjectList(): Call<ProjectLabourListForMarker>
+
+    // Mark Attendance
+    @POST("auth/add-attendance-mark")
+    fun markAttendance(
+        @Query("project_id") projectId: String,
+        @Query("mgnrega_card_id") mgnregaId: String,
+        @Query("attendance_day") attendanceDay: String):Call<MastersModel>
+
+    // get list attendance marked
+    @POST("auth/list-attendance-marked")
+    fun getListOfMarkedAttendance():Call<AttendanceModel>
+
 
     @Multipart
     @POST("auth/add-labour")
@@ -67,6 +83,14 @@ interface ApiService {
         @Part file3: MultipartBody.Part,
         @Part file4: MultipartBody.Part
     ):Response<MastersModel>
+
+    @Multipart
+    @POST("auth/upload_document")
+    suspend fun UploadDocument(
+        @Part file: MultipartBody.Part
+    ):Response<MastersModel>
+
+
     
 
 

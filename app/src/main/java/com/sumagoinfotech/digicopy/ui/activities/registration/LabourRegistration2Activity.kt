@@ -192,6 +192,8 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     photo = photoImagePath,
                     isSynced = false,
                     skilled = false,
+                    latitude = latitude.toString(),
+                    longitude = longitude.toString(),
                     skill = labourInputData.skill)
 
                     CoroutineScope(Dispatchers.IO).launch {
