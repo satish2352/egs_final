@@ -41,14 +41,18 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
     }
 
     override fun onBindViewHolder(holder: SyncLandDocumentsAdapter.ViewHolder, position: Int) {
-        holder.tvDocumentName.text=documentList[position].documentName
-        holder.tvPageCount.text=documentList[position].pageCount
-        holder.itemView.setOnClickListener {
-            val file=File(Uri.parse(documentList[position].documentUri).path)
-            openPdfFromUri(holder.itemView.context,file)
+        try {
+            holder.tvDocumentName.text=documentList[position].documentName
+            holder.tvPageCount.text=documentList[position].pageCount
+            holder.itemView.setOnClickListener {
+                val file=File(Uri.parse(documentList[position].documentUri).path)
+                openPdfFromUri(holder.itemView.context,file)
+            }
+            val bitmap=generateThumbnailFromPDF(documentList[position].documentUri,holder.itemView.context)
+            Glide.with(holder.itemView.context).load(bitmap).into(holder.ivDocumentThumb)
+        } catch (e: Exception) {
+
         }
-        val bitmap=generateThumbnailFromPDF(documentList[position].documentUri,holder.itemView.context)
-        Glide.with(holder.itemView.context).load(bitmap).into(holder.ivDocumentThumb)
 
     }
 

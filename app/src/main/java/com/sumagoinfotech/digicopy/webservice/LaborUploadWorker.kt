@@ -23,6 +23,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Calendar
 
 class LaborUploadWorker(
     context: Context,
@@ -39,11 +40,11 @@ class LaborUploadWorker(
                     val fileAadhar =
                         createFilePart(FileInfo("aadhar_image", laborRegistration.aadharImage))
                     val voter_image =
-                        createFilePart(FileInfo("voter_image", laborRegistration.aadharImage))
+                        createFilePart(FileInfo("voter_image", laborRegistration.voterIdImage))
                     val profile_image =
-                        createFilePart(FileInfo("profile_image", laborRegistration.aadharImage))
+                        createFilePart(FileInfo("profile_image", laborRegistration.photo))
                     val mgnrega_image =
-                        createFilePart(FileInfo("mgnrega_image", laborRegistration.aadharImage))
+                        createFilePart(FileInfo("mgnrega_image", laborRegistration.mgnregaIdImage))
                     val response = apiService.uploadLaborInfo(
                         fullName = laborRegistration.fullName,
                         genderId = laborRegistration.gender,
@@ -123,8 +124,9 @@ class LaborUploadWorker(
                     .submit()
                     .get()
 
+                val time= Calendar.getInstance().timeInMillis.toString()
                 // Create a temporary file to store the bitmap
-                val file = File(context.cacheDir, "temp_image.jpg")
+                val file = File(context.cacheDir, "$time.jpg")// Create a temporary file to store the bitmap
                 val outputStream = FileOutputStream(file)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                 outputStream.flush()

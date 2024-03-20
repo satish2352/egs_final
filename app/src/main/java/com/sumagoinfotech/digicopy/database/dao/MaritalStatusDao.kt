@@ -22,7 +22,7 @@ interface MaritalStatusDao {
         insertAll(items)
     }
 
-    @Query("SELECT * FROM marital_status ORDER BY maritalstatus ASC")
+    @Query("SELECT * FROM marital_status ORDER BY id ASC")
     suspend fun getAllMaritalStatus(): List<MaritalStatus>
 
     @Query("SELECT * FROM marital_status WHERE id = :id")

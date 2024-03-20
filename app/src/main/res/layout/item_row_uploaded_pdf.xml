@@ -80,14 +80,14 @@
 
 
         <TextView
-            android:id="@+id/tvPageCount"
+            android:id="@+id/tvDownload"
             android:textSize="12dp"
             android:layout_marginTop="5dp"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:gravity="center"
             android:layout_gravity="center"
-            android:text="3  Pages"
+            android:text="Download"
             android:background="@drawable/rounded_backgroud_blue"
             android:fontFamily="@font/poppins"
             android:textColor="@color/white"

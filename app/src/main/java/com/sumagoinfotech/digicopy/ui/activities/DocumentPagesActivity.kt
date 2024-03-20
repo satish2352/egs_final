@@ -398,6 +398,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                         )
                         toast.show()
                         Log.d("mytag", "Document added successfully : $rows")
+                        setCount()
                     }
                 } else {
                     runOnUiThread {
@@ -407,6 +408,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                             "Document not added please try again",
                             Toast.LENGTH_SHORT
                         )
+                        setCount()
                         toast.show()
                         Log.d("mytag", "Document not added please try again : $rows")
                     }
@@ -503,8 +505,9 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
 
     override fun onResume() {
         super.onResume()
-        updateDocumentList()
+        //updateDocumentList()
         checkAndPromptGps()
+        setCount()
     }
 
     override fun onPause() {
@@ -519,6 +522,12 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
 
     override fun onRestart() {
         super.onRestart()
+
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        setCount()
     }
 
 
@@ -739,6 +748,15 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     }
 
     override fun onUpdateDocumentType(documentName: Document) {
+    }
+
+    fun setCount(){
+        CoroutineScope(Dispatchers.IO).launch{
+            val documentCount=documentDao.getDocumentsCount();
+            withContext(Dispatchers.Main) {
+                binding.tvDocumentsCount.setText("${documentCount}")
+            }
+        }
     }
 }
 

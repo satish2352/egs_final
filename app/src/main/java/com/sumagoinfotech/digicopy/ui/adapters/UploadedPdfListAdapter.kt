@@ -18,7 +18,7 @@ import java.io.File
 
 class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : RecyclerView.Adapter<UploadedPdfListAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
-        val tvPageCount=itemView.findViewById<TextView>(R.id.tvPageCount)
+        val tvDownload=itemView.findViewById<TextView>(R.id.tvDownload)
         val tvDocumentDate=itemView.findViewById<TextView>(R.id.tvDocumentDate)
         val tvDocumentName=itemView.findViewById<TextView>(R.id.tvDocumentName)
         val ivDocumentThumb=itemView.findViewById<ImageView>(R.id.ivDocumentThumb)
@@ -28,7 +28,7 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
         parent: ViewGroup,
         viewType: Int
     ): UploadedPdfListAdapter.ViewHolder {
-        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_sync_land_document,parent,false)
+        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_uploaded_pdf,parent,false)
 
         return UploadedPdfListAdapter.ViewHolder(view)
     }
@@ -38,7 +38,8 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
         holder.itemView.setOnClickListener {
 
         }
-        holder.itemView.setOnClickListener {
+        holder.tvDocumentDate.setText(documentList.get(position).documenttype)
+        holder.tvDownload.setOnClickListener {
             /*val intent = Intent(Intent.ACTION_VIEW)
             intent.setDataAndType(Uri.parse(documentList.get(position).document_pdf), "application/pdf")
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

@@ -96,6 +96,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
             skillsList=skillsDao.getAllSkills()
             genderList=genderDao.getAllGenders()
             withContext(Dispatchers.Main){
+
                 binding.actVillage.setText(prevSelectedVillage.name)
                 binding.actTaluka.setText(prevSelectedTaluka.name)
                 binding.actDistrict.setText(prevselectedDistrict.name)

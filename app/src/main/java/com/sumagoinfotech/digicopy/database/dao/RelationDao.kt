@@ -23,7 +23,7 @@ interface RelationDao {
         insertAll(items)
     }
 
-    @Query("SELECT * FROM relation ORDER BY relation_title ASC")
+    @Query("SELECT * FROM relation ORDER BY id ASC")
     suspend fun getAllRelation(): List<Relation>
 
     @Query("SELECT * FROM relation WHERE id = :id")

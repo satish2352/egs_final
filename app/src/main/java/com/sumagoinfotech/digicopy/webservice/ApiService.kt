@@ -43,6 +43,8 @@ interface ApiService {
 
     @POST("auth/list-labour")
     fun getLabourDataById(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
+    @POST("auth/particular-labour-details")
+    fun getLabourDetailsById(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
 
     @POST("auth/list-user-labours")
     fun getLaboursByProject(@Query("user_id")user_id:String): Call<LabourByMgnregaId>

@@ -38,6 +38,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Calendar
 
 class SyncLabourDataActivity : AppCompatActivity() {
     private lateinit var binding:ActivitySyncLabourDataBinding
@@ -180,9 +181,9 @@ class SyncLabourDataActivity : AppCompatActivity() {
                     .apply(requestOptions)
                     .submit()
                     .get()
-
+                val time=Calendar.getInstance().timeInMillis.toString()
                 // Create a temporary file to store the bitmap
-                val file = File(context.cacheDir, "temp_image.jpg")
+                val file = File(context.cacheDir, "$time.jpg")
                 val outputStream = FileOutputStream(file)
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                 outputStream.flush()
@@ -196,6 +197,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
         }
     }
     private suspend fun createFilePart(fileInfo: FileInfo): MultipartBody.Part? {
+        Log.d("mytag",""+fileInfo.fileUri)
         val file: File? = uriToFile(applicationContext, fileInfo.fileUri)
         return file?.let {
             val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
@@ -216,11 +218,38 @@ class SyncLabourDataActivity : AppCompatActivity() {
                     val aadharCardImage =
                         createFilePart(FileInfo("aadhar_image", laborRegistration.aadharImage))
                     val voterIdImage =
-                        createFilePart(FileInfo("voter_image", laborRegistration.aadharImage))
+                        createFilePart(FileInfo("voter_image", laborRegistration.voterIdImage))
                     val profileImage =
-                        createFilePart(FileInfo("profile_image", laborRegistration.aadharImage))
+                        createFilePart(FileInfo("profile_image", laborRegistration.photo))
                     val mgnregaIdImage =
-                        createFilePart(FileInfo("mgnrega_image", laborRegistration.aadharImage))
+                        createFilePart(FileInfo("mgnrega_image", laborRegistration.mgnregaIdImage))
+//                     lateinit var aadharCardImage :MultipartBody.Part
+//                    lateinit var voterIdImage :MultipartBody.Part
+//                    lateinit var profileImage :MultipartBody.Part
+//                    lateinit var mgnregaIdImage :MultipartBody.Part
+//                    val file: File? = uriToFile(applicationContext, laborRegistration.aadharImage)
+//                    file?.let {
+//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+//                        aadharCardImage = MultipartBody.Part.createFormData("aadhar_image", it.name, requestFile)
+//                        // Use 'part' as needed (e.g., pass it to a Retrofit API call)
+//                    }
+//                    val file2: File? = uriToFile(applicationContext, laborRegistration.voterIdImage)
+//                    file2?.let {
+//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+//                        voterIdImage = MultipartBody.Part.createFormData("voter_image", it.name, requestFile)
+//                        // Use 'part' as needed (e.g., pass it to a Retrofit API call)
+//                    }
+//                    val file3: File? = uriToFile(applicationContext, laborRegistration.photo)
+//                    file3?.let {
+//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+//                        profileImage = MultipartBody.Part.createFormData("profile_image", it.name, requestFile)
+//                        // Use 'part' as needed (e.g., pass it to a Retrofit API call)
+//                    }
+//                    val file4: File? = uriToFile(applicationContext, laborRegistration.mgnregaIdImage)
+//                    file4?.let {
+//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+//                        mgnregaIdImage = MultipartBody.Part.createFormData("mgnrega_image", it.name, requestFile)
+//                    }
                     val response= apiService.uploadLaborInfo(
                         fullName = laborRegistration.fullName,
                         genderId = laborRegistration.gender,
@@ -261,6 +290,14 @@ class SyncLabourDataActivity : AppCompatActivity() {
             }
         }
 
+
+
+    }
+    fun getSize(filePart: MultipartBody.Part): Long {
+        // Access the request body associated with the file part
+        val requestBody = filePart.body
+        // Get the size of the request body
+        return requestBody?.contentLength() ?: 0
     }
 
 }

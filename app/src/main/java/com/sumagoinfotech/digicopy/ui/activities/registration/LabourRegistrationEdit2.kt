@@ -230,7 +230,11 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                         mgnregaIdImagePath= uriMgnregaCard.toString()
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriMgnregaCard.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            getAddressFromLatLong()
+                            try {
+                                getAddressFromLatLong()
+                            } finally {
+
+                            }
                             withContext(Dispatchers.Main){
                                 // binding.ivPhoto.setImageBitmap(bitmap)
                             }
@@ -677,7 +681,7 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     private fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 10, it) }
             outputStream?.flush()
             outputStream?.close()
         } catch (e: Exception) {
@@ -686,33 +690,38 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     }
 
     private fun getAddressFromLatLong():String{
-        val geocoder: Geocoder
-        val addresses: List<Address>?
-        geocoder = Geocoder(this, Locale.getDefault())
-        addresses = geocoder.getFromLocation(
-            latitude, longitude,
-            1) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+        try {
+            val geocoder: Geocoder
+            val addresses: List<Address>?
+            geocoder = Geocoder(this, Locale.getDefault())
+            addresses = geocoder.getFromLocation(
+                latitude, longitude,
+                1) // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
-        var fullAddress=""
-        if (addresses != null) {
-            if(addresses.size>0){
-                fullAddress= addresses!![0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+            var fullAddress=""
+            if (addresses != null) {
+                if(addresses.size>0){
+                    fullAddress= addresses!![0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
-                val city: String = addresses!![0].locality
-                val state: String = addresses!![0].adminArea
-                val country: String = addresses!![0].countryName
-                val postalCode: String = addresses!![0].postalCode
-                val knownName: String = addresses!![0].featureName
+                    val city: String = addresses!![0].locality
+                    val state: String = addresses!![0].adminArea
+                    val country: String = addresses!![0].countryName
+                    val postalCode: String = addresses!![0].postalCode
+                    val knownName: String = addresses!![0].featureName
 
-                Log.d("mytag",fullAddress)
-                Log.d("mytag",city)
-                Log.d("mytag",state)
-                Log.d("mytag",country)
-                Log.d("mytag",postalCode)
-                Log.d("mytag",knownName)
+                    Log.d("mytag",fullAddress)
+                    Log.d("mytag",city)
+                    Log.d("mytag",state)
+                    Log.d("mytag",country)
+                    Log.d("mytag",postalCode)
+                    Log.d("mytag",knownName)
+                }
             }
+            return fullAddress
+        } catch (e: Exception) {
+            return ""
+
         }
-        return fullAddress
 
     }
 
