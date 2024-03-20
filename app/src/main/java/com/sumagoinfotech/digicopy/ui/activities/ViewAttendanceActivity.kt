@@ -229,9 +229,15 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
                                     )
                                     toast.show()
                                 }
+                            }else{
+                                val toast = Toast.makeText(
+                                    this@ViewAttendanceActivity,
+                                    getString(R.string.attendance_updating_failed),
+                                    Toast.LENGTH_SHORT
+                                )
+                                toast.show()
                             }
                         }
-
                         override fun onFailure(call: Call<MastersModel>, t: Throwable) {
                             Log.d("mytag","showAttendanceDialog : onFailure "+t.message)
                             dialog.dismiss()

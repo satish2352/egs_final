@@ -421,12 +421,23 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 }*/
                 Log.d("mytag", "Document Inserted : $rows")
             } catch (e: Exception) {
+
+                dialog.dismiss()
                 Log.d("mytag", "Exception saveRecordToDatabase : ${e.message}")
                 e.printStackTrace()
+                runOnUiThread {
+                    dialog.dismiss()
+                    val toast = Toast.makeText(
+                        this@DocumentPagesActivity,
+                        "Document not added please try again",
+                        Toast.LENGTH_SHORT
+                    )
+                }
             }
         }
     }
     private fun savePdfFileToStorage(uri: Uri?, pageCount: String, documentId: String) {
+        Log.d("mytag","savePdfFileToStorage : Inside")
         dialog.show()
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -448,6 +459,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 val pageSize = pdfDoc.getFirstPage().getPageSize()
                 for (pageNum in 1..pdfDoc.numberOfPages)
                 {
+                    Log.d("mytag","assigning latlong : Inside")
                     val page = pdfDoc.getPage(pageNum)
                     val document = com.itextpdf.layout.Document(pdfDoc, PageSize.A4)
                     val paragraph = Paragraph("$latitude,$longitude \n $addressFromLatLong \n $formattedDateTime")

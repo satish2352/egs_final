@@ -277,6 +277,12 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                     binding.projectArea.clearListSelection()
                                     binding.projectArea.setText("")
                                 }
+                            }else{
+                                val toast = Toast.makeText(
+                                    this@AllocateWorkActivity, "Unable to mark  please try again",
+                                    Toast.LENGTH_SHORT
+                                )
+                                toast.show()
                             }
                         }
 

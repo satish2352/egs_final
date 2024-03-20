@@ -86,7 +86,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
                     if(response.isSuccessful){
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)
-                        if(response.body()?.status.equals("success")){
+                        if(response.body()?.status.equals("true")){
                             document.isSynced=true
                             documentDao.updateDocument(document)
                             Log.d("mytag","Document upload successful  "+document.id)

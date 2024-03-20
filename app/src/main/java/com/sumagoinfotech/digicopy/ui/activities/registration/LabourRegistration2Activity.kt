@@ -527,7 +527,6 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 }
             }
     }
-
     private fun showAddFamilyDetailsDialog() {
         val dialog=Dialog(this@LabourRegistration2Activity)
         dialog.setContentView(R.layout.layout_dialog_add_family_details)
