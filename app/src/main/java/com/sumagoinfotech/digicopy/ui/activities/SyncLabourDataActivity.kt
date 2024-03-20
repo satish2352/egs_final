@@ -69,7 +69,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            finish()
+            //finish()
         }
         if(item.itemId==R.id.navigation_sync){
 

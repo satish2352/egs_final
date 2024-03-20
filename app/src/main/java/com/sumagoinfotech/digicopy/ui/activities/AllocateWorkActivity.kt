@@ -216,86 +216,93 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     }
 
     private fun showAttendanceDialog(fullName: String, labourImage: String, mgnregaId: String) {
-        val dialog = Dialog(this@AllocateWorkActivity)
-        dialog.setContentView(R.layout.layout_dialog_mark_attendence)
-        val width = ViewGroup.LayoutParams.MATCH_PARENT
-        val height = ViewGroup.LayoutParams.WRAP_CONTENT
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(width, height)
-        dialog.show()
-        val tvFullName = dialog.findViewById<TextView>(R.id.tvFullName)
-        val ivPhoto = dialog.findViewById<ImageView>(R.id.ivPhoto)
-        val radioGroupAttendance = dialog.findViewById<RadioGroup>(R.id.radioGroupAttendance)
-        tvFullName.text = fullName
-        Glide.with(this@AllocateWorkActivity).load(labourImage).into(ivPhoto)
-        val btnSubmit = dialog.findViewById<Button>(R.id.btnSubmit)
-        btnSubmit.setOnClickListener {
-            if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
+        try {
+            val dialog = Dialog(this@AllocateWorkActivity)
+            dialog.setContentView(R.layout.layout_dialog_mark_attendence)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window?.setLayout(width, height)
+            dialog.show()
+            val tvFullName = dialog.findViewById<TextView>(R.id.tvFullName)
+            val ivPhoto = dialog.findViewById<ImageView>(R.id.ivPhoto)
+            val radioGroupAttendance = dialog.findViewById<RadioGroup>(R.id.radioGroupAttendance)
+            tvFullName.text = fullName
+            Glide.with(this@AllocateWorkActivity).load(labourImage).into(ivPhoto)
+            val btnSubmit = dialog.findViewById<Button>(R.id.btnSubmit)
+            btnSubmit.setOnClickListener {
+                if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
 
-                var dayType = ""
-                if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
-                    dayType = "Half Day"
-                } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
-                    dayType = "Full Day"
-                }
-                val call =
-                    apiService.markAttendance(selectedProjectId, mgnregaId = mgnregaId, dayType)
-                call.enqueue(object : Callback<MastersModel> {
-                    override fun onResponse(
-                        call: Call<MastersModel>,
-                        response: Response<MastersModel>
-                    ) {
-                        dialog.dismiss()
-                        if (response.isSuccessful) {
+                    var dayType = ""
+                    if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
+                        dayType = "Half Day"
+                    } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
+                        dayType = "Full Day"
+                    }
+                    val call =
+                        apiService.markAttendance(selectedProjectId, mgnregaId = mgnregaId, dayType)
+                    call.enqueue(object : Callback<MastersModel> {
+                        override fun onResponse(
+                            call: Call<MastersModel>,
+                            response: Response<MastersModel>
+                        ) {
+                            Log.d("mytag","showAttendanceDialog : onResponse ");
+                            dialog.dismiss()
+                            if (response.isSuccessful) {
 
-                            if (response.body()?.status.equals("true")) {
-                                val toast = Toast.makeText(
-                                    this@AllocateWorkActivity, "Attendance marked successfully",
-                                    Toast.LENGTH_SHORT
-                                )
-                                toast.show()
-                                labourDataList.clear()
-                                binding.recyclerViewAttendance.adapter=adapter
-                                adapter.notifyDataSetChanged()
-                                binding.etLabourId.setText("")
-                                binding.tvProjectAddress.setText("")
-                                binding.projectArea.clearListSelection()
-                                binding.projectArea.setText("")
-                            }else{
-                                val toast = Toast.makeText(
-                                    this@AllocateWorkActivity, "Attendance marking failed",
-                                    Toast.LENGTH_SHORT
-                                )
-                                toast.show()
-                                labourDataList.clear()
-                                binding.recyclerViewAttendance.adapter=adapter
-                                adapter.notifyDataSetChanged()
-                                binding.etLabourId.setText("")
-                                binding.tvProjectAddress.setText("")
-                                binding.projectArea.clearListSelection()
-                                binding.projectArea.setText("")
+                                if (response.body()?.status.equals("true")) {
+                                    val toast = Toast.makeText(
+                                        this@AllocateWorkActivity, "Attendance marked successfully",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    toast.show()
+                                    labourDataList.clear()
+                                    binding.recyclerViewAttendance.adapter=adapter
+                                    adapter.notifyDataSetChanged()
+                                    binding.etLabourId.setText("")
+                                    binding.tvProjectAddress.setText("")
+                                    binding.projectArea.clearListSelection()
+                                    binding.projectArea.setText("")
+                                }else{
+                                    val toast = Toast.makeText(
+                                        this@AllocateWorkActivity, response.body()?.message,
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    toast.show()
+                                    labourDataList.clear()
+                                    binding.recyclerViewAttendance.adapter=adapter
+                                    adapter.notifyDataSetChanged()
+                                    binding.etLabourId.setText("")
+                                    binding.tvProjectAddress.setText("")
+                                    binding.projectArea.clearListSelection()
+                                    binding.projectArea.setText("")
+                                }
                             }
                         }
-                    }
 
-                    override fun onFailure(call: Call<MastersModel>, t: Throwable) {
-                        dialog.dismiss()
-                        val toast = Toast.makeText(
-                            this@AllocateWorkActivity, "Error occured during api call",
-                            Toast.LENGTH_SHORT
-                        )
-                        toast.show()
-                    }
-                })
+                        override fun onFailure(call: Call<MastersModel>, t: Throwable) {
+                            Log.d("mytag","showAttendanceDialog : onFailure "+t.message);
+                            dialog.dismiss()
+                            val toast = Toast.makeText(
+                                this@AllocateWorkActivity, "Error occured during api call",
+                                Toast.LENGTH_SHORT
+                            )
+                            toast.show()
+                        }
+                    })
 
-            } else {
-                val toast = Toast.makeText(
-                    this@AllocateWorkActivity, "Select Day",
-                    Toast.LENGTH_SHORT
-                )
-                toast.show()
+                } else {
+                    val toast = Toast.makeText(
+                        this@AllocateWorkActivity, "Select Day",
+                        Toast.LENGTH_SHORT
+                    )
+                    toast.show()
+                }
+
             }
-
+        } catch (e: Exception) {
+            Log.d("mytag","showAttendanceDialog : Exception "+e.message);
+            e.printStackTrace()
         }
     }
 

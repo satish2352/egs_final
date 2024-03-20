@@ -8,6 +8,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.model.apis.skills.SkillsModel
+import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -57,11 +58,21 @@ interface ApiService {
         @Query("mgnrega_card_id") mgnregaId: String,
         @Query("attendance_day") attendanceDay: String):Call<MastersModel>
 
+    @POST("auth/update-attendance-mark")
+    fun updateAttendance(
+        @Query("project_id") projectId: String,
+        @Query("mgnrega_card_id") mgnregaId: String,
+        @Query("attendance_day") attendanceDay: String):Call<MastersModel>
+
+
+
     // get list attendance marked
     @POST("auth/list-attendance-marked")
     fun getListOfMarkedAttendance(
         @Query("project_id") projectId: String,
     ):Call<AttendanceModel>
+
+
 
 
     @Multipart
@@ -87,12 +98,15 @@ interface ApiService {
     ):Response<MastersModel>
 
     @Multipart
-    @POST("auth/upload_document")
-    suspend fun UploadDocument(
+    @POST("auth/add-document")
+    suspend fun uploadDocument(
+        @Query("document_type_id") documentId: String,
+        @Query("document_name") documentName: String,
         @Part file: MultipartBody.Part
     ):Response<MastersModel>
 
-
+    @POST("auth/list-document")
+    fun getUploadedDocumentsList():Call<UploadedDocsModel>
     
 
 

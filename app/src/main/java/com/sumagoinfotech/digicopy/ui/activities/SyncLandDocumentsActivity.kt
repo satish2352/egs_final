@@ -21,6 +21,7 @@ import com.sumagoinfotech.digicopy.database.entity.Document
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLandDocumentsBinding
 import com.sumagoinfotech.digicopy.ui.adapters.DocumentPagesAdapter
 import com.sumagoinfotech.digicopy.ui.adapters.SyncLandDocumentsAdapter
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.FileInfo
 import kotlinx.coroutines.CoroutineScope
@@ -73,29 +74,39 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
     }
 
     private fun uploadDocuments() {
+        val dialog=CustomProgressDialog(this@SyncLandDocumentsActivity)
+        dialog.show()
         val apiService = ApiClient.create(this@SyncLandDocumentsActivity)
         CoroutineScope(Dispatchers.IO).launch {
             val documents = documentDao.getAllDocuments()
             try {
                 documents.forEach { document ->
-                    val filePart = createFilePart(FileInfo("file", document.documentUri))
-                    val response=apiService.UploadDocument(filePart!!)
+                    val filePart = createFilePart(FileInfo("document_pdf", document.documentUri))
+                    val response=apiService.uploadDocument(document.documentId,document.documentName,filePart!!)
                     if(response.isSuccessful){
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)
-                        if(response.body()?.status.equals("True")){
+                        if(response.body()?.status.equals("success")){
                             document.isSynced=true
                             documentDao.updateDocument(document)
+                            Log.d("mytag","Document upload successful  "+document.id)
+                            updateDocumentList()
                         }else{
-
+                            updateDocumentList()
+                            Log.d("mytag","Document upload (response.unsccessful  "+document.id)
                         }
                     }else{
+                        updateDocumentList()
                         Log.d("mytag","Document upload failed  "+document.id)
                     }
                 }
 
+                dialog.dismiss()
+
             } catch (e: Exception) {
-                Log.d("mytag","Upload Document Online "+e.message)
+                updateDocumentList()
+                dialog.dismiss()
+                Log.d("mytag","Upload Document Online Exception "+e.message)
             }
         }
 

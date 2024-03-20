@@ -1,19 +1,20 @@
 package com.sumagoinfotech.digicopy.model.apis.attendance
 
 data class AttendanceData(
-    val aadhar_image: String,
-    val attendance_day: String,
-    val date_of_birth: String,
-    val family_details: List<Any>,
-    val full_name: String,
-    val id: Int,
-    val landline_number: String,
-    val latitude: String,
-    val longitude: String,
-    val mgnrega_card_id: String,
-    val mgnrega_image: String,
-    val mobile_number: String,
-    val profile_image: String,
-    val project_name: String,
-    val voter_image: String
+    var aadhar_image: String,
+    var attendance_day: String,
+    var date_of_birth: String,
+    var family_details: List<Any>,
+    var full_name: String,
+    var id: Int,
+    var landline_number: String,
+    var latitude: String,
+    var longitude: String,
+    var mgnrega_card_id: String,
+    var mgnrega_image: String,
+    var mobile_number: String,
+    var profile_image: String,
+    var project_name: String,
+    var voter_image: String,
+    var project_id:String
 )

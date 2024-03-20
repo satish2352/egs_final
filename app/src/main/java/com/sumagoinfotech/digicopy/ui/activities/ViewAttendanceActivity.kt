@@ -1,18 +1,30 @@
 package com.sumagoinfotech.digicopy.ui.activities
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityViewAttendanceBinding
+import com.sumagoinfotech.digicopy.interfaces.AttendanceEditListener
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceData
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
+import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.ui.adapters.ViewAttendanceAdapter
@@ -23,7 +35,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ViewAttendanceActivity : AppCompatActivity() {
+class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
 
     private lateinit var binding:ActivityViewAttendanceBinding
     private lateinit var attendanceList:ArrayList<AttendanceData>
@@ -43,7 +55,7 @@ class ViewAttendanceActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         attendanceList=ArrayList()
         listProject=ArrayList()
-        adapter=ViewAttendanceAdapter(attendanceList)
+        adapter=ViewAttendanceAdapter(attendanceList,this@ViewAttendanceActivity)
         binding.recyclerView.adapter=adapter
         binding.actSelectProject.setOnClickListener {
             binding.actSelectProject.showDropDown()
@@ -130,7 +142,7 @@ class ViewAttendanceActivity : AppCompatActivity() {
                     attendanceList.clear()
                     if(response.body()?.status.equals("true")){
                         attendanceList= (response.body()?.data as ArrayList<AttendanceData>?)!!
-                        adapter= ViewAttendanceAdapter(attendanceList)
+                        adapter= ViewAttendanceAdapter(attendanceList,this@ViewAttendanceActivity)
                         binding.recyclerView.adapter=adapter
                         adapter.notifyDataSetChanged()
                     }
@@ -151,5 +163,98 @@ class ViewAttendanceActivity : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onAttendanceEdit(data: AttendanceData,position:Int) {
+
+        showAttendanceDialog(data,position)
+    }
+    private fun showAttendanceDialog(data: AttendanceData,position: Int) {
+        try {
+            val dialog = Dialog(this@ViewAttendanceActivity)
+            dialog.setContentView(R.layout.layout_dialog_mark_attendence)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window?.setLayout(width, height)
+            dialog.show()
+            val tvFullName = dialog.findViewById<TextView>(R.id.tvFullName)
+            val ivPhoto = dialog.findViewById<ImageView>(R.id.ivPhoto)
+            val radioGroupAttendance = dialog.findViewById<RadioGroup>(R.id.radioGroupAttendance)
+            val radioButtonHalfDay = dialog.findViewById<RadioButton>(R.id.radioButtonHalfDay)
+            val radioButtonFullDay = dialog.findViewById<RadioButton>(R.id.radioButtonFullDay)
+            tvFullName.text = data.full_name
+            Glide.with(this@ViewAttendanceActivity).load(data.profile_image).into(ivPhoto)
+            if(data.attendance_day.equals("Half Day")){
+                radioButtonHalfDay.isChecked = true
+            }else {
+                radioButtonFullDay.isChecked=true
+            }
+            val btnSubmit = dialog.findViewById<Button>(R.id.btnSubmit)
+            btnSubmit.setOnClickListener {
+                if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
+                    var dayType = ""
+                    if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
+                        dayType = "Half Day"
+                    } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
+                        dayType = "Full Day"
+                    }
+                    Log.d("mytag","showAttendanceDialog : "+dayType)
+                    val call = apiService.updateAttendance(projectId = data.project_id, mgnregaId = data.mgnrega_card_id, attendanceDay = dayType)
+                    call.enqueue(object : Callback<MastersModel> {
+                        override fun onResponse(
+                            call: Call<MastersModel>,
+                            response: Response<MastersModel>
+                        ) {
+                            Log.d("mytag","showAttendanceDialog : onResponse ")
+                            dialog.dismiss()
+                            if (response.isSuccessful) {
+
+                                if (response.body()?.status.equals("true")) {
+                                    data.attendance_day=dayType
+                                    val toast = Toast.makeText(
+                                        this@ViewAttendanceActivity,
+                                        getString(R.string.attendance_updated_successfully),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    toast.show()
+                                   attendanceList.set(position,data)
+                                    adapter.notifyDataSetChanged()
+
+                                }else{
+                                    val toast = Toast.makeText(
+                                        this@ViewAttendanceActivity,
+                                        getString(R.string.attendance_updating_failed),
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    toast.show()
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<MastersModel>, t: Throwable) {
+                            Log.d("mytag","showAttendanceDialog : onFailure "+t.message)
+                            dialog.dismiss()
+                            val toast = Toast.makeText(
+                                this@ViewAttendanceActivity,
+                                getString(R.string.error_occured_during_api_call),
+                                Toast.LENGTH_SHORT
+                            )
+                            toast.show()
+                        }
+                    })
+
+                } else {
+                    val toast = Toast.makeText(
+                        this@ViewAttendanceActivity, getString(R.string.select_day),
+                        Toast.LENGTH_SHORT
+                    )
+                    toast.show()
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","showAttendanceDialog : Exception "+e.message)
+            e.printStackTrace()
+        }
     }
 }

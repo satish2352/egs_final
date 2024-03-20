@@ -72,4 +72,9 @@
     <string name="view_attendance">View Attendance</string>
     <string name="select_project">Select Project</string>
     <string name="project_name">Project Name</string>
+    <string name="attendance_updated_successfully">Attendance updated successfully</string>
+    <string name="attendance_updating_failed">Attendance updating failed</string>
+    <string name="error_occured_during_api_call">Error occured during api call</string>
+    <string name="select_day">Select Day</string>
+    <string name="uploaded_documents">Uploaded Documents</string>
 </resources>

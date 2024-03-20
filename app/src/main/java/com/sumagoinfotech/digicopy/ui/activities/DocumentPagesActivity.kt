@@ -110,6 +110,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private  var addressFromLatLong:String=""
     private  var isInternetAvailable=false
     private lateinit var dialog:CustomProgressDialog
+    private var selectedDocumentId=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_pages)
@@ -172,6 +173,16 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 }
             }
         requestThePermissions()
+        binding.cardOfflineDocs.setOnClickListener {
+
+            val intent=Intent(this@DocumentPagesActivity,SyncLandDocumentsActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cardUploadedDocs.setOnClickListener {
+
+            val intent=Intent(this@DocumentPagesActivity,ViewUploadedDocumentsActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 
@@ -303,6 +314,10 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             actDocumentType.showDropDown()
         }
 
+        actDocumentType.setOnItemClickListener { parent, view, position, id ->
+            selectedDocumentId=documentTypeList[position].id.toString()
+        }
+
         ivAddDocument.setOnClickListener {
 
             if (validateFields()) {
@@ -352,7 +367,8 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         pdfUri: Uri,
         documentName: String,
         pageCount: String,
-        documentId: String
+        documentId: String,
+        date: String
     ) {
         Log.d("mytag", "------>" + documentName)
         val document = Document(
@@ -360,7 +376,8 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             pageCount = pageCount,
             documentUri = pdfUri.toString(),
             isSynced = false,
-            documentId = documentId
+            documentId = documentId,
+            date=date
         )
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -394,12 +411,12 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                         Log.d("mytag", "Document not added please try again : $rows")
                     }
                 }
-                documentList = documentDao.getAllDocuments()
+               /* documentList = documentDao.getAllDocuments()
                 withContext(Dispatchers.Main) {
                     adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
                     binding.recyclerViewDocumentPages.adapter = adapter
                     adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
-                }
+                }*/
                 Log.d("mytag", "Document Inserted : $rows")
             } catch (e: Exception) {
                 Log.d("mytag", "Exception saveRecordToDatabase : ${e.message}")
@@ -468,7 +485,7 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 // Close the InputStream and FileOutputStream
                 inputStream.close()
                 fileOutputStream.close()
-                saveRecordToDatabase(savedFileUri, documentName, pageCount, documentId = formattedDateTime)
+                saveRecordToDatabase(savedFileUri, documentName, pageCount, documentId = selectedDocumentId,formattedDateTime)
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d("mytag","SavePdfException : "+e.message)

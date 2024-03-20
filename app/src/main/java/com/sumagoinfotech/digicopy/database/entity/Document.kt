@@ -11,4 +11,5 @@ data class Document(
     var pageCount:String,
     var isSynced: Boolean,
     var documentId: String,
+    var date: String,
 )
