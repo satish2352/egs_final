@@ -118,7 +118,6 @@ class OfficerMainActivity : AppCompatActivity(),
                 navController.navigate(R.id.navigation_officer_reports)
                 return true
             }
-            // Add other cases for additional bottom navigation items if needed
         }
         return false
     }
