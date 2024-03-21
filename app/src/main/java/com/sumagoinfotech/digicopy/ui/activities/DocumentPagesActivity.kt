@@ -383,14 +383,8 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val rows = documentDao.insertDocument(document)
-               /* val documentType = documentTypeDao.getDocumentByName(documentName)
-                if (documentType != null) {
-                    documentType.isAdded = true
-                    documentTypeDao.updateDocumentType(documentType)
-                }*/
                 if (rows > 0) {
                     runOnUiThread {
-                        dialog.dismiss()
                         val toast = Toast.makeText(
                             this@DocumentPagesActivity,
                             "Document added successfully",
@@ -402,7 +396,6 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                     }
                 } else {
                     runOnUiThread {
-                        dialog.dismiss()
                         val toast = Toast.makeText(
                             this@DocumentPagesActivity,
                             "Document not added please try again",
@@ -413,20 +406,11 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                         Log.d("mytag", "Document not added please try again : $rows")
                     }
                 }
-               /* documentList = documentDao.getAllDocuments()
-                withContext(Dispatchers.Main) {
-                    adapter = DocumentPagesAdapter(documentList, this@DocumentPagesActivity)
-                    binding.recyclerViewDocumentPages.adapter = adapter
-                    adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
-                }*/
                 Log.d("mytag", "Document Inserted : $rows")
             } catch (e: Exception) {
-
-                dialog.dismiss()
                 Log.d("mytag", "Exception saveRecordToDatabase : ${e.message}")
                 e.printStackTrace()
                 runOnUiThread {
-                    dialog.dismiss()
                     val toast = Toast.makeText(
                         this@DocumentPagesActivity,
                         "Document not added please try again",
@@ -479,14 +463,6 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                     )
                 }
                 val imageQr=Image(ImageDataFactory.create(generateQRCodeByteArray("filedownload/$documentName",500,500)))
-//                val pageWidth = pdfDoc.defaultPageSize.width
-//                val pageHeight = pdfDoc.defaultPageSize.height
-//                val imageWidth = imageQr.imageScaledWidth
-//                val imageHeight = imageQr.imageScaledHeight
-//                val xPos = (pageWidth - imageWidth) / 2
-//                val yPos = (pageHeight - imageHeight) / 2
-//                // Add image to the center of the page
-//                imageQr.setFixedPosition(xPos, yPos)
                 pdfDoc.addNewPage(1, PageSize.A4)
                 val resultDocument=com.itextpdf.layout.Document(pdfDoc)
                 resultDocument.add(imageQr)
@@ -500,7 +476,9 @@ class DocumentPagesActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 inputStream.close()
                 fileOutputStream.close()
                 saveRecordToDatabase(savedFileUri, documentName, pageCount, documentId = selectedDocumentId,formattedDateTime)
+                dialog.dismiss()
             } catch (e: Exception) {
+                dialog.dismiss()
                 e.printStackTrace()
                 Log.d("mytag","SavePdfException : "+e.message)
             }
