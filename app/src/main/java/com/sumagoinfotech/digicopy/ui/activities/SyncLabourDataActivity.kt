@@ -20,7 +20,7 @@ import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.model.LabourWithAreaNames
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLabourDataBinding
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
-import com.sumagoinfotech.digicopy.ui.adapters.LabourListAdapter
+import com.sumagoinfotech.digicopy.adapters.LabourListAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.FileInfo
@@ -45,7 +45,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
     lateinit var labourList:List<LabourWithAreaNames>
-    lateinit var  adapter:LabourListAdapter
+    lateinit var  adapter: LabourListAdapter
     private lateinit var dialog:CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +99,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
             }
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                adapter=LabourListAdapter(labourList)
+                adapter= LabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
@@ -120,7 +120,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                adapter=LabourListAdapter(labourList)
+                adapter= LabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
@@ -135,7 +135,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                adapter=LabourListAdapter(labourList)
+                adapter= LabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }

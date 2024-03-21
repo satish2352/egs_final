@@ -19,8 +19,8 @@ import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.DocumentDao
 import com.sumagoinfotech.digicopy.database.entity.Document
 import com.sumagoinfotech.digicopy.databinding.ActivitySyncLandDocumentsBinding
-import com.sumagoinfotech.digicopy.ui.adapters.DocumentPagesAdapter
-import com.sumagoinfotech.digicopy.ui.adapters.SyncLandDocumentsAdapter
+import com.sumagoinfotech.digicopy.adapters.DocumentPagesAdapter
+import com.sumagoinfotech.digicopy.adapters.SyncLandDocumentsAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.FileInfo
@@ -39,7 +39,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
     private lateinit var appDatabase: AppDatabase
     private lateinit var documentDao: DocumentDao
     private lateinit var documentList: List<Document>
-    private lateinit var adapter:SyncLandDocumentsAdapter
+    private lateinit var adapter: SyncLandDocumentsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySyncLandDocumentsBinding.inflate(layoutInflater)
@@ -47,7 +47,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
         val layoutManager=GridLayoutManager(this,2,RecyclerView.VERTICAL,false)
         binding.recyclerViewSyncLandDocuments.layoutManager=layoutManager
         documentList=ArrayList<Document>()
-        adapter=SyncLandDocumentsAdapter(documentList as ArrayList<Document>)
+        adapter= SyncLandDocumentsAdapter(documentList as ArrayList<Document>)
         binding.recyclerViewSyncLandDocuments.adapter=adapter
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.sync_land_documents)

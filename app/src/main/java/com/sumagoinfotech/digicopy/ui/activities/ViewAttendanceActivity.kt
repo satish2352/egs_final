@@ -27,7 +27,7 @@ import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
-import com.sumagoinfotech.digicopy.ui.adapters.ViewAttendanceAdapter
+import com.sumagoinfotech.digicopy.adapters.ViewAttendanceAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -55,7 +55,7 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
         binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         attendanceList=ArrayList()
         listProject=ArrayList()
-        adapter=ViewAttendanceAdapter(attendanceList,this@ViewAttendanceActivity)
+        adapter= ViewAttendanceAdapter(attendanceList,this@ViewAttendanceActivity)
         binding.recyclerView.adapter=adapter
         binding.actSelectProject.setOnClickListener {
             binding.actSelectProject.showDropDown()
@@ -76,6 +76,7 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
         getAttendanceList(selectedProjectId);
     }
     private fun getProjectList() {
+        try {
             val apiService = ApiClient.create(this@ViewAttendanceActivity)
             val call = apiService.getProjectList()
             call.enqueue(object : Callback<ProjectLabourListForMarker> {
@@ -124,6 +125,8 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
                     ).show()
                 }
             })
+        } catch (e: Exception) {
+        }
 
     }
 

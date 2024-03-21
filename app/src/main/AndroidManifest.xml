@@ -24,9 +24,34 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
-            android:parentActivityName=".ui.activities.DocumentPagesActivity"
-            android:name=".ui.activities.ViewUploadedDocumentsActivity"
+            android:name=".ui.activities.officer.ui.activities.OfficersLaboursApprovedList"
             android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerLabourNotApprovedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerLaboursReceivedForApproval"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewNotApprovedLabourDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.OfficerMainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_officer_main" />
+        <activity
+            android:name=".ui.activities.ViewLaboursListApproved"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewLabourNotApproved"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewLaboursListSentForApprovalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewUploadedDocumentsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activities.ScanDocumentsActivity" />
         <activity
             android:name=".ui.activities.ViewAttendanceActivity"
             android:exported="false" />
@@ -40,7 +65,7 @@
             android:name=".ui.activities.ViewLabourDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.SplashActivity"
+            android:name=".ui.activities.start.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
@@ -62,7 +87,7 @@
             android:name=".ui.activities.ScannerActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.DocumentPagesActivity"
+            android:name=".ui.activities.ScanDocumentsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.ScanBarcodeActivity"
@@ -81,7 +106,7 @@
             android:name=".ui.activities.registration.LabourRegistration2Activity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.LoginActivity"
+            android:name=".ui.activities.start.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity

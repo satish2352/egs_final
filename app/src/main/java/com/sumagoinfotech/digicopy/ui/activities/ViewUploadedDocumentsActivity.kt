@@ -10,7 +10,7 @@ import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityViewUploadedDocumetsBinding
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocument
-import com.sumagoinfotech.digicopy.ui.adapters.UploadedPdfListAdapter
+import com.sumagoinfotech.digicopy.adapters.UploadedPdfListAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService

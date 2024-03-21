@@ -286,7 +286,7 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="center"
+                                    android:scaleType="fitCenter"
                                     android:id="@+id/ivVoterId"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
@@ -316,7 +316,7 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="center"
+                                    android:scaleType="fitCenter"
                                     android:id="@+id/ivAadhar"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
@@ -352,7 +352,7 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="center"
+                                    android:scaleType="fitCenter"
                                     android:id="@+id/ivMnregaCard"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"

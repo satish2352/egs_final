@@ -5,14 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.activities.DocumentPagesActivity">
+    tools:context=".ui.activities.ScanDocumentsActivity">
     <LinearLayout
+        android:layout_margin="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
     <androidx.cardview.widget.CardView
         android:id="@+id/cardUploadedDocs"
-        android:layout_marginTop="36dp"
         app:cardCornerRadius="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
             <LinearLayout
                 android:weightSum="10"
                 android:paddingTop="16dp"
@@ -32,10 +31,9 @@
                 <ImageView
                     android:background="@drawable/circle_blue_background"
                     android:layout_weight="4"
-                    android:src="@drawable/document1"
+                    android:src="@drawable/upload_icon"
                     android:layout_width="250dp"
                     android:layout_height="150dp"></ImageView>
-
                 <TextView
                     android:textColor="@color/black"
                     android:layout_marginRight="16dp"
@@ -54,9 +52,8 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
-
                 <TextView
-                    android:visibility="gone"
+                    android:visibility="invisible"
                     android:layout_weight="1"
                     android:layout_marginRight="16dp"
                     android:layout_marginLeft="16dp"
@@ -68,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
                 <TextView
-                    android:visibility="gone"
+                    android:visibility="invisible"
                     android:layout_weight="6"
                     android:layout_marginRight="16dp"
                     android:layout_gravity="center"
@@ -79,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"></TextView>
                 <androidx.cardview.widget.CardView
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:layout_marginRight="16dp"
                     android:layout_gravity="center"
                     app:cardCornerRadius="16dp"
@@ -109,13 +106,11 @@
         app:cardCornerRadius="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
         <LinearLayout
             android:id="@+id/layoutOfflineDocuments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
             <LinearLayout
                 android:weightSum="10"
                 android:paddingTop="16dp"
@@ -130,7 +125,6 @@
                     android:src="@drawable/document1"
                     android:layout_width="250dp"
                     android:layout_height="150dp"></ImageView>
-
                 <TextView
                     android:textColor="@color/black"
                     android:layout_marginRight="16dp"
@@ -148,7 +142,6 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
-
                 <TextView
                     android:layout_weight="1"
                     android:id="@+id/tvDocumentsCount"

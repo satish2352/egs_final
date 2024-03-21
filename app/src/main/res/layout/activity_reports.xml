@@ -7,7 +7,6 @@
     android:orientation="vertical"
     android:background="#CEC3FF"
     tools:context=".ui.activities.ReportsActivity">
-
     <LinearLayout
         android:layout_marginTop="24dp"
         android:layout_width="match_parent"
@@ -18,14 +17,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="36dp"
             android:layout_marginRight="36dp"
             app:cardCornerRadius="24dp">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -98,8 +95,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
             <HorizontalScrollView
+                android:visibility="invisible"
                 android:scrollbarSize="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -230,17 +227,291 @@
 
                 </LinearLayout>
             </HorizontalScrollView>
-
-
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewReports"
-                android:paddingTop="24dp"
-                android:paddingLeft="24dp"
-                android:paddingRight="24dp"
+            <LinearLayout
+                android:layout_margin="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardSentForApproval"
+                    app:cardCornerRadius="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:weightSum="10"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            android:background="#EEEBFF"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_marginLeft="16dp"
+                                android:background="@drawable/circle_blue_background"
+                                android:layout_weight="4"
+                                android:src="@drawable/ic_upload"
+                                android:layout_width="110dp"
+                                android:layout_height="60dp"></ImageView>
+                            <TextView
+                                android:textColor="@color/black"
+                                android:layout_marginRight="16dp"
+                                android:layout_marginLeft="16dp"
+                                android:layout_gravity="center"
+                                android:layout_weight="6"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="16dp"
+                                android:text="Registrations Sent For Approval"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"></TextView>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:visibility="visible"
+                            android:background="@color/appBlue"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp">
+                            <TextView
+                                android:visibility="invisible"
+                                android:layout_weight="1"
+                                android:layout_marginRight="16dp"
+                                android:layout_marginLeft="16dp"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="32dp"
+                                android:text="0"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></TextView>
+                            <TextView
+                                android:visibility="invisible"
+                                android:layout_weight="6"
+                                android:layout_marginRight="16dp"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="16dp"
+                                android:text="@string/entries_to_sync"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></TextView>
+                            <androidx.cardview.widget.CardView
+                                android:visibility="visible"
+                                android:layout_marginRight="16dp"
+                                android:layout_gravity="center"
+                                app:cardCornerRadius="16dp"
+                                android:layout_width="50dp"
+                                android:layout_height="30dp">
+                                <LinearLayout
+                                    android:gravity="center_horizontal"
+                                    android:layout_gravity="center"
+                                    android:orientation="horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                    <ImageView
+                                        android:layout_gravity="center_horizontal"
+                                        android:src="@drawable/arrow_right"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"></ImageView>
+                                </LinearLayout>
+
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardSentNotApproved"
+                    app:cardCornerRadius="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:weightSum="10"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            android:background="#EEEBFF"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_marginLeft="16dp"
+                                android:background="@drawable/circle_blue_background"
+                                android:layout_weight="4"
+                                android:src="@drawable/ic_user_not_approved"
+                                android:layout_width="110dp"
+                                android:layout_height="60dp"></ImageView>
+                            <TextView
+                                android:textColor="@color/black"
+                                android:layout_marginRight="16dp"
+                                android:layout_marginLeft="16dp"
+                                android:layout_gravity="center"
+                                android:layout_weight="6"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="16dp"
+                                android:text="@string/not_approved"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"></TextView>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:visibility="visible"
+                            android:background="@color/appBlue"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp">
+                            <TextView
+                                android:visibility="invisible"
+                                android:layout_weight="1"
+                                android:layout_marginRight="16dp"
+                                android:layout_marginLeft="16dp"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="32dp"
+                                android:text="0"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></TextView>
+                            <TextView
+                                android:visibility="invisible"
+                                android:layout_weight="6"
+                                android:layout_marginRight="16dp"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="16dp"
+                                android:text="@string/entries_to_sync"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></TextView>
+                            <androidx.cardview.widget.CardView
+                                android:visibility="visible"
+                                android:layout_marginRight="16dp"
+                                android:layout_gravity="center"
+                                app:cardCornerRadius="16dp"
+                                android:layout_width="50dp"
+                                android:layout_height="30dp">
+                                <LinearLayout
+                                    android:gravity="center_horizontal"
+                                    android:layout_gravity="center"
+                                    android:orientation="horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                    <ImageView
+                                        android:layout_gravity="center_horizontal"
+                                        android:src="@drawable/arrow_right"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"></ImageView>
+                                </LinearLayout>
+
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardApproved"
+                    app:cardCornerRadius="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:weightSum="10"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="16dp"
+                            android:background="#EEEBFF"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:layout_marginLeft="16dp"
+                                android:background="@drawable/circle_blue_background"
+                                android:layout_weight="4"
+                                android:src="@drawable/ic_user_check"
+                                android:layout_width="110dp"
+                                android:layout_height="60dp"></ImageView>
+                            <TextView
+                                android:textColor="@color/black"
+                                android:layout_marginRight="16dp"
+                                android:layout_marginLeft="16dp"
+                                android:layout_gravity="center"
+                                android:layout_weight="6"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="16dp"
+                                android:text="Approved"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"></TextView>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:visibility="visible"
+                            android:background="@color/appBlue"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp">
+                            <TextView
+                                android:visibility="invisible"
+                                android:layout_weight="1"
+                                android:layout_marginRight="16dp"
+                                android:layout_marginLeft="16dp"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="32dp"
+                                android:text="0"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></TextView>
+                            <TextView
+                                android:visibility="invisible"
+                                android:layout_weight="6"
+                                android:layout_marginRight="16dp"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/poppins"
+                                android:textSize="16dp"
+                                android:text="@string/entries_to_sync"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"></TextView>
+                            <androidx.cardview.widget.CardView
+                                android:visibility="visible"
+                                android:layout_marginRight="16dp"
+                                android:layout_gravity="center"
+                                app:cardCornerRadius="16dp"
+                                android:layout_width="50dp"
+                                android:layout_height="30dp">
+                                <LinearLayout
+                                    android:gravity="center_horizontal"
+                                    android:layout_gravity="center"
+                                    android:orientation="horizontal"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                    <ImageView
+                                        android:layout_gravity="center_horizontal"
+                                        android:src="@drawable/arrow_right"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"></ImageView>
+                                </LinearLayout>
+
+                            </androidx.cardview.widget.CardView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:visibility="invisible"
+                    android:id="@+id/recyclerViewReports"
+                    android:paddingTop="24dp"
+                    android:paddingLeft="24dp"
+                    android:paddingRight="24dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
+                <View
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></View>
+            </LinearLayout>
 
 
         </LinearLayout>

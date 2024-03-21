@@ -19,7 +19,8 @@ import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourFromMarkerClickBinding
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
-import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsListOnlineAdapter
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListOnlineAdapter
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import io.getstream.photoview.PhotoView
 import retrofit2.Call
@@ -34,6 +35,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
     private var mgnregaIdImage=""
     private var photo=""
     private var aadharImage=""
+    private lateinit var dialog: CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityViewLabourFromMarkerClickBinding.inflate(layoutInflater)
@@ -42,6 +44,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
         supportActionBar?.title=resources.getString(R.string.labour_details)
             binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         val mgnregaCardId=intent.getStringExtra("id")
+        dialog= CustomProgressDialog(this)
         getLabourDetails(mgnregaCardId!!)
         binding.ivAadhar.setOnClickListener {
             showPhotoZoomDialog(aadharImage)
@@ -61,6 +64,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
     private fun getLabourDetails(mgnregaCardId:String) {
 
         try {
+            dialog.show()
             val apiService= ApiClient.create(this@ViewLabourFromMarkerClick)
             apiService.getLabourDetailsById(mgnregaCardId).enqueue(object :
                 Callback<LabourByMgnregaId> {
@@ -68,6 +72,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                     call: Call<LabourByMgnregaId>,
                     response: Response<LabourByMgnregaId>
                 ) {
+                    dialog.dismiss()
                     if(response.isSuccessful){
                         if(!response.body()?.data.isNullOrEmpty()) {
                             val list=response.body()?.data
@@ -91,7 +96,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                             Glide.with(this@ViewLabourFromMarkerClick).load(voterIdImage).into(binding.ivVoterId)
                             val familyList=response.body()?.data?.get(0)?.family_details
                             Log.d("mytag",""+familyList?.size);
-                            var adapterFamily=FamilyDetailsListOnlineAdapter(familyList)
+                            var adapterFamily= FamilyDetailsListOnlineAdapter(familyList)
                             binding.recyclerViewFamilyDetails.adapter=adapterFamily
                             adapterFamily.notifyDataSetChanged()
                         }else {
@@ -103,10 +108,12 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                     }
                 }
                 override fun onFailure(call: Call<LabourByMgnregaId>, t: Throwable) {
+                    dialog.dismiss()
                     Toast.makeText(this@ViewLabourFromMarkerClick, "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
                 }
             })
         } catch (e: Exception) {
+            dialog.dismiss()
             e.printStackTrace()
         }
     }
@@ -121,21 +128,25 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
 
     private fun showPhotoZoomDialog(uri:String){
 
-        val dialog= Dialog(this@ViewLabourFromMarkerClick)
-        dialog.setContentView(R.layout.layout_zoom_image)
-        val width = ViewGroup.LayoutParams.MATCH_PARENT
-        val height = ViewGroup.LayoutParams.WRAP_CONTENT
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(width, height)
-        dialog.show()
-        val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
-        val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
-        Glide.with(this@ViewLabourFromMarkerClick)
-            .load(uri)
-            .into(photoView)
+        try {
+            val dialog= Dialog(this@ViewLabourFromMarkerClick)
+            dialog.setContentView(R.layout.layout_zoom_image)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window?.setLayout(width, height)
+            dialog.show()
+            val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
+            val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
+            Glide.with(this@ViewLabourFromMarkerClick)
+                .load(uri)
+                .into(photoView)
 
-        ivClose.setOnClickListener {
-            dialog.dismiss()
+            ivClose.setOnClickListener {
+                dialog.dismiss()
+            }
+        } catch (e: Exception) {
+
         }
     }
 

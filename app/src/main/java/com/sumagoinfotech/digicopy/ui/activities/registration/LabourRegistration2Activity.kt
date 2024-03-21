@@ -56,7 +56,7 @@ import com.sumagoinfotech.digicopy.database.entity.Relation
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistration2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
-import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsAdapter
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -82,7 +82,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     lateinit var  btnSubmit:Button
     var validationResults = mutableListOf<Boolean>()
     var familyDetailsList=ArrayList<FamilyDetails>()
-    lateinit var adapter:FamilyDetailsAdapter
+    lateinit var adapter: FamilyDetailsAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var database: AppDatabase
     private lateinit var LabourDao: LabourDao
@@ -164,7 +164,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         Log.d("mytag",registrationViewModel.fullName)
         val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         binding.recyclerViewFamilyDetails.layoutManager=layoutManager;
-        adapter=FamilyDetailsAdapter(familyDetailsList,this)
+        adapter= FamilyDetailsAdapter(familyDetailsList,this)
         binding.recyclerViewFamilyDetails.adapter=adapter
         voterIdImagePath=""
         photoImagePath=""

@@ -54,7 +54,7 @@ import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit2Bi
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
 import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
-import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
@@ -156,7 +156,7 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         Log.d("mytag",registrationViewModel.fullName)
         val layoutManager= LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         binding.recyclerViewFamilyDetails.layoutManager=layoutManager;
-        adapter=FamilyDetailsAdapter(familyDetailsList,this)
+        adapter= FamilyDetailsAdapter(familyDetailsList,this)
         binding.recyclerViewFamilyDetails.adapter=adapter
         binding.btnUpdate.setOnClickListener {
             if(validateFormFields())
@@ -325,7 +325,7 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         val gson=Gson()
         val familyList: ArrayList<FamilyDetails> = gson.fromJson(labour.familyDetails, object : TypeToken<ArrayList<FamilyDetails>>() {}.type)
         familyDetailsList=familyList
-        adapter=FamilyDetailsAdapter(familyDetailsList,this)
+        adapter= FamilyDetailsAdapter(familyDetailsList,this)
         binding.recyclerViewFamilyDetails.adapter=adapter
         adapter.notifyDataSetChanged()
         Log.d("mytag",labour.familyDetails)

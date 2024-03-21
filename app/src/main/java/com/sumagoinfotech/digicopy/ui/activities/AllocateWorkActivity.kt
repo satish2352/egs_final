@@ -34,7 +34,7 @@ import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourInfo
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
-import com.sumagoinfotech.digicopy.ui.adapters.AttendanceAdapter
+import com.sumagoinfotech.digicopy.adapters.AttendanceAdapter
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
 import kotlinx.coroutines.CoroutineScope

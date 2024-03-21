@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/navigation_officer_home">
+
+    <fragment
+        android:id="@+id/navigation_officer_home"
+        android:name="com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments.DashboardOfficerFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_dashboard_officer" />
+
+    <fragment
+        android:id="@+id/navigation_officer_reports"
+        android:name="com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments.OfficerReportsFragment"
+        android:label="@string/report"
+        tools:layout="@layout/fragment_officer_reports" />
+</navigation>

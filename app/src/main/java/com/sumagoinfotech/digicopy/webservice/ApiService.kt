@@ -2,6 +2,7 @@ package com.sumagoinfotech.digicopy.webservice
 
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
+import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusModel
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
@@ -26,8 +27,6 @@ interface ApiService {
     // masters initial
     @POST("list-masters")
     fun getAllMasters(): Call<MastersModel>
-
-
     @POST("login")
     fun loginUser(@Query("email")email:String,
                   @Query("password")password:String,): Call<LoginModel>
@@ -109,6 +108,20 @@ interface ApiService {
 
     @POST("auth/list-document")
     fun getUploadedDocumentsList():Call<UploadedDocsModel>
+
+
+    @POST("auth/list-send-approved-labour")
+    fun getLaboursListSentForApproval():Call<LabourListModel>
+
+
+    @POST("auth/list-not-approved-labour")
+    fun getLaboursListNotApproved():Call<LabourListModel>
+
+    @POST("auth/list-approved-labour")
+    fun getLabourListApproved():Call<LabourListModel>
+
+
+
     
 
 

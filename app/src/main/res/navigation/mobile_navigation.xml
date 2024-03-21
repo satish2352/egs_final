@@ -22,7 +22,7 @@
 
     <activity
         android:id="@+id/navigation_document"
-        android:name="com.sumagoinfotech.digicopy.ui.activities.DocumentPagesActivity"
+        android:name="com.sumagoinfotech.digicopy.ui.activities.ScanDocumentsActivity"
         tools:layout="@layout/activity_document_pages" />
 
     <activity
