@@ -59,18 +59,31 @@ class LoginActivity : AppCompatActivity() {
                                     mySharedPref.setId(loginModel?.data?.id!!)
                                     mySharedPref.setEmail(loginModel?.data?.email!!)
                                     mySharedPref.setRememberToken(loginModel?.data?.remember_token!!)
+                                    mySharedPref.setRoleId(loginModel?.data?.role_id!!)
                                     Log.d("mytag",""+loginModel?.data?.remember_token!!)
                                     Log.d("mytag","User_ID"+loginModel?.data?.id!!)
                                     runOnUiThread {
                                         customProgressDialog.dismiss()
-                                        val toast= Toast.makeText(this@LoginActivity,
-                                            getString(R.string.login_successful),
-                                            Toast.LENGTH_SHORT)
-                                        toast.show()
-                                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                                        startActivity(intent)
-                                        finish()
+
+                                        if(loginModel?.data?.role_id==2){
+                                            val toast= Toast.makeText(this@LoginActivity,
+                                                getString(R.string.login_successful),
+                                                Toast.LENGTH_SHORT)
+                                            toast.show()
+                                            val intent = Intent(this@LoginActivity, OfficerMainActivity::class.java)
+                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                            startActivity(intent)
+                                            finish()
+                                       }else if(loginModel?.data?.role_id==3) {
+                                            val toast= Toast.makeText(this@LoginActivity,
+                                                getString(R.string.login_successful),
+                                                Toast.LENGTH_SHORT)
+                                            toast.show()
+                                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                            startActivity(intent)
+                                            finish()
+                                        }
                                     }
                                 }else{
                                     runOnUiThread {

@@ -121,6 +121,25 @@ interface ApiService {
     fun getLabourListApproved():Call<LabourListModel>
 
 
+    @POST("auth/update-labour-status-approved")
+    fun sendApprovedLabourResponseToServer(
+        @Query("is_approved")isApproved:String,
+        @Query("mgnrega_card_id")mgnrega_card_id:String,
+    ):Call<LabourListModel>
+
+    @POST("auth/update-labour-status-not-approved")
+    fun sendNotApprovedLabourResponseToServer(
+        @Query("mgnrega_card_id")mgnrega_card_id:String,
+        @Query("is_approved")isApproved:String,
+        @Query("reason_id")reason_id:String,
+        @Query("other_remark")other_remark:String
+        ):Call<LabourListModel>
+
+
+
+
+
+
 
     
 

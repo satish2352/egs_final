@@ -21,7 +21,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.sumagoinfotech.digicopy.R
-import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardOfficerBinding
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectMarkerData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.LabourData
@@ -36,10 +35,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [DashboardOfficerFragment.newInstance] factory method to
+ * Use the [OfficerDashboardFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class DashboardOfficerFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
     GoogleMap.OnInfoWindowClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null

@@ -33,6 +33,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.Reasons
 import com.sumagoinfotech.digicopy.model.apis.masters.RegistrationStatus
 import com.sumagoinfotech.digicopy.model.apis.masters.Relation
 import com.sumagoinfotech.digicopy.model.apis.masters.Skill
+import com.sumagoinfotech.digicopy.ui.activities.officer.OfficerMainActivity
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import kotlinx.coroutines.CoroutineScope
@@ -99,13 +100,19 @@ class SplashActivity : AppCompatActivity() {
                fetchMastersFromServer()
                withContext(Dispatchers.Main) {
                    val mySharedPref=MySharedPref(this@SplashActivity)
-                   if(mySharedPref.getIsLoggedIn()){
+                   if(mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId()==3){
                        binding.progressBar.visibility = View.GONE
                        val intent= Intent(this@SplashActivity,MainActivity::class.java)
                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                        startActivity(intent)
                        finish()
-                   }else{
+                   }else if(mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId()==2){
+                       binding.progressBar.visibility = View.GONE
+                       val intent= Intent(this@SplashActivity,OfficerMainActivity::class.java)
+                       intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                       startActivity(intent)
+                       finish()
+                   } else{
                        binding.progressBar.visibility = View.GONE
                        val intent= Intent(this@SplashActivity, LoginActivity::class.java)
                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK

@@ -37,13 +37,13 @@ class OfficerMainActivity : AppCompatActivity(),
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_officer_home,
-                R.id.navigation_officer_reports
+                R.id.navigation_officer_reports,
+                R.id.navigation_officer_attendance
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setOnNavigationItemSelectedListener(this)
-
     }
     private fun refreshCurrentFragment(){
         val id = navController.currentDestination?.id
@@ -116,6 +116,10 @@ class OfficerMainActivity : AppCompatActivity(),
             }
             R.id.navigation_officer_reports -> {
                 navController.navigate(R.id.navigation_officer_reports)
+                return true
+            }
+            R.id.navigation_officer_attendance -> {
+                navController.navigate(R.id.navigation_officer_attendance)
                 return true
             }
         }

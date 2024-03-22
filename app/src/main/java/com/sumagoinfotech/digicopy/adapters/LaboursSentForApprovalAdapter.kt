@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
 import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
+import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerViewEditReceivedLabourDetails
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 
 class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : RecyclerView.Adapter<LaboursSentForApprovalAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView)
@@ -40,10 +42,21 @@ class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : Re
             holder.tvMgnregaId.text= labourList[position].mgnrega_card_id
             holder.tvStatus.text=labourList[position].status_name
             Glide.with(holder.itemView.context).load(labourList[position].profile_image).into(holder.ivPhoto)
+
             holder.itemView.setOnClickListener {
+
+                val pref=MySharedPref(holder.itemView.context)
+                if(pref.getRoleId()==2){
+                    val intent= Intent(holder.itemView.context, OfficerViewEditReceivedLabourDetails::class.java)
+                    intent.putExtra("id",labourList.get(position).mgnrega_card_id)
+                    holder.itemView.context.startActivity(intent)
+                }else if(pref.getRoleId()==3)
+                {
                 val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
                 intent.putExtra("id",labourList.get(position).mgnrega_card_id)
                 holder.itemView.context.startActivity(intent)
+                }
+
             }
         } catch (e: Exception) {
             Log.d("mytag","LaboursSentForApprovalAdapter:onBindViewHolder  "+e.message)

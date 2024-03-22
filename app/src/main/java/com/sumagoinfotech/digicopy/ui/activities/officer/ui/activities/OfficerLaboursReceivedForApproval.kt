@@ -31,7 +31,7 @@ class OfficerLaboursReceivedForApproval : AppCompatActivity() {
             binding = ActivityOfficerLaboursReceivedForApprovalBinding.inflate(layoutInflater)
             setContentView(binding.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.sent_for_approval)
+            supportActionBar?.title = resources.getString(R.string.registrations_received_for_approval)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             labourList = ArrayList()
@@ -39,7 +39,7 @@ class OfficerLaboursReceivedForApproval : AppCompatActivity() {
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-            getDataFromServer()
+
         } catch (e: Exception) {
             Log.d(
                 "mytag",
@@ -47,6 +47,11 @@ class OfficerLaboursReceivedForApproval : AppCompatActivity() {
             )
             e.printStackTrace()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getDataFromServer()
     }
 
     private fun getDataFromServer() {

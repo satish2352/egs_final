@@ -6,13 +6,17 @@
 
     <fragment
         android:id="@+id/navigation_officer_home"
-        android:name="com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments.DashboardOfficerFragment"
+        android:name="com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments.OfficerDashboardFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_dashboard_officer" />
-
     <fragment
         android:id="@+id/navigation_officer_reports"
         android:name="com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments.OfficerReportsFragment"
         android:label="@string/report"
         tools:layout="@layout/fragment_officer_reports" />
+    <fragment
+        android:id="@+id/navigation_officer_attendance"
+        android:name="com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments.OfficerAttendanceFragment"
+        android:label="@string/attendence"
+        tools:layout="@layout/fragment_officer_attendance" />
 </navigation>

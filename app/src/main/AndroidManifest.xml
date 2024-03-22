@@ -24,6 +24,12 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerViewNotApprovedLabourDetails"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerViewEditReceivedLabourDetails"
+            android:exported="false" />
+        <activity
             android:name=".ui.activities.officer.ui.activities.OfficersLaboursApprovedList"
             android:exported="false" />
         <activity

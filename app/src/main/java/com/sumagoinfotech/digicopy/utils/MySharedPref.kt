@@ -251,7 +251,18 @@ class MySharedPref(context: Context) {
         return sharedPreferences.getInt(KEY_IS_ACTIVE, 0)
     }
 
-    fun clearAll(){
+    fun getRoleId():Int{
+        return sharedPreferences.getInt(KEY_ROLE_ID, 0)
+    }
+
+    fun setRoleId(roleId: Int) {
+        with(sharedPreferences.edit()) {
+            putInt(KEY_ROLE_ID, roleId)
+            apply()
+        }
+    }
+
+            fun clearAll(){
         sharedPreferences.edit().clear().commit()
     }
 }
