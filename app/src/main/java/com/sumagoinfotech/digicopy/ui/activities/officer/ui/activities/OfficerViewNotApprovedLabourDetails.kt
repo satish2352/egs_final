@@ -81,7 +81,7 @@ private fun getLabourDetails(mgnregaCardId:String) {
     try {
         dialog.show()
         val apiService= ApiClient.create(this@OfficerViewNotApprovedLabourDetails)
-        apiService.getLabourDetailsById(mgnregaCardId).enqueue(object :
+        apiService.getLabourDetailsByIdForOfficer(mgnregaCardId).enqueue(object :
             Callback<LabourByMgnregaId> {
             override fun onResponse(
                 call: Call<LabourByMgnregaId>,
@@ -106,15 +106,20 @@ private fun getLabourDetails(mgnregaCardId:String) {
                         mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                         aadharImage= list?.get(0)?.aadhar_image.toString()
                         voterIdImage= list?.get(0)?.voter_image.toString()
-
-                        if(!list?.get(0)?.remark.isNullOrEmpty()){
-                            binding.tvRemarks.text=list?.get(0)?.remark
+                        binding.tvSkills.text=list?.get(0)?.skills
+                        if(!list?.get(0)?.other_remark.isNullOrEmpty()){
+                            if(!list?.get(0)?.other_remark.equals("null")){
+                                binding.tvRemarks.text=list?.get(0)?.other_remark
+                            }
                         }
                         if(!list?.get(0)?.status_name.isNullOrEmpty()){
                             binding.tvRegistrationStatus.text=list?.get(0)?.status_name
                         }
-
-
+                        if(!list?.get(0)?.reason_name.isNullOrEmpty()){
+                            if(!list?.get(0)?.reason_name.equals("null")){
+                                binding.tvReason.text=list?.get(0)?.reason_name
+                            }
+                        }
                         Glide.with(this@OfficerViewNotApprovedLabourDetails).load(mgnregaIdImage).into(binding.ivMnregaCard)
                         Glide.with(this@OfficerViewNotApprovedLabourDetails).load(photo).into(binding.ivPhoto)
                         Glide.with(this@OfficerViewNotApprovedLabourDetails).load(aadharImage).into(binding.ivAadhar)

@@ -8,9 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
-import com.sumagoinfotech.digicopy.adapters.LaboursNotApprovedAdapter
-import com.sumagoinfotech.digicopy.adapters.LaboursSentForApprovalAdapter
-import com.sumagoinfotech.digicopy.databinding.ActivityViewNotApprovedLabourBinding
+import com.sumagoinfotech.digicopy.adapters.LabourApprovedListAdapter
+import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourApprovedBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
@@ -20,23 +19,23 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ViewLabourNotApproved : AppCompatActivity() {
-    private lateinit var binding: ActivityViewNotApprovedLabourBinding
+class LaboursListApproved : AppCompatActivity() {
+    private lateinit var binding: ActivityViewLabourApprovedBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
-    private lateinit var adapter: LaboursNotApprovedAdapter
+    private lateinit var adapter: LabourApprovedListAdapter
     private lateinit var labourList: ArrayList<LaboursList>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
-            binding = ActivityViewNotApprovedLabourBinding.inflate(layoutInflater)
+            binding = ActivityViewLabourApprovedBinding.inflate(layoutInflater)
             setContentView(binding.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.not_approved_list)
+            supportActionBar?.title = resources.getString(R.string.approved_list)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             labourList = ArrayList()
-            adapter = LaboursNotApprovedAdapter(labourList)
+            adapter = LabourApprovedListAdapter(labourList)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -46,11 +45,10 @@ class ViewLabourNotApproved : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-
     private fun getDataFromServer() {
         try {
             dialog.show()
-            val call = apiService.getLaboursListNotApproved()
+            val call = apiService.getLabourListApproved()
             call.enqueue(object : Callback<LabourListModel> {
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -60,12 +58,12 @@ class ViewLabourNotApproved : AppCompatActivity() {
                     if (response.isSuccessful) {
                         if (response.body()?.status.equals("true")) {
                             labourList = (response?.body()?.data as ArrayList<LaboursList>?)!!
-                            adapter = LaboursNotApprovedAdapter(labourList)
+                            adapter = LabourApprovedListAdapter(labourList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
                         } else {
                             Toast.makeText(
-                                this@ViewLabourNotApproved,
+                                this@LaboursListApproved,
                                 resources.getString(R.string.please_try_again),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -73,7 +71,7 @@ class ViewLabourNotApproved : AppCompatActivity() {
                     } else {
 
                         Toast.makeText(
-                            this@ViewLabourNotApproved,
+                            this@LaboursListApproved,
                             resources.getString(R.string.please_try_again),
                             Toast.LENGTH_SHORT
                         ).show()
@@ -83,7 +81,7 @@ class ViewLabourNotApproved : AppCompatActivity() {
                 override fun onFailure(call: Call<LabourListModel>, t: Throwable) {
                     dialog.dismiss()
                     Toast.makeText(
-                        this@ViewLabourNotApproved,
+                        this@LaboursListApproved,
                         resources.getString(R.string.error_occured_during_api_call),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -92,15 +90,13 @@ class ViewLabourNotApproved : AppCompatActivity() {
         } catch (e: Exception) {
             dialog.dismiss()
             Toast.makeText(
-                this@ViewLabourNotApproved, resources.getString(R.string.please_try_again),
+                this@LaboursListApproved, resources.getString(R.string.please_try_again),
                 Toast.LENGTH_SHORT
             ).show()
-            Log.d("mytag", "ViewLabourNotApproved : getDataFromServer : Exception => " + e.message)
+            Log.d("mytag", "ViewLabourApproved : getDataFromServer : Exception => " + e.message)
             e.printStackTrace()
         }
-
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (item.itemId == android.R.id.home) {

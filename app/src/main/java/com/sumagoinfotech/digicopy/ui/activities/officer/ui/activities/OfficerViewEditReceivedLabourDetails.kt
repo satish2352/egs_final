@@ -293,7 +293,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         try {
             dialog.show()
             val apiService= ApiClient.create(this@OfficerViewEditReceivedLabourDetails)
-            apiService.getLabourDetailsById(mgnregaCardId).enqueue(object :
+            apiService.getLabourDetailsByIdForOfficer(mgnregaCardId).enqueue(object :
                 Callback<LabourByMgnregaId> {
                 override fun onResponse(
                     call: Call<LabourByMgnregaId>,
@@ -389,6 +389,8 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             if(selectedStatusId.equals("2")){
 
                 sendApprovedToServer()
+            }else if(selectedStatusId.equals("4")){
+                sendRejectedStatusToServer()
             }else{
                 sendNotApprovedToServer()
             }
@@ -402,6 +404,46 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         }
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
+    }
+
+    private fun sendRejectedStatusToServer() {
+        try {
+            dialog.show()
+            val apiService= ApiClient.create(this@OfficerViewEditReceivedLabourDetails)
+            val call=apiService.sendRejectedLabourStatusServer(mgnrega_card_id = mgnregaCardIdOfLabour, isApproved = selectedStatusId)
+            call.enqueue(object :Callback<LabourListModel>{
+                override fun onResponse(
+                    call: Call<LabourListModel>,
+                    response: Response<LabourListModel>
+                ) {
+                    dialog.dismiss()
+                    if(response.isSuccessful){
+                        if(response.body()?.status.equals("true"))
+                        {
+                            Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
+                                getString(R.string.labour_status_upaded), Toast.LENGTH_SHORT).show()
+                            finish()
+                        }else {
+                            Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
+                                getString(R.string.something_went_wrong_please_try_again), Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    } else{
+
+                        Toast.makeText(this@OfficerViewEditReceivedLabourDetails, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onFailure(call: Call<LabourListModel>, t: Throwable) {
+
+                    dialog.dismiss()
+                }
+            })
+        } catch (e: Exception) {
+            dialog.dismiss()
+            Log.d("mytag","Exception : sendApprovedToServer "+e.message)
+            e.printStackTrace()
+        }
+
     }
 
 

@@ -24,19 +24,31 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activities.registration.LabourUpdateOnline2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.registration.LabourUpdateOnline1Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.LaboursListRejectedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerLaboursRejectedListActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.activities.officer.ui.activities.OfficerViewNotApprovedLabourDetails"
             android:exported="false" />
         <activity
             android:name=".ui.activities.officer.ui.activities.OfficerViewEditReceivedLabourDetails"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficersLaboursApprovedList"
+            android:name=".ui.activities.officer.ui.activities.OfficersLaboursApprovedListActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.officer.ui.activities.OfficerLabourNotApprovedListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficerLaboursReceivedForApproval"
+            android:name=".ui.activities.officer.ui.activities.OfficerLaboursReceivedForApprovalActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.ViewNotApprovedLabourDetailsActivity"
@@ -46,10 +58,10 @@
             android:exported="false"
             android:label="@string/title_activity_officer_main" />
         <activity
-            android:name=".ui.activities.ViewLaboursListApproved"
+            android:name=".ui.activities.LaboursListApproved"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ViewLabourNotApproved"
+            android:name=".ui.activities.LaboursListNotApproved"
             android:exported="false" />
         <activity
             android:name=".ui.activities.ViewLaboursListSentForApprovalActivity"

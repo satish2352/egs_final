@@ -6,12 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.sumagoinfotech.digicopy.R
-import com.sumagoinfotech.digicopy.databinding.FragmentDashboardOfficerBinding
 import com.sumagoinfotech.digicopy.databinding.FragmentOfficerReportsBinding
 import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLabourNotApprovedListActivity
-import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLaboursReceivedForApproval
-import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficersLaboursApprovedList
+import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLaboursReceivedForApprovalActivity
+import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLaboursRejectedListActivity
+import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficersLaboursApprovedListActivity
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,15 +42,19 @@ class OfficerReportsFragment : Fragment() {
     ): View? {
         binding = FragmentOfficerReportsBinding.inflate(inflater, container, false)
         binding.cardSentForApproval.setOnClickListener {
-            val intent= Intent(requireActivity(),OfficerLaboursReceivedForApproval::class.java)
+            val intent= Intent(requireActivity(),OfficerLaboursReceivedForApprovalActivity::class.java)
             startActivity(intent)
         }
         binding.cardApproved.setOnClickListener {
-            val intent= Intent(requireActivity(),OfficersLaboursApprovedList::class.java)
+            val intent= Intent(requireActivity(),OfficersLaboursApprovedListActivity::class.java)
             startActivity(intent)
         }
         binding.cardSentNotApproved.setOnClickListener {
             val intent= Intent(requireActivity(),OfficerLabourNotApprovedListActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cardRejected.setOnClickListener {
+            val intent= Intent(requireActivity(),OfficerLaboursRejectedListActivity::class.java)
             startActivity(intent)
         }
         return binding.root

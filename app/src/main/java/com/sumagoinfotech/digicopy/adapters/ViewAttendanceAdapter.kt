@@ -38,6 +38,7 @@ class ViewAttendanceAdapter(var list:List<AttendanceData>,var attendanceEditList
         holder.tvMgnregaId.text= list[position].mgnrega_card_id
         Glide.with(holder.itemView.context).load(list.get(position).profile_image).into(holder.ivPhoto)
         holder.tvAttendance.setText(list.get(position).attendance_day)
+
         holder.ivEdit.setOnClickListener {
             attendanceEditListener.onAttendanceEdit(list.get(position),position)
         }

@@ -8,9 +8,12 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
+import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListOnlineAdapter
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.GenderDao
@@ -20,27 +23,34 @@ import com.sumagoinfotech.digicopy.database.entity.AreaItem
 import com.sumagoinfotech.digicopy.database.entity.Gender
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.entity.Skills
-import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit1Binding
+import com.sumagoinfotech.digicopy.databinding.ActivityLabourUpdateOnline1Binding
+import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
+import com.sumagoinfotech.digicopy.model.apis.update.LabourUpdateDetails
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
+import com.sumagoinfotech.digicopy.webservice.ApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class LabourRegistrationEdit1 : AppCompatActivity() {
-    lateinit var binding: ActivityLabourRegistrationEdit1Binding
+class LabourUpdateOnline1Activity : AppCompatActivity() {
+    private lateinit var binding:ActivityLabourUpdateOnline1Binding
     private lateinit var districts: List<String>
     private lateinit var labourInputData: LabourInputData
     private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var appDatabase: AppDatabase
     private lateinit var labourDao: LabourDao
-    lateinit var labour:Labour
+    lateinit var labour: Labour
     private  var isInternetAvailable=false
     private lateinit var areaDao: AreaDao
     private lateinit var districtList:List<AreaItem>
@@ -52,11 +62,11 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     private var districtId=""
     private var villageId=""
     private var talukaId=""
-    private lateinit var prevselectedDistrict:AreaItem
-    private lateinit var prevSelectedVillage:AreaItem
-    private lateinit var prevSelectedTaluka:AreaItem
-    private lateinit var prevSelectedGender:Gender
-    private lateinit var prevSelectedSkill:Skills
+    private lateinit var prevselectedDistrict: AreaItem
+    private lateinit var prevSelectedVillage: AreaItem
+    private lateinit var prevSelectedTaluka: AreaItem
+    private lateinit var prevSelectedGender: Gender
+    private lateinit var prevSelectedSkill: Skills
     private lateinit var skillsDao: SkillsDao
     private lateinit var genderDao: GenderDao
     private lateinit var genderList:List<Gender>
@@ -65,70 +75,24 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     private var skillsNames= mutableListOf<String>()
     private var genderId=""
     private var skillId=""
-
+    private lateinit var dialog:CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityLabourRegistrationEdit1Binding.inflate(layoutInflater)
+        binding= ActivityLabourUpdateOnline1Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        Log.d("mytag","LabourUpdateOnline1Activity");
+        dialog= CustomProgressDialog(this)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.update_details_step_1)
         appDatabase=AppDatabase.getDatabase(this)
         areaDao=appDatabase.areaDao()
-        var labourId=intent.extras?.getString("id")
+        var mgnregaCardId=intent.extras?.getString("id")
         labourDao=appDatabase.labourDao()
         genderDao=appDatabase.genderDao()
         skillsDao=appDatabase.skillsDao()
-        CoroutineScope(Dispatchers.IO).launch {
-            labour=labourDao.getLabourById(Integer.parseInt(labourId))
-            prevselectedDistrict=areaDao.getAreaByLocationId(labour.district)
-            prevSelectedTaluka=areaDao.getAreaByLocationId(labour.taluka)
-            prevSelectedVillage=areaDao.getAreaByLocationId(labour.village)
-            prevSelectedGender=genderDao.getGenderById(labour.gender)
-            prevSelectedSkill=skillsDao.getSkillById(labour.skill)
-            talukaList=areaDao.getAllTalukas(labour.district)
-            villageList=areaDao.getVillageByTaluka(labour.taluka)
-            skillsList=skillsDao.getAllSkills()
-            genderList=genderDao.getAllGenders()
-            withContext(Dispatchers.Main){
-                binding.actVillage.setText(prevSelectedVillage.name)
-                binding.actTaluka.setText(prevSelectedTaluka.name)
-                binding.actDistrict.setText(prevselectedDistrict.name)
-                binding.actGender.setText(prevSelectedGender.gender_name)
-                binding.actSkill.setText(prevSelectedSkill.skills)
-                for (taluka in talukaList)
-                {
-                    talukaNames.add(taluka.name)
-                }
-                Log.d("mytag",""+talukaNames.size);
-                val talukaAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, talukaNames
-                )
-                binding.actTaluka.setAdapter(talukaAdapter)
-                for (village in villageList){
-                    villageNames.add(village.name)
-                }
-                Log.d("mytag",""+villageNames.size);
-                val villageAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, villageNames
-                )
-                binding.actVillage.setAdapter(villageAdapter)
-                for (skill in skillsList){
-                    skillsNames.add(skill.skills)
-                }
-                val skillsAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, skillsNames
-                )
-                binding.actSkill.setAdapter(skillsAdapter)
-                for (gender in genderList){
-                    genderNames.add(gender.gender_name)
-                }
-                val genderAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, genderNames
-                )
-                binding.actGender.setAdapter(genderAdapter)
-                initializeFields()
-            }
-        }
+
+            getDetailsFromServer(mgnregaCardId!!)
+
         districtList=ArrayList<AreaItem>()
         CoroutineScope(Dispatchers.IO).launch {
             districtList=areaDao.getAllDistrict()
@@ -136,7 +100,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 districtNames.add(district.name)
             }
         }
-
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
             .subscribeOn(Schedulers.io())
@@ -161,12 +124,12 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 labourInputData.mobile= binding.etMobileNumber.text.toString()
                 labourInputData.landline= binding.etLandLine.text.toString()
                 labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
-                val intent = Intent(this, LabourRegistrationEdit2::class.java)
+                val intent = Intent(this, LabourUpdateOnline2Activity::class.java)
                 intent.putExtra("id",labour.id.toString())
                 intent.putExtra("LabourInputData", labourInputData)
                 startActivity(intent)
-            } else {
-
+            } else
+            {
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
                 toast.show()
             }
@@ -175,17 +138,15 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
         }
         binding.btnUpdateLabour.setOnClickListener {
-            if (validateFieldsX()) {
-
-
-
+            if (validateFieldsX())
+            {
                 Log.d("mytag","gender Id "+genderId)
                 Log.d("mytag","skill Id "+skillId)
                 Log.d("mytag","dist Id "+districtId)
                 Log.d("mytag","taluka Id "+talukaId)
                 Log.d("mytag","Village Id "+villageId)
 
-                labour.fullName= binding.etFullName.text.toString()
+               /* labour.fullName= binding.etFullName.text.toString()
                 labour.dob= binding.etDob.text.toString()
                 labour.district= districtId
                 labour.village= villageId
@@ -194,31 +155,25 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 labour.skill=skillId
                 labour.mobile= binding.etMobileNumber.text.toString()
                 labour.landline= binding.etLandLine.text.toString()
-                labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
+                labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()*/
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    var row=labourDao.updateLabour(labour)
+                    /*var row=labourDao.updateLabour(labour)
                     Log.d("mytag",""+row)
                     if(row>0){
                         runOnUiThread {
-                            val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour updated successfully",
+                            val toast= Toast.makeText(this@LabourUpdateOnline1Activity,"Labour updated successfully",
                                 Toast.LENGTH_SHORT)
                             toast.show()
                         }
                     }else{
                         runOnUiThread {
-                            val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour not updated please try again ",
+                            val toast= Toast.makeText(this@LabourUpdateOnline1Activity,"Labour not updated please try again ",
                                 Toast.LENGTH_SHORT)
                             toast.show()
                         }
-                    }
+                    }*/
                 }
-                Log.d("mytag","After")
-
-//                    val intent = Intent(this, LabourRegistrationEdit2::class.java)
-//                    intent.putExtra("id",labour.id.toString())
-//                    intent.putExtra("LabourInputData", labourInputData)
-//                    startActivity(intent)
             } else {
 
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
@@ -241,11 +196,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
 
     private fun initializeFields() {
-        binding.etFullName.setText(labour.fullName)
-        binding.etDob.setText(labour.dob)
-        binding.etMobileNumber.setText(labour.mobile)
-        binding.etLandLine.setText(labour.landline)
-        binding.etMgnregaIdNumber.setText(labour.mgnregaId)
         genderId=prevSelectedGender.id.toString()
         villageId=prevSelectedVillage.id.toString()
         skillId=prevSelectedSkill.id.toString()
@@ -295,7 +245,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     talukaNames.add(taluka.name)
                 }
                 val talukaAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, talukaNames
+                    this@LabourUpdateOnline1Activity, android.R.layout.simple_list_item_1, talukaNames
                 )
                 withContext(Dispatchers.Main){
                     binding.actTaluka.setAdapter(talukaAdapter)
@@ -312,7 +262,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     villageNames.add(village.name)
                 }
                 val villageAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, villageNames
+                    this@LabourUpdateOnline1Activity, android.R.layout.simple_list_item_1, villageNames
                 )
                 Log.d("mytag",""+villageNames.size)
                 withContext(Dispatchers.Main){
@@ -457,5 +407,100 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         datePickerDialog.datePicker.minDate = minCalendar.timeInMillis // Set minimum date
         datePickerDialog.datePicker.maxDate = eighteenYearsAgo.timeInMillis //
         datePickerDialog.show()
+    }
+    private  fun getDetailsFromServer(mgnregaCardId:String){
+        Log.d("mytag","getDetailsFromServer")
+        try {
+            dialog.show()
+            val apiService= ApiClient.create(this@LabourUpdateOnline1Activity)
+            CoroutineScope(Dispatchers.IO).launch {
+                val response=apiService.getLabourDetailsForUpdate(mgnregaCardId)
+                dialog.dismiss()
+                Log.d("mytag","getDetailsFromServer")
+                if(response.isSuccessful){
+                    Log.d("mytag","getDetailsFromServer isSuccessful")
+                    if(!response.body()?.data.isNullOrEmpty()) {
+                        val list=response.body()?.data
+                        if(response.body()?.status.equals("true"))
+                        {
+                            Log.d("mytag","getDetailsFromServer isSuccessful true")
+                            //labour=labourDao.getLabourById(Integer.parseInt(mgnregaCardId))
+                            val labourInfo=list?.get(0);
+                            prevselectedDistrict=areaDao.getAreaByLocationId(labourInfo?.district_id.toString())
+                            prevSelectedTaluka=areaDao.getAreaByLocationId(labourInfo?.taluka_id.toString())
+                            prevSelectedVillage=areaDao.getAreaByLocationId(labourInfo?.village_id.toString())
+                            prevSelectedGender=genderDao.getGenderById(labourInfo?.gender_id.toString())
+                            prevSelectedSkill=skillsDao.getSkillById(labourInfo?.skill_id.toString())
+                            talukaList=areaDao.getAllTalukas(labourInfo?.district_id.toString())
+                            villageList=areaDao.getVillageByTaluka(labourInfo?.taluka_id.toString())
+                            skillsList=skillsDao.getAllSkills()
+                            genderList=genderDao.getAllGenders()
+
+                            withContext(Dispatchers.Main) {
+                                binding.actVillage.setText(prevSelectedVillage.name)
+                                binding.actTaluka.setText(prevSelectedTaluka.name)
+                                binding.actDistrict.setText(prevselectedDistrict.name)
+                                binding.actGender.setText(prevSelectedGender.gender_name)
+                                binding.actSkill.setText(prevSelectedSkill.skills)
+                                binding.etFullName.setText(labourInfo?.full_name)
+                                binding.etDob.setText(labourInfo?.date_of_birth)
+                                binding.etMobileNumber.setText(labourInfo?.mobile_number)
+                                binding.etLandLine.setText(labourInfo?.landline_number)
+                                binding.etMgnregaIdNumber.setText(labourInfo?.mgnrega_card_id)
+                                for (taluka in talukaList)
+                                {
+                                    talukaNames.add(taluka.name)
+                                }
+                                Log.d("mytag",""+talukaNames.size);
+                                val talukaAdapter = ArrayAdapter(
+                                    this@LabourUpdateOnline1Activity, android.R.layout.simple_list_item_1, talukaNames
+                                )
+                                binding.actTaluka.setAdapter(talukaAdapter)
+                                for (village in villageList){
+                                    villageNames.add(village.name)
+                                }
+                                Log.d("mytag",""+villageNames.size);
+                                val villageAdapter = ArrayAdapter(
+                                    this@LabourUpdateOnline1Activity, android.R.layout.simple_list_item_1, villageNames
+                                )
+                                binding.actVillage.setAdapter(villageAdapter)
+                                for (skill in skillsList){
+                                    skillsNames.add(skill.skills)
+                                }
+                                val skillsAdapter = ArrayAdapter(
+                                    this@LabourUpdateOnline1Activity, android.R.layout.simple_list_item_1, skillsNames
+                                )
+                                binding.actSkill.setAdapter(skillsAdapter)
+                                for (gender in genderList){
+                                    genderNames.add(gender.gender_name)
+                                }
+                                val genderAdapter = ArrayAdapter(
+                                    this@LabourUpdateOnline1Activity, android.R.layout.simple_list_item_1, genderNames
+                                )
+                                binding.actGender.setAdapter(genderAdapter)
+                                initializeFields()
+                            }
+                        }else{
+                            Log.d("mytag","getDetailsFromServer isSuccessful false")
+                        }
+                    }else {
+                        runOnUiThread {
+                            Toast.makeText(this@LabourUpdateOnline1Activity, "No records found", Toast.LENGTH_SHORT).show()
+                        }
+
+                    }
+                } else{
+                    runOnUiThread {
+                        Toast.makeText(this@LabourUpdateOnline1Activity, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.d("mytag","getDetailsFromServer : Exception => "+e.message)
+            dialog.dismiss()
+            e.printStackTrace()
+        }
     }
 }

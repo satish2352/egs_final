@@ -1,10 +1,12 @@
 package com.sumagoinfotech.digicopy.ui.activities
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
@@ -17,6 +19,7 @@ import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListOnlineAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourDetailsNotApprovedBinding
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
+import com.sumagoinfotech.digicopy.ui.activities.registration.LabourUpdateOnline1Activity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import io.getstream.photoview.PhotoView
@@ -53,6 +56,12 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
         binding.ivVoterId.setOnClickListener {
             showPhotoZoomDialog(voterIdImage)
         }
+        binding.fabEdit.setOnClickListener {
+
+            val intent= Intent(this,LabourUpdateOnline1Activity::class.java)
+            intent.putExtra("id",mgnregaCardId)
+            startActivity(intent);
+        }
     }
     private fun getLabourDetails(mgnregaCardId:String) {
 
@@ -80,11 +89,21 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                             binding.tvLandline.text=list?.get(0)?.landline_number
                             binding.tvMnregaId.text=list?.get(0)?.mgnrega_card_id
                             binding.tvDob.text=list?.get(0)?.date_of_birth
-                            binding.tvStatus.text=list?.get(0)?.status_name
-                            if(list?.get(0)?.status_name.equals("null")){
-                                binding.tvRemark.text=list?.get(0)?.remark
+                            binding.tvRegistrationStatus.text=list?.get(0)?.status_name
+                            binding.tvSkills.text=list?.get(0)?.skills
+                            if(!list?.get(0)?.other_remark.isNullOrEmpty()){
+                                if(!list?.get(0)?.other_remark.equals("null")){
+                                    binding.tvRemarks.text=list?.get(0)?.other_remark
+                                }
                             }
-
+                            if(!list?.get(0)?.status_name.isNullOrEmpty()){
+                                binding.tvRegistrationStatus.text=list?.get(0)?.status_name
+                            }
+                            if(!list?.get(0)?.reason_name.isNullOrEmpty()){
+                                if(!list?.get(0)?.reason_name.equals("null")){
+                                    binding.tvReason.text=list?.get(0)?.reason_name
+                                }
+                            }
                             photo= list?.get(0)?.profile_image.toString()
                             mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                             aadharImage= list?.get(0)?.aadhar_image.toString()

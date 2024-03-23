@@ -54,13 +54,18 @@ class ReportsActivity : AppCompatActivity() {
             }
             binding.cardSentNotApproved.setOnClickListener {
 
-                val intent= Intent(this,ViewLabourNotApproved::class.java)
+                val intent= Intent(this,LaboursListNotApproved::class.java)
                 startActivity(intent)
             }
 
             binding.cardApproved.setOnClickListener {
 
-                val intent= Intent(this,ViewLaboursListApproved::class.java)
+                val intent= Intent(this,LaboursListApproved::class.java)
+                startActivity(intent)
+            }
+            binding.cardRejected.setOnClickListener {
+
+                val intent= Intent(this,LaboursListRejectedActivity::class.java)
                 startActivity(intent)
             }
         } catch (e: Exception) {

@@ -9,6 +9,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.model.apis.skills.SkillsModel
+import com.sumagoinfotech.digicopy.model.apis.update.LabourUpdateDetails
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -113,27 +114,59 @@ interface ApiService {
     @POST("auth/list-send-approved-labour")
     fun getLaboursListSentForApproval():Call<LabourListModel>
 
-
     @POST("auth/list-not-approved-labour")
     fun getLaboursListNotApproved():Call<LabourListModel>
+
+    @POST("auth/list-labour-rejected")
+    fun getRejectedLabourList():Call<LabourListModel>
+
 
     @POST("auth/list-approved-labour")
     fun getLabourListApproved():Call<LabourListModel>
 
 
-    @POST("auth/update-labour-status-approved")
+    @POST("auth/update-officer-labour-status-approved")
     fun sendApprovedLabourResponseToServer(
         @Query("is_approved")isApproved:String,
         @Query("mgnrega_card_id")mgnrega_card_id:String,
     ):Call<LabourListModel>
 
-    @POST("auth/update-labour-status-not-approved")
+    @POST("auth/update-officer-labour-status-rejected")
+    fun sendRejectedLabourStatusServer(
+        @Query("is_approved")isApproved:String,
+        @Query("mgnrega_card_id")mgnrega_card_id:String,
+    ):Call<LabourListModel>
+
+
+
+    @POST("auth/update-officer-labour-status-not-approved")
     fun sendNotApprovedLabourResponseToServer(
         @Query("mgnrega_card_id")mgnrega_card_id:String,
         @Query("is_approved")isApproved:String,
         @Query("reason_id")reason_id:String,
         @Query("other_remark")other_remark:String
         ):Call<LabourListModel>
+
+
+    @POST("auth/list-labour-received-to-officer-for-approval")
+    fun getListOfLaboursReceivedForApproval():Call<LabourListModel>
+    @POST("auth/list-labour-approved-by-officer")
+    fun getListOfLaboursApprovedByOfficer():Call<LabourListModel>
+    @POST("auth/list-labour-not-approved-by-officer")
+    fun getListOfLaboursNotApprovedByOfficer():Call<LabourListModel>
+    @POST("auth/list-labour-rejected-by-officer")
+    fun getListOfLaboursRejectedByOfficer():Call<LabourListModel>
+
+    @POST("auth/list-particular-officer-labour-details")
+    fun getLabourDetailsByIdForOfficer(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
+
+    @POST("auth/particular-labour-details-for-update")
+    suspend fun getLabourDetailsForUpdate(@Query("mgnrega_card_id")mgnrega_card_id:String): Response<LabourUpdateDetails>
+
+
+
+
+
 
 
 

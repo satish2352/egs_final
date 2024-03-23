@@ -101,4 +101,9 @@
     <string name="something_went_wrong_please_try_again">Something went wrong please try again</string>
     <string name="labour_status_upaded">Labour registration status updated</string>
     <string name="reason">Reason</string>
+    <string name="rejected_list">Rejected List</string>
+    <string name="rejected">Rejected</string>
+    <string name="start_date">Start date</string>
+    <string name="end_date">End Date</string>
+    <string name="skills">Skills</string>
 </resources>

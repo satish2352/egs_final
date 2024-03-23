@@ -19,5 +19,9 @@ data class LabourInfo(
     val village_id: String,
     val voter_image: String,
     val status_name: String,
-    val remark: String
+    val remark: String,
+    val other_remark: String,
+    val reason_name:String,
+    val skills:String
+
 )
