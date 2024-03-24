@@ -1,15 +1,21 @@
 package com.sumagoinfotech.digicopy.model.apis.getlabour
 
+import androidx.room.PrimaryKey
+
 data class FamilyDetail(
-    val created_at: String,
-    val date_of_birth: String,
-    val full_name: String,
-    val gender_id: String,
-    val id: Int,
-    val is_active: Int,
-    val is_deleted: Int,
-    val labour_id: Int,
-    val married_status_id: String,
-    val relationship_id: String,
-    val updated_at: String
-)
+    var created_at: String?=null,
+    var date_of_birth: String,
+    var full_name: String,
+    var gender_id: String,
+    var id: Int?=null,
+    var is_active: Int?=null,
+    var is_deleted: Int?=null,
+    var labour_id: Int?=null,
+    var married_status_id: String,
+    var relationship_id: String,
+    var updated_at: String?=null,
+    var gender: String? = null,
+    var relation: String? = null,
+    var martitalStatus: String? = null
+
+    )

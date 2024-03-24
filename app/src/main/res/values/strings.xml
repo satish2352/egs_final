@@ -106,4 +106,7 @@
     <string name="start_date">Start date</string>
     <string name="end_date">End Date</string>
     <string name="skills">Skills</string>
+    <string name="labour_details_upaded">Labour details updated successfully</string>
+    <string name="failed_updating_labour">Error while updating labour details please try again</string>
+    <string name="failed_updating_labour_response">response unsuccessfull</string>
 </resources>

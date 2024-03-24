@@ -20,6 +20,7 @@ import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourFromMarkerClickBinding
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListOnlineAdapter
+import com.sumagoinfotech.digicopy.model.apis.getlabour.FamilyDetail
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import io.getstream.photoview.PhotoView
@@ -96,7 +97,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                             Glide.with(this@ViewLabourFromMarkerClick).load(voterIdImage).into(binding.ivVoterId)
                             val familyList=response.body()?.data?.get(0)?.family_details
                             Log.d("mytag",""+familyList?.size);
-                            var adapterFamily= FamilyDetailsListOnlineAdapter(familyList)
+                            var adapterFamily= FamilyDetailsListOnlineAdapter(familyList as ArrayList<FamilyDetail>?)
                             binding.recyclerViewFamilyDetails.adapter=adapterFamily
                             adapterFamily.notifyDataSetChanged()
                         }else {

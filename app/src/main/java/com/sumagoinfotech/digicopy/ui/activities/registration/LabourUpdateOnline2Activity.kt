@@ -34,6 +34,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -42,6 +44,8 @@ import com.google.gson.reflect.TypeToken
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.FamilyDetailsAdapter
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListOnlineAdapter
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsOnlineEditAdapter
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.GenderDao
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
@@ -54,19 +58,28 @@ import com.sumagoinfotech.digicopy.database.entity.Relation
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourUpdateOnline2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
+import com.sumagoinfotech.digicopy.model.apis.getlabour.FamilyDetail
+import com.sumagoinfotech.digicopy.ui.activities.ReportsActivity
 import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import com.sumagoinfotech.digicopy.webservice.FileInfo
 import io.getstream.photoview.PhotoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
 class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private lateinit var binding:ActivityLabourUpdateOnline2Binding
@@ -77,8 +90,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     lateinit var  actGenderFamily: AutoCompleteTextView
     lateinit var  btnSubmit: Button
     var validationResults = mutableListOf<Boolean>()
-    var familyDetailsList=ArrayList<FamilyDetails>()
-    lateinit var adapter: FamilyDetailsAdapter
+    var familyDetailsList=ArrayList<com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.FamilyDetail>()
+    lateinit var adapter: FamilyDetailsOnlineEditAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var database: AppDatabase
     private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
@@ -92,7 +105,6 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private lateinit var mgnregaIdImagePath:String
     private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var labourInputData: LabourInputData
-    lateinit var labour: Labour
     private lateinit var labourDao: LabourDao
     private  var latitude:Double=0.0
     private  var longitude:Double=0.0
@@ -109,12 +121,15 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private var genderId=""
     private var relationId=""
     private var maritalStatusId=""
+    private var mgnregaId=""
+    private lateinit var dialog:CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLabourUpdateOnline2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.update_details_step_2)
+        dialog= CustomProgressDialog(this)
         registrationViewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
         registrationViewModel.dataObject.observe(this) { labourData ->
             Log.d("mytag", "labourData.mobile")
@@ -128,9 +143,9 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         genderDao=database.genderDao()
         relationDao=database.relationDao()
         maritalStatusDao=database.martialStatusDao()
-        var labourId=intent.extras?.getString("id")
+        mgnregaId= intent.extras?.getString("id").toString()
+        getDetailsFromServer(mgnregaId!!)
         CoroutineScope(Dispatchers.IO).launch {
-            labour=labourDao.getLabourById(Integer.parseInt(labourId))
             genderList=genderDao.getAllGenders()
             relationList=relationDao.getAllRelation()
             maritalStatusList=maritalStatusDao.getAllMaritalStatus()
@@ -153,40 +168,13 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         Log.d("mytag",registrationViewModel.fullName)
         val layoutManager= LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         binding.recyclerViewFamilyDetails.layoutManager=layoutManager;
-        adapter= FamilyDetailsAdapter(familyDetailsList,this)
-        binding.recyclerViewFamilyDetails.adapter=adapter
         binding.btnUpdate.setOnClickListener {
             if(validateFormFields())
             {
                 val familyDetails= Gson().toJson(familyDetailsList).toString()
-                labour.location=binding.etLocation.text.toString()
-                labour.familyDetails=familyDetails
-                labour.aadharImage=aadharIdImagePath
-                labour.voterIdImage=voterIdImagePath
-                labour.photo=photoImagePath
-                labour.mgnregaIdImage=mgnregaIdImagePath
-                labour.latitude=latitude.toString()
-                labour.longitude=longitude.toString()
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val rows=labourDao.updateLabour(labour)
-                        if(rows>0){
-                            runOnUiThread {
-                                val toast= Toast.makeText(this@LabourUpdateOnline2Activity,"Labour updated successfully",
-                                    Toast.LENGTH_SHORT)
-                                toast.show()
-                            }
-                            val intent= Intent(this@LabourUpdateOnline2Activity, SyncLabourDataActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                            startActivity(intent)
-                        }else{
-                            runOnUiThread {
-                                val toast= Toast.makeText(this@LabourUpdateOnline2Activity,"Labour not updated please try again",
-                                    Toast.LENGTH_SHORT)
-                                toast.show()
-                            }
-                        }
-                        Log.d("mytag","Rows updated : $rows")
+                        uploadLabourOnline()
                     } catch (e: Exception) {
                         Log.d("mytag","Exception on update : ${e.message}")
                         e.printStackTrace()
@@ -308,9 +296,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         }
     }
     private fun initializeFields() {
-        Log.d("mytag","initializeFields "+labour.familyDetails)
 
-        binding.etLocation.setText(labour.location)
+        /*binding.etLocation.setText(labour.location)
         loadWithGlideFromUri(labour.aadharImage,binding.ivAadhar)
         loadWithGlideFromUri(labour.mgnregaIdImage,binding.ivMgnregaCard)
         loadWithGlideFromUri(labour.voterIdImage,binding.ivVoterId)
@@ -326,7 +313,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         binding.recyclerViewFamilyDetails.adapter=adapter
         adapter.notifyDataSetChanged()
         Log.d("mytag",labour.familyDetails)
-        Log.d("mytag",""+familyList.size)
+        Log.d("mytag",""+familyList.size)*/
     }
     private fun loadWithGlideFromUri(uri: String, imageView: ImageView) {
         Glide.with(this@LabourUpdateOnline2Activity)
@@ -485,17 +472,17 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         btnSubmit.setOnClickListener {
             if(validateFields())
             {
-                val familyMember=FamilyDetails(
-                    fullName = etFullName.text.toString(),
-                    dob = etDob.text.toString(),
-                    relationship = actRelationship.text.toString(),
+                val familyMemberNew=com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.FamilyDetail(
+                    full_name = etFullName.text.toString(),
+                    date_of_birth = etDob.text.toString(),
+                    relation = actRelationship.text.toString(),
                     maritalStatus = actMaritalStatus.text.toString(),
                     gender = actGenderFamily.text.toString(),
-                    genderId=genderId,
-                    maritalStatusId=maritalStatusId,
-                    relationId = relationId
+                    gender_id  =genderId,
+                    married_status_id =maritalStatusId,
+                    relationship_id = relationId,
                 )
-                familyDetailsList.add(familyMember)
+                familyDetailsList.add(familyMemberNew)
                 adapter.notifyDataSetChanged()
                 dialog.dismiss()
             }else{
@@ -719,6 +706,168 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             return ""
 
         }
+
+    }
+    private  fun getDetailsFromServer(mgnregaCardId:String){
+        Log.d("mytag","getDetailsFromServer")
+        try {
+            dialog.show()
+            val apiService= ApiClient.create(this@LabourUpdateOnline2Activity)
+            CoroutineScope(Dispatchers.IO).launch {
+                val response=apiService.getLabourDetailsForUpdate2(mgnregaCardId)
+                dialog.dismiss()
+                Log.d("mytag","getDetailsFromServer")
+                if(response.isSuccessful){
+                    Log.d("mytag","getDetailsFromServer isSuccessful")
+                    if(!response.body()?.data.isNullOrEmpty()) {
+                        val list=response.body()?.data
+                        if(response.body()?.status.equals("true"))
+                        {
+                            Log.d("mytag","getDetailsFromServer isSuccessful true")
+
+
+                            withContext(Dispatchers.Main) {
+                                binding.etLocation.setText(list?.get(0)?.latitude+","+list?.get(0)?.longitude)
+                                loadWithGlideFromUri(list?.get(0)?.aadhar_image!!,binding.ivAadhar)
+                                loadWithGlideFromUri(list?.get(0)?.mgnrega_image!!,binding.ivMgnregaCard)
+                                loadWithGlideFromUri(list?.get(0)?.voter_image!!,binding.ivVoterId)
+                                loadWithGlideFromUri(list?.get(0)?.profile_image!!,binding.ivPhoto)
+                                voterIdImagePath=list?.get(0)?.voter_image!!
+                                photoImagePath=list?.get(0)?.profile_image!!
+                                aadharIdImagePath=list?.get(0)?.aadhar_image!!
+                                mgnregaIdImagePath=list?.get(0)?.mgnrega_image!!
+                                val gson= Gson()
+                                val jsonList=gson.toJson(response.body()?.data?.get(0)?.family_details)
+                                val familyList: ArrayList<com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.FamilyDetail> = gson.fromJson(jsonList, object : TypeToken<ArrayList<FamilyDetail>>() {}.type)
+                                familyDetailsList=familyList
+                                Log.d("mytag",""+familyDetailsList.size)
+                                familyDetailsList= response.body()?.data?.get(0)?.family_details as ArrayList<com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.FamilyDetail>
+                                 adapter= FamilyDetailsOnlineEditAdapter(familyDetailsList,this@LabourUpdateOnline2Activity)
+                                binding.recyclerViewFamilyDetails.adapter=adapter
+                                adapter.notifyDataSetChanged()
+                            }
+                        }else{
+                            Log.d("mytag","getDetailsFromServer isSuccessful false")
+                        }
+                    }else {
+                        runOnUiThread {
+                            Toast.makeText(this@LabourUpdateOnline2Activity, "No records found", Toast.LENGTH_SHORT).show()
+                        }
+
+                    }
+                } else{
+                    runOnUiThread {
+                        Toast.makeText(this@LabourUpdateOnline2Activity, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+            }
+
+        } catch (e: Exception) {
+            Log.d("mytag","getDetailsFromServer : Exception => "+e.message)
+            dialog.dismiss()
+            e.printStackTrace()
+        }
+    }
+    suspend fun uriToFile(context: Context, uri: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val requestOptions = RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Don't cache to avoid reading from cache
+                    .skipMemoryCache(true) // Skip memory cache
+                val bitmap = Glide.with(context)
+                    .asBitmap()
+                    .load(uri)
+                    .apply(requestOptions)
+                    .submit()
+                    .get()
+                val time=Calendar.getInstance().timeInMillis.toString()
+                // Create a temporary file to store the bitmap
+                val file = File(context.cacheDir, "$time.jpg")
+                val outputStream = FileOutputStream(file)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                file // Return the temporary file
+            } catch (e: Exception) {
+                Log.d("mytag", "Exception uriToFile: ${e.message}")
+                null // Return null if there's an error
+            }
+        }
+    }
+    private suspend fun createFilePart(fileInfo: FileInfo): MultipartBody.Part? {
+        Log.d("mytag",""+fileInfo.fileUri)
+        val file: File? = uriToFile(applicationContext, fileInfo.fileUri)
+        return file?.let {
+            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
+            MultipartBody.Part.createFormData(fileInfo.fileName, it.name, requestFile)
+        }
+    }
+
+    private suspend fun uploadLabourOnline(){
+        runOnUiThread {
+            dialog.show()
+        }
+
+        val apiService = ApiClient.create(this@LabourUpdateOnline2Activity)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val familyDetails= Gson().toJson(familyDetailsList).toString()
+
+                    Log.d("mytag","=>"+familyDetails)
+
+                    val aadharCardImage =
+                        createFilePart(FileInfo("aadhar_image", aadharIdImagePath))
+                    val voterIdImage =
+                        createFilePart(FileInfo("voter_image", voterIdImagePath))
+                    val profileImage =
+                        createFilePart(FileInfo("profile_image", photoImagePath))
+                    val mgnregaIdImage =
+                        createFilePart(FileInfo("mgnrega_image",mgnregaIdImagePath))
+                    val response= apiService.updateLabourFormTwo(
+                        latitude=latitude.toString(),
+                        longitude = longitude.toString(),
+                        family = familyDetails,
+                        mgnregaId = mgnregaId,
+                        file1 = aadharCardImage!!,
+                        file2 = voterIdImage!!,
+                        file3 = profileImage!!,
+                        file4 = mgnregaIdImage!!)
+                    if(response.isSuccessful){
+                        if(response.body()?.status.equals("true")){
+
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.labour_details_upaded),
+                                    Toast.LENGTH_SHORT).show()
+                                val intent= Intent(this@LabourUpdateOnline2Activity, ReportsActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                            }
+                        }else{
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour),
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        Log.d("mytag",""+response.body()?.message)
+                        Log.d("mytag",""+response.body()?.status)
+                    }else{
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour_response),
+                                Toast.LENGTH_SHORT).show()
+                        }
+
+
+                    }
+                runOnUiThread {dialog.dismiss()  }
+            } catch (e: Exception) {
+                runOnUiThread { dialog.dismiss() }
+                Log.d("mytag","uploadLabourOnline "+e.message)
+            }
+        }
+
+
 
     }
 

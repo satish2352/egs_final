@@ -50,7 +50,6 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
     private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var appDatabase: AppDatabase
     private lateinit var labourDao: LabourDao
-    lateinit var labour: Labour
     private  var isInternetAvailable=false
     private lateinit var areaDao: AreaDao
     private lateinit var districtList:List<AreaItem>
@@ -75,6 +74,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
     private var skillsNames= mutableListOf<String>()
     private var genderId=""
     private var skillId=""
+    private var family=""
     private lateinit var dialog:CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -115,7 +115,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
         binding.btnNext.setOnClickListener {
             if (validateFieldsX()) {
                 labourInputData=LabourInputData()
-                labour.fullName= binding.etFullName.text.toString()
+                labourInputData.fullName= binding.etFullName.text.toString()
                 labourInputData.dateOfBirth= binding.etDob.text.toString()
                 labourInputData.gender= binding.actGender.text.toString()
                 labourInputData.district= binding.actDistrict.text.toString()
@@ -124,8 +124,10 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                 labourInputData.mobile= binding.etMobileNumber.text.toString()
                 labourInputData.landline= binding.etLandLine.text.toString()
                 labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
+                labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
+                labourInputData.family= ""
                 val intent = Intent(this, LabourUpdateOnline2Activity::class.java)
-                intent.putExtra("id",labour.id.toString())
+                intent.putExtra("id",mgnregaCardId)
                 intent.putExtra("LabourInputData", labourInputData)
                 startActivity(intent)
             } else
@@ -133,9 +135,6 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
                 toast.show()
             }
-
-
-
         }
         binding.btnUpdateLabour.setOnClickListener {
             if (validateFieldsX())
@@ -146,34 +145,54 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                 Log.d("mytag","taluka Id "+talukaId)
                 Log.d("mytag","Village Id "+villageId)
 
-               /* labour.fullName= binding.etFullName.text.toString()
-                labour.dob= binding.etDob.text.toString()
-                labour.district= districtId
-                labour.village= villageId
-                labour.taluka= talukaId
-                labour.gender=genderId
-                labour.skill=skillId
-                labour.mobile= binding.etMobileNumber.text.toString()
-                labour.landline= binding.etLandLine.text.toString()
-                labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()*/
-
+                dialog.show()
                 CoroutineScope(Dispatchers.IO).launch {
-                    /*var row=labourDao.updateLabour(labour)
-                    Log.d("mytag",""+row)
-                    if(row>0){
-                        runOnUiThread {
-                            val toast= Toast.makeText(this@LabourUpdateOnline1Activity,"Labour updated successfully",
-                                Toast.LENGTH_SHORT)
-                            toast.show()
+                    val apiService=ApiClient.create(this@LabourUpdateOnline1Activity)
+                    var name=binding.etFullName.text.toString();
+                    var dob= binding.etDob.text.toString()
+                    var district= districtId
+                    var village= villageId
+                    var taluka= talukaId
+                    var gender=genderId
+                    var skill=skillId
+                    var mobile= binding.etMobileNumber.text.toString()
+                    var landline= binding.etLandLine.text.toString()
+                    var mgnregaId= binding.etMgnregaIdNumber.text.toString()
+                    val response=apiService.updateLabourFirstForm(
+                        fullName = name,
+                        genderId=gender,
+                        dateOfBirth = dob,
+                        districtId=districtId,
+                        villageId = villageId,
+                        talukaId = talukaId,
+                        skillId = skillId,
+                        mobileNumber = mobile,
+                        landLineNumber =landline,
+                        mgnregaId = mgnregaId
+                    )
+                    if(response.isSuccessful){
+
+                        if(response.body()?.status.equals("true"))
+                        {
+                            withContext(Dispatchers.Main){
+                              Toast.makeText(this@LabourUpdateOnline1Activity,"Information updated successsfully",Toast.LENGTH_LONG).show()
+                            }
+                        }else{
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LabourUpdateOnline1Activity,"Error while updating information",Toast.LENGTH_LONG).show()
+                            }
+                        }
+                        withContext(Dispatchers.Main){
+                            dialog.dismiss()
                         }
                     }else{
-                        runOnUiThread {
-                            val toast= Toast.makeText(this@LabourUpdateOnline1Activity,"Labour not updated please try again ",
-                                Toast.LENGTH_SHORT)
-                            toast.show()
+                        withContext(Dispatchers.Main){
+                            dialog.dismiss()
+                            Toast.makeText(this@LabourUpdateOnline1Activity,"Error while updating information",Toast.LENGTH_LONG).show()
                         }
-                    }*/
+                    }
                 }
+
             } else {
 
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
@@ -447,6 +466,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                                 binding.etMobileNumber.setText(labourInfo?.mobile_number)
                                 binding.etLandLine.setText(labourInfo?.landline_number)
                                 binding.etMgnregaIdNumber.setText(labourInfo?.mgnrega_card_id)
+                                family=labourInfo?.family_details.toString()
                                 for (taluka in talukaList)
                                 {
                                     talukaNames.add(taluka.name)

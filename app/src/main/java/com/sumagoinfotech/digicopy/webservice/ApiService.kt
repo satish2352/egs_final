@@ -1,5 +1,6 @@
 package com.sumagoinfotech.digicopy.webservice
 
+import com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.LabourEditDetailsOnline
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
@@ -99,6 +100,33 @@ interface ApiService {
         @Part file4: MultipartBody.Part
     ):Response<MastersModel>
 
+    @POST("auth/update-labour-first-form")
+    suspend fun updateLabourFirstForm(
+        @Query("full_name") fullName: String,
+        @Query("gender_id") genderId: String,
+        @Query("date_of_birth") dateOfBirth: String,
+        @Query("skill_id") skillId: String,
+        @Query("village_id") villageId: String,
+        @Query("taluka_id") talukaId: String,
+        @Query("district_id") districtId: String,
+        @Query("mobile_number") mobileNumber: String,
+        @Query("mgnrega_card_id") mgnregaId: String,
+        @Query("landline_number") landLineNumber: String
+    ):Response<MastersModel>
+
+    @Multipart
+    @POST("auth/update-labour-second-form")
+    suspend fun updateLabourFormTwo(
+        @Query("mgnrega_card_id") mgnregaId: String,
+        @Query("family") family: String,
+        @Query("longitude") longitude: String,
+        @Query("latitude") latitude: String,
+        @Part file1: MultipartBody.Part,
+        @Part file2: MultipartBody.Part,
+        @Part file3: MultipartBody.Part,
+        @Part file4: MultipartBody.Part
+    ):Response<MastersModel>
+
     @Multipart
     @POST("auth/add-document")
     suspend fun uploadDocument(
@@ -164,6 +192,8 @@ interface ApiService {
     suspend fun getLabourDetailsForUpdate(@Query("mgnrega_card_id")mgnrega_card_id:String): Response<LabourUpdateDetails>
 
 
+    @POST("auth/particular-labour-details-for-update")
+    suspend fun getLabourDetailsForUpdate2(@Query("mgnrega_card_id")mgnrega_card_id:String): Response<LabourEditDetailsOnline>
 
 
 

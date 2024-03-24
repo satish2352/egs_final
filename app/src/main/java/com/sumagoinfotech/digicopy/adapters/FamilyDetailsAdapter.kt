@@ -9,8 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
+import kotlinx.coroutines.CoroutineScope
 
-class FamilyDetailsAdapter(var familyDetailsList: ArrayList<FamilyDetails>,var deleteListener: OnDeleteListener) : RecyclerView.Adapter<FamilyDetailsAdapter.ViewHolder>() {
+class FamilyDetailsAdapter(
+    var familyDetailsList: ArrayList<FamilyDetails>,
+    var deleteListener: OnDeleteListener
+) : RecyclerView.Adapter<FamilyDetailsAdapter.ViewHolder>() {
 
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

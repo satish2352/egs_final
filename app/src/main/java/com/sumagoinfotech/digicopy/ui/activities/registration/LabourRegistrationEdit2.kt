@@ -55,7 +55,6 @@ import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.FamilyDetails
 import com.sumagoinfotech.digicopy.ui.activities.SyncLabourDataActivity
 import com.sumagoinfotech.digicopy.adapters.FamilyDetailsAdapter
-import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
 import io.getstream.photoview.PhotoView

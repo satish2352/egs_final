@@ -1,5 +1,6 @@
 package com.sumagoinfotech.digicopy.utils
 
+import androidx.room.PrimaryKey
 import java.io.Serializable
 
 data class LabourInputData(
@@ -12,5 +13,6 @@ data class LabourInputData(
     var mobile: String = "",
     var landline: String = "",
     var idCard: String = "",
-    var skill: String = ""
+    var skill: String = "",
+    var family: String? = null,
 ):Serializable
