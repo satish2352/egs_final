@@ -15,4 +15,10 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="CustomDialogTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+
+    </style>
+
 </resources>

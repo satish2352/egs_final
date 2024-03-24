@@ -7,8 +7,9 @@ import androidx.room.PrimaryKey
 data class Document(
     @PrimaryKey(autoGenerate = true) val id: Int? = null,
     val documentName: String,
-    val documentUri: String,
-    val pageCount:String,
-    val isSynced: Boolean,
-    val documentId: String,
+    var documentUri: String,
+    var pageCount:String,
+    var isSynced: Boolean,
+    var documentId: String,
+    var date: String,
 )

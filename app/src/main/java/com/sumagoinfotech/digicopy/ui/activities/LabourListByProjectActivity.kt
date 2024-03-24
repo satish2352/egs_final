@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourListByProjectBinding
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
-import com.sumagoinfotech.digicopy.ui.adapters.LabourListByProjectAdapter
+import com.sumagoinfotech.digicopy.adapters.LabourListByProjectAdapter
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -41,7 +41,7 @@ class LabourListByProjectActivity : AppCompatActivity() {
                 if(response.isSuccessful){
                     if(!response.body()?.data.isNullOrEmpty()) {
                         val list=response.body()?.data
-                        var adapter=LabourListByProjectAdapter(list)
+                        var adapter= LabourListByProjectAdapter(list)
                         binding.recyclerViewLabourList.adapter=adapter
                     }else {
                         Toast.makeText(this@LabourListByProjectActivity, "No records found", Toast.LENGTH_SHORT)

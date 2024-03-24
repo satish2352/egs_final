@@ -33,7 +33,6 @@ class ScanBarcodeActivity : AppCompatActivity() {
             startScanner()
         }
     }
-
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +44,6 @@ class ScanBarcodeActivity : AppCompatActivity() {
             startScanner()
         }
     }
-
     private fun requestThePermissions() {
 
         PermissionX.init(this@ScanBarcodeActivity)
@@ -66,7 +64,6 @@ class ScanBarcodeActivity : AppCompatActivity() {
                 }
             }
     }
-
     @RequiresApi(Build.VERSION_CODES.M)
     private fun requestCameraAndStartScanner() {
 //        if (isPermissionGranted(cameraPermission)) {
@@ -75,7 +72,6 @@ class ScanBarcodeActivity : AppCompatActivity() {
 //            requestCameraPermission()
 //        }
     }
-
     @RequiresApi(Build.VERSION_CODES.M)
     private fun requestCameraPermission() {
         when {

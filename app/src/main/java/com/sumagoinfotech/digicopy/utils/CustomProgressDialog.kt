@@ -1,35 +1,43 @@
 package com.sumagoinfotech.digicopy.utils
 
-import android.app.Dialog
+import android.app.Activity
 import android.content.Context
-import android.view.Window
-import android.widget.ProgressBar
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.os.Build
+import androidx.core.content.ContextCompat
 import com.sumagoinfotech.digicopy.R
 
-class CustomProgressDialog(context: Context) : Dialog(context) {
+class CustomProgressDialog(private val context: Context) {
+    private val dialog: CustomDialog
 
     init {
-        requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.layout_custom_dialog)
-        setCancelable(false)
+        val inflater = (context as Activity).layoutInflater
+        val view = inflater.inflate(R.layout.layout_custom_dialog, null)
+        // cpCardView.setCardBackgroundColor(Color.parseColor("#70000000"))
+        // Progress Bar Color
+        // Text Color
+        // cpTitle.setTextColor(Color.WHITE)
+        // Custom Dialog initialization
+        dialog = CustomDialog(context)
+        dialog.setContentView(view)
     }
 
-    companion object {
-        private var progressDialog: CustomProgressDialog? = null
+    public fun show() {
+        dialog.show()
+    }
 
-        fun show(context: Context) {
-            dismiss()
-            progressDialog = CustomProgressDialog(context)
-            progressDialog?.show()
-        }
+    public fun dismiss() {
+        dialog.dismiss()
+    }
 
-        fun dismiss() {
-            progressDialog?.dismiss()
-            progressDialog = null
-        }
-
-        fun isShowing(): Boolean {
-            return progressDialog?.isShowing ?: false
+    private fun setColorFilter(drawable: Drawable, color: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            drawable.colorFilter = BlendModeColorFilter(color, BlendMode.SRC_ATOP)
+        } else {
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
         }
     }
 }

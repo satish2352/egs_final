@@ -50,7 +50,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="Project Id "
+                        android:text="@string/project_name"
                         android:textColor="@color/white"
                         android:textSize="12dp"></TextView>
                 </LinearLayout>
@@ -84,7 +84,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="MGNREGA Id"
+                        android:text="@string/mgnrega_id"
                         android:textColor="@color/white"
                         android:textSize="12dp"></TextView>
                 </LinearLayout>

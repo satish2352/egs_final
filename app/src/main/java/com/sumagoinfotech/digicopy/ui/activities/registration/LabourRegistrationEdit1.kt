@@ -80,17 +80,11 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         skillsDao=appDatabase.skillsDao()
         CoroutineScope(Dispatchers.IO).launch {
             labour=labourDao.getLabourById(Integer.parseInt(labourId))
-            Log.d("mytag","Skills->"+labour.skill)
-            Log.d("mytag","Skills->"+labour.gender)
-            Log.d("mytag","Skills->"+labour.district)
-            Log.d("mytag","Skills->"+labour.village)
-            Log.d("mytag","Skills->"+labour.taluka)
             prevselectedDistrict=areaDao.getAreaByLocationId(labour.district)
             prevSelectedTaluka=areaDao.getAreaByLocationId(labour.taluka)
             prevSelectedVillage=areaDao.getAreaByLocationId(labour.village)
             prevSelectedGender=genderDao.getGenderById(labour.gender)
             prevSelectedSkill=skillsDao.getSkillById(labour.skill)
-
             talukaList=areaDao.getAllTalukas(labour.district)
             villageList=areaDao.getVillageByTaluka(labour.taluka)
             skillsList=skillsDao.getAllSkills()
@@ -101,7 +95,8 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 binding.actDistrict.setText(prevselectedDistrict.name)
                 binding.actGender.setText(prevSelectedGender.gender_name)
                 binding.actSkill.setText(prevSelectedSkill.skills)
-                for (taluka in talukaList){
+                for (taluka in talukaList)
+                {
                     talukaNames.add(taluka.name)
                 }
                 Log.d("mytag",""+talukaNames.size);

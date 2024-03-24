@@ -16,5 +16,12 @@ data class LabourInfo(
     val mobile_number: String,
     val profile_image: String,
     val taluka_id: String,
-    val village_id: String
+    val village_id: String,
+    val voter_image: String,
+    val status_name: String,
+    val remark: String,
+    val other_remark: String,
+    val reason_name:String,
+    val skills:String
+
 )

@@ -19,7 +19,7 @@ interface LabourDao {
     @Delete
     suspend fun deleteLabour(labour: Labour)
 
-    @Query("SELECT * FROM labours")
+    @Query("SELECT * FROM labours WHERE isSynced=false")
     fun getAllLabour(): List<Labour>
 
     @Query("SELECT * FROM labours WHERE id = :id")
@@ -31,14 +31,14 @@ interface LabourDao {
     @Query("SELECT * FROM labours WHERE mgnregaId like '%' || :searchQuery || '%'")
     suspend fun getLabourByMgnregaIdLike(searchQuery: String): List<Labour>
 
-    @Query("SELECT COUNT(*) FROM labours")
+    @Query("SELECT COUNT(*) FROM labours WHERE isSynced=false")
     suspend fun getLaboursCount(): Int
 
     @Query("SELECT l.*, village.name AS villageName, district.name AS districtName, taluka.name AS talukaName " +
             "FROM labours l " +
             "LEFT JOIN area AS village ON l.village = village.location_id " +
             "LEFT JOIN area AS district ON l.district = district.location_id " +
-            "LEFT JOIN area AS taluka ON l.taluka = taluka.location_id ORDER BY id DESC")
+            "LEFT JOIN area AS taluka ON l.taluka = taluka.location_id WHERE isSynced=false ORDER BY id DESC")
     suspend fun getLabourWithAreaNames(): List<LabourWithAreaNames>
 
 
@@ -47,6 +47,6 @@ interface LabourDao {
             "LEFT JOIN area AS village ON l.village = village.location_id " +
             "LEFT JOIN area AS district ON l.district = district.location_id " +
             "LEFT JOIN area AS taluka ON l.taluka = taluka.location_id " +
-            "WHERE l.id = :labourId")
+            "WHERE l.id = :labourId AND isSynced=false")
     suspend fun getLabourWithAreaNamesById(labourId: Int): LabourWithAreaNames?
 }

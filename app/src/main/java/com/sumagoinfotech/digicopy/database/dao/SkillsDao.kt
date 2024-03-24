@@ -23,7 +23,7 @@ interface SkillsDao {
         deleteAllSkills()
             insertAll(items)
     }
-    @Query("SELECT * FROM skills ORDER BY skills ASC")
+    @Query("SELECT * FROM skills ORDER BY id ASC")
     suspend fun getAllSkills(): List<Skills>
 
     @Query("SELECT * FROM skills WHERE id = :id")

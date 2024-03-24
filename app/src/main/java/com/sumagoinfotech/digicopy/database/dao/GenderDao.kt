@@ -22,7 +22,7 @@ interface GenderDao {
         insertAll(items)
     }
 
-    @Query("SELECT * FROM gender ORDER BY gender_name ASC")
+    @Query("SELECT * FROM gender ORDER BY id ASC")
     suspend fun getAllGenders(): List<Gender>
 
     @Query("SELECT * FROM gender WHERE id = :id")

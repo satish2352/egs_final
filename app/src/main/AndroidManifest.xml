@@ -24,6 +24,53 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activities.registration.LabourUpdateOnline2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.registration.LabourUpdateOnline1Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.LaboursListRejectedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerLaboursRejectedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerViewNotApprovedLabourDetails"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerViewEditReceivedLabourDetails"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficersLaboursApprovedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerLabourNotApprovedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.ui.activities.OfficerLaboursReceivedForApprovalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewNotApprovedLabourDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.officer.OfficerMainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_officer_main" />
+        <activity
+            android:name=".ui.activities.LaboursListApproved"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.LaboursListNotApproved"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewLaboursListSentForApprovalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.activities.ViewUploadedDocumentsActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.activities.ScanDocumentsActivity" />
+        <activity
             android:name=".ui.activities.ViewAttendanceActivity"
             android:exported="false" />
         <activity
@@ -36,7 +83,7 @@
             android:name=".ui.activities.ViewLabourDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.SplashActivity"
+            android:name=".ui.activities.start.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
@@ -58,7 +105,7 @@
             android:name=".ui.activities.ScannerActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.DocumentPagesActivity"
+            android:name=".ui.activities.ScanDocumentsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.ScanBarcodeActivity"
@@ -68,7 +115,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.activities.SyncLabourDataActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".ui.activities.SyncLandDocumentsActivity"
             android:exported="false" />
@@ -76,7 +124,7 @@
             android:name=".ui.activities.registration.LabourRegistration2Activity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.LoginActivity"
+            android:name=".ui.activities.start.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity

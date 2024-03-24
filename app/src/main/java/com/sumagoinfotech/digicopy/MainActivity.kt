@@ -19,8 +19,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.databinding.ActivityMainBinding
-import com.sumagoinfotech.digicopy.ui.activities.LoginActivity
-import com.sumagoinfotech.digicopy.ui.fragments.dashboard.DashboardFragment
+import com.sumagoinfotech.digicopy.ui.activities.start.LoginActivity
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 
 class MainActivity : AppCompatActivity() {
@@ -82,9 +81,10 @@ class MainActivity : AppCompatActivity() {
             // GPS is not enabled, prompt the user to enable it
             AlertDialog.Builder(this)
                 .setMessage(" Please enable GPS on your device")
-                .setPositiveButton("Yes") { _, _ ->
+                .setPositiveButton("Yes") { dialog, _ ->
                     // Open the location settings to enable GPS
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    dialog.dismiss()
                 }
                 .setNegativeButton("No") { dialog, _ ->
                     dialog.dismiss()
@@ -109,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         {
             val mySharedPref=MySharedPref(this@MainActivity)
             mySharedPref.clearAll()
-            val intent=Intent(this@MainActivity,LoginActivity::class.java)
+            val intent=Intent(this@MainActivity, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }

@@ -25,8 +25,8 @@ import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourDetailsBinding
 import com.sumagoinfotech.digicopy.model.FamilyDetails
 import com.sumagoinfotech.digicopy.ui.activities.registration.LabourRegistrationEdit1
 import com.sumagoinfotech.digicopy.ui.activities.registration.RegistrationViewModel
-import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsAdapter
-import com.sumagoinfotech.digicopy.ui.adapters.FamilyDetailsListAdapter
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsAdapter
+import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListAdapter
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import io.getstream.photoview.PhotoView
 import kotlinx.coroutines.CoroutineScope
@@ -43,68 +43,74 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
     lateinit var adapter: FamilyDetailsListAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityViewLabourDetailsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title=resources.getString(R.string.labour_details)
-        var labourId=intent.extras?.getString("id")
-        database= AppDatabase.getDatabase(this)
-        adapter= FamilyDetailsListAdapter(familyDetailsList)
-        binding.recyclerViewFamilyDetails.adapter=adapter
-        binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this@ViewLabourDetailsActivity,RecyclerView.VERTICAL,false)
-        labourDao=database.labourDao()
-        CoroutineScope(Dispatchers.IO).launch {
-            labour= labourDao.getLabourWithAreaNamesById(Integer.parseInt(labourId))!!
-            runOnUiThread {
-                initializeFields()
+        try {
+            binding= ActivityViewLabourDetailsBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title=resources.getString(R.string.labour_details)
+            var labourId=intent.extras?.getString("id")
+            database= AppDatabase.getDatabase(this)
+            adapter= FamilyDetailsListAdapter(familyDetailsList)
+            binding.recyclerViewFamilyDetails.adapter=adapter
+            binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this@ViewLabourDetailsActivity,RecyclerView.VERTICAL,false)
+            labourDao=database.labourDao()
+            CoroutineScope(Dispatchers.IO).launch {
+                labour= labourDao.getLabourWithAreaNamesById(Integer.parseInt(labourId))!!
+                runOnUiThread {
+                    initializeFields()
+                }
             }
-        }
-        binding.ivAadhar.setOnClickListener {
-            showPhotoZoomDialog(labour.aadharImage)
-        }
-        binding.ivPhoto.setOnClickListener {
-            showPhotoZoomDialog(labour.photo)
-        }
-        binding.ivMnregaCard.setOnClickListener {
-            showPhotoZoomDialog(labour.mgnregaIdImage)
-        }
-        binding.ivVoterId.setOnClickListener {
-            showPhotoZoomDialog(labour.voterIdImage)
-        }
-        binding.fabEdit.setOnClickListener {
+            binding.ivAadhar.setOnClickListener {
+                showPhotoZoomDialog(labour.aadharImage)
+            }
+            binding.ivPhoto.setOnClickListener {
+                showPhotoZoomDialog(labour.photo)
+            }
+            binding.ivMnregaCard.setOnClickListener {
+                showPhotoZoomDialog(labour.mgnregaIdImage)
+            }
+            binding.ivVoterId.setOnClickListener {
+                showPhotoZoomDialog(labour.voterIdImage)
+            }
+            binding.fabEdit.setOnClickListener {
 
-            val intent= Intent(this,LabourRegistrationEdit1::class.java)
-            intent.putExtra("id",labour.id.toString())
-            startActivity(intent)
+                val intent= Intent(this,LabourRegistrationEdit1::class.java)
+                intent.putExtra("id",labour.id.toString())
+                startActivity(intent)
+            }
+        } catch (e: Exception) {
         }
 
     }
 
     private fun initializeFields() {
 
-        binding.tvFullName.text=labour.fullName
-        binding.tvGender.text=labour.gender
-        binding.tvDistritct.text=labour.districtName
-        binding.tvTaluka.text=labour.talukaName
-        binding.tvVillage.text=labour.villageName
-        binding.tvMobile.text=labour.mobile
-        if(labour.landline.length<1){
-            binding.tvLandline.text="-"
+        try {
+            binding.tvFullName.text=labour.fullName
+            binding.tvGender.text=labour.gender
+            binding.tvDistritct.text=labour.districtName
+            binding.tvTaluka.text=labour.talukaName
+            binding.tvVillage.text=labour.villageName
+            binding.tvMobile.text=labour.mobile
+            if(labour.landline.length<1){
+                binding.tvLandline.text="-"
+            }
+            binding.tvLandline.text=labour.landline
+            binding.tvDob.text=labour.dob
+            binding.tvMnregaId.text=labour.mgnregaId
+            loadWithGlideFromUri(labour.aadharImage,binding.ivAadhar)
+            loadWithGlideFromUri(labour.mgnregaIdImage,binding.ivMnregaCard)
+            loadWithGlideFromUri(labour.voterIdImage,binding.ivVoterId)
+            loadWithGlideFromUri(labour.photo,binding.ivPhoto)
+            Log.d("mytag",labour.familyDetails)
+            val gson= Gson()
+            val familyList: ArrayList<FamilyDetails> = gson.fromJson(labour.familyDetails, object : TypeToken<ArrayList<FamilyDetails>>() {}.type)
+            familyDetailsList=familyList
+            adapter= FamilyDetailsListAdapter(familyDetailsList)
+            binding.recyclerViewFamilyDetails.adapter=adapter
+            adapter.notifyDataSetChanged()
+        } catch (e: Exception) {
         }
-        binding.tvLandline.text=labour.landline
-        binding.tvDob.text=labour.dob
-        binding.tvMnregaId.text=labour.mgnregaId
-        loadWithGlideFromUri(labour.aadharImage,binding.ivAadhar)
-        loadWithGlideFromUri(labour.mgnregaIdImage,binding.ivMnregaCard)
-        loadWithGlideFromUri(labour.voterIdImage,binding.ivVoterId)
-        loadWithGlideFromUri(labour.photo,binding.ivPhoto)
-        Log.d("mytag",labour.familyDetails)
-        val gson= Gson()
-        val familyList: ArrayList<FamilyDetails> = gson.fromJson(labour.familyDetails, object : TypeToken<ArrayList<FamilyDetails>>() {}.type)
-        familyDetailsList=familyList
-        adapter= FamilyDetailsListAdapter(familyDetailsList)
-        binding.recyclerViewFamilyDetails.adapter=adapter
-        adapter.notifyDataSetChanged()
     }
     private fun loadWithGlideFromUri(uri: String, imageView: ImageView) {
         Glide.with(this@ViewLabourDetailsActivity)
@@ -114,21 +120,25 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
 
     private fun showPhotoZoomDialog(uri:String){
 
-        val dialog= Dialog(this@ViewLabourDetailsActivity)
-        dialog.setContentView(R.layout.layout_zoom_image)
-        val width = ViewGroup.LayoutParams.MATCH_PARENT
-        val height = ViewGroup.LayoutParams.WRAP_CONTENT
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(width, height)
-        dialog.show()
-        val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
-        val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
-        Glide.with(this@ViewLabourDetailsActivity)
-            .load(uri)
-            .into(photoView)
+        try {
+            val dialog= Dialog(this@ViewLabourDetailsActivity)
+            dialog.setContentView(R.layout.layout_zoom_image)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window?.setLayout(width, height)
+            dialog.show()
+            val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
+            val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
+            Glide.with(this@ViewLabourDetailsActivity)
+                .load(uri)
+                .into(photoView)
 
-        ivClose.setOnClickListener {
-            dialog.dismiss()
+            ivClose.setOnClickListener {
+                dialog.dismiss()
+            }
+        } catch (e: Exception) {
+
         }
     }
 

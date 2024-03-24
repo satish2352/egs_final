@@ -5,5 +5,7 @@ data class Data(
     val gender: List<Gender>,
     val maritalstatus: List<Maritalstatu>,
     val relation: List<Relation>,
-    val skills: List<Skill>
+    val skills: List<Skill>,
+    val registrationstatus: List<RegistrationStatus>,
+    val reasons: List<Reasons>
 )

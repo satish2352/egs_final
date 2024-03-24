@@ -12,6 +12,8 @@ import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
 import com.sumagoinfotech.digicopy.database.dao.GenderDao
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.database.dao.MaritalStatusDao
+import com.sumagoinfotech.digicopy.database.dao.ReasonsDao
+import com.sumagoinfotech.digicopy.database.dao.RegistrationStatusDao
 import com.sumagoinfotech.digicopy.database.dao.RelationDao
 import com.sumagoinfotech.digicopy.database.dao.SkillsDao
 import com.sumagoinfotech.digicopy.database.dao.UserDao
@@ -22,12 +24,14 @@ import com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown
 import com.sumagoinfotech.digicopy.database.entity.Gender
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.entity.MaritalStatus
+import com.sumagoinfotech.digicopy.database.entity.Reasons
+import com.sumagoinfotech.digicopy.database.entity.RegistrationStatus
 import com.sumagoinfotech.digicopy.database.entity.Relation
 import com.sumagoinfotech.digicopy.database.entity.Skills
 import com.sumagoinfotech.digicopy.database.entity.User
 import java.util.concurrent.Executors
 
-@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class], version = 1)
+@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun labourDao(): LabourDao
     abstract fun documentDao(): DocumentDao
@@ -39,6 +43,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun relationDao():RelationDao
     abstract fun genderDao():GenderDao
     abstract fun documentDropDownDao():DocumentTypeDropDownDao
+    abstract fun registrationStatusDao():RegistrationStatusDao
+    abstract fun reasonsDao():ReasonsDao
 
     companion object {
         @Volatile

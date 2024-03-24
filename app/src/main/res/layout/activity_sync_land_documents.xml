@@ -14,6 +14,7 @@
 
 
     <TextView
+
         android:layout_marginTop="8dp"
         android:layout_gravity="end"
         android:fontFamily="@font/poppins"
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"></TextView>
 
     <TextView
+        android:visibility="gone"
         android:layout_marginTop="16dp"
         android:layout_gravity="center"
         android:textColor="@color/appBlue"

@@ -150,18 +150,25 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
     }
 
     private fun showLabourMakkers(labourData: MutableList<LabourData>) {
-        labourData.forEach { marker ->
-            val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
-            val myMarker=map.addMarker(
-                MarkerOptions()
-                    .position(position)
-                    .title(marker.full_name).snippet(marker.district_id+" "+marker.taluka_id+" "+marker.village_id)
-            )
-            myMarker?.tag=marker.mgnrega_card_id
-            myMarker?.showInfoWindow()
+        try {
+            Log.d("mytag","=>"+Gson().toJson(labourData))
+            labourData.forEach { marker ->
+                Log.d("mytag","showLabourMakkers: ${marker.latitude},${marker.latitude}")
+                val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
+                val myMarker=map.addMarker(
+                    MarkerOptions()
+                        .position(position)
+                        .title(marker.full_name).snippet(marker.district_id+" "+marker.taluka_id+" "+marker.village_id)
+                )
+                myMarker?.tag=marker.mgnrega_card_id
+                myMarker?.showInfoWindow()
+            }
+            // Move camera to the first marker
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(labourData[0].latitude.toDouble(), labourData[0].longitude.toDouble()), 15f))
+        } catch (e: Exception) {
+            Log.d("mytag","showLabourMakkers: Exception "+e.message)
+            e.printStackTrace()
         }
-        // Move camera to the first marker
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(labourData[0].latitude.toDouble(), labourData[0].longitude.toDouble()), 15f))
 
     }
 
@@ -197,18 +204,25 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
 
     private fun showProjectMarkers(projectData: MutableList<ProjectData>) {
         map.clear()
-        projectData.forEach { marker ->
-            val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
-            val myMarker=map.addMarker(
-                MarkerOptions()
-                    .position(position)
-                    .title("Project : "+marker.project_name).snippet(marker.district)
-            )
-            myMarker?.tag=marker.id
-            myMarker?.showInfoWindow()
+
+        try {
+            projectData.forEach { marker ->
+                Log.d("mytag","showProjectMarkers: ${marker.latitude},${marker.latitude}")
+                val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
+                val myMarker=map.addMarker(
+                    MarkerOptions()
+                        .position(position)
+                        .title("Project : "+marker.project_name).snippet(marker.district)
+                )
+                myMarker?.tag=marker.id
+                myMarker?.showInfoWindow()
+            }
+            // Move camera to the first marker
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(projectData[0].latitude.toDouble(), projectData[0].longitude.toDouble()), 15f))
+        } catch (e: Exception) {
+            Log.d("mytag","showProjectMarkers: Exception "+e.message)
+            e.printStackTrace()
         }
-        // Move camera to the first marker
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(projectData[0].latitude.toDouble(), projectData[0].longitude.toDouble()), 15f))
     }
 
     override fun onDestroyView() {

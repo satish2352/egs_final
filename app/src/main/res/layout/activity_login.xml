@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/appBlue"
     android:orientation="vertical"
-    tools:context=".ui.activities.LoginActivity">
+    tools:context=".ui.activities.start.LoginActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -134,6 +134,7 @@
                     android:text="@string/login"></Button>
 
                 <ImageView
+                    android:id="@+id/ivHome"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:src="@drawable/login_image"></ImageView>
