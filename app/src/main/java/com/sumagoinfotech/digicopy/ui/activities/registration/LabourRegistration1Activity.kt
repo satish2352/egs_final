@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
@@ -114,10 +116,33 @@ class LabourRegistration1Activity : AppCompatActivity() {
                 toast.show()
             }
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                val builder = AlertDialog.Builder(this@LabourRegistration1Activity)
+                builder.setTitle("Exit Confirmation")
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        // If "Yes" is clicked, exit the app
+                        finish()
+                    }
+                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .show()
+
+            }
+        })
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            finish()
+            val builder = AlertDialog.Builder(this@LabourRegistration1Activity)
+            builder.setTitle("Exit Confirmation")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // If "Yes" is clicked, exit the app
+                    finish()
+                }
+                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .show()
         }
         return super.onOptionsItemSelected(item)
     }

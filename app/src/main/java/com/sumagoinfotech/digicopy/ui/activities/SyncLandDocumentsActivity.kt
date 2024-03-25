@@ -44,7 +44,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySyncLandDocumentsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val layoutManager=GridLayoutManager(this,2,RecyclerView.VERTICAL,false)
+        val layoutManager=GridLayoutManager(this,3,RecyclerView.VERTICAL,false)
         binding.recyclerViewSyncLandDocuments.layoutManager=layoutManager
         documentList=ArrayList<Document>()
         adapter= SyncLandDocumentsAdapter(documentList as ArrayList<Document>)

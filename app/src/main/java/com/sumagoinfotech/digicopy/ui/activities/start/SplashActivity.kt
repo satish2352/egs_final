@@ -246,7 +246,7 @@ class SplashActivity : AppCompatActivity() {
         return apiResponseList.map { apiResponse ->
             com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown(
                 id = apiResponse.id,
-                documenttype = apiResponse.documenttype,
+                documenttype = apiResponse.document_type_name,
                 is_deleted =apiResponse.is_deleted,
                 is_active = apiResponse.is_active,
                 created_at = apiResponse.created_at,

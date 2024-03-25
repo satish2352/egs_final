@@ -111,6 +111,7 @@
             android:name=".ui.activities.ScanBarcodeActivity"
             android:exported="false" />
         <activity
+            android:parentActivityName=".MainActivity"
             android:name=".ui.activities.ReportsActivity"
             android:exported="false" />
         <activity

@@ -53,10 +53,10 @@ class OfficerReportsFragment : Fragment() {
             val intent= Intent(requireActivity(),OfficerLabourNotApprovedListActivity::class.java)
             startActivity(intent)
         }
-        binding.cardRejected.setOnClickListener {
+       /* binding.cardRejected.setOnClickListener {
             val intent= Intent(requireActivity(),OfficerLaboursRejectedListActivity::class.java)
             startActivity(intent)
-        }
+        }*/
         return binding.root
     }
 

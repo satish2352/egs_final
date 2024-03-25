@@ -75,7 +75,7 @@ class ReportsActivity : AppCompatActivity() {
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            finish()
+          //  finish()
         }
         return super.onOptionsItemSelected(item)
     }

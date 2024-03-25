@@ -43,6 +43,8 @@ class ScanBarcodeActivity : AppCompatActivity() {
             requestCameraAndStartScanner()
             startScanner()
         }
+        requestCameraAndStartScanner()
+        startScanner()
     }
     private fun requestThePermissions() {
 

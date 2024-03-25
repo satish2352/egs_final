@@ -27,6 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <androidx.cardview.widget.CardView
+                android:paddingBottom="24dp"
                 android:background="@color/white"
                 app:cardUseCompatPadding="true"
                 app:cardPreventCornerOverlap="true"
@@ -286,12 +287,11 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="fitCenter"
-                                    android:id="@+id/ivVoterId"
+                                    android:scaleType="center"                                    android:id="@+id/ivVoterId"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
                                     android:layout_width="match_parent"
-                                    android:layout_height="120dp"></ImageView>
+                                    android:layout_height="100dp"></ImageView>
                                 <TextView
                                     android:layout_marginBottom="10dp"
                                     android:layout_marginTop="10dp"
@@ -316,12 +316,12 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="fitCenter"
+                                    android:scaleType="center"
                                     android:id="@+id/ivAadhar"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
                                     android:layout_width="match_parent"
-                                    android:layout_height="120dp"></ImageView>
+                                    android:layout_height="100dp"></ImageView>
 
                                 <TextView
                                     android:layout_marginBottom="10dp"
@@ -332,11 +332,6 @@
                                     android:layout_height="wrap_content"></TextView>
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
                         <androidx.cardview.widget.CardView
                             android:layout_weight="1"
                             android:background="@color/white"
@@ -352,12 +347,11 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="fitCenter"
-                                    android:id="@+id/ivMnregaCard"
+                                    android:scaleType="center"                                    android:id="@+id/ivMnregaCard"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
                                     android:layout_width="match_parent"
-                                    android:layout_height="120dp"></ImageView>
+                                    android:layout_height="100dp"></ImageView>
 
                                 <TextView
                                     android:layout_marginBottom="10dp"
@@ -368,10 +362,6 @@
                                     android:layout_height="wrap_content"></TextView>
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
-                        <View
-                            android:layout_weight="1"
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"></View>
                     </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

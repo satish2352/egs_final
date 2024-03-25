@@ -26,9 +26,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,6 +39,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -67,6 +72,8 @@ import com.sumagoinfotech.digicopy.utils.MyValidator
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.FileInfo
 import io.getstream.photoview.PhotoView
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -123,6 +130,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private var maritalStatusId=""
     private var mgnregaId=""
     private lateinit var dialog:CustomProgressDialog
+    private var isInternetAvailable=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLabourUpdateOnline2Binding.inflate(layoutInflater)
@@ -145,6 +153,18 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         maritalStatusDao=database.martialStatusDao()
         mgnregaId= intent.extras?.getString("id").toString()
         getDetailsFromServer(mgnregaId!!)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                } else {
+                    isInternetAvailable = false
+                }
+            }) { throwable: Throwable? -> }
         CoroutineScope(Dispatchers.IO).launch {
             genderList=genderDao.getAllGenders()
             relationList=relationDao.getAllRelation()
@@ -171,14 +191,20 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         binding.btnUpdate.setOnClickListener {
             if(validateFormFields())
             {
-                val familyDetails= Gson().toJson(familyDetailsList).toString()
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        uploadLabourOnline()
-                    } catch (e: Exception) {
-                        Log.d("mytag","Exception on update : ${e.message}")
-                        e.printStackTrace()
+                if(isInternetAvailable){
+                    val familyDetails= Gson().toJson(familyDetailsList).toString()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            uploadLabourOnline()
+                        } catch (e: Exception) {
+                            Log.d("mytag","Exception on update : ${e.message}")
+                            e.printStackTrace()
+                        }
                     }
+                }else{
+                    val toast = Toast.makeText(applicationContext,
+                        getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_SHORT)
+                    toast.show()
                 }
             }else{
                 Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.select_all_documents),
@@ -294,6 +320,21 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         binding.ivPhoto.setOnClickListener {
             showPhotoZoomDialog(photoImagePath)
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                val builder = AlertDialog.Builder(this@LabourUpdateOnline2Activity)
+                builder.setTitle("Exit Confirmation")
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        // If "Yes" is clicked, exit the app
+                        finish()
+                    }
+                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .show()
+            }
+        })
     }
     private fun initializeFields() {
 
@@ -594,7 +635,15 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            finish()
+            val builder = AlertDialog.Builder(this@LabourUpdateOnline2Activity)
+            builder.setTitle("Exit Confirmation")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // If "Yes" is clicked, exit the app
+                    finish()
+                }
+                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .show()
         }
         return super.onOptionsItemSelected(item)
     }
@@ -773,8 +822,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         return withContext(Dispatchers.IO) {
             try {
                 val requestOptions = RequestOptions()
-                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Don't cache to avoid reading from cache
-                    .skipMemoryCache(true) // Skip memory cache
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC) // Don't cache to avoid reading from cache
+                    .skipMemoryCache(false) // Skip memory cache
                 val bitmap = Glide.with(context)
                     .asBitmap()
                     .load(uri)
@@ -863,6 +912,10 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 runOnUiThread {dialog.dismiss()  }
             } catch (e: Exception) {
                 runOnUiThread { dialog.dismiss() }
+                withContext(Dispatchers.Main){
+                    Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour_response),
+                        Toast.LENGTH_SHORT).show()
+                }
                 Log.d("mytag","uploadLabourOnline "+e.message)
             }
         }
@@ -870,5 +923,6 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
 
 
     }
+
 
 }

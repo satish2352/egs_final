@@ -38,7 +38,7 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
         holder.itemView.setOnClickListener {
 
         }
-        holder.tvDocumentDate.setText(documentList.get(position).documenttype)
+        holder.tvDocumentDate.setText(documentList.get(position).document_type_name)
         holder.tvDownload.setOnClickListener {
             /*val intent = Intent(Intent.ACTION_VIEW)
             intent.setDataAndType(Uri.parse(documentList.get(position).document_pdf), "application/pdf")

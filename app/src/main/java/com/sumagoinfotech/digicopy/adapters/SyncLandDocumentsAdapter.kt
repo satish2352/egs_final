@@ -41,6 +41,7 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
             holder.tvDocumentName.text=documentList[position].documentName
+            holder.tvDocumentDate.text=documentList[position].date
             holder.tvPageCount.text=documentList[position].pageCount
             holder.itemView.setOnClickListener {
                 val file=File(Uri.parse(documentList[position].documentUri).path)

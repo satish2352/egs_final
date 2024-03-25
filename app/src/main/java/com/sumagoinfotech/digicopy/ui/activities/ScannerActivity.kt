@@ -39,7 +39,6 @@ class ScannerActivity : AppCompatActivity() {
 
         cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
         cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener(
             {
                 try {
@@ -105,6 +104,7 @@ class ScannerActivity : AppCompatActivity() {
                     onScan?.invoke(barcodes)
                     onScan = null
                     finish()
+
                 }
             }
             .addOnFailureListener {

@@ -274,7 +274,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                     }
                 }
         } else {
-            // Request location permission
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -283,11 +282,9 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
         }
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(layoutInflater))
     }
-
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
     }
-
     public fun updateMarker(){
         if (isAdded && ActivityCompat.checkSelfPermission(
                 requireActivity().applicationContext,

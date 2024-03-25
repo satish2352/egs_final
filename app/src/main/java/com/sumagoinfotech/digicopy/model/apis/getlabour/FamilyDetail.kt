@@ -16,6 +16,6 @@ data class FamilyDetail(
     var updated_at: String?=null,
     var gender: String? = null,
     var relation: String? = null,
-    var martitalStatus: String? = null
+    var maritalStatus: String? = null
 
     )

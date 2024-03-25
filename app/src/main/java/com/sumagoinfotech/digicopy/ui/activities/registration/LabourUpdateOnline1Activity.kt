@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
@@ -137,68 +139,85 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
             }
         }
         binding.btnUpdateLabour.setOnClickListener {
-            if (validateFieldsX())
-            {
-                Log.d("mytag","gender Id "+genderId)
-                Log.d("mytag","skill Id "+skillId)
-                Log.d("mytag","dist Id "+districtId)
-                Log.d("mytag","taluka Id "+talukaId)
-                Log.d("mytag","Village Id "+villageId)
+            if(isInternetAvailable){
+                if (validateFieldsX())
+                {
+                    dialog.show()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val apiService=ApiClient.create(this@LabourUpdateOnline1Activity)
+                        var name=binding.etFullName.text.toString();
+                        var dob= binding.etDob.text.toString()
+                        var district= districtId
+                        var village= villageId
+                        var taluka= talukaId
+                        var gender=genderId
+                        var skill=skillId
+                        var mobile= binding.etMobileNumber.text.toString()
+                        var landline= binding.etLandLine.text.toString()
+                        mgnregaCardId= binding.etMgnregaIdNumber.text.toString()
+                        val response=apiService.updateLabourFirstForm(
+                            fullName = name,
+                            genderId=gender,
+                            dateOfBirth = dob,
+                            districtId=districtId,
+                            villageId = villageId,
+                            talukaId = talukaId,
+                            skillId = skillId,
+                            mobileNumber = mobile,
+                            landLineNumber =landline,
+                            mgnregaId = mgnregaCardId!!
+                        )
+                        if(response.isSuccessful){
 
-                dialog.show()
-                CoroutineScope(Dispatchers.IO).launch {
-                    val apiService=ApiClient.create(this@LabourUpdateOnline1Activity)
-                    var name=binding.etFullName.text.toString();
-                    var dob= binding.etDob.text.toString()
-                    var district= districtId
-                    var village= villageId
-                    var taluka= talukaId
-                    var gender=genderId
-                    var skill=skillId
-                    var mobile= binding.etMobileNumber.text.toString()
-                    var landline= binding.etLandLine.text.toString()
-                    var mgnregaId= binding.etMgnregaIdNumber.text.toString()
-                    val response=apiService.updateLabourFirstForm(
-                        fullName = name,
-                        genderId=gender,
-                        dateOfBirth = dob,
-                        districtId=districtId,
-                        villageId = villageId,
-                        talukaId = talukaId,
-                        skillId = skillId,
-                        mobileNumber = mobile,
-                        landLineNumber =landline,
-                        mgnregaId = mgnregaId
-                    )
-                    if(response.isSuccessful){
-
-                        if(response.body()?.status.equals("true"))
-                        {
+                            if(response.body()?.status.equals("true"))
+                            {
+                                withContext(Dispatchers.Main){
+                                    Toast.makeText(this@LabourUpdateOnline1Activity,"Information updated successsfully",Toast.LENGTH_LONG).show()
+                                }
+                            }else{
+                                withContext(Dispatchers.Main){
+                                    Toast.makeText(this@LabourUpdateOnline1Activity,
+                                        getString(R.string.error_while_updating_information_please_try_again),Toast.LENGTH_LONG).show()
+                                }
+                            }
                             withContext(Dispatchers.Main){
-                              Toast.makeText(this@LabourUpdateOnline1Activity,"Information updated successsfully",Toast.LENGTH_LONG).show()
+                                dialog.dismiss()
                             }
                         }else{
                             withContext(Dispatchers.Main){
-                                Toast.makeText(this@LabourUpdateOnline1Activity,"Error while updating information",Toast.LENGTH_LONG).show()
+                                dialog.dismiss()
+                                Toast.makeText(this@LabourUpdateOnline1Activity,getString(R.string.error_while_updating_information_please_try_again),Toast.LENGTH_LONG).show()
                             }
                         }
-                        withContext(Dispatchers.Main){
-                            dialog.dismiss()
-                        }
-                    }else{
-                        withContext(Dispatchers.Main){
-                            dialog.dismiss()
-                            Toast.makeText(this@LabourUpdateOnline1Activity,"Error while updating information",Toast.LENGTH_LONG).show()
-                        }
                     }
+
+                } else {
+
+                    val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
+                    toast.show()
                 }
-
-            } else {
-
-                val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
+            }
+            else{
+                val toast = Toast.makeText(applicationContext,
+                    getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_SHORT)
                 toast.show()
             }
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                val builder = AlertDialog.Builder(this@LabourUpdateOnline1Activity)
+                builder.setTitle("Exit Confirmation")
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        // If "Yes" is clicked, exit the app
+                        finish()
+                    }
+                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .show()
+
+            }
+        })
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -208,7 +227,15 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            finish()
+            val builder = AlertDialog.Builder(this@LabourUpdateOnline1Activity)
+            builder.setTitle("Exit Confirmation")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // If "Yes" is clicked, exit the app
+                    finish()
+                }
+                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .show()
         }
         return super.onOptionsItemSelected(item)
     }

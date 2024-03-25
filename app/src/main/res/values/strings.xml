@@ -108,5 +108,12 @@
     <string name="skills">Skills</string>
     <string name="labour_details_upaded">Labour details updated successfully</string>
     <string name="failed_updating_labour">Error while updating labour details please try again</string>
-    <string name="failed_updating_labour_response">response unsuccessfull</string>
+    <string name="failed_updating_labour_response">response unsuccessful please try again</string>
+    <string name="project">Project</string>
+    <string name="internet_is_not_available_please_check">Internet is not available please check</string>
+    <string name="error_while_updating_information_please_try_again">Error while updating information please try again</string>
+    <string name="date">Date :</string>
+    <string name="remark">Remark :</string>
+    <string name="reason_1">Reason :</string>
+    <string name="status_1">Status :</string>
 </resources>

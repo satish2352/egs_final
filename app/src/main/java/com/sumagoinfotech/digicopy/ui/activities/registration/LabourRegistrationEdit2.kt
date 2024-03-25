@@ -25,8 +25,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
@@ -308,6 +310,22 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         binding.ivPhoto.setOnClickListener {
             showPhotoZoomDialog(photoImagePath)
         }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                val builder = AlertDialog.Builder(this@LabourRegistrationEdit2)
+                builder.setTitle("Exit Confirmation")
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        // If "Yes" is clicked, exit the app
+                        finish()
+                    }
+                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .show()
+
+            }
+        })
     }
     private fun initializeFields() {
         Log.d("mytag","initializeFields "+labour.familyDetails)
@@ -609,7 +627,15 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            finish()
+            val builder = AlertDialog.Builder(this@LabourRegistrationEdit2)
+            builder.setTitle("Exit Confirmation")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // If "Yes" is clicked, exit the app
+                    finish()
+                }
+                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .show()
         }
         return super.onOptionsItemSelected(item)
     }

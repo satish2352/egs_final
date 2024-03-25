@@ -3,6 +3,6 @@ package com.sumagoinfotech.digicopy.model.apis.uploadeddocs
 data class UploadedDocument(
     val document_name: String,
     val document_pdf: String,
-    val documenttype: String,
+    val document_type_name: String,
     val id: Int
 )

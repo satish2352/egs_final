@@ -26,8 +26,10 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
@@ -317,6 +319,21 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         binding.layoutMgnregaCard.setOnClickListener {
             captureImage(REQUEST_CODE_MGNREGA_CARD)
         }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                val builder = AlertDialog.Builder(this@LabourRegistration2Activity)
+                builder.setTitle("Exit Confirmation")
+                    .setMessage("Are you sure you want to exit?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        // If "Yes" is clicked, exit the app
+                        finish()
+                    }
+                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .show()
+
+            }
+        })
     }
     suspend fun uriStringToBitmap(context: Context, uriString: String): Bitmap? {
         return withContext(Dispatchers.IO) {
@@ -387,7 +404,15 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            finish()
+            val builder = AlertDialog.Builder(this@LabourRegistration2Activity)
+            builder.setTitle("Exit Confirmation")
+                .setMessage("Are you sure you want to exit?")
+                .setPositiveButton("Yes") { _, _ ->
+                    // If "Yes" is clicked, exit the app
+                    finish()
+                }
+                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .show()
         }
         return super.onOptionsItemSelected(item)
     }
