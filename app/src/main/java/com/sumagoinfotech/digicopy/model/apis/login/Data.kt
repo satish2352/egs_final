@@ -24,5 +24,7 @@ data class Data(
     val updated_at: String,
     val user_agent: String,
     val user_profile: String,
-    val village: String
+    val village: String,
+    val user_district: String,
+
 )

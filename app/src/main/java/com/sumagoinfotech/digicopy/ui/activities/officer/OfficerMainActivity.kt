@@ -38,7 +38,8 @@ class OfficerMainActivity : AppCompatActivity(),
             setOf(
                 R.id.navigation_officer_home,
                 R.id.navigation_officer_reports,
-                R.id.navigation_officer_attendance
+                R.id.navigation_officer_attendance,
+                R.id.navigation_officer_documents
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -120,6 +121,10 @@ class OfficerMainActivity : AppCompatActivity(),
             }
             R.id.navigation_officer_attendance -> {
                 navController.navigate(R.id.navigation_officer_attendance)
+                return true
+            }
+            R.id.navigation_officer_documents -> {
+                navController.navigate(R.id.navigation_officer_documents)
                 return true
             }
         }

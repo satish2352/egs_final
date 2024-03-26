@@ -22,7 +22,7 @@
     <string name="select_date_of_birth">Select Date Of Birth</string>
     <string name="select_district">Select District</string>
     <string name="select_village">Select Village</string>
-    <string name="select_taluka">Select taluka</string>
+    <string name="select_taluka">Select Taluka</string>
     <string name="enter_valid_id_card_number">Enter MNREGA ID Card Number</string>
     <string name="select_relationship">Select Relationship</string>
     <string name="select_marital_status">Select Marital Status</string>
@@ -116,4 +116,5 @@
     <string name="remark">Remark :</string>
     <string name="reason_1">Reason :</string>
     <string name="status_1">Status :</string>
+    <string name="search">Search</string>
 </resources>

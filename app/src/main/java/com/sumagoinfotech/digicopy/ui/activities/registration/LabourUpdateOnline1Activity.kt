@@ -77,6 +77,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
     private var genderId=""
     private var skillId=""
     private var family=""
+    private var labourId=""
     private lateinit var dialog:CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,7 +155,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                         var skill=skillId
                         var mobile= binding.etMobileNumber.text.toString()
                         var landline= binding.etLandLine.text.toString()
-                        mgnregaCardId= binding.etMgnregaIdNumber.text.toString()
+                        val mgnregaId= binding.etMgnregaIdNumber.text.toString()
                         val response=apiService.updateLabourFirstForm(
                             fullName = name,
                             genderId=gender,
@@ -163,14 +164,16 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                             villageId = villageId,
                             talukaId = talukaId,
                             skillId = skillId,
+                            id =labourId ,
                             mobileNumber = mobile,
                             landLineNumber =landline,
-                            mgnregaId = mgnregaCardId!!
+                            mgnregaId = mgnregaId!!
                         )
                         if(response.isSuccessful){
 
                             if(response.body()?.status.equals("true"))
                             {
+                                mgnregaCardId=binding.etMgnregaIdNumber.text.toString()
                                 withContext(Dispatchers.Main){
                                     Toast.makeText(this@LabourUpdateOnline1Activity,"Information updated successsfully",Toast.LENGTH_LONG).show()
                                 }
@@ -207,8 +210,8 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
             override fun handleOnBackPressed() {
 
                 val builder = AlertDialog.Builder(this@LabourUpdateOnline1Activity)
-                builder.setTitle("Exit Confirmation")
-                    .setMessage("Are you sure you want to exit?")
+                builder.setTitle("Exit")
+                    .setMessage("Are you sure you want to exit this screen?")
                     .setPositiveButton("Yes") { _, _ ->
                         // If "Yes" is clicked, exit the app
                         finish()
@@ -472,6 +475,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                             Log.d("mytag","getDetailsFromServer isSuccessful true")
                             //labour=labourDao.getLabourById(Integer.parseInt(mgnregaCardId))
                             val labourInfo=list?.get(0);
+                            labourId=labourInfo?.id.toString()
                             prevselectedDistrict=areaDao.getAreaByLocationId(labourInfo?.district_id.toString())
                             prevSelectedTaluka=areaDao.getAreaByLocationId(labourInfo?.taluka_id.toString())
                             prevSelectedVillage=areaDao.getAreaByLocationId(labourInfo?.village_id.toString())

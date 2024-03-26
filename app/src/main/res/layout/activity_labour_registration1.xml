@@ -94,7 +94,7 @@
             android:textColor="@color/appBlue"
             />
 
-        <AutoCompleteTextView
+        <TextView
             android:background="@drawable/rounded_background_light_gray"
             android:clickable="true"
             android:inputType="none"
@@ -103,9 +103,11 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:layout_weight="1"
+            android:gravity="center|left"
+            android:layout_gravity="center"
             android:hint="@string/date_of_birth"
             android:layout_width="match_parent"
-            android:layout_height="48dp"></AutoCompleteTextView>
+            android:layout_height="48dp"></TextView>
         <TextView
             android:layout_marginTop="16dp"
             android:layout_width="wrap_content"

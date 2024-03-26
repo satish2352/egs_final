@@ -325,8 +325,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             override fun handleOnBackPressed() {
 
                 val builder = AlertDialog.Builder(this@LabourUpdateOnline2Activity)
-                builder.setTitle("Exit Confirmation")
-                    .setMessage("Are you sure you want to exit?")
+                builder.setTitle("Exit")
+                    .setMessage("Are you sure you want to exit this screen?")
                     .setPositiveButton("Yes") { _, _ ->
                         // If "Yes" is clicked, exit the app
                         finish()
@@ -834,7 +834,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 // Create a temporary file to store the bitmap
                 val file = File(context.cacheDir, "$time.jpg")
                 val outputStream = FileOutputStream(file)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 10, outputStream)
                 outputStream.flush()
                 outputStream.close()
 

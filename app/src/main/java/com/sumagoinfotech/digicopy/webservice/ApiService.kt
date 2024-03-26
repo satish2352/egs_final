@@ -7,8 +7,10 @@ import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusModel
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
+import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
+import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectListForOfficerModel
 import com.sumagoinfotech.digicopy.model.apis.skills.SkillsModel
 import com.sumagoinfotech.digicopy.model.apis.update.LabourUpdateDetails
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
@@ -54,6 +56,17 @@ interface ApiService {
     @POST("auth/filter-project-labour-list")
     fun getProjectList(): Call<ProjectLabourListForMarker>
 
+    @POST("auth/project-list-for-officer")
+    fun getProjectListForOfficer(): Call<ProjectListForOfficerModel>
+
+    @POST("auth/filter-project-labour-list")
+    fun getProjectList(
+        @Query("latitude")latitude:String,
+        @Query("longitude")longitude:String
+    ): Call<ProjectLabourListForMarker>
+
+
+
     // Mark Attendance
     @POST("auth/add-attendance-mark")
     fun markAttendance(
@@ -69,12 +82,24 @@ interface ApiService {
 
 
 
+
     // get list attendance marked
     @POST("auth/list-attendance-marked")
     fun getListOfMarkedAttendance(
         @Query("project_id") projectId: String,
     ):Call<AttendanceModel>
 
+
+    @POST("auth/list-attendance-marked-visible-for-officer")
+    fun getAttendanceListForOfficer(
+        @Query("project_id") projectId: String,
+        @Query("taluka_id") talukaId: String,
+        @Query("village_id") VillageId: String,
+    ):Call<AttendanceModel>
+
+
+    @POST("auth/list-document-officer")
+    fun getDocumentsListForOfficer():Call<UploadedDocsModel>
 
 
 
@@ -111,6 +136,7 @@ interface ApiService {
         @Query("district_id") districtId: String,
         @Query("mobile_number") mobileNumber: String,
         @Query("mgnrega_card_id") mgnregaId: String,
+        @Query("id") id: String,
         @Query("landline_number") landLineNumber: String
     ):Response<MastersModel>
 
@@ -196,6 +222,11 @@ interface ApiService {
     suspend fun getLabourDetailsForUpdate2(@Query("mgnrega_card_id")mgnrega_card_id:String): Response<LabourEditDetailsOnline>
 
 
+    @POST("auth/project-list-lat-log")
+    fun getProjectsListFromLatLong(
+        @Query("latitude")latitude:String,
+        @Query("longitude")longitude:String,
+    ):Call<ProjectsFromLatLongModel>
 
 
 

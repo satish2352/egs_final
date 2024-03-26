@@ -29,6 +29,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
+import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectDataFromLatLong
+import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectMarkerData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.LabourData
@@ -40,6 +42,7 @@ import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
 import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
 import com.sumagoinfotech.digicopy.utils.CustomInfoWindowAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -51,7 +54,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
     private var _binding: FragmentDashboardBinding? = null
     private var markersList= mutableListOf<ProjectMarkerData>()
     private var labourData= mutableListOf<LabourData>()
-    private var projectData= mutableListOf<ProjectData>()
+    private var projectData= mutableListOf<ProjectDataFromLatLong>()
     lateinit var dialog:CustomProgressDialog
 
     // This property is only valid between onCreateView and
@@ -184,7 +187,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                 if(response.isSuccessful){
                     Log.d("mytag",Gson().toJson(response.body()))
                     if(!response.body()?.project_data.isNullOrEmpty()){
-                        projectData= response.body()?.project_data as MutableList<ProjectData>
+                        projectData= response.body()?.project_data as MutableList<com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectDataFromLatLong>
                         if(projectData.size>0){
                             showProjectMarkers(projectData)
                         }
@@ -202,29 +205,34 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
         })
     }
 
-    private fun showProjectMarkers(projectData: MutableList<ProjectData>) {
+    private fun showProjectMarkers(projectData: MutableList<ProjectDataFromLatLong>) {
         map.clear()
 
         try {
-            projectData.forEach { marker ->
-                Log.d("mytag","showProjectMarkers: ${marker.latitude},${marker.latitude}")
-                val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
-                val myMarker=map.addMarker(
-                    MarkerOptions()
-                        .position(position)
-                        .title("Project : "+marker.project_name).snippet(marker.district)
-                )
-                myMarker?.tag=marker.id
-                myMarker?.showInfoWindow()
+            if (projectData.isNotEmpty()) {
+                projectData.forEach { marker ->
+                    Log.d("mytag","showProjectMarkers: ${marker.latitude},${marker.longitude}")
+                    val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
+                    val myMarker = map.addMarker(
+                        MarkerOptions()
+                            .position(position)
+                            .title("Project : " + marker.project_name).snippet(marker.district)
+                    )
+                    myMarker?.tag = marker.id
+                    myMarker?.showInfoWindow()
+                }
+                // Move camera to the first marker
+                val firstMarker = projectData.first()
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(firstMarker.latitude.toDouble(), firstMarker.longitude.toDouble()), 13f))
+            } else {
+                // Handle case when projectData is empty
+                Log.d("mytag","showProjectMarkers: Project data is empty")
             }
-            // Move camera to the first marker
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(projectData[0].latitude.toDouble(), projectData[0].longitude.toDouble()), 15f))
         } catch (e: Exception) {
             Log.d("mytag","showProjectMarkers: Exception "+e.message)
             e.printStackTrace()
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -247,6 +255,12 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                 .addOnSuccessListener { location ->
                     location?.let {
                         val currentLatLng = LatLng(it.latitude, it.longitude)
+
+
+                        var pref=MySharedPref(requireContext())
+                        pref.setLatitude(it.latitude.toString())
+                        pref.setLongitude(it.longitude.toString())
+                        fetchProjectDataFromLatLong(it.latitude.toString(),it.longitude.toString())
 
                         // Move camera to current location
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
@@ -383,5 +397,35 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
             context?.startActivity(intent)
         }
         //Toast.makeText(requireContext(), "${marker.tag}Info window clicked: ${marker.title}", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun fetchProjectDataFromLatLong( latitude: String,longitude:String){
+        dialog.show()
+        val apiService=ApiClient.create(requireContext())
+        apiService.getProjectsListFromLatLong(latitude,longitude).enqueue(object : Callback<ProjectsFromLatLongModel>{
+            override fun onResponse(
+                call: Call<ProjectsFromLatLongModel>,
+                response: Response<ProjectsFromLatLongModel>
+            ) {
+                dialog.dismiss()
+                if(response.isSuccessful){
+                    Log.d("mytag",Gson().toJson(response.body()))
+                    if(!response.body()?.data.isNullOrEmpty()){
+                        projectData= response.body()?.data as MutableList<ProjectDataFromLatLong>
+                        if(projectData.size>0){
+                            showProjectMarkers(projectData)
+                        }
+                    }else{
+                        Toast.makeText(requireContext(), "No records found", Toast.LENGTH_SHORT).show()
+                    }
+                }else{
+                    Toast.makeText(requireContext(), "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<ProjectsFromLatLongModel>, t: Throwable) {
+                Toast.makeText(requireContext(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+        })
     }
 }

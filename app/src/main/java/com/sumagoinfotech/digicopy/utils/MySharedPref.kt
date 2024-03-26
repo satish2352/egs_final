@@ -30,6 +30,10 @@ class MySharedPref(context: Context) {
         const val KEY_IS_ACTIVE = "is_active"
         const val KEY_CREATED_AT = "created_at"
         const val KEY_UPDATED_AT = "updated_at"
+        const val KEY_LATITUDE = "latitude"
+        const val KEY_LONGITUDE = "longitude"
+        const val KEY_OFFICER_DISTRICT = "officer_district"
+        const val KEY_DEVICE_ID = "deviceId"
     }
 
     val KEY_ALL_AREA_ENTRIES = "all_area_entries"
@@ -37,12 +41,64 @@ class MySharedPref(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
+    fun setOfficerDistrictID(districtId: String) {
+        with(sharedPreferences.edit()) {
+            putString(KEY_OFFICER_DISTRICT, districtId)
+            apply()
+        }
+    }
+    fun getOfficerDistrictId(): String? {
+        return sharedPreferences.getString(
+            KEY_OFFICER_DISTRICT,
+            "0"
+        ) // Default value is false if key doesn't exist
+    }
+
+    fun setDeviceId(deviceId: String) {
+        with(sharedPreferences.edit()) {
+            putString(KEY_DEVICE_ID, deviceId)
+            apply()
+        }
+    }
+    fun getDeviceId(): String? {
+        return sharedPreferences.getString(
+            KEY_DEVICE_ID,
+            "0"
+        ) // Default value is false if key doesn't exist
+    }
+
+
     // Custom method to set boolean value for all area entries
     fun setAllAreaEntries(value: Boolean) {
         with(sharedPreferences.edit()) {
             putBoolean(KEY_ALL_AREA_ENTRIES, value)
             apply()
         }
+    }
+
+    fun setLatitude(latitude: String) {
+        with(sharedPreferences.edit()) {
+            putString(KEY_LATITUDE, latitude)
+            apply()
+        }
+    }
+    fun setLongitude(longitude: String) {
+        with(sharedPreferences.edit()) {
+            putString(KEY_LONGITUDE, longitude)
+            apply()
+        }
+    }
+    fun getLatitude(): String? {
+        return sharedPreferences.getString(
+            KEY_LATITUDE,
+            "0.0"
+        ) // Default value is false if key doesn't exist
+    }
+    fun getLongitude(): String? {
+        return sharedPreferences.getString(
+            KEY_LONGITUDE,
+            "0.0"
+        ) // Default value is false if key doesn't exist
     }
 
     // Custom method to get boolean value for all area entries

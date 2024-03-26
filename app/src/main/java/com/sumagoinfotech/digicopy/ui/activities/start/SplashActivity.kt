@@ -34,6 +34,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.RegistrationStatus
 import com.sumagoinfotech.digicopy.model.apis.masters.Relation
 import com.sumagoinfotech.digicopy.model.apis.masters.Skill
 import com.sumagoinfotech.digicopy.ui.activities.officer.OfficerMainActivity
+import com.sumagoinfotech.digicopy.utils.DeviceUtils
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import kotlinx.coroutines.CoroutineScope
@@ -80,6 +81,9 @@ class SplashActivity : AppCompatActivity() {
         reasonsDao=appDatabase.reasonsDao()
         binding.progressBar.visibility = View.VISIBLE
            CoroutineScope(Dispatchers.IO).launch {
+               val deviceId=DeviceUtils.getDeviceId(this@SplashActivity)
+
+               Log.d("mytag","Device Id =>"+deviceId)
                userDao.insertInitialRecords()
                documentTypeDao.insertInitialRecords()
                if(!mySharedPref.getAllAreaEntries())

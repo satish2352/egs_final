@@ -61,6 +61,11 @@ class LoginActivity : AppCompatActivity() {
                                     mySharedPref.setRememberToken(loginModel?.data?.remember_token!!)
                                     mySharedPref.setRoleId(loginModel?.data?.role_id!!)
                                     Log.d("mytag",""+loginModel?.data?.remember_token!!)
+
+
+                                    if(loginModel?.data?.role_id==2){
+                                        mySharedPref.setOfficerDistrictID(loginModel?.data?.user_district.toString())
+                                    }
                                     Log.d("mytag","User_ID"+loginModel?.data?.id!!)
                                     runOnUiThread {
                                         customProgressDialog.dismiss()

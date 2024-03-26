@@ -3,6 +3,8 @@ package com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -27,6 +29,8 @@ import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceData
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
+import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectDataForOfficer
+import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectListForOfficerModel
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -61,7 +65,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
     private lateinit var apiService: ApiService
     private lateinit var adapter: ViewAttendanceAdapter
     private lateinit var dialog: CustomProgressDialog
-    private lateinit var listProject: List<ProjectData>
+    private lateinit var listProject: List<ProjectDataForOfficer>
     private var selectedProjectId=""
     private lateinit var appDatabase: AppDatabase
     private lateinit var areaDao: AreaDao
@@ -92,8 +96,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
             areaDao=appDatabase.areaDao()
             mySharedPref= MySharedPref(requireContext())
             CoroutineScope(Dispatchers.IO).launch {
-                talukaList=areaDao.getAllTalukas("3")
-                villageList=areaDao.getVillageByTaluka("641")
+                talukaList=areaDao.getAllTalukas(mySharedPref.getOfficerDistrictId()!!)
 
                 withContext(Dispatchers.Main){
                     for (taluka in talukaList)
@@ -105,23 +108,12 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                         requireActivity(), android.R.layout.simple_list_item_1, talukaNames
                     )
                     binding.actSelectTaluka.setAdapter(talukaAdapter)
-                   /* for (village in villageList){
-                        villageNames.add(village.name)
-                    }
-                    Log.d("mytag",""+villageNames.size);
-                    val villageAdapter = ArrayAdapter(
-                        requireActivity(), android.R.layout.simple_list_item_1, villageNames
-                    )
-                    binding.actSelectVillage.setAdapter(villageAdapter)*/
-
                     binding.actSelectTaluka.setOnFocusChangeListener { abaad, asd ->
                         binding.actSelectTaluka.showDropDown()
                     }
                     binding.actSelectTaluka.setOnClickListener {
                         binding.actSelectTaluka.showDropDown()
                     }
-
-
                 }
             }
             dialog= CustomProgressDialog(requireContext())
@@ -146,30 +138,30 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
             }
             binding.actSelectProject.setOnItemClickListener { parent, view, position, id ->
                 selectedProjectId=listProject.get(position).id.toString()
-                getAttendanceList(selectedProjectId)
+                getAttendanceList()
             }
             binding.actSelectProject.setOnFocusChangeListener { v, hasFocus ->
                 binding.actSelectProject.showDropDown()
             }
             binding.btnClose.setOnClickListener {
                 binding.actSelectProject.setText("")
-                getAttendanceList("")
+                getAttendanceList()
             }
-
             binding.actSelectTaluka.setOnItemClickListener { parent, view, position, id ->
                 CoroutineScope(Dispatchers.IO).launch {
-                    talukaId=talukaList[position].location_id
-                    villageNames.clear();
-                    binding.actSelectVillage.setText("")
-                    villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
-                    for (village in villageList){
-                        villageNames.add(village.name)
-                    }
-                    val villageAdapter = ArrayAdapter(
-                        requireActivity(), android.R.layout.simple_list_item_1, villageNames
-                    )
-                    Log.d("mytag",""+villageNames.size)
+
                     withContext(Dispatchers.Main){
+                        talukaId=talukaList[position].location_id
+                        villageNames.clear();
+                        binding.actSelectVillage.setText("")
+                        villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
+                        for (village in villageList){
+                            villageNames.add(village.name)
+                        }
+                        val villageAdapter = ArrayAdapter(
+                            requireActivity(), android.R.layout.simple_list_item_1, villageNames
+                        )
+                        Log.d("mytag",""+villageNames.size)
                         binding.actSelectVillage.setAdapter(villageAdapter)
                         binding.actSelectVillage.setOnFocusChangeListener { abaad, asd ->
                             binding.actSelectVillage.showDropDown()
@@ -179,6 +171,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                         }
                     }
                 }
+
             }
             binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
                 villageId=villageList[position].location_id
@@ -187,17 +180,20 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
 
                 binding.actSelectTaluka.setText("")
                 talukaId=""
+                getAttendanceList()
             }
             binding.btnCloseVillage.setOnClickListener {
 
                 binding.actSelectVillage.setText("")
                 villageId=""
+                getAttendanceList()
             }
 
             binding.btnClose.setOnClickListener {
 
                 binding.actSelectProject.setText("")
                 selectedProjectId=""
+                getAttendanceList()
             }
             binding.layoutStartDate.setOnClickListener {
                 showDatePicker(requireContext(),binding.etStartDate)
@@ -217,9 +213,83 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                 villageId=""
                 startDate=""
                 endDate=""
+                //getProjectList();
+                getAttendanceList();
             }
             getProjectList();
-            getAttendanceList(selectedProjectId);
+            getAttendanceList();
+            binding.btnClose.visibility=View.GONE
+            binding.btnCloseTaluka.visibility=View.GONE
+            binding.btnCloseVillage.visibility=View.GONE
+            binding.btnSearch.setOnClickListener {
+                getAttendanceList()
+            }
+            binding.actSelectProject.addTextChangedListener(object :TextWatcher{
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+                override fun afterTextChanged(s: Editable?) {
+
+                    val length = s?.length ?: 0
+                    val text = s?.toString() ?: ""
+                    if (length > 0) {
+                        binding.btnClose.visibility = View.VISIBLE
+                    } else {
+                        binding.btnClose.visibility = View.GONE
+                    }
+                }
+            })
+            binding.actSelectTaluka.addTextChangedListener(object :TextWatcher{
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+                override fun afterTextChanged(s: Editable?) {
+
+                    val length = s?.length ?: 0
+                    val text = s?.toString() ?: ""
+                    if (length > 0) {
+                        binding.btnCloseTaluka.visibility = View.VISIBLE
+                    } else {
+                        binding.btnCloseTaluka.visibility = View.GONE
+                    }
+                }
+            })
+            binding.actSelectVillage.addTextChangedListener(object :TextWatcher{
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+                override fun afterTextChanged(s: Editable?) {
+
+                    val length = s?.length ?: 0
+                    val text = s?.toString() ?: ""
+                    if (length > 0) {
+                        binding.btnCloseVillage.visibility = View.VISIBLE
+                    } else {
+                        binding.btnCloseVillage.visibility = View.GONE
+                    }
+                }
+            })
         } catch (e: Exception)
         {
 
@@ -261,10 +331,10 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
 
     }
 
-    private fun getAttendanceList(selectedProjectId: String) {
+    private fun getAttendanceList() {
 
         dialog.show()
-        val call=apiService.getListOfMarkedAttendance(selectedProjectId);
+        val call=apiService.getAttendanceListForOfficer(selectedProjectId,talukaId,villageId);
         call.enqueue(object : Callback<AttendanceModel> {
             override fun onResponse(
                 call: Call<AttendanceModel>,
@@ -294,16 +364,16 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
     private fun getProjectList() {
         try {
             val apiService = ApiClient.create(requireActivity())
-            val call = apiService.getProjectList()
-            call.enqueue(object : Callback<ProjectLabourListForMarker> {
+            val call = apiService.getProjectListForOfficer()
+            call.enqueue(object : Callback<ProjectListForOfficerModel> {
                 override fun onResponse(
-                    call: Call<ProjectLabourListForMarker>,
-                    response: Response<ProjectLabourListForMarker>
+                    call: Call<ProjectListForOfficerModel>,
+                    response: Response<ProjectListForOfficerModel>
                 ) {
                     Log.d("mytag", "getProjectList=>"+ Gson().toJson(response.body()))
                     if (response.isSuccessful) {
-                        if (!response.body()?.project_data.isNullOrEmpty()) {
-                            listProject = response.body()?.project_data!!
+                        if (!response.body()?.data.isNullOrEmpty()) {
+                            listProject = response.body()?.data!!
                             val projectNames = mutableListOf<String>()
                             for (project in listProject) {
                                 projectNames.add(project.project_name)
@@ -332,7 +402,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                     }
                 }
 
-                override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
+                override fun onFailure(call: Call<ProjectListForOfficerModel>, t: Throwable) {
                     Log.d("mytag", "onFailure getProjectFromServer " + t.message)
                     Toast.makeText(
                         requireActivity(),

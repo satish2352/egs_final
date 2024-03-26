@@ -1,11 +1,39 @@
 package com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
+import com.sumagoinfotech.digicopy.adapters.OfficerUploadedDocsAdapter
+import com.sumagoinfotech.digicopy.adapters.ViewAttendanceAdapter
+import com.sumagoinfotech.digicopy.database.AppDatabase
+import com.sumagoinfotech.digicopy.database.dao.AreaDao
+import com.sumagoinfotech.digicopy.database.entity.AreaItem
+import com.sumagoinfotech.digicopy.databinding.FragmentOfficerUploadedDocumentsBinding
+import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceData
+import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
+import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
+import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocument
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.MySharedPref
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import com.sumagoinfotech.digicopy.webservice.ApiService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -21,7 +49,23 @@ class OfficerUploadedDocumentsFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    private lateinit var binding:FragmentOfficerUploadedDocumentsBinding
+    private lateinit var apiService: ApiService
+    private lateinit var dialog: CustomProgressDialog
+    private lateinit var adapter: OfficerUploadedDocsAdapter
+    private  var listDocuments=ArrayList<UploadedDocument>()
+    private  var isInternetAvailable=false
+    private lateinit var talukaList:List<AreaItem>
+    private lateinit var villageList:List<AreaItem>
+    private var villageNames= mutableListOf<String>()
+    private var talukaNames= mutableListOf<String>()
+    private var talukaId=""
+    private var villageId=""
+    private var startDate=""
+    private var endDate=""
+    private lateinit var mySharedPref: MySharedPref
+    private lateinit var appDatabase: AppDatabase
+    private lateinit var areaDao: AreaDao
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -35,19 +79,211 @@ class OfficerUploadedDocumentsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_officer_uploaded_documents, container, false)
+        binding= FragmentOfficerUploadedDocumentsBinding.inflate(layoutInflater, container, false)
+        try {
+            appDatabase=AppDatabase.getDatabase(requireActivity())
+            areaDao=appDatabase.areaDao()
+            mySharedPref= MySharedPref(requireContext())
+            CoroutineScope(Dispatchers.IO).launch {
+                talukaList=areaDao.getAllTalukas(mySharedPref.getOfficerDistrictId()!!)
+
+                withContext(Dispatchers.Main){
+                    for (taluka in talukaList)
+                    {
+                        talukaNames.add(taluka.name)
+                    }
+                    Log.d("mytag",""+talukaNames.size);
+                    val talukaAdapter = ArrayAdapter(
+                        requireActivity(), android.R.layout.simple_list_item_1, talukaNames
+                    )
+                    binding.actSelectTaluka.setAdapter(talukaAdapter)
+                    binding.actSelectTaluka.setOnFocusChangeListener { abaad, asd ->
+                        binding.actSelectTaluka.showDropDown()
+                    }
+                    binding.actSelectTaluka.setOnClickListener {
+                        binding.actSelectTaluka.showDropDown()
+                    }
+                }
+            }
+            binding.recyclerView.layoutManager=GridLayoutManager(requireContext(),3,RecyclerView.VERTICAL,false)
+            apiService=ApiClient.create(requireContext())
+            dialog= CustomProgressDialog(requireContext())
+
+            binding.actSelectTaluka.setOnItemClickListener { parent, view, position, id ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
+                    withContext(Dispatchers.Main){
+                        talukaId=talukaList[position].location_id
+                        villageNames.clear();
+                        binding.actSelectVillage.setText("")
+                        for (village in villageList){
+                            villageNames.add(village.name)
+                        }
+                        val villageAdapter = ArrayAdapter(
+                            requireActivity(), android.R.layout.simple_list_item_1, villageNames
+                        )
+                        Log.d("mytag",""+villageNames.size)
+                        binding.actSelectVillage.setAdapter(villageAdapter)
+                        binding.actSelectVillage.setOnFocusChangeListener { abaad, asd ->
+                            binding.actSelectVillage.showDropDown()
+                        }
+                        binding.actSelectVillage.setOnClickListener {
+                            binding.actSelectVillage.showDropDown()
+                        }
+                    }
+                }
+            }
+            binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
+                villageId=villageList[position].location_id
+            }
+            binding.btnCloseTaluka.setOnClickListener {
+
+                binding.actSelectTaluka.setText("")
+                talukaId=""
+
+            }
+            binding.btnCloseVillage.setOnClickListener {
+
+                binding.actSelectVillage.setText("")
+                villageId=""
+            }
+            binding.btnClose.setOnClickListener {
+
+                binding.actSelectProject.setText("")
+            }
+            binding.layoutStartDate.setOnClickListener {
+            }
+            binding.layoutEndDate.setOnClickListener {
+            }
+            binding.layoutClearAll.setOnClickListener {
+
+                binding.actSelectProject.setText("")
+                binding.actSelectTaluka.setText("")
+                binding.actSelectVillage.setText("")
+                binding.etStartDate.setText("")
+                binding.etEndDate.setText("")
+                talukaId=""
+                villageId=""
+                startDate=""
+                endDate=""
+            }
+            binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
+                villageId=villageList[position].location_id
+            }
+            getDocumentsList();
+            addTextWatcher()
+            return binding.root
+        } catch (e: Exception) {
+
+        }
+        return binding.root
+    }
+
+    private fun addTextWatcher() {
+
+        binding.actSelectProject.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {
+
+                val length = s?.length ?: 0
+                val text = s?.toString() ?: ""
+                if (length > 0) {
+                    binding.btnClose.visibility = View.VISIBLE
+                } else {
+                    binding.btnClose.visibility = View.GONE
+                }
+            }
+        })
+        binding.actSelectTaluka.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {
+
+                val length = s?.length ?: 0
+                val text = s?.toString() ?: ""
+                if (length > 0) {
+                    binding.btnCloseTaluka.visibility = View.VISIBLE
+                } else {
+                    binding.btnCloseTaluka.visibility = View.GONE
+                }
+            }
+        })
+        binding.actSelectVillage.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {
+
+                val length = s?.length ?: 0
+                val text = s?.toString() ?: ""
+                if (length > 0) {
+                    binding.btnCloseVillage.visibility = View.VISIBLE
+                } else {
+                    binding.btnCloseVillage.visibility = View.GONE
+                }
+            }
+        })
+    }
+
+    private fun getDocumentsList() {
+        try {
+            dialog.show()
+            val call=apiService.getDocumentsListForOfficer();
+            call.enqueue(object : Callback<UploadedDocsModel> {
+                override fun onResponse(
+                    call: Call<UploadedDocsModel>,
+                    response: Response<UploadedDocsModel>
+                ) {
+                    dialog.dismiss()
+                    if(response.isSuccessful)
+                    {
+                        listDocuments.clear()
+                        if(response.body()?.status.equals("true")){
+                            listDocuments= (response.body()?.data as ArrayList<UploadedDocument>?)!!
+                            adapter= OfficerUploadedDocsAdapter(listDocuments)
+                            binding.recyclerView.adapter=adapter
+                            adapter.notifyDataSetChanged()
+                        }
+                    }else{
+                        Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<UploadedDocsModel>, t: Throwable) {
+                    Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+            })
+        }catch (e:Exception){
+
+        }
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment OfficerUploadedDocumentsFragment.
-         */
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             OfficerUploadedDocumentsFragment().apply {

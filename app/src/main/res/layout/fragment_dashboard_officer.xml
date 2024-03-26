@@ -7,18 +7,17 @@
     tools:context=".ui.activities.officer.ui.fragments.OfficerDashboardFragment">
 
     <fragment
-        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/map_container"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:visibility="gone"
         android:layout_margin="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
+        android:layout_height="wrap_content">
         <EditText
             android:background="@drawable/rounded_background"
             android:id="@+id/etInput"
@@ -94,7 +93,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:visibility="gone"
+        android:visibility="visible"
         android:paddingRight="13dp"
         android:paddingLeft="8dp"
         android:layout_alignParentStart="true"
@@ -113,10 +112,12 @@
             android:id="@+id/layoutScanQR">
 
             <ImageView
+                android:layout_marginTop="16dp"
                 android:src="@drawable/scan_me"
-                android:layout_width="24dp"
-                android:layout_height="24dp"></ImageView>
+                android:layout_width="36dp"
+                android:layout_height="36dp"></ImageView>
             <TextView
+                android:layout_marginBottom="16dp"
                 android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -127,12 +128,14 @@
                 android:textSize="8dp"></TextView>
         </LinearLayout>
         <View
+            android:visibility="gone"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="1dp"></View>
         <LinearLayout
+            android:visibility="gone"
             android:clickable="true"
             android:id="@+id/layoutRegisterLabour"
             android:orientation="vertical"

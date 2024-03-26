@@ -35,6 +35,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.adapters.AttendanceAdapter
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
 import kotlinx.coroutines.CoroutineScope
@@ -54,6 +55,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     private lateinit var labourDataList: ArrayList<LabourInfo>
     private var selectedProjectId = ""
     private lateinit var apiService: ApiService
+    lateinit var pref:MySharedPref
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAllocateWorkBinding.inflate(layoutInflater)
@@ -63,6 +65,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = resources.getString(R.string.allocate_work)
         apiService = ApiClient.create(this)
+        pref=MySharedPref(this)
         getProjectFromServer()
         labourList = ArrayList<Labour>()
         labourDataList = ArrayList<LabourInfo>()
@@ -322,10 +325,10 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
         binding.projectArea.setText("")
     }
 
-    private fun getProjectFromServer() {
-
+    private fun getProjectFromServer()
+    {
         val apiService = ApiClient.create(this@AllocateWorkActivity)
-        val call = apiService.getProjectList()
+        val call = apiService.getProjectList(pref.getLatitude()!!,pref.getLongitude()!!)
         call.enqueue(object : Callback<ProjectLabourListForMarker> {
             override fun onResponse(
                 call: Call<ProjectLabourListForMarker>,

@@ -38,14 +38,13 @@ class FamilyDetailsOnlineEditAdapter(
     ) {
         holder.tvFullName.setText(familyDetailsList?.get(position)?.full_name)
         holder.tvDob.setText(familyDetailsList?.get(position)?.date_of_birth)
-        holder.tvRelationship.setText(familyDetailsList?.get(position)?.relationship_id)
-        holder.tvMaritalStatus.setText(familyDetailsList?.get(position)?.married_status_id)
-        holder.tvGender.setText(familyDetailsList?.get(position)?.gender_id)
+        holder.tvRelationship.setText(familyDetailsList?.get(position)?.relation)
+        holder.tvMaritalStatus.setText(familyDetailsList?.get(position)?.maritalStatus)
+        holder.tvGender.setText(familyDetailsList?.get(position)?.gender)
         holder.imageViewDelete.setOnClickListener {
             deleteListener.onDelete(position)
             notifyItemRemoved(position)
         }
-
     }
 
     override fun getItemCount(): Int {

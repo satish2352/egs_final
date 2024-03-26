@@ -1,6 +1,8 @@
 package com.sumagoinfotech.digicopy.ui.activities
 
+import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -29,11 +32,15 @@ import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.adapters.ViewAttendanceAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
 
@@ -44,10 +51,12 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
     private lateinit var dialog:CustomProgressDialog
     private lateinit var listProject: List<ProjectData>
     private var selectedProjectId=""
+    private lateinit var pref:MySharedPref
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityViewAttendanceBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        pref= MySharedPref(this)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = resources.getString(R.string.view_attendance)
         dialog= CustomProgressDialog(this)
@@ -72,13 +81,46 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
             binding.actSelectProject.setText("")
             getAttendanceList("")
         }
+        binding.layoutStartDate.setOnClickListener {
+            showDatePicker(this,binding.etStartDate)
+        }
+        binding.layoutEndDate.setOnClickListener {
+            showDatePicker(this,binding.etEndDate)
+        }
+        binding.btnClearAll.setOnClickListener {
+            binding.etEndDate.setText("")
+            binding.etStartDate.setText("")
+            binding.actSelectProject.setText("")
+            selectedProjectId=""
+        }
         getProjectList();
         getAttendanceList(selectedProjectId);
     }
+    private fun showDatePicker(context: Context, editText: TextView) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val datePickerDialog = DatePickerDialog(
+            context, { view, year, monthOfYear, dayOfMonth ->
+                val selectedDate = formatDate(dayOfMonth, monthOfYear, year)
+                editText.setText(selectedDate)
+            }, year, month, day
+        )
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+        datePickerDialog.show()
+    }
+    private fun formatDate(day: Int, month: Int, year: Int): String {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day)
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
     private fun getProjectList() {
         try {
+
             val apiService = ApiClient.create(this@ViewAttendanceActivity)
-            val call = apiService.getProjectList()
+            val call = apiService.getProjectList(pref.getLatitude()!!,pref.getLongitude()!!)
             call.enqueue(object : Callback<ProjectLabourListForMarker> {
                 override fun onResponse(
                     call: Call<ProjectLabourListForMarker>,

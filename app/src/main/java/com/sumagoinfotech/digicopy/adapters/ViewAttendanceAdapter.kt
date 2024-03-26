@@ -11,8 +11,11 @@ import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.interfaces.AttendanceEditListener
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceData
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 
 class ViewAttendanceAdapter(var list:List<AttendanceData>,var attendanceEditListener: AttendanceEditListener): RecyclerView.Adapter<ViewAttendanceAdapter.ViewHolder>() {
+
+    lateinit var pref:MySharedPref
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
         val tvFullName=itemView.findViewById<TextView>(R.id.tvFullName)
         val tvAddress=itemView.findViewById<TextView>(R.id.tvAddress)
@@ -26,6 +29,7 @@ class ViewAttendanceAdapter(var list:List<AttendanceData>,var attendanceEditList
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
+        pref= MySharedPref(parent.context)
         val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_view_marked_attendance_list,parent,false)
         return ViewHolder(view)
     }
@@ -39,10 +43,14 @@ class ViewAttendanceAdapter(var list:List<AttendanceData>,var attendanceEditList
         Glide.with(holder.itemView.context).load(list.get(position).profile_image).into(holder.ivPhoto)
         holder.tvAttendance.setText(list.get(position).attendance_day)
 
-        holder.ivEdit.setOnClickListener {
-            attendanceEditListener.onAttendanceEdit(list.get(position),position)
+        if(pref.getRoleId()==2)
+        {
+            holder.ivEdit.visibility=View.GONE
+        }else{
+            holder.ivEdit.setOnClickListener {
+                attendanceEditListener.onAttendanceEdit(list.get(position),position)
+            }
         }
-
     }
     override fun getItemCount(): Int {
         return list.size
