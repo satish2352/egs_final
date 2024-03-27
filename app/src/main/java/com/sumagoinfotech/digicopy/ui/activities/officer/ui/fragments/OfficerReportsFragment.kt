@@ -6,11 +6,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import com.sumagoinfotech.digicopy.adapters.ViewAttendanceAdapter
 import com.sumagoinfotech.digicopy.databinding.FragmentOfficerReportsBinding
+import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceData
+import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
+import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLabourNotApprovedListActivity
 import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLaboursReceivedForApprovalActivity
 import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLaboursRejectedListActivity
 import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficersLaboursApprovedListActivity
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import com.sumagoinfotech.digicopy.webservice.ApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,6 +38,9 @@ class OfficerReportsFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentOfficerReportsBinding
+    private lateinit var dialog:CustomProgressDialog
+    private lateinit var apiService: ApiService
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +67,9 @@ class OfficerReportsFragment : Fragment() {
             val intent= Intent(requireActivity(),OfficerLabourNotApprovedListActivity::class.java)
             startActivity(intent)
         }
+        dialog=CustomProgressDialog(requireContext())
+        apiService=ApiClient.create(requireContext())
+
        /* binding.cardRejected.setOnClickListener {
             val intent= Intent(requireActivity(),OfficerLaboursRejectedListActivity::class.java)
             startActivity(intent)
@@ -78,5 +95,41 @@ class OfficerReportsFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getReportsCount()
+    }
+    private fun getReportsCount() {
+
+
+        try {
+            dialog.show()
+            val call=apiService.getLaboursReportCount();
+            call.enqueue(object : Callback<ReportsCount> {
+                override fun onFailure(call: Call<ReportsCount>, t: Throwable) {
+                    Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+
+                override fun onResponse(call: Call<ReportsCount>, response: Response<ReportsCount>) {
+                    dialog.dismiss()
+                    if(response.isSuccessful)
+                    {
+                        if(response.body()?.status.equals("true"))
+                        {
+                            binding.tvApprovedCount.text=response?.body()?.approved_count.toString()
+                            binding.tvNotApprovedCount.text=response?.body()?.not_approved_count.toString()
+                            binding.tvReceivedCount.text=response?.body()?.sent_for_approval_count.toString()
+                        }
+                    }else{
+                        Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        } catch (e: Exception) {
+            dialog.dismiss()
+        }
     }
 }

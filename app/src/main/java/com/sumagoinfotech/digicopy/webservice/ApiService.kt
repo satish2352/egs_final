@@ -1,5 +1,6 @@
 package com.sumagoinfotech.digicopy.webservice
 
+import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.LabourEditDetailsOnline
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
@@ -11,6 +12,7 @@ import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongMod
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectListForOfficerModel
+import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.model.apis.skills.SkillsModel
 import com.sumagoinfotech.digicopy.model.apis.update.LabourUpdateDetails
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
@@ -93,13 +95,20 @@ interface ApiService {
     @POST("auth/list-attendance-marked-visible-for-officer")
     fun getAttendanceListForOfficer(
         @Query("project_id") projectId: String,
-        @Query("taluka_id") talukaId: String,
-        @Query("village_id") VillageId: String,
+        @Query("user_taluka") talukaId: String,
+        @Query("user_village") villageId: String,
+        @Query("from_date") from_date: String,
+        @Query("to_date") to_date: String,
     ):Call<AttendanceModel>
 
 
     @POST("auth/list-document-officer")
-    fun getDocumentsListForOfficer():Call<UploadedDocsModel>
+    fun getDocumentsListForOfficer(
+        @Query("user_taluka") talukaId: String,
+        @Query("user_village") villageId: String,
+        @Query("from_date") from_date: String,
+        @Query("to_date") to_date: String
+    ):Call<UploadedDocsModel>
 
 
 
@@ -222,11 +231,23 @@ interface ApiService {
     suspend fun getLabourDetailsForUpdate2(@Query("mgnrega_card_id")mgnrega_card_id:String): Response<LabourEditDetailsOnline>
 
 
+
+
     @POST("auth/project-list-lat-log")
     fun getProjectsListFromLatLong(
         @Query("latitude")latitude:String,
         @Query("longitude")longitude:String,
     ):Call<ProjectsFromLatLongModel>
+
+
+    @POST("auth/officer-count-labour")
+    fun getLaboursReportCount():Call<ReportsCount>
+
+    @POST("auth/download-document")
+    fun downloadPDF(
+        @Query("document_name")document_pdf:String,
+    ):Call<DocumentDownloadModel>
+
 
 
 

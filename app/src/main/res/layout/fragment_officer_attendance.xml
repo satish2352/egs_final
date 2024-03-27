@@ -107,118 +107,132 @@
                 android:layout_marginTop="5dp"
                 android:orientation="horizontal">
                 <FrameLayout
-                    android:clickable="true"
+                    android:layout_weight="1"
                     android:id="@+id/layoutStartDate"
-                    android:layout_weight="1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:clickable="true">
+
                     <LinearLayout
-                        android:clickable="false"
-                        android:background="@drawable/rounded_blue_border"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:clickable="false"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/calendar" />
-
-                        <LinearLayout
-                            android:clickable="false"
-
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="5dp"
-                            android:orientation="vertical">
-
-
-                            <TextView
-                                android:clickable="false"
-
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/start_date"
-                                android:textColor="@color/black"
-                                android:textStyle="normal" />
-
-                            <EditText
-                                android:clickable="false"
-
-                                android:background="@drawable/edittext_background"
-                                android:inputType="none"
-                                android:id="@+id/etStartDate"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
-                                android:focusable="false"
-                                android:hint=""
-                                android:imeOptions="actionDone"
-                                android:padding="4dp"
-                                android:textSize="12dp" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </FrameLayout>
-
-                <FrameLayout
-                    android:clickable="true"
-                    android:id="@+id/layoutEndDate"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:clickable="false"
-                        android:background="@drawable/rounded_blue_border"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:clickable="false"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/calendar" />
+                        android:background="@drawable/rounded_blue_border"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:orientation="vertical"
+                        android:padding="5dp">
 
                         <LinearLayout
-                            android:clickable="false"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="5dp"
-                            android:orientation="vertical">
-
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:layout_width="30dp"
+                                android:layout_height="16dp"
+                                android:clickable="false"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
+                                android:src="@drawable/calendar" />
 
                             <TextView
-                                android:clickable="false"
-                                android:layout_width="match_parent"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/end_date"
+                                android:clickable="false"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
+                                android:text="@string/from"
                                 android:textColor="@color/black"
                                 android:textStyle="normal" />
+                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/etStartDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/edittext_background"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:hint=""
+                            android:imeOptions="actionDone"
+                            android:inputType="none"
+                            android:textColor="@color/black"
+                            android:textSize="12dp" />
+                    </LinearLayout>
+                </FrameLayout>
 
-                            <EditText
+                <FrameLayout
+                    android:layout_weight="1"
+                    android:id="@+id/layoutEndDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/rounded_blue_border"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:orientation="vertical"
+                        android:padding="5dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:layout_width="30dp"
+                                android:layout_height="16dp"
                                 android:clickable="false"
-                                android:background="@drawable/edittext_background"
-                                android:inputType="none"
-                                android:id="@+id/etEndDate"
+                                android:focusable="false"
+                                android:focusableInTouchMode="false"
+                                android:src="@drawable/calendar" />
+                            <TextView
+
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_centerInParent="true"
+                                android:clickable="false"
                                 android:focusable="false"
-                                android:hint=""
-                                android:imeOptions="actionDone"
-                                android:padding="4dp"
-                                android:textSize="12dp" />
-
+                                android:focusableInTouchMode="false"
+                                android:text="@string/to"
+                                android:textColor="@color/black"
+                                android:textStyle="normal" />
                         </LinearLayout>
-
+                        <TextView
+                            android:id="@+id/etEndDate"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/edittext_background"
+                            android:clickable="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:hint=""
+                            android:imeOptions="actionDone"
+                            android:inputType="none"
+                            android:textColor="@color/black"
+                            android:textSize="12dp" />
                     </LinearLayout>
                 </FrameLayout>
             </LinearLayout>

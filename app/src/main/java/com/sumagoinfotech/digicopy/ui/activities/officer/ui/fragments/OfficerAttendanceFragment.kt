@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -76,8 +77,8 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
     private var talukaNames= mutableListOf<String>()
     private var talukaId=""
     private var villageId=""
-    private var startDate=""
-    private var endDate=""
+    private var fromDate=""
+    private var toDate=""
     private lateinit var mySharedPref:MySharedPref
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -145,13 +146,15 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
             }
             binding.btnClose.setOnClickListener {
                 binding.actSelectProject.setText("")
+                selectedProjectId=""
                 getAttendanceList()
             }
             binding.actSelectTaluka.setOnItemClickListener { parent, view, position, id ->
                 CoroutineScope(Dispatchers.IO).launch {
-
                     withContext(Dispatchers.Main){
                         talukaId=talukaList[position].location_id
+                        getAttendanceList()
+                        getProjectList()
                         villageNames.clear();
                         binding.actSelectVillage.setText("")
                         villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
@@ -169,28 +172,27 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                         binding.actSelectVillage.setOnClickListener {
                             binding.actSelectVillage.showDropDown()
                         }
+                        binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
+                            villageId=villageList[position].location_id
+                            getAttendanceList()
+                            getProjectList()
+                        }
                     }
                 }
+            }
 
-            }
-            binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
-                villageId=villageList[position].location_id
-            }
             binding.btnCloseTaluka.setOnClickListener {
-
                 binding.actSelectTaluka.setText("")
                 talukaId=""
                 getAttendanceList()
             }
             binding.btnCloseVillage.setOnClickListener {
-
                 binding.actSelectVillage.setText("")
                 villageId=""
                 getAttendanceList()
             }
 
             binding.btnClose.setOnClickListener {
-
                 binding.actSelectProject.setText("")
                 selectedProjectId=""
                 getAttendanceList()
@@ -211,8 +213,8 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                 selectedProjectId=""
                 talukaId=""
                 villageId=""
-                startDate=""
-                endDate=""
+                fromDate=""
+                toDate=""
                 //getProjectList();
                 getAttendanceList();
             }
@@ -296,7 +298,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
         }
         return binding.root
     }
-    private fun showDatePicker(context:Context,editText: EditText) {
+    private fun showDatePicker(context:Context,editText: TextView) {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
@@ -313,7 +315,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
     private fun formatDate(day: Int, month: Int, year: Int): String {
         val calendar = Calendar.getInstance()
         calendar.set(year, month, day)
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
     override fun onAttendanceEdit(data: AttendanceData, postion: Int) {
@@ -333,8 +335,10 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
 
     private fun getAttendanceList() {
 
+        fromDate=binding.etStartDate.text.toString()
+        toDate=binding.etEndDate.text.toString()
         dialog.show()
-        val call=apiService.getAttendanceListForOfficer(selectedProjectId,talukaId,villageId);
+        val call=apiService.getAttendanceListForOfficer(selectedProjectId,talukaId,villageId,fromDate,toDate);
         call.enqueue(object : Callback<AttendanceModel> {
             override fun onResponse(
                 call: Call<AttendanceModel>,

@@ -20,16 +20,19 @@ import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListOnlineAdapter
+import com.sumagoinfotech.digicopy.adapters.RegistrationStatusHistoryAdapter
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.ReasonsDao
 import com.sumagoinfotech.digicopy.database.dao.RegistrationStatusDao
 import com.sumagoinfotech.digicopy.database.entity.Reasons
 import com.sumagoinfotech.digicopy.database.entity.RegistrationStatus
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerViewEditReceivedLabourDetailsBinding
+import com.sumagoinfotech.digicopy.model.apis.getlabour.HistoryDetailsItem
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.NonScrollableLayoutManager
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import io.getstream.photoview.PhotoView
 import kotlinx.coroutines.CoroutineScope
@@ -51,6 +54,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
     private lateinit var registrationStatusDao: RegistrationStatusDao
     private var reasonsList=ArrayList<Reasons>()
     private var registrationStatusList=ArrayList<RegistrationStatus>()
+    private var historyList=ArrayList<HistoryDetailsItem>()
     private var selectedStatusId=""
     private var selectedReasonsId=""
     private var remarks=""
@@ -66,6 +70,10 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             appDatabase=AppDatabase.getDatabase(this)
             reasonsDao=appDatabase.reasonsDao()
             registrationStatusDao=appDatabase.registrationStatusDao()
+            binding.recyclerViewHistory.layoutManager=LinearLayoutManager(this@OfficerViewEditReceivedLabourDetails,RecyclerView.VERTICAL,false)
+            var adapter=RegistrationStatusHistoryAdapter(historyList)
+            binding.recyclerViewHistory.adapter=adapter
+            adapter.notifyDataSetChanged()
             CoroutineScope(Dispatchers.IO).launch {
                 reasonsList= reasonsDao.getAllReasons() as ArrayList<Reasons>;
                 registrationStatusList= registrationStatusDao.getAllRegistrationStatus() as ArrayList<RegistrationStatus>;
@@ -318,6 +326,16 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                             mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                             aadharImage= list?.get(0)?.aadhar_image.toString()
                             voterIdImage= list?.get(0)?.voter_image.toString()
+                            historyList= list?.get(0)?.history_details as ArrayList<HistoryDetailsItem>
+                            var adapter = RegistrationStatusHistoryAdapter(historyList)
+                           // binding.recyclerViewHistory.layoutManager = NonScrollableLayoutManager(this@OfficerViewEditReceivedLabourDetails)
+                            binding.recyclerViewHistory.adapter=adapter
+                            adapter.notifyDataSetChanged()
+                            if(historyList.size<1){
+                                binding.tvHIstory.visibility=View.GONE
+                                binding.recyclerViewHistory.visibility=View.GONE
+                            }
+                            Log.d("mytag","=>"+historyList.size);
                             Glide.with(this@OfficerViewEditReceivedLabourDetails).load(mgnregaIdImage).into(binding.ivMnregaCard)
                             Glide.with(this@OfficerViewEditReceivedLabourDetails).load(photo).into(binding.ivPhoto)
                             Glide.with(this@OfficerViewEditReceivedLabourDetails).load(aadharImage).into(binding.ivAadhar)
@@ -343,6 +361,8 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         } catch (e: Exception) {
             dialog.dismiss()
             e.printStackTrace()
+        }catch (t:Throwable){
+
         }
     }
 

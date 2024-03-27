@@ -152,6 +152,24 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"></TextView>
 
+                    <ImageView
+                        android:layout_marginLeft="16dp"
+                        android:src="@drawable/calendar"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"/>
+                    <TextView
+                        android:layout_gravity="center"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:lines="1"
+                        android:ellipsize="end"
+                        android:id="@+id/tvDate"
+                        android:textSize="9dp"
+                        android:layout_marginLeft="8dp"
+                        android:fontFamily="@font/poppins"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"></TextView>
+
                 </LinearLayout>
 
             </LinearLayout>

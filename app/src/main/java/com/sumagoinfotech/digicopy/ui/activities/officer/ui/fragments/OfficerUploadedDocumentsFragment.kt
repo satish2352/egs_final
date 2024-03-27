@@ -1,5 +1,7 @@
 package com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments
 
+import android.app.DatePickerDialog
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,6 +37,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -114,6 +120,7 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                     villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
                     withContext(Dispatchers.Main){
                         talukaId=talukaList[position].location_id
+                        villageId=""
                         villageNames.clear();
                         binding.actSelectVillage.setText("")
                         for (village in villageList){
@@ -130,34 +137,39 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                         binding.actSelectVillage.setOnClickListener {
                             binding.actSelectVillage.showDropDown()
                         }
+                        binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
+                            villageId=villageList[position].location_id
+                            getDocumentsList()
+                            Log.d("mytag","Select Village"+villageList[position].location_id);
+                        }
+
+                        getDocumentsList()
                     }
                 }
-            }
-            binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
-                villageId=villageList[position].location_id
             }
             binding.btnCloseTaluka.setOnClickListener {
 
                 binding.actSelectTaluka.setText("")
                 talukaId=""
+                getDocumentsList()
 
             }
             binding.btnCloseVillage.setOnClickListener {
-
                 binding.actSelectVillage.setText("")
                 villageId=""
+                getDocumentsList()
             }
-            binding.btnClose.setOnClickListener {
 
-                binding.actSelectProject.setText("")
-            }
             binding.layoutStartDate.setOnClickListener {
+                showDatePicker(requireContext(),binding.etStartDate)
+                endDate=binding.etStartDate.getText().toString()
             }
             binding.layoutEndDate.setOnClickListener {
+                showDatePicker(requireContext(),binding.etEndDate)
+                endDate=binding.etEndDate.getText().toString()
             }
             binding.layoutClearAll.setOnClickListener {
 
-                binding.actSelectProject.setText("")
                 binding.actSelectTaluka.setText("")
                 binding.actSelectVillage.setText("")
                 binding.etStartDate.setText("")
@@ -166,9 +178,13 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                 villageId=""
                 startDate=""
                 endDate=""
+                getDocumentsList()
             }
             binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
                 villageId=villageList[position].location_id
+            }
+            binding.btnSearch.setOnClickListener {
+                getDocumentsList()
             }
             getDocumentsList();
             addTextWatcher()
@@ -180,29 +196,6 @@ class OfficerUploadedDocumentsFragment : Fragment() {
     }
 
     private fun addTextWatcher() {
-
-        binding.actSelectProject.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence?,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-            override fun afterTextChanged(s: Editable?) {
-
-                val length = s?.length ?: 0
-                val text = s?.toString() ?: ""
-                if (length > 0) {
-                    binding.btnClose.visibility = View.VISIBLE
-                } else {
-                    binding.btnClose.visibility = View.GONE
-                }
-            }
-        })
         binding.actSelectTaluka.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(
                 s: CharSequence?,
@@ -248,11 +241,33 @@ class OfficerUploadedDocumentsFragment : Fragment() {
             }
         })
     }
+    private fun showDatePicker(context: Context, editText: TextView) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val datePickerDialog = DatePickerDialog(
+            context, { view, year, monthOfYear, dayOfMonth ->
+                val selectedDate = formatDate(dayOfMonth, monthOfYear, year)
+                editText.setText(selectedDate)
+            }, year, month, day
+        )
+        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+        datePickerDialog.show()
+    }
+    private fun formatDate(day: Int, month: Int, year: Int): String {
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
 
     private fun getDocumentsList() {
         try {
             dialog.show()
-            val call=apiService.getDocumentsListForOfficer();
+            startDate=binding.etStartDate.getText().toString()
+            endDate=binding.etEndDate.getText().toString()
+            val call=apiService.getDocumentsListForOfficer(talukaId=talukaId,villageId=villageId, from_date = startDate, to_date = endDate);
             call.enqueue(object : Callback<UploadedDocsModel> {
                 override fun onResponse(
                     call: Call<UploadedDocsModel>,

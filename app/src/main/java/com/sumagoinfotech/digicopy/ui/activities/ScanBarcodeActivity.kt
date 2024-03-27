@@ -22,6 +22,15 @@ import com.google.mlkit.vision.common.InputImage
 import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityScanBarcodeBinding
+import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
+import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.FileDownloader
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import com.sumagoinfotech.digicopy.webservice.ApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.concurrent.Executors
 
 class ScanBarcodeActivity : AppCompatActivity() {
@@ -103,10 +112,44 @@ class ScanBarcodeActivity : AppCompatActivity() {
                     else -> {
                         binding.textViewQrType.text = "Other"
                         binding.textViewQrContent.text = barcode.rawValue.toString()
+                        getFileDownloadUrl(barcode.rawValue.toString())
                     }
                 }
             }
         }
     }
+
+    private fun getFileDownloadUrl(fileName:String){
+
+
+        val dialog=CustomProgressDialog(this@ScanBarcodeActivity)
+        dialog.show()
+        val apiService=ApiClient.create(this@ScanBarcodeActivity)
+        val call=apiService.downloadPDF(fileName)
+        call.enqueue(object :Callback<DocumentDownloadModel>{
+            override fun onResponse(call: Call<DocumentDownloadModel>, response: Response<DocumentDownloadModel>) {
+                dialog.dismiss()
+                if(response.isSuccessful){
+
+                    if(response.body()?.status.equals("true")){
+                        val url=response.body()?.data+"/"+fileName
+                        Log.d("mytag",url)
+                        FileDownloader.downloadFile(this@ScanBarcodeActivity,url,fileName)
+                    }else{
+                        Toast.makeText(this@ScanBarcodeActivity,"response false",Toast.LENGTH_SHORT).show()
+                    }
+
+                }else{
+                    Toast.makeText(this@ScanBarcodeActivity,"response unsuccessful",Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<DocumentDownloadModel>, t: Throwable) {
+                dialog.dismiss()
+                Toast.makeText(this@ScanBarcodeActivity,"response failed",Toast.LENGTH_SHORT).show()
+            }
+        })
+
+    }
+
 }
 

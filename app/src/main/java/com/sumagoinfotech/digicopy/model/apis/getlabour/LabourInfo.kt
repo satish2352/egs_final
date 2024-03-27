@@ -22,6 +22,7 @@ data class LabourInfo(
     val remark: String,
     val other_remark: String,
     val reason_name:String,
-    val skills:String
+    val skills:String,
+    var history_details:List<HistoryDetailsItem>
 
 )

@@ -16,5 +16,6 @@ data class AttendanceData(
     var profile_image: String,
     var project_name: String,
     var voter_image: String,
-    var project_id:String
+    var project_id:String,
+    var updated_at:String,
 )

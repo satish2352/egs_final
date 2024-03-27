@@ -117,4 +117,10 @@
     <string name="reason_1">Reason :</string>
     <string name="status_1">Status :</string>
     <string name="search">Search</string>
+    <string name="history">History</string>
+    <string name="status_">Status :</string>
+    <string name="remark_">Remark :</string>
+    <string name="date_">Date :</string>
+    <string name="from">From</string>
+    <string name="to">To  </string>
 </resources>

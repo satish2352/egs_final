@@ -459,7 +459,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                         0f
                     )
                 }
-                val imageQr=Image(ImageDataFactory.create(generateQRCodeByteArray("filedownload/$documentName.pdf",500,500)))
+                val imageQr=Image(ImageDataFactory.create(generateQRCodeByteArray("$documentName.pdf",500,500)))
                 pdfDoc.addNewPage(1, PageSize.A4)
                 val resultDocument=com.itextpdf.layout.Document(pdfDoc)
                 resultDocument.add(imageQr)

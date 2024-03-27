@@ -476,6 +476,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                             //labour=labourDao.getLabourById(Integer.parseInt(mgnregaCardId))
                             val labourInfo=list?.get(0);
                             labourId=labourInfo?.id.toString()
+                            Log.d("mytag","===>"+labourInfo?.district_id.toString());
                             prevselectedDistrict=areaDao.getAreaByLocationId(labourInfo?.district_id.toString())
                             prevSelectedTaluka=areaDao.getAreaByLocationId(labourInfo?.taluka_id.toString())
                             prevSelectedVillage=areaDao.getAreaByLocationId(labourInfo?.village_id.toString())

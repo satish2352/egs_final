@@ -27,8 +27,11 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
+import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectDataFromLatLong
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
@@ -39,9 +42,11 @@ import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourLis
 import com.sumagoinfotech.digicopy.ui.activities.LabourListByProjectActivity
 import com.sumagoinfotech.digicopy.ui.activities.registration.LabourRegistration1Activity
 import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
+import com.sumagoinfotech.digicopy.ui.activities.ScannerActivity
 import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
 import com.sumagoinfotech.digicopy.utils.CustomInfoWindowAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.FileDownloader
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import retrofit2.Call
@@ -80,8 +85,13 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                 startActivity(intent)
             }
             binding.layoutScanQR.setOnClickListener {
-                val intent= Intent(activity,ScanBarcodeActivity::class.java)
-                startActivity(intent)
+                /*val intent= Intent(activity,ScanBarcodeActivity::class.java)
+                startActivity(intent)*/
+                if(ActivityCompat.checkSelfPermission(requireActivity(),android.Manifest.permission.CAMERA)==PackageManager.PERMISSION_GRANTED){
+                    startScanner()
+                }else{
+                    requestThePermissions()
+                }
             }
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
             val mapFragment = childFragmentManager.findFragmentById(R.id.map_container) as SupportMapFragment
@@ -97,6 +107,43 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
            Log.d("mytag","Exception "+e.message)
         }
         return root
+    }
+    private fun startScanner() {
+        ScannerActivity.startScanner(requireContext()) { barcodes ->
+            barcodes.forEach { barcode ->
+                when (barcode.valueType) {
+                    Barcode.TYPE_URL -> {
+
+                    }
+                    Barcode.TYPE_CONTACT_INFO -> {
+
+                    }
+                    else -> {
+
+                        getFileDownloadUrl(barcode.rawValue.toString())
+                        Log.d("mytag",""+barcode.rawValue.toString())
+
+                    }
+                }
+            }
+        }
+    }
+    private fun requestThePermissions() {
+
+        PermissionX.init(requireActivity())
+            .permissions(android.Manifest.permission.CAMERA)
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
+            }
+            .onForwardToSettings { scope, deniedList ->
+                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+            }
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+
+                } else {
+                }
+            }
     }
     private fun fetchDataAndShowMarkers() {
 
@@ -427,5 +474,36 @@ class DashboardFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClick
                 dialog.dismiss()
             }
         })
+    }
+    private fun getFileDownloadUrl(fileName:String){
+
+
+        val dialog=CustomProgressDialog(requireContext())
+        dialog.show()
+        val apiService=ApiClient.create(requireContext())
+        val call=apiService.downloadPDF(fileName)
+        call.enqueue(object :Callback<DocumentDownloadModel>{
+            override fun onResponse(call: Call<DocumentDownloadModel>, response: Response<DocumentDownloadModel>) {
+                dialog.dismiss()
+                if(response.isSuccessful){
+
+                    if(response.body()?.status.equals("true")){
+                        val url=response.body()?.data+"/"+fileName
+                        Log.d("mytag",url)
+                        FileDownloader.downloadFile(requireContext(),url,fileName)
+                    }else{
+                        Toast.makeText(requireContext(),response.body()?.message,Toast.LENGTH_SHORT).show()
+                    }
+
+                }else{
+                    Toast.makeText(requireContext(),"response unsuccessful",Toast.LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<DocumentDownloadModel>, t: Throwable) {
+                dialog.dismiss()
+                Toast.makeText(requireContext(),"response failed",Toast.LENGTH_SHORT).show()
+            }
+        })
+
     }
 }
