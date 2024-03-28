@@ -82,8 +82,7 @@ class SplashActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
            CoroutineScope(Dispatchers.IO).launch {
                val deviceId=DeviceUtils.getDeviceId(this@SplashActivity)
-
-               Log.d("mytag","Device Id =>"+deviceId)
+               mySharedPref.setDeviceId(deviceId)
                userDao.insertInitialRecords()
                documentTypeDao.insertInitialRecords()
                if(!mySharedPref.getAllAreaEntries())

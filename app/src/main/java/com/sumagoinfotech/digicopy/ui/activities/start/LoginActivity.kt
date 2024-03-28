@@ -39,13 +39,14 @@ class LoginActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener {
             if(validateFields()) {
                 customProgressDialog.show()
+                val mySharedPref=MySharedPref(this@LoginActivity)
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val user=userDao.getUser(binding.etEmail.text.toString(),binding.etPassword.text.toString())
                         val list=userDao.getAllUsers()
                         Log.d("mytag","found "+list.size)
                         val apiService=ApiClient.create(this@LoginActivity)
-                        val call=apiService.loginUser(binding.etEmail.text.toString(),binding.etPassword.text.toString())
+                        val call=apiService.loginUser(binding.etEmail.text.toString(),binding.etPassword.text.toString(),mySharedPref.getDeviceId()!!)
                         call.enqueue(object :Callback<LoginModel>{
                             override fun onResponse(
                                 call: Call<LoginModel>,
@@ -53,43 +54,51 @@ class LoginActivity : AppCompatActivity() {
                             ) {
                                 if(response.isSuccessful)
                                 {
-                                    val loginModel=response.body()
-                                    val mySharedPref=MySharedPref(this@LoginActivity)
-                                    mySharedPref.setIsLoggedIn(true)
-                                    mySharedPref.setId(loginModel?.data?.id!!)
-                                    mySharedPref.setEmail(loginModel?.data?.email!!)
-                                    mySharedPref.setRememberToken(loginModel?.data?.remember_token!!)
-                                    mySharedPref.setRoleId(loginModel?.data?.role_id!!)
-                                    Log.d("mytag",""+loginModel?.data?.remember_token!!)
+                                    val message=response.body()?.message
+                                    if(response.body()?.status.equals("True")){
+                                        val loginModel=response.body()
+                                        mySharedPref.setIsLoggedIn(true)
+                                        mySharedPref.setId(loginModel?.data?.id!!)
+                                        mySharedPref.setEmail(loginModel?.data?.email!!)
+                                        mySharedPref.setRememberToken(loginModel?.data?.remember_token!!)
+                                        mySharedPref.setRoleId(loginModel?.data?.role_id!!)
+                                        if(loginModel?.data?.role_id==2)
+                                        {
+                                            mySharedPref.setOfficerDistrictID(loginModel?.data?.user_district.toString())
+                                        }
+                                        runOnUiThread {
+                                            customProgressDialog.dismiss()
 
-
-                                    if(loginModel?.data?.role_id==2){
-                                        mySharedPref.setOfficerDistrictID(loginModel?.data?.user_district.toString())
-                                    }
-                                    Log.d("mytag","User_ID"+loginModel?.data?.id!!)
-                                    runOnUiThread {
-                                        customProgressDialog.dismiss()
-
-                                        if(loginModel?.data?.role_id==2){
+                                            if(loginModel?.data?.role_id==2){
+                                                val toast= Toast.makeText(this@LoginActivity,
+                                                    getString(R.string.login_successful),
+                                                    Toast.LENGTH_SHORT)
+                                                toast.show()
+                                                val intent = Intent(this@LoginActivity, OfficerMainActivity::class.java)
+                                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                                startActivity(intent)
+                                                finish()
+                                            }else if(loginModel?.data?.role_id==3) {
+                                                val toast= Toast.makeText(this@LoginActivity,
+                                                    getString(R.string.login_successful),
+                                                    Toast.LENGTH_SHORT)
+                                                toast.show()
+                                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                                                startActivity(intent)
+                                                finish()
+                                            }
+                                        }
+                                    }else{
+                                        runOnUiThread {
+                                            customProgressDialog.dismiss()
                                             val toast= Toast.makeText(this@LoginActivity,
-                                                getString(R.string.login_successful),
+                                                message,
                                                 Toast.LENGTH_SHORT)
                                             toast.show()
-                                            val intent = Intent(this@LoginActivity, OfficerMainActivity::class.java)
-                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                                            startActivity(intent)
-                                            finish()
-                                       }else if(loginModel?.data?.role_id==3) {
-                                            val toast= Toast.makeText(this@LoginActivity,
-                                                getString(R.string.login_successful),
-                                                Toast.LENGTH_SHORT)
-                                            toast.show()
-                                            val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                                            startActivity(intent)
-                                            finish()
                                         }
                                     }
+
                                 }else{
                                     runOnUiThread {
                                         customProgressDialog.dismiss()

@@ -35,7 +35,9 @@ interface ApiService {
     fun getAllMasters(): Call<MastersModel>
     @POST("login")
     fun loginUser(@Query("email")email:String,
-                  @Query("password")password:String,): Call<LoginModel>
+                  @Query("password")password:String,
+                  @Query("device_id")device_id:String,
+                  ): Call<LoginModel>
     @GET("auth/list-project")
     fun getProjectListForMap(): Call<ProjectListModel>
     @POST("auth/filter-project-labour-list")
