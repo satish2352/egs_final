@@ -273,7 +273,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp">
                             <TextView
-                                android:visibility="invisible"
+                                android:id="@+id/tvSentForApproval"
+                                android:visibility="visible"
                                 android:layout_weight="1"
                                 android:layout_marginRight="16dp"
                                 android:layout_marginLeft="16dp"
@@ -281,7 +282,6 @@
                                 android:textColor="@color/white"
                                 android:fontFamily="@font/poppins"
                                 android:textSize="32dp"
-                                android:text="0"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"></TextView>
                             <TextView
@@ -363,7 +363,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp">
                             <TextView
-                                android:visibility="invisible"
+                                android:id="@+id/tvApproved"
+                                android:visibility="visible"
                                 android:layout_weight="1"
                                 android:layout_marginRight="16dp"
                                 android:layout_marginLeft="16dp"
@@ -454,7 +455,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="50dp">
                             <TextView
-                                android:visibility="invisible"
+                                android:id="@+id/tvNotApproved"
+                                android:visibility="visible"
                                 android:layout_weight="1"
                                 android:layout_marginRight="16dp"
                                 android:layout_marginLeft="16dp"

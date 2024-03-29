@@ -123,4 +123,7 @@
     <string name="date_">Date :</string>
     <string name="from">From</string>
     <string name="to">To  </string>
+    <string name="normal">Normal</string>
+    <string name="satellite">Satellite</string>
+    <string name="hybrid">Hybrid</string>
 </resources>

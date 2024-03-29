@@ -129,6 +129,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private var relationId=""
     private var maritalStatusId=""
     private var mgnregaId=""
+    private var labourId=""
     private lateinit var dialog:CustomProgressDialog
     private var isInternetAvailable=false
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -785,6 +786,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                                 photoImagePath=list?.get(0)?.profile_image!!
                                 aadharIdImagePath=list?.get(0)?.aadhar_image!!
                                 mgnregaIdImagePath=list?.get(0)?.mgnrega_image!!
+                                labourId=list?.get(0)?.id.toString()!!
                                 val gson= Gson()
                                 val jsonList=gson.toJson(response.body()?.data?.get(0)?.family_details)
                                 val familyList: ArrayList<com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.FamilyDetail> = gson.fromJson(jsonList, object : TypeToken<ArrayList<FamilyDetail>>() {}.type)
@@ -878,7 +880,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         latitude=latitude.toString(),
                         longitude = longitude.toString(),
                         family = familyDetails,
-                        mgnregaId = mgnregaId,
+                        id = labourId,
                         file1 = aadharCardImage!!,
                         file2 = voterIdImage!!,
                         file3 = profileImage!!,

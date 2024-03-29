@@ -88,6 +88,7 @@
                     app:boxCornerRadiusBottomEnd="8dp"
                     app:boxCornerRadiusTopEnd="8dp"
                     app:boxCornerRadiusBottomStart="8dp"
+                    android:inputType="textEmailAddress"
                     app:boxCornerRadiusTopStart="8dp"
                     android:background="@drawable/rounded_background_light_green"
                     android:paddingLeft="16dp"/>

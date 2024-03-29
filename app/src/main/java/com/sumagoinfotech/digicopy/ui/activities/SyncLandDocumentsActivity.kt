@@ -82,7 +82,13 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
             try {
                 documents.forEach { document ->
                     val filePart = createFilePart(FileInfo("document_pdf", document.documentUri))
-                    val response=apiService.uploadDocument(document.documentId,document.documentName,filePart!!)
+                    val response=apiService.uploadDocument(
+                        documentName = document.documentName,
+                        documentId =document.documentId,
+                        file = filePart!!,
+                        longitude = document.longitude,
+                        latitude = document.latitude,
+                    )
                     if(response.isSuccessful){
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)

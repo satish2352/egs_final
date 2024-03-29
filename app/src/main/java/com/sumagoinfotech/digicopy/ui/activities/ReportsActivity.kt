@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
@@ -12,6 +13,12 @@ import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.dao.LabourDao
 import com.sumagoinfotech.digicopy.databinding.ActivityReportsBinding
 import com.sumagoinfotech.digicopy.adapters.LabourListByProjectAdapter
+import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ReportsActivity : AppCompatActivity() {
 
@@ -79,4 +86,41 @@ class ReportsActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onResume() {
+        super.onResume()
+        getReportsCount()
+    }
+    private fun getReportsCount() {
+
+        val dialog=CustomProgressDialog(this@ReportsActivity)
+        try {
+            dialog.show()
+            val call=ApiClient.create(this@ReportsActivity).getReportCountInGramsevakLogin();
+            call.enqueue(object : Callback<ReportsCount> {
+                override fun onFailure(call: Call<ReportsCount>, t: Throwable) {
+                    Toast.makeText(this@ReportsActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+
+                override fun onResponse(call: Call<ReportsCount>, response: Response<ReportsCount>) {
+                    dialog.dismiss()
+                    if(response.isSuccessful)
+                    {
+                        if(response.body()?.status.equals("true"))
+                        {
+                            binding.tvSentForApproval.text=response?.body()?.sent_for_approval_count.toString()
+                            binding.tvNotApproved.text=response?.body()?.not_approved_count.toString()
+                            binding.tvApproved.text=response?.body()?.approved_count.toString()
+                        }
+                    }else{
+                        Toast.makeText(this@ReportsActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            })
+        } catch (e: Exception) {
+            dialog.dismiss()
+        }
+    }
+
 }

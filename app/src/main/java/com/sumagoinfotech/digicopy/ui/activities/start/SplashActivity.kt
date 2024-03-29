@@ -79,6 +79,8 @@ class SplashActivity : AppCompatActivity() {
         documentTypeDropDownDao=appDatabase.documentDropDownDao()
         maritalStatusDao=appDatabase.martialStatusDao()
         reasonsDao=appDatabase.reasonsDao()
+        val deviceId=DeviceUtils.getDeviceId(this@SplashActivity)
+        mySharedPref.setDeviceId(deviceId)
         binding.progressBar.visibility = View.VISIBLE
            CoroutineScope(Dispatchers.IO).launch {
                val deviceId=DeviceUtils.getDeviceId(this@SplashActivity)

@@ -374,7 +374,9 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             documentUri = pdfUri.toString(),
             isSynced = false,
             documentId = documentId,
-            date=date
+            date=date,
+            latitude = latitude.toString(),
+            longitude =longitude.toString()
         )
 
         CoroutineScope(Dispatchers.IO).launch {

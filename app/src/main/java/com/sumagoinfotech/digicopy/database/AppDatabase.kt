@@ -31,7 +31,7 @@ import com.sumagoinfotech.digicopy.database.entity.Skills
 import com.sumagoinfotech.digicopy.database.entity.User
 import java.util.concurrent.Executors
 
-@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class], version = 2)
+@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun labourDao(): LabourDao
     abstract fun documentDao(): DocumentDao

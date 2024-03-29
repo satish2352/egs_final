@@ -39,7 +39,7 @@ class LabourApprovedListAdapter(var labourList: ArrayList<LaboursList>): Recycle
         try {
             holder.tvFullName.text = labourList[position]?.full_name ?: ""
             holder.tvMobile.text = labourList[position]?.mobile_number ?: ""
-            val address="${labourList[position].district_id} ->${labourList[position].taluka_id} ->${labourList[position].village_id}"
+            val address="${labourList[position].district_name} ->${labourList[position].taluka_name} ->${labourList[position].village_name}"
             holder.tvAddress.text = address
             holder.tvMgnregaId.text= labourList[position].mgnrega_card_id
             Glide.with(holder.itemView.context).load(labourList[position].profile_image).into(holder.ivPhoto)

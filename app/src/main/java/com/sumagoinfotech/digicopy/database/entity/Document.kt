@@ -11,5 +11,7 @@ data class Document(
     var pageCount:String,
     var isSynced: Boolean,
     var documentId: String,
+    var latitude: String,
+    var longitude: String,
     var date: String,
 )

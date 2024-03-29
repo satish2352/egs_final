@@ -13,6 +13,7 @@ import com.sumagoinfotech.digicopy.databinding.ActivityLoginBinding
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.ui.activities.officer.OfficerMainActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.DeviceUtils
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.utils.MyValidator
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -28,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var database: AppDatabase
     private lateinit var userDao: UserDao
     private lateinit var customProgressDialog: CustomProgressDialog
+    private lateinit var mySharedPref:MySharedPref
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,9 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         database= AppDatabase.getDatabase(this)
         userDao=database.userDao()
+        mySharedPref=MySharedPref(this)
+        val deviceId= DeviceUtils.getDeviceId(this@LoginActivity)
+        mySharedPref.setDeviceId(deviceId)
         customProgressDialog= CustomProgressDialog(this)
         binding.btnLogin.setOnClickListener {
             if(validateFields()) {

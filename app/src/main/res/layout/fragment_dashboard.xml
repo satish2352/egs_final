@@ -13,6 +13,7 @@
         android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/searchLayout"
         android:layout_margin="10dp"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -92,6 +93,15 @@
         </LinearLayout>
 
     </LinearLayout>
+    <ImageView
+        android:layout_marginRight="16dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/searchLayout"
+        android:id="@+id/ivMapType"
+        android:background="@drawable/circle_white_background"
+        android:src="@drawable/ic_map_type"
+        android:layout_width="42dp"
+        android:layout_height="42dp"></ImageView>
 
     <LinearLayout
         android:paddingRight="13dp"

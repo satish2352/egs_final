@@ -6,6 +6,7 @@ import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
+import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapMarkerModel
 import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusModel
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
@@ -41,19 +42,22 @@ interface ApiService {
     @GET("auth/list-project")
     fun getProjectListForMap(): Call<ProjectListModel>
     @POST("auth/filter-project-labour-list")
-    fun getProjectListForMarker(@Query("project_name")projectName:String): Call<ProjectLabourListForMarker>
+    fun getProjectListForMarker(@Query("project_name")projectName:String): Call<MapMarkerModel>
 
     @POST("auth/filter-project-labour-list")
-    fun getLabourForMarker(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<ProjectLabourListForMarker>
+    fun getLabourForMarker(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<MapMarkerModel>
 
     // Search Labour By MGNREGA ID
 
     @POST("auth/list-labour")
     fun getLabourDataById(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
-    @POST("auth/particular-labour-details")
+
+    // changed to particular-labour-details = > list-labour
+    @POST("auth/list-labour")
     fun getLabourDetailsById(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
 
-    @POST("auth/list-user-labours")
+    // changed to list-user-labours=> list-labour
+    @POST("auth/list-labour")
     fun getLaboursByProject(@Query("user_id")user_id:String): Call<LabourByMgnregaId>
 
     // GET project list for attendance page
@@ -68,8 +72,11 @@ interface ApiService {
         @Query("latitude")latitude:String,
         @Query("longitude")longitude:String
     ): Call<ProjectLabourListForMarker>
-
-
+    @POST("auth/filter-project-labour-list")
+    fun getProjectListForAttendance(
+        @Query("latitude")latitude:String,
+        @Query("longitude")longitude:String
+    ): Call<ProjectLabourListForMarker>
 
     // Mark Attendance
     @POST("auth/add-attendance-mark")
@@ -154,7 +161,7 @@ interface ApiService {
     @Multipart
     @POST("auth/update-labour-second-form")
     suspend fun updateLabourFormTwo(
-        @Query("mgnrega_card_id") mgnregaId: String,
+        @Query("id") id: String,
         @Query("family") family: String,
         @Query("longitude") longitude: String,
         @Query("latitude") latitude: String,
@@ -169,25 +176,35 @@ interface ApiService {
     suspend fun uploadDocument(
         @Query("document_type_id") documentId: String,
         @Query("document_name") documentName: String,
+        @Query("latitude") latitude: String,
+        @Query("longitude") longitude: String,
         @Part file: MultipartBody.Part
     ):Response<MastersModel>
 
     @POST("auth/list-document")
     fun getUploadedDocumentsList():Call<UploadedDocsModel>
 
+// changed to list-send-approved-labour => list-labour
+    @POST("auth/list-labour")
+    fun getLaboursListSentForApproval(
+    @Query("is_approved") param1: String = "added",
+    ):Call<LabourListModel>
 
-    @POST("auth/list-send-approved-labour")
-    fun getLaboursListSentForApproval():Call<LabourListModel>
-
-    @POST("auth/list-not-approved-labour")
-    fun getLaboursListNotApproved():Call<LabourListModel>
+    // change to => list-not-approved-labour => list-labour
+    @POST("auth/list-labour")
+    fun getLaboursListNotApproved(
+        @Query("is_approved") param1: String = "not_approved"
+    ):Call<LabourListModel>
 
     @POST("auth/list-labour-rejected")
     fun getRejectedLabourList():Call<LabourListModel>
 
 
-    @POST("auth/list-approved-labour")
-    fun getLabourListApproved():Call<LabourListModel>
+    // changed to list-approved-labour => list-labour
+    @POST("auth/list-labour")
+    fun getLabourListApproved(
+        @Query("is_approved") param1: String = "approved"
+    ):Call<LabourListModel>
 
 
     @POST("auth/update-officer-labour-status-approved")
@@ -225,25 +242,38 @@ interface ApiService {
     @POST("auth/list-particular-officer-labour-details")
     fun getLabourDetailsByIdForOfficer(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
 
-    @POST("auth/particular-labour-details-for-update")
+    // particular-labour-details-for-update => list-labour
+    @POST("auth/list-labour")
     suspend fun getLabourDetailsForUpdate(@Query("mgnrega_card_id")mgnrega_card_id:String): Response<LabourUpdateDetails>
 
+    // particular-labour-details-for-update => list-labour
 
-    @POST("auth/particular-labour-details-for-update")
+    @POST("auth/list-labour")
     suspend fun getLabourDetailsForUpdate2(@Query("mgnrega_card_id")mgnrega_card_id:String): Response<LabourEditDetailsOnline>
 
 
 
-
-    @POST("auth/project-list-lat-log")
+// project-list-lat-log => filter-project-labour-list
+    @POST("auth/filter-project-labour-list")
     fun getProjectsListFromLatLong(
         @Query("latitude")latitude:String,
         @Query("longitude")longitude:String,
     ):Call<ProjectsFromLatLongModel>
 
+    @POST("auth/filter-project-labour-list")
+    fun getMapsMarkersFromLatLong(
+        @Query("latitude")latitude:String,
+        @Query("longitude")longitude:String,
+    ):Call<MapMarkerModel>
+
 
     @POST("auth/officer-count-labour")
     fun getLaboursReportCount():Call<ReportsCount>
+
+    @POST("auth/gramsevak-count-labour")
+    fun getReportCountInGramsevakLogin():Call<ReportsCount>
+
+
 
     @POST("auth/download-document")
     fun downloadPDF(

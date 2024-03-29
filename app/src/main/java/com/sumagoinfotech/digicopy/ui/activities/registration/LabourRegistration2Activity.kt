@@ -15,9 +15,11 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -33,6 +35,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -225,6 +228,14 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getTheLocation()
+        if (!isLocationEnabled()) {
+            // If not enabled, show dialog to enable it
+            showEnableLocationDialog()
+        } else {
+            // Request location updates
+            //showProgressDialog()
+            requestLocationUpdates()
+        }
 
         try {
             cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
@@ -334,6 +345,11 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
 
             }
         })
+    }
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
     suspend fun uriStringToBitmap(context: Context, uriString: String): Bitmap? {
         return withContext(Dispatchers.IO) {
@@ -552,6 +568,67 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 }
             }
     }
+    private fun requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Request location permissions
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1000
+            )
+            return
+        }
+
+        // Request last known location
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                location?.let {
+                    val currentLatLng = LatLng(it.latitude, it.longitude)
+                    latitude = it.latitude
+                    longitude = it.longitude
+                    // Update UI with latitude and longitude
+                    // Note: getAddressFromLatLong() needs to be implemented to fetch address
+                    // from latitude and longitude
+                    binding.etLocation.setText("${it.latitude},${it.longitude}")
+                    addressFromLatLong = getAddressFromLatLong()
+                } ?: run {
+                    // Handle case where location is null
+                    Toast.makeText(
+                        this@LabourRegistration2Activity,
+                        "Unable to retrieve location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
+    private fun showEnableLocationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Location services are disabled. Do you want to enable them?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { dialog, _ ->
+                dialog.dismiss()
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+                // Handle the case when the user refuses to enable location services
+                Toast.makeText(
+                    this@LabourRegistration2Activity,
+                    "Unable to retrieve location without enabling location services",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
+
     private fun showAddFamilyDetailsDialog() {
         val dialog=Dialog(this@LabourRegistration2Activity)
         dialog.setContentView(R.layout.layout_dialog_add_family_details)
@@ -560,8 +637,6 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.window?.setLayout(width, height)
         dialog.show()
-
-
          etFullName=dialog.findViewById<EditText>(R.id.etFullName)
          etDob=dialog.findViewById<AutoCompleteTextView>(R.id.etDob)
          actRelationship=dialog.findViewById<AutoCompleteTextView>(R.id.actRelationShip)

@@ -91,7 +91,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
 
                                 if (response.isSuccessful) {
                                     (labourDataList as ArrayList<LabourInfo>).clear()
-                                    if (response.body()?.status.equals("success")) {
+                                    if (response.body()?.status.equals("true")) {
                                         labourDataList = (response.body()?.data as ArrayList<LabourInfo>?)!!
                                         Log.d("mytag", "userListSize=>" + labourDataList.size)
                                         runOnUiThread {
@@ -328,7 +328,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     private fun getProjectFromServer()
     {
         val apiService = ApiClient.create(this@AllocateWorkActivity)
-        val call = apiService.getProjectList(pref.getLatitude()!!,pref.getLongitude()!!)
+        val call = apiService.getProjectListForAttendance(pref.getLatitude()!!,pref.getLongitude()!!)
         call.enqueue(object : Callback<ProjectLabourListForMarker> {
             override fun onResponse(
                 call: Call<ProjectLabourListForMarker>,

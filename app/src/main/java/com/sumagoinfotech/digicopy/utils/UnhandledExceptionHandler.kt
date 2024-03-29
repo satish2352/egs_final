@@ -20,7 +20,7 @@ class UnhandledExceptionHandler(private val defaultExceptionHandler: Thread.Unca
         // defaultExceptionHandler?.uncaughtException(thread, throwable)
 
         // Finish the app to avoid further instability
-        //android.os.Process.killProcess(android.os.Process.myPid())
-        //System.exit(10)
+        android.os.Process.killProcess(android.os.Process.myPid())
+        System.exit(10)
     }
 }
