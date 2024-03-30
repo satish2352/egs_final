@@ -3,6 +3,7 @@ package com.sumagoinfotech.digicopy.webservice
 import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.LabourEditDetailsOnline
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
+import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
@@ -42,15 +43,23 @@ interface ApiService {
     @GET("auth/list-project")
     fun getProjectListForMap(): Call<ProjectListModel>
     @POST("auth/filter-project-labour-list")
-    fun getProjectListForMarker(@Query("project_name")projectName:String): Call<MapMarkerModel>
+    fun getProjectListForMarkerByNameSearch(
+        @Query("project_name")projectName:String,
+        @Query("latitude")latitude:String,
+        @Query("longitude")longitude:String
+
+    ): Call<ProjectsFromLatLongModel>
 
     @POST("auth/filter-project-labour-list")
-    fun getLabourForMarker(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<MapMarkerModel>
+    fun getLabourDataForMarkerById(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<ProjectLabourListForMarker>
 
     // Search Labour By MGNREGA ID
 
     @POST("auth/list-labour")
-    fun getLabourDataById(@Query("mgnrega_card_id")mgnrega_card_id:String): Call<LabourByMgnregaId>
+    fun getLabourDataByIdForAttendance(
+        @Query("mgnrega_card_id")mgnrega_card_id:String,
+        @Query("is_approved") param1: String = "approved"
+        ): Call<LabourByMgnregaId>
 
     // changed to particular-labour-details = > list-labour
     @POST("auth/list-labour")
@@ -58,7 +67,9 @@ interface ApiService {
 
     // changed to list-user-labours=> list-labour
     @POST("auth/list-labour")
-    fun getLaboursByProject(@Query("user_id")user_id:String): Call<LabourByMgnregaId>
+    fun getLaboursByProjectId(
+        @Query("project_id")project_id:String,
+        @Query("is_approved") param1: String = "approved"): Call<LabourByMgnregaId>
 
     // GET project list for attendance page
     @POST("auth/filter-project-labour-list")
@@ -74,9 +85,12 @@ interface ApiService {
     ): Call<ProjectLabourListForMarker>
     @POST("auth/filter-project-labour-list")
     fun getProjectListForAttendance(
+        @Query("want_project_data") param1: String = "yes",
         @Query("latitude")latitude:String,
         @Query("longitude")longitude:String
     ): Call<ProjectLabourListForMarker>
+
+
 
     // Mark Attendance
     @POST("auth/add-attendance-mark")
@@ -210,7 +224,7 @@ interface ApiService {
     @POST("auth/update-officer-labour-status-approved")
     fun sendApprovedLabourResponseToServer(
         @Query("is_approved")isApproved:String,
-        @Query("mgnrega_card_id")mgnrega_card_id:String,
+        @Query("labour_id")labour_id:String,
     ):Call<LabourListModel>
 
     @POST("auth/update-officer-labour-status-rejected")
@@ -223,7 +237,7 @@ interface ApiService {
 
     @POST("auth/update-officer-labour-status-not-approved")
     fun sendNotApprovedLabourResponseToServer(
-        @Query("mgnrega_card_id")mgnrega_card_id:String,
+        @Query("labour_id")labour_id:String,
         @Query("is_approved")isApproved:String,
         @Query("reason_id")reason_id:String,
         @Query("other_remark")other_remark:String
@@ -278,7 +292,7 @@ interface ApiService {
     @POST("auth/download-document")
     fun downloadPDF(
         @Query("document_name")document_pdf:String,
-    ):Call<DocumentDownloadModel>
+    ):Call<QRDocumentDownloadModel>
 
 
 

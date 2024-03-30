@@ -3,23 +3,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.fragments.dashboard.MapTypeBottomSheetDialogFragment">
 
     <androidx.cardview.widget.CardView
+        android:layout_weight="1"
         android:id="@+id/layoutNormal"
         app:cardUseCompatPadding="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:gravity="center"
+            android:layout_gravity="center"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
         <ImageView
+            android:layout_marginTop="16dp"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
@@ -28,12 +32,13 @@
             android:layout_width="50dp"
             android:layout_height="50dp"></ImageView>
             <TextView
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins"
-                android:layout_marginLeft="16dp"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -41,18 +46,22 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
+        android:layout_weight="1"
         android:id="@+id/layoutHybird"
         app:cardUseCompatPadding="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:gravity="center"
+            android:layout_gravity="center"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
             <ImageView
+                android:layout_marginTop="16dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -61,12 +70,13 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"></ImageView>
             <TextView
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins"
-                android:layout_marginLeft="16dp"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,18 +84,22 @@
         </LinearLayout>
     </androidx.cardview.widget.CardView>
     <androidx.cardview.widget.CardView
+        android:layout_weight="1"
         android:id="@+id/layoutSatellite"
         app:cardUseCompatPadding="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:gravity="center"
+            android:layout_gravity="center"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
             <ImageView
+                android:layout_marginTop="16dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -94,12 +108,13 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"></ImageView>
             <TextView
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
                 android:clickable="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins"
-                android:layout_marginLeft="16dp"
                 android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -33,7 +33,7 @@ class LabourListByProjectAdapter(var list: List<LabourInfo>?) : RecyclerView.Ada
 
         holder.tvFullName.text = list?.get(position)?.full_name ?: "Default"
         holder.tvMobile.text = list?.get(position)?.mobile_number ?: "Default"
-        val address="${list?.get(position)?.district_id} ->${list?.get(position)?.taluka_id} ->${list?.get(position)?.village_id}"
+        val address="${list?.get(position)?.district_name} ->${list?.get(position)?.taluka_name} ->${list?.get(position)?.village_name}"
         holder.tvAddress.text = address
         holder.tvMgnregaId.text= list?.get(position)?.mgnrega_card_id
         Glide.with(holder.itemView.context).load(list?.get(position)?.profile_image).into(holder.ivPhoto)

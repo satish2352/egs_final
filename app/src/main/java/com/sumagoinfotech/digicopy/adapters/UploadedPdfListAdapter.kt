@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
         val tvDownload=itemView.findViewById<TextView>(R.id.tvDownload)
         val tvDocumentDate=itemView.findViewById<TextView>(R.id.tvDocumentDate)
         val tvDocumentName=itemView.findViewById<TextView>(R.id.tvDocumentName)
+        val tvDocumentType=itemView.findViewById<TextView>(R.id.tvDocumentType)
         val ivDocumentThumb=itemView.findViewById<ImageView>(R.id.ivDocumentThumb)
     }
 
@@ -39,11 +41,8 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
             holder.tvDocumentName.text=documentList[position].document_name
-            holder.tvDocumentDate.text=formatDate(documentList[position].updated_at)
-            holder.itemView.setOnClickListener {
-
-            }
-            holder.tvDocumentDate.setText(documentList.get(position).document_type_name)
+            holder.tvDocumentDate.text= documentList[position]?.updated_at?.let { formatDate(it) }
+            holder.tvDocumentType.setText(documentList.get(position).document_type_name)
             holder.tvDownload.setOnClickListener {
                 /*val intent = Intent(Intent.ACTION_VIEW)
                 intent.setDataAndType(Uri.parse(documentList.get(position).document_pdf), "application/pdf")
@@ -55,9 +54,12 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
                     Toast.makeText(holder.itemView.context, "No PDF viewer application found", Toast.LENGTH_SHORT).show()
                 }*/
                 FileDownloader.downloadFile(holder.itemView.context,documentList.get(position).document_pdf,documentList.get(position).document_name)
+                Log.d("mytag","UploadedPdfListAdapter=>"+documentList.get(position).document_pdf)
             }
         } catch (e: Exception) {
 
+            Log.d("mytag","UploadedPdfListAdapter=>Exception=>"+e.message.toString())
+            e.printStackTrace()
         }
     }
 

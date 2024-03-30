@@ -83,9 +83,11 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.layout.element.Image
+import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
 import com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.MySharedPref
 import java.util.Hashtable
 
 class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
@@ -96,6 +98,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private lateinit var documentName: String
     private lateinit var database: AppDatabase
     private lateinit var documentDao: DocumentDao
+    private lateinit var areaDao: AreaDao
     private lateinit var documentTypeDao: DocumentTypeDropDownDao
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
     private lateinit var scanner: GmsDocumentScanner
@@ -108,6 +111,10 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private  var isInternetAvailable=false
     private lateinit var dialog:CustomProgressDialog
     private var selectedDocumentId=""
+    private var userDistrictName=""
+    private var userVillageName=""
+    private var userTalukaName=""
+    private lateinit var mySharedPref: MySharedPref
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_pages)
@@ -118,17 +125,29 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         val layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
         binding.recyclerViewDocumentPages.layoutManager = layoutManager
         documentList = ArrayList()
+        mySharedPref= MySharedPref(this)
         dialog=CustomProgressDialog(this)
         adapter = DocumentPagesAdapter(documentList, this)
         binding.recyclerViewDocumentPages.adapter = adapter
         documentName = ""
         database = AppDatabase.getDatabase(this)
         documentDao = database.documentDao()
+        areaDao = database.areaDao()
         documentTypeDao = database.documentDropDownDao()
+        CoroutineScope(Dispatchers.IO).launch {
+            val district=areaDao.getAreaByLocationId(mySharedPref.getUserDistrictId().toString())
+            val taluka=areaDao.getAreaByLocationId(mySharedPref.getUserTalukaId().toString())
+            val village=areaDao.getAreaByLocationId(mySharedPref.getUserVillageId().toString())
+            withContext(Dispatchers.Main){
+                userDistrictName=district.name
+                userTalukaName=taluka.name
+                userVillageName=village.name
+            }
+        }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getTheLocation()
         binding.fabAddDocument.setOnClickListener {
-            showDialog()
+            showDocumentTypeSelectDialog()
         }
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
@@ -181,6 +200,9 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             startActivity(intent)
         }
 
+    }
+    fun removeSpaces(inputString: String): String {
+        return inputString.replace(" ", "")
     }
 
     fun bitmapToByteArray(bitmap: Bitmap): ByteArray? {
@@ -269,7 +291,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun showDialog() {
+    private fun showDocumentTypeSelectDialog() {
         val dialog = Dialog(this@ScanDocumentsActivity)
         dialog.setContentView(R.layout.layout_dialog_select_document_type)
         val width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -321,11 +343,12 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 val calendar = Calendar.getInstance()
                 val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
                 if (etDocumentName.text.length > 0 && !etDocumentName.text.isNullOrEmpty()) {
+
                     documentName =
-                        "${actDocumentType.text.toString()}_${etDocumentName.text.toString()}_${timeInMillis}"
+                        "MH_${userDistrictName.trim()}_${userTalukaName.trim()}_${userVillageName.trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${removeSpaces(etDocumentName.text.toString().trim())}_${timeInMillis.trim()}.pdf"
                 } else {
                     documentName =
-                        "${actDocumentType.text.toString()}_${timeInMillis}"
+                        "MH_${userDistrictName.trim()}_${userTalukaName.trim()}_${userVillageName.trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${timeInMillis.trim()}.pdf"
                 }
                 Log.d("mytag", "Document Name >$documentName")
                 launchScanner()
@@ -428,7 +451,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
                     Log.e("Error", "Directory not created")
                 }
-                val myFile = File(mediaStorageDir, "$documentName.pdf")
+                val myFile = File(mediaStorageDir, "$documentName")
                 val fileOutputStream = FileOutputStream(myFile)
                 val inputStream = contentResolver.openInputStream(uri!!)
                 val currentDateTime = Date()
@@ -461,9 +484,14 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                         0f
                     )
                 }
-                val imageQr=Image(ImageDataFactory.create(generateQRCodeByteArray("$documentName.pdf",500,500)))
+                val title = Paragraph("Document Identification Code")
+                    .setTextAlignment(TextAlignment.CENTER) // Adjust alignment as needed
+                    .setBold()
+                    .setFontSize(30f) // Adjust font size as needed
+                val imageQr=Image(ImageDataFactory.create(generateQRCodeByteArray("$documentName",500,500)))
                 pdfDoc.addNewPage(1, PageSize.A4)
                 val resultDocument=com.itextpdf.layout.Document(pdfDoc)
+                resultDocument.add(title)
                 resultDocument.add(imageQr)
                 pdfDoc.close()
                 val buffer = ByteArray(1024)

@@ -67,13 +67,20 @@ class LoginActivity : AppCompatActivity() {
                                         mySharedPref.setEmail(loginModel?.data?.email!!)
                                         mySharedPref.setRememberToken(loginModel?.data?.remember_token!!)
                                         mySharedPref.setRoleId(loginModel?.data?.role_id!!)
+                                        mySharedPref.setFName(loginModel?.data?.f_name!!)
+                                        mySharedPref.setMName(loginModel?.data?.m_name!!)
+                                        mySharedPref.setLName(loginModel?.data?.l_name!!)
+                                        mySharedPref.setUserDistrictId(loginModel?.data?.user_district.toString())
+                                        mySharedPref.setUserTalukaId(loginModel?.data?.user_taluka.toString())
+                                        mySharedPref.setUserVillageId(loginModel?.data?.user_village.toString())
                                         if(loginModel?.data?.role_id==2)
                                         {
                                             mySharedPref.setOfficerDistrictID(loginModel?.data?.user_district.toString())
+                                            mySharedPref.setUserTalukaId(loginModel?.data?.user_taluka.toString())
+                                            mySharedPref.setUserVillageId(loginModel?.data?.user_village.toString())
                                         }
                                         runOnUiThread {
                                             customProgressDialog.dismiss()
-
                                             if(loginModel?.data?.role_id==2){
                                                 val toast= Toast.makeText(this@LoginActivity,
                                                     getString(R.string.login_successful),

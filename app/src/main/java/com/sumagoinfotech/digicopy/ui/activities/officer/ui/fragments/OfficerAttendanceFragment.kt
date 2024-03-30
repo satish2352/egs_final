@@ -184,6 +184,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
             binding.btnCloseTaluka.setOnClickListener {
                 binding.actSelectTaluka.setText("")
                 talukaId=""
+
                 getAttendanceList()
             }
             binding.btnCloseVillage.setOnClickListener {

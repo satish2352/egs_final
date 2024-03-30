@@ -34,12 +34,55 @@ class MySharedPref(context: Context) {
         const val KEY_LONGITUDE = "longitude"
         const val KEY_OFFICER_DISTRICT = "officer_district"
         const val KEY_DEVICE_ID = "deviceId"
+        const val KEY_USER_DISTRICT = "user_district"
+        const val KEY_USER_TALUKA = "user_taluka"
+        const val KEY_USER_VILLAGE = "user_village"
     }
 
     val KEY_ALL_AREA_ENTRIES = "all_area_entries"
     val KEY_IS_LOGGED_IN = "is_logged_in"
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+
+
+    fun setUserDistrictId(districtId: String) {
+        with(sharedPreferences.edit()) {
+            putString(KEY_USER_DISTRICT, districtId)
+            apply()
+        }
+    }
+    fun getUserDistrictId(): String? {
+        return sharedPreferences.getString(
+            KEY_USER_DISTRICT,
+            "0"
+        )
+    }
+    fun setUserTalukaId(talukaId: String) {
+        with(sharedPreferences.edit()) {
+            putString(KEY_USER_TALUKA, talukaId)
+            apply()
+        }
+    }
+    fun getUserTalukaId(): String? {
+        return sharedPreferences.getString(
+            KEY_USER_TALUKA,
+            "0"
+        )
+    }
+    fun setUserVillageId(villageId: String) {
+        with(sharedPreferences.edit()) {
+            putString(KEY_USER_VILLAGE, villageId)
+            apply()
+        }
+    }
+    fun getUserVillageId(): String? {
+        return sharedPreferences.getString(
+            KEY_USER_VILLAGE,
+            "0"
+        )
+    }
+
 
     fun setOfficerDistrictID(districtId: String) {
         with(sharedPreferences.edit()) {
@@ -51,7 +94,7 @@ class MySharedPref(context: Context) {
         return sharedPreferences.getString(
             KEY_OFFICER_DISTRICT,
             "0"
-        ) // Default value is false if key doesn't exist
+        )
     }
 
     fun setDeviceId(deviceId: String) {
@@ -64,7 +107,7 @@ class MySharedPref(context: Context) {
         return sharedPreferences.getString(
             KEY_DEVICE_ID,
             "0"
-        ) // Default value is false if key doesn't exist
+        )
     }
 
 
@@ -92,13 +135,13 @@ class MySharedPref(context: Context) {
         return sharedPreferences.getString(
             KEY_LATITUDE,
             "0.0"
-        ) // Default value is false if key doesn't exist
+        )
     }
     fun getLongitude(): String? {
         return sharedPreferences.getString(
             KEY_LONGITUDE,
             "0.0"
-        ) // Default value is false if key doesn't exist
+        )
     }
 
     // Custom method to get boolean value for all area entries
@@ -106,7 +149,7 @@ class MySharedPref(context: Context) {
         return sharedPreferences.getBoolean(
             KEY_ALL_AREA_ENTRIES,
             false
-        ) // Default value is false if key doesn't exist
+        )
     }
 
     fun setIsLoggedIn(status: Boolean) {

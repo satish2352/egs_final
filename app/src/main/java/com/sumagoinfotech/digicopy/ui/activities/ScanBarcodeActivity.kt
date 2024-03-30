@@ -2,7 +2,10 @@ package com.sumagoinfotech.digicopy.ui.activities
 
 
 import android.Manifest
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +26,7 @@ import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.ActivityScanBarcodeBinding
 import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
+import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.FileDownloader
@@ -126,15 +130,27 @@ class ScanBarcodeActivity : AppCompatActivity() {
         dialog.show()
         val apiService=ApiClient.create(this@ScanBarcodeActivity)
         val call=apiService.downloadPDF(fileName)
-        call.enqueue(object :Callback<DocumentDownloadModel>{
-            override fun onResponse(call: Call<DocumentDownloadModel>, response: Response<DocumentDownloadModel>) {
+        call.enqueue(object :Callback<QRDocumentDownloadModel>{
+            override fun onResponse(call: Call<QRDocumentDownloadModel>, response: Response<QRDocumentDownloadModel>) {
                 dialog.dismiss()
                 if(response.isSuccessful){
 
                     if(response.body()?.status.equals("true")){
-                        val url=response.body()?.data+"/"+fileName
+                        val url=response.body()?.data?.document_pdf.toString()
                         Log.d("mytag",url)
-                        FileDownloader.downloadFile(this@ScanBarcodeActivity,url,fileName)
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(Uri.parse(url), "application/pdf")
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        try {
+                            startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(
+                                this@ScanBarcodeActivity,
+                                "No PDF viewer application found",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                       // FileDownloader.downloadFile(this@ScanBarcodeActivity,url,fileName)
                     }else{
                         Toast.makeText(this@ScanBarcodeActivity,"response false",Toast.LENGTH_SHORT).show()
                     }
@@ -143,7 +159,7 @@ class ScanBarcodeActivity : AppCompatActivity() {
                     Toast.makeText(this@ScanBarcodeActivity,"response unsuccessful",Toast.LENGTH_SHORT).show()
                 }
             }
-            override fun onFailure(call: Call<DocumentDownloadModel>, t: Throwable) {
+            override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
                 dialog.dismiss()
                 Toast.makeText(this@ScanBarcodeActivity,"response failed",Toast.LENGTH_SHORT).show()
             }

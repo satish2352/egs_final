@@ -25,14 +25,14 @@ class LabourListByProjectActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.labour_list)
         binding.recyclerViewLabourList.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
-       val user_id=intent.getStringExtra("id")
-        getLabourDetails(user_id!!)
+       val project_id=intent.getStringExtra("id")
+        getLabourDetails(project_id!!)
     }
 
-    private fun getLabourDetails(user_id:String) {
+    private fun getLabourDetails(project_id:String) {
 
         val apiService= ApiClient.create(this@LabourListByProjectActivity)
-        apiService.getLaboursByProject(user_id).enqueue(object :
+        apiService.getLaboursByProjectId(project_id = project_id).enqueue(object :
             Callback<LabourByMgnregaId> {
             override fun onResponse(
                 call: Call<LabourByMgnregaId>,

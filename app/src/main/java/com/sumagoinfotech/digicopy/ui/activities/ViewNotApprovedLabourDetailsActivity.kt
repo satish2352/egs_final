@@ -17,7 +17,9 @@ import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListOnlineAdapter
+import com.sumagoinfotech.digicopy.adapters.RegistrationStatusHistoryAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourDetailsNotApprovedBinding
+import com.sumagoinfotech.digicopy.model.apis.getlabour.HistoryDetailsItem
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.ui.activities.registration.LabourUpdateOnline1Activity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
@@ -33,6 +35,7 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
     private var photo=""
     private var aadharImage=""
     private lateinit var dialog:CustomProgressDialog
+    private var historyList=ArrayList<HistoryDetailsItem>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityViewLabourDetailsNotApprovedBinding.inflate(layoutInflater)
@@ -44,6 +47,10 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
         val mgnregaCardId=intent.getStringExtra("id")
         dialog= CustomProgressDialog(this)
         getLabourDetails(mgnregaCardId!!)
+        var adapter= RegistrationStatusHistoryAdapter(historyList)
+        binding.recyclerViewHistory.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+        binding.recyclerViewHistory.adapter=adapter
+        adapter.notifyDataSetChanged()
         binding.ivAadhar.setOnClickListener {
             showPhotoZoomDialog(aadharImage)
         }
@@ -94,6 +101,9 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                             if(!list?.get(0)?.other_remark.isNullOrEmpty()){
                                 if(!list?.get(0)?.other_remark.equals("null")){
                                     binding.tvRemarks.text=list?.get(0)?.other_remark
+                                }else{
+                                    binding.tvRemarks.visibility=View.GONE
+                                    binding.tvLabelRemarks.visibility=View.GONE
                                 }
                             }
                             if(!list?.get(0)?.status_name.isNullOrEmpty()){
@@ -102,7 +112,25 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                             if(!list?.get(0)?.reason_name.isNullOrEmpty()){
                                 if(!list?.get(0)?.reason_name.equals("null")){
                                     binding.tvReason.text=list?.get(0)?.reason_name
+                                }else{
+                                    binding.tvReason.visibility=View.GONE
+                                    binding.tvLabelReason.visibility=View.GONE
                                 }
+                            }
+                            if(!list?.get(0)?.history_details.isNullOrEmpty())
+                            {
+                                Log.d("mytag","----->>>>")
+                                binding.recyclerViewHistory.visibility=View.VISIBLE
+                                binding.tvHistory.visibility=View.VISIBLE
+                                historyList= list?.get(0)?.history_details as ArrayList<HistoryDetailsItem>
+                                var adapter = RegistrationStatusHistoryAdapter(historyList)
+                                binding.recyclerViewHistory.adapter=adapter
+                                adapter.notifyDataSetChanged()
+                                Log.d("mytag","----->>>>"+historyList.size)
+                            }else{
+                               // binding.tvHistory.visibility=View.GONE
+                               // binding.recyclerViewHistory.visibility=View.GONE
+
                             }
                             photo= list?.get(0)?.profile_image.toString()
                             mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()

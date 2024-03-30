@@ -1,8 +1,10 @@
 package com.sumagoinfotech.digicopy.ui.activities.officer.ui.fragments
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -26,11 +28,13 @@ import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardOfficerBinding
 import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
+import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectMarkerData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.LabourData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
 import com.sumagoinfotech.digicopy.ui.activities.ScannerActivity
+import com.sumagoinfotech.digicopy.ui.fragments.dashboard.MapTypeBottomSheetDialogFragment
 import com.sumagoinfotech.digicopy.utils.CustomInfoWindowAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.FileDownloader
@@ -50,7 +54,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnInfoWindowClickListener {
+    GoogleMap.OnInfoWindowClickListener, MapTypeBottomSheetDialogFragment.BottomSheetListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -64,6 +68,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentLocationMarker: Marker? = null // Reference to the current location marker
     private var isCurrentMarkerVisible = true
+    val bottomSheetDialogFragment = MapTypeBottomSheetDialogFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +104,11 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                 }else{
                     requestThePermissions()
                 }
+            }
+            binding.ivMapType.setOnClickListener {
+
+                bottomSheetDialogFragment.setBottomSheetListener(this@OfficerDashboardFragment)
+                bottomSheetDialogFragment.show(childFragmentManager, bottomSheetDialogFragment.tag)
             }
         } catch (e: Exception) {
             Log.d("mytag", "Exception " + e.message)
@@ -142,37 +152,57 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
             }
         }
     }
-    private fun getFileDownloadUrl(fileName:String){
-
-
-        val dialog=CustomProgressDialog(requireContext())
-        dialog.show()
-        val apiService= ApiClient.create(requireContext())
-        val call=apiService.downloadPDF(fileName)
-        call.enqueue(object : Callback<DocumentDownloadModel> {
-            override fun onResponse(call: Call<DocumentDownloadModel>, response: Response<DocumentDownloadModel>) {
-                dialog.dismiss()
-                if(response.isSuccessful){
-
-                    if(response.body()?.status.equals("true")){
-                        val url=response.body()?.data+"/"+fileName
-                        Log.d("mytag",url)
-                        FileDownloader.downloadFile(requireContext(),url,fileName)
-                    }else{
-                        Toast.makeText(requireContext(),response.body()?.message,Toast.LENGTH_SHORT).show()
+    private fun getFileDownloadUrl(fileName: String) {
+        Log.d("mytag","filename ==>"+fileName)
+        val activity = requireActivity()
+        if (activity != null && isAdded && !isDetached) {
+            val dialog = CustomProgressDialog(activity)
+            dialog.show()
+            val apiService = ApiClient.create(activity)
+            val call = apiService.downloadPDF(fileName)
+            call.enqueue(object : Callback<QRDocumentDownloadModel> {
+                override fun onResponse(
+                    call: Call<QRDocumentDownloadModel>,
+                    response: Response<QRDocumentDownloadModel>
+                ) {
+                    dialog.dismiss()
+                    if (response.isSuccessful) {
+                        if (response.body()?.status.equals("true")) {
+                            val url = response.body()?.data?.document_pdf.toString()
+                            Log.d("mytag", url)
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(Uri.parse(url), "application/pdf")
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            try {
+                                activity.startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No PDF viewer application found",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            //FileDownloader.downloadFile(activity, url, fileName)
+                            Toast.makeText(activity, "file download started", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(activity, response.body()?.message, Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        Toast.makeText(activity, "response unsuccessful", Toast.LENGTH_SHORT).show()
                     }
-
-                }else{
-                    Toast.makeText(requireContext(),"response unsuccessful",Toast.LENGTH_SHORT).show()
                 }
-            }
-            override fun onFailure(call: Call<DocumentDownloadModel>, t: Throwable) {
-                dialog.dismiss()
-                Toast.makeText(requireContext(),"response failed",Toast.LENGTH_SHORT).show()
-            }
-        })
 
+                override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
+                    dialog.dismiss()
+                    Toast.makeText(activity, "response failed", Toast.LENGTH_SHORT).show()
+                }
+            })
+        } else {
+            // Fragment is not attached to an activity, handle accordingly
+            // For example, log an error or show a message to the user
+        }
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         map.setOnMarkerClickListener(this)
@@ -239,5 +269,16 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
 
     override fun onInfoWindowClick(p0: Marker) {
 
+    }
+
+    override fun onDataReceived(data: String) {
+        bottomSheetDialogFragment.dismiss()
+        if(data.equals("normal")){
+            map.mapType=GoogleMap.MAP_TYPE_NORMAL
+        }else if(data.equals("hybrid")){
+            map.mapType=GoogleMap.MAP_TYPE_HYBRID
+        }else if(data.equals("satellite")) {
+            map.mapType = GoogleMap.MAP_TYPE_SATELLITE
+        }
     }
 }

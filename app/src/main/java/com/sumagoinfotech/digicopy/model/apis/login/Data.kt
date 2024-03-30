@@ -26,5 +26,7 @@ data class Data(
     val user_profile: String,
     val village: String,
     val user_district: String,
+    val user_village: String,
+    val user_taluka: String,
 
 )

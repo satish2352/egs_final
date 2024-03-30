@@ -59,6 +59,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
     private var selectedReasonsId=""
     private var remarks=""
     private var mgnregaCardIdOfLabour=""
+    private var labour_id=""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -185,7 +186,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         try {
             dialog.show()
             val apiService= ApiClient.create(this@OfficerViewEditReceivedLabourDetails)
-            val call=apiService.sendApprovedLabourResponseToServer("2",mgnregaCardIdOfLabour)
+            val call=apiService.sendApprovedLabourResponseToServer("2",labour_id)
             call.enqueue(object :Callback<LabourListModel>{
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -224,7 +225,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         try {
             dialog.show()
             val apiService= ApiClient.create(this@OfficerViewEditReceivedLabourDetails)
-            val call=apiService.sendNotApprovedLabourResponseToServer(mgnrega_card_id = mgnregaCardIdOfLabour, isApproved = "3", reason_id = selectedReasonsId, other_remark = remarks)
+            val call=apiService.sendNotApprovedLabourResponseToServer(labour_id = labour_id, isApproved = "3", reason_id = selectedReasonsId, other_remark = remarks)
             call.enqueue(object :Callback<LabourListModel>{
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -321,20 +322,26 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                             binding.tvLandline.text=list?.get(0)?.landline_number
                             binding.tvMnregaId.text=list?.get(0)?.mgnrega_card_id
                             mgnregaCardIdOfLabour=list?.get(0)?.mgnrega_card_id.toString()
+                            labour_id=list?.get(0)?.id.toString()
                             binding.tvDob.text=list?.get(0)?.date_of_birth
                             photo= list?.get(0)?.profile_image.toString()
                             mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                             aadharImage= list?.get(0)?.aadhar_image.toString()
                             voterIdImage= list?.get(0)?.voter_image.toString()
-                            historyList= list?.get(0)?.history_details as ArrayList<HistoryDetailsItem>
-                            var adapter = RegistrationStatusHistoryAdapter(historyList)
-                           // binding.recyclerViewHistory.layoutManager = NonScrollableLayoutManager(this@OfficerViewEditReceivedLabourDetails)
-                            binding.recyclerViewHistory.adapter=adapter
-                            adapter.notifyDataSetChanged()
-                            if(historyList.size<1){
-                                binding.tvHIstory.visibility=View.GONE
-                                binding.recyclerViewHistory.visibility=View.GONE
+                            if(!list?.get(0)?.history_details.isNullOrEmpty())
+                            {
+                                historyList= list?.get(0)?.history_details as ArrayList<HistoryDetailsItem>
+                                var adapter = RegistrationStatusHistoryAdapter(historyList)
+                                binding.recyclerViewHistory.adapter=adapter
+                                adapter.notifyDataSetChanged()
+
+                            }else{
+
+                                    binding.tvHIstory.visibility=View.GONE
+                                    binding.recyclerViewHistory.visibility=View.GONE
+
                             }
+
                             Log.d("mytag","=>"+historyList.size);
                             Glide.with(this@OfficerViewEditReceivedLabourDetails).load(mgnregaIdImage).into(binding.ivMnregaCard)
                             Glide.with(this@OfficerViewEditReceivedLabourDetails).load(photo).into(binding.ivPhoto)

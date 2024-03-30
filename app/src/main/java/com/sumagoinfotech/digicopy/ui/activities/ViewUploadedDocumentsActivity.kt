@@ -30,7 +30,7 @@ class ViewUploadedDocumentsActivity : AppCompatActivity() {
             setContentView(binding.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.title=resources.getString(R.string.uploaded_documents)
-            binding.recyclverView.layoutManager=GridLayoutManager(this,2,RecyclerView.VERTICAL,false)
+            binding.recyclverView.layoutManager=GridLayoutManager(this,3,RecyclerView.VERTICAL,false)
             documentList= ArrayList()
             adapter= UploadedPdfListAdapter(documentList)
             binding.recyclverView.adapter=adapter

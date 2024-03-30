@@ -1,6 +1,7 @@
 package com.sumagoinfotech.digicopy.ui.fragments.dashboard
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -38,6 +40,7 @@ import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
 import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
+import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapData
 import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapMarkerModel
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectDataFromLatLong
@@ -53,6 +56,7 @@ import com.sumagoinfotech.digicopy.ui.activities.ScanBarcodeActivity
 import com.sumagoinfotech.digicopy.ui.activities.ScannerActivity
 import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
 import com.sumagoinfotech.digicopy.utils.CustomInfoWindowAdapter
+import com.sumagoinfotech.digicopy.utils.CustomMarkerObject
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.FileDownloader
 import com.sumagoinfotech.digicopy.utils.MySharedPref
@@ -70,6 +74,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     private var projectData = mutableListOf<ProjectDataFromLatLong>()
     private var mapMarkerData = mutableListOf<MapData>()
     lateinit var dialog: CustomProgressDialog
+    private var latitude = ""
+    private var longitude = ""
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -120,11 +126,11 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 childFragmentManager.findFragmentById(R.id.map_container) as SupportMapFragment
             mapFragment.getMapAsync(this)
             binding.layoutByProjectId.setOnClickListener {
-                fetchProjectDataForMarker(binding.etInput.text.toString())
+                fetchProjectDataForMarkerWhenSearchByName(binding.etInput.text.toString())
                 Log.d("mytag", binding.etInput.text.toString())
             }
             binding.layoutByLabourId.setOnClickListener {
-                fetchLabourDataForMarker(binding.etInput.text.toString())
+                fetchLabourDataForMarkerById(binding.etInput.text.toString())
             }
             binding.ivMapType.setOnClickListener {
 
@@ -136,6 +142,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         }
         return root
     }
+
     private fun requestLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
                 requireActivity(),
@@ -256,137 +263,183 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         })
     }
 
-    private fun fetchLabourDataForMarker(mgnregaId: String) {
+    private fun fetchLabourDataForMarkerById(mgnregaId: String) {
         dialog.show()
         val apiService = ApiClient.create(requireContext())
-        apiService.getLabourForMarker(mgnregaId).enqueue(object : Callback<MapMarkerModel> {
-            override fun onResponse(
-                call: Call<MapMarkerModel>,
-                response: Response<MapMarkerModel>
-            ) {
-
-                dialog.dismiss()
-                if (response.isSuccessful) {
-                    if (!response.body()?.map_data.isNullOrEmpty()) {
-                        Log.d("mytag", Gson().toJson(response.body()))
-                        mapMarkerData = response.body()?.map_data as MutableList<MapData>
-                        if (mapMarkerData.size > 0) {
-                            showProjectMarkersNew(mapMarkerData)
+        apiService.getLabourDataForMarkerById(mgnregaId)
+            .enqueue(object : Callback<ProjectLabourListForMarker> {
+                override fun onResponse(
+                    call: Call<ProjectLabourListForMarker>,
+                    response: Response<ProjectLabourListForMarker>
+                ) {
+                    dialog.dismiss()
+                    if (response.isSuccessful) {
+                        if (!response.body()?.status.isNullOrEmpty() && response.body()?.status.equals(
+                                "true"
+                            )
+                        ) {
+                            if (!response.body()?.labour_data.isNullOrEmpty()) {
+                                Log.d("mytag", Gson().toJson(response.body()))
+                                labourData = response.body()?.labour_data as MutableList<LabourData>
+                                if (labourData.size > 0) {
+                                    showLabourMarkers(labourData)
+                                }
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "No records found",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), "Please try again", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     } else {
-                        Toast.makeText(requireContext(), "No records found", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            requireContext(),
+                            "Response unsuccessful",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
-                } else {
-                    Toast.makeText(requireContext(), "Response unsuccessful", Toast.LENGTH_SHORT)
-                        .show()
+
                 }
 
-            }
-
-            override fun onFailure(call: Call<MapMarkerModel>, t: Throwable) {
-                Toast.makeText(
-                    requireContext(),
-                    "Error Ocuured during api call",
-                    Toast.LENGTH_SHORT
-                ).show()
-                dialog.dismiss()
-            }
-        })
-    }
-
-    private fun showLabourMakkers(labourData: MutableList<LabourData>) {
-        try {
-            Log.d("mytag", "=>" + Gson().toJson(labourData))
-            labourData.forEach { marker ->
-                Log.d("mytag", "showLabourMakkers: ${marker.latitude},${marker.latitude}")
-                val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
-                val myMarker = map.addMarker(
-                    MarkerOptions()
-                        .position(position)
-                        .title(marker.full_name)
-                        .snippet(marker.district_id + " " + marker.taluka_id + " " + marker.village_id)
-                )
-                myMarker?.tag = marker.mgnrega_card_id
-                myMarker?.showInfoWindow()
-            }
-            // Move camera to the first marker
-            map.moveCamera(
-                CameraUpdateFactory.newLatLngZoom(
-                    LatLng(
-                        labourData[0].latitude.toDouble(),
-                        labourData[0].longitude.toDouble()
-                    ), 15f
-                )
-            )
-        } catch (e: Exception) {
-            Log.d("mytag", "showLabourMakkers: Exception " + e.message)
-            e.printStackTrace()
-        }
-
-    }
-
-    private fun fetchProjectDataForMarker(projectName: String) {
-        dialog.show()
-        val apiService = ApiClient.create(requireContext())
-        apiService.getProjectListForMarker(projectName).enqueue(object : Callback<MapMarkerModel> {
-            override fun onResponse(
-                call: Call<MapMarkerModel>,
-                response: Response<MapMarkerModel>
-            ) {
-                dialog.dismiss()
-                if (response.isSuccessful) {
-                    Log.d("mytag", Gson().toJson(response.body()))
-                    if (!response.body()?.map_data.isNullOrEmpty()) {
-                        mapMarkerData = response.body()?.map_data as MutableList<MapData>
-                        if (mapMarkerData.size > 0) {
-                            showProjectMarkersNew(mapMarkerData)
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "No records found", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Response unsuccessful", Toast.LENGTH_SHORT)
-                        .show()
+                override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Error Ocuured during api call",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
                 }
-            }
-
-            override fun onFailure(call: Call<MapMarkerModel>, t: Throwable) {
-                Toast.makeText(
-                    requireContext(),
-                    "Error Ocuured during api call",
-                    Toast.LENGTH_SHORT
-                ).show()
-                dialog.dismiss()
-            }
-        })
+            })
     }
 
-    private fun showProjectMarkers(projectData: MutableList<ProjectDataFromLatLong>) {
+    private fun showLabourMarkers(labourData: MutableList<LabourData>) {
         map.clear()
-
+        val redVue = 0F
         try {
-            if (projectData.isNotEmpty()) {
-                projectData.forEach { marker ->
+            if (labourData.isNotEmpty()) {
+                labourData.forEach { marker ->
                     Log.d("mytag", "showProjectMarkers: ${marker.latitude},${marker.longitude}")
                     val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
-                    val myMarker = map.addMarker(
+                    var myMarker: Marker? = null
+                    val markerIcon = BitmapDescriptorFactory.defaultMarker(redVue)
+                    //val markerIcon=getMarkerIcon(Color.GREEN)
+                    myMarker = map.addMarker(
                         MarkerOptions()
                             .position(position)
-                            .title("Project : " + marker.project_name).snippet(marker.district)
+                            .icon(markerIcon)
+                            .title(marker.full_name)
                     )
-                    myMarker?.tag = marker.id
+                    var customMarkerObject = CustomMarkerObject(
+                        id = marker.id.toString(),
+                        type = "labour",
+                        name = marker.full_name,
+                        url = ""
+                    )
+                    myMarker?.tag = customMarkerObject
                     myMarker?.showInfoWindow()
                 }
-                // Move camera to the first marker
-                val firstMarker = projectData.first()
+                val firstMarker = projectData.last()
                 map.moveCamera(
                     CameraUpdateFactory.newLatLngZoom(
                         LatLng(
                             firstMarker.latitude.toDouble(),
                             firstMarker.longitude.toDouble()
-                        ), 13f
+                        ), 15f
+                    )
+                )
+            } else {
+                // Handle case when projectData is empty
+                Log.d("mytag", "showLabourMarkers:  data is empty")
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "showLabourMarkers: Exception " + e.message)
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun fetchProjectDataForMarkerWhenSearchByName(projectName: String) {
+        dialog.show()
+        val apiService = ApiClient.create(requireContext())
+        apiService.getProjectListForMarkerByNameSearch(projectName, latitude, longitude)
+            .enqueue(object : Callback<ProjectsFromLatLongModel> {
+                override fun onResponse(
+                    call: Call<ProjectsFromLatLongModel>,
+                    response: Response<ProjectsFromLatLongModel>
+                ) {
+                    dialog.dismiss()
+                    if (response.isSuccessful) {
+                        Log.d("mytag", Gson().toJson(response.body()))
+                        if (!response.body()?.project_data.isNullOrEmpty()) {
+                            projectData =
+                                response.body()?.project_data as MutableList<ProjectDataFromLatLong>
+                            if (projectData.size > 0) {
+                                showProjectMarkersWhenSearchByName(projectData)
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), "No records found", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Response unsuccessful",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ProjectsFromLatLongModel>, t: Throwable) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Error Ocuured during api call",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    dialog.dismiss()
+                }
+            })
+    }
+
+    private fun showProjectMarkersWhenSearchByName(projectData: MutableList<ProjectDataFromLatLong>) {
+        map.clear()
+        val greenHue = 120F
+        try {
+            if (projectData.isNotEmpty()) {
+                projectData.forEach { marker ->
+                    Log.d("mytag", "showProjectMarkers: ${marker.latitude},${marker.longitude}")
+                    val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
+                    var myMarker: Marker? = null
+                    val markerIcon = BitmapDescriptorFactory.defaultMarker(greenHue)
+                    //val markerIcon=getMarkerIcon(Color.GREEN)
+                    myMarker = map.addMarker(
+                        MarkerOptions()
+                            .position(position)
+                            .icon(markerIcon)
+                            .title(marker.project_name)
+                    )
+                    var customMarkerObject = CustomMarkerObject(
+                        id = marker.id.toString(),
+                        type = "project",
+                        name = marker.project_name,
+                        url = ""
+                    )
+                    myMarker?.tag = customMarkerObject
+                    myMarker?.showInfoWindow()
+                }
+                val firstMarker = projectData.last()
+                map.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            firstMarker.latitude.toDouble(),
+                            firstMarker.longitude.toDouble()
+                        ), 15f
                     )
                 )
             } else {
@@ -421,11 +474,17 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                             MarkerOptions()
                                 .position(position)
                                 .icon(markerIcon)
-                                .title("Project : " + marker.name)
+                                .title(marker.name)
                         )
-                        myMarker?.tag = marker.id
+                        var customMarkerObject = CustomMarkerObject(
+                            id = marker.id.toString(),
+                            type = marker.type,
+                            name = marker.name,
+                            url = ""
+                        )
+                        myMarker?.tag = customMarkerObject
                         myMarker?.showInfoWindow()
-                    } else {
+                    } else if (marker.type.equals("labour")) {
                         //val markerIcon=getMarkerIcon(Color.RED)
                         val markerIcon = BitmapDescriptorFactory.defaultMarker(redHue)
                         myMarker = map.addMarker(
@@ -434,7 +493,29 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                                 .position(position)
                                 .title(marker.name)
                         )
-                        myMarker?.tag = marker.id
+                        var customMarkerObject = CustomMarkerObject(
+                            id = marker.id.toString(),
+                            type = marker.type,
+                            name = marker.name,
+                            url = ""
+                        )
+                        myMarker?.tag = customMarkerObject
+                        myMarker?.showInfoWindow()
+                    } else if (marker.type.equals("document")) {
+                        val markerIcon = BitmapDescriptorFactory.defaultMarker(purpleHue)
+                        myMarker = map.addMarker(
+                            MarkerOptions()
+                                .icon(markerIcon)
+                                .position(position)
+                                .title(marker.document_name)
+                        )
+                        var customMarkerObject = CustomMarkerObject(
+                            id = marker.id.toString(),
+                            type = marker.type,
+                            name = marker.document_name,
+                            url = marker.document_pdf
+                        )
+                        myMarker?.tag = customMarkerObject
                         myMarker?.showInfoWindow()
                     }
                 }
@@ -445,7 +526,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         LatLng(
                             firstMarker.latitude.toDouble(),
                             firstMarker.longitude.toDouble()
-                        ), 10f
+                        ), 15f
                     )
                 )
             } else {
@@ -534,13 +615,17 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
                         // Add marker for current location
                         if (currentLocationMarker == null) {
+                            val markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
                             // If marker doesn't exist, create a new one
                             currentLocationMarker = map.addMarker(
                                 MarkerOptions()
                                     .position(currentLatLng)
                                     .title("You are here")
+                                    .icon(markerIcon)
                                     .snippet("${it.latitude}, ${it.longitude}")
                             )
+                            latitude = it.latitude.toString()
+                            longitude = it.longitude.toString()
                             currentLocationMarker?.showInfoWindow()
                         } else {
                             // If marker already exists, update its position
@@ -596,11 +681,14 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
                     // Add marker for current location
                     if (currentLocationMarker == null) {
+                        val markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
+
                         // If marker doesn't exist, create a new one
                         currentLocationMarker = map.addMarker(
                             MarkerOptions()
                                 .position(currentLatLng)
                                 .title("You are here")
+                                .icon(markerIcon)
                                 .snippet("${it.latitude}, ${it.longitude}")
                         )
                         currentLocationMarker?.showInfoWindow()
@@ -642,13 +730,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        Log.d("mytag", "onMarkerClick" + marker.title)
-        val toast = Toast.makeText(
-            activity,
-            "" + marker.title + " " + marker.snippet + " " + marker.position,
-            Toast.LENGTH_SHORT
-        )
-        toast.show()
         return false
     }
 
@@ -671,60 +752,34 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     override fun onInfoWindowClick(marker: Marker) {
 
-        if (marker.title?.startsWith("Project :")!!) {
+        val customMarkerObject = marker.tag as CustomMarkerObject
+        if (customMarkerObject.type.equals("project")) {
             val intent = Intent(context, LabourListByProjectActivity::class.java)
-            intent.putExtra("id", "" + marker.tag)
+            intent.putExtra("id", "" + customMarkerObject.id)
             context?.startActivity(intent)
-        } else if (marker.title?.startsWith("You")!!) {
-        } else {
+        } else if (customMarkerObject.type.equals("document")) {
+
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(Uri.parse(customMarkerObject.url), "application/pdf")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            try {
+                startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                Toast.makeText(
+                    requireContext(),
+                    "No PDF viewer application found",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+        } else if (customMarkerObject.type.equals("labour")) {
             val intent = Intent(context, ViewLabourFromMarkerClick::class.java)
-            intent.putExtra("id", "" + marker.tag)
+            intent.putExtra("id", "" + customMarkerObject.id)
             context?.startActivity(intent)
         }
         //Toast.makeText(requireContext(), "${marker.tag}Info window clicked: ${marker.title}", Toast.LENGTH_SHORT).show()
     }
 
-    private fun fetchProjectDataFromLatLong(latitude: String, longitude: String) {
-        dialog.show()
-        val apiService = ApiClient.create(requireContext())
-        apiService.getProjectsListFromLatLong(latitude, longitude)
-            .enqueue(object : Callback<ProjectsFromLatLongModel> {
-                override fun onResponse(
-                    call: Call<ProjectsFromLatLongModel>,
-                    response: Response<ProjectsFromLatLongModel>
-                ) {
-                    dialog.dismiss()
-                    if (response.isSuccessful) {
-                        Log.d("mytag", Gson().toJson(response.body()))
-                        if (!response.body()?.data.isNullOrEmpty()) {
-                            projectData =
-                                response.body()?.data as MutableList<ProjectDataFromLatLong>
-                            if (projectData.size > 0) {
-                                showProjectMarkers(projectData)
-                            }
-                        } else {
-                            Toast.makeText(requireContext(), "No records found", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Response unsuccessful",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<ProjectsFromLatLongModel>, t: Throwable) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Error Occurred during api call",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    dialog.dismiss()
-                }
-            })
-    }
 
     private fun fetchProjectDataFromLatLongNew(latitude: String, longitude: String) {
         dialog.show()
@@ -774,18 +829,31 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         dialog.show()
         val apiService = ApiClient.create(requireContext())
         val call = apiService.downloadPDF(fileName)
-        call.enqueue(object : Callback<DocumentDownloadModel> {
+        call.enqueue(object : Callback<QRDocumentDownloadModel> {
             override fun onResponse(
-                call: Call<DocumentDownloadModel>,
-                response: Response<DocumentDownloadModel>
+                call: Call<QRDocumentDownloadModel>,
+                response: Response<QRDocumentDownloadModel>
             ) {
                 dialog.dismiss()
                 if (response.isSuccessful) {
 
                     if (response.body()?.status.equals("true")) {
-                        val url = response.body()?.data + "/" + fileName
+                        val url = response.body()?.data?.document_pdf.toString()
                         Log.d("mytag", url)
-                        FileDownloader.downloadFile(requireContext(), url, fileName)
+
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(Uri.parse(url), "application/pdf")
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        try {
+                            startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(
+                                requireContext(),
+                                "No PDF viewer application found",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        //FileDownloader.downloadFile(requireContext(), url, fileName)
                     } else {
                         Toast.makeText(
                             requireContext(),
@@ -800,7 +868,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 }
             }
 
-            override fun onFailure(call: Call<DocumentDownloadModel>, t: Throwable) {
+            override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
                 dialog.dismiss()
                 Toast.makeText(requireContext(), "response failed", Toast.LENGTH_SHORT).show()
             }
@@ -810,12 +878,11 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     override fun onDataReceived(data: String) {
         bottomSheetDialogFragment.dismiss()
-        if(data.equals("normal")){
-
-            map.mapType=GoogleMap.MAP_TYPE_NORMAL
-        }else if(data.equals("hybrid")){
-            map.mapType=GoogleMap.MAP_TYPE_NORMAL
-        }else if(data.equals("satellite")) {
+        if (data.equals("normal")) {
+            map.mapType = GoogleMap.MAP_TYPE_NORMAL
+        } else if (data.equals("hybrid")) {
+            map.mapType = GoogleMap.MAP_TYPE_HYBRID
+        } else if (data.equals("satellite")) {
             map.mapType = GoogleMap.MAP_TYPE_SATELLITE
         }
 

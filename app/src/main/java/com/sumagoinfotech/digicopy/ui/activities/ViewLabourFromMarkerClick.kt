@@ -80,9 +80,9 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                             Log.d("mytag",""+ Gson().toJson(response.body()));
                             binding.tvFullName.text=list?.get(0)?.full_name
                             binding.tvGender.text=list?.get(0)?.gender_name
-                            binding.tvDistritct.text=list?.get(0)?.district_id
-                            binding.tvTaluka.text=list?.get(0)?.taluka_id
-                            binding.tvVillage.text=list?.get(0)?.village_id
+                            binding.tvDistritct.text=list?.get(0)?.district_name
+                            binding.tvTaluka.text=list?.get(0)?.taluka_name
+                            binding.tvVillage.text=list?.get(0)?.village_name
                             binding.tvMobile.text=list?.get(0)?.mobile_number
                             binding.tvLandline.text=list?.get(0)?.landline_number
                             binding.tvMnregaId.text=list?.get(0)?.mgnrega_card_id

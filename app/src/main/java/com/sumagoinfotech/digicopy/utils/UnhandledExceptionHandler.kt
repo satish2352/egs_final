@@ -17,7 +17,7 @@ class UnhandledExceptionHandler(private val defaultExceptionHandler: Thread.Unca
         // ...
 
         // If you want to allow the default uncaught exception handler to handle the exception as well, uncomment the following line
-        // defaultExceptionHandler?.uncaughtException(thread, throwable)
+         defaultExceptionHandler?.uncaughtException(thread, throwable)
 
         // Finish the app to avoid further instability
         android.os.Process.killProcess(android.os.Process.myPid())

@@ -36,7 +36,7 @@ class AttendanceAdapter(var list: List<LabourInfo>, var markAttendanceListener: 
         try {
             holder.tvFullName.text = list[position]?.full_name ?: "Default"
             holder.tvMobile.text = list[position]?.mobile_number ?: "Default"
-            val address="${list[position].district_id} ->${list[position].taluka_id} ->${list[position].village_id}"
+            val address="${list[position].district_name} ->${list[position].taluka_name} ->${list[position].village_name}"
             holder.tvAddress.text = address
             holder.tvMgnregaId.text= list[position].mgnrega_card_id
             holder.itemView.setOnClickListener{

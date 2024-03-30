@@ -82,7 +82,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
             if (validateFields()) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val call = apiService.getLabourDataById(binding.etLabourId.text.toString())
+                        val call = apiService.getLabourDataByIdForAttendance(mgnrega_card_id = binding.etLabourId.text.toString())
                         call.enqueue(object : Callback<LabourByMgnregaId> {
                             override fun onResponse(
                                 call: Call<LabourByMgnregaId>,
@@ -148,9 +148,9 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 Log.d("mytag", "" + position)
                 binding.tvProjectAddress.setText(
-                    listProject.get(position).district + " -> " + listProject.get(
+                    listProject.get(position).district_name + " -> " + listProject.get(
                         position
-                    ).taluka + " -> " + listProject.get(position).village
+                    ).taluka_name + " -> " + listProject.get(position).village_name
                 )
                 binding.tvProjectDuration.setText(
                     listProject.get(position).start_date + " To " + listProject.get(
@@ -328,7 +328,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     private fun getProjectFromServer()
     {
         val apiService = ApiClient.create(this@AllocateWorkActivity)
-        val call = apiService.getProjectListForAttendance(pref.getLatitude()!!,pref.getLongitude()!!)
+        val call = apiService.getProjectListForAttendance(latitude = pref.getLatitude()!!, longitude = pref.getLongitude()!!)
         call.enqueue(object : Callback<ProjectLabourListForMarker> {
             override fun onResponse(
                 call: Call<ProjectLabourListForMarker>,
@@ -379,7 +379,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     private fun getLabourByIdFromServer(mgnregaId: String) {
 
         val apiService = ApiClient.create(this@AllocateWorkActivity)
-        val call = apiService.getLabourDataById(mgnregaId)
+        val call = apiService.getLabourDataByIdForAttendance(mgnregaId)
         call.enqueue(object : Callback<LabourByMgnregaId> {
             override fun onResponse(
                 call: Call<LabourByMgnregaId>,
