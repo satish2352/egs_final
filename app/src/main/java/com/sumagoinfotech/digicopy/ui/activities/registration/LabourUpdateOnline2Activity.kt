@@ -892,7 +892,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                                 Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.labour_details_upaded),
                                     Toast.LENGTH_SHORT).show()
                                 val intent= Intent(this@LabourUpdateOnline2Activity, ReportsActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                                 startActivity(intent)
                             }
                         }else{
@@ -921,10 +922,6 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 Log.d("mytag","uploadLabourOnline "+e.message)
             }
         }
-
-
-
     }
-
 
 }

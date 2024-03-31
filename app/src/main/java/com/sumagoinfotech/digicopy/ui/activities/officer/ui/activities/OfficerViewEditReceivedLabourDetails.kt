@@ -186,7 +186,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         try {
             dialog.show()
             val apiService= ApiClient.create(this@OfficerViewEditReceivedLabourDetails)
-            val call=apiService.sendApprovedLabourResponseToServer("2",labour_id)
+            val call=apiService.sendApprovedLabourResponseToServer("2",labour_id, mgnrega_card_id = mgnregaCardIdOfLabour)
             call.enqueue(object :Callback<LabourListModel>{
                 override fun onResponse(
                     call: Call<LabourListModel>,

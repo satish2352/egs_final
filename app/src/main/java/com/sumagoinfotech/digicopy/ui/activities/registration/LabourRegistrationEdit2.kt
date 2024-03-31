@@ -181,7 +181,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                                 toast.show()
                             }
                             val intent= Intent(this@LabourRegistrationEdit2, SyncLabourDataActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            //intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                             startActivity(intent)
                         }else{
                             runOnUiThread {

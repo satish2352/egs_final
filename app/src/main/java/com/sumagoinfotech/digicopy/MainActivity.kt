@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -46,6 +47,23 @@ class MainActivity : AppCompatActivity() {
             navView.setupWithNavController(navController)
 
             requestThePermissions()
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+
+                    if (!navController.popBackStack()) {
+                        // If there are no more fragments to pop in the back stack,
+                        // show the exit confirmation dialog
+                        AlertDialog.Builder(this@MainActivity)
+                            .setTitle("Exit")
+                            .setMessage("Are you sure you want to exit App?")
+                            .setPositiveButton("Yes") { _, _ ->
+                                finish()
+                            }
+                            .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                            .show()
+                    }
+                }
+            })
         } catch (e: Exception) {
             Log.d("mytag","Exception "+e.message)
         }

@@ -225,6 +225,7 @@ interface ApiService {
     fun sendApprovedLabourResponseToServer(
         @Query("is_approved")isApproved:String,
         @Query("labour_id")labour_id:String,
+        @Query("mgnrega_card_id")mgnrega_card_id:String,
     ):Call<LabourListModel>
 
     @POST("auth/update-officer-labour-status-rejected")

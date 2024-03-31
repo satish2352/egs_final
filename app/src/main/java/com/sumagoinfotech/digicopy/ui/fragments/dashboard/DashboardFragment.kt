@@ -167,10 +167,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 location?.let {
                     val currentLatLng = LatLng(it.latitude, it.longitude)
 
-                    // Update UI with latitude and longitude
-                    // Note: getAddressFromLatLong() needs to be implemented to fetch address
-                    // from latitude and longitude
-
                 } ?: run {
                     // Handle case where location is null
                     Toast.makeText(
@@ -344,13 +340,13 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     myMarker?.tag = customMarkerObject
                     myMarker?.showInfoWindow()
                 }
-                val firstMarker = projectData.last()
+                val firstMarker = labourData.last()
                 map.moveCamera(
                     CameraUpdateFactory.newLatLngZoom(
                         LatLng(
                             firstMarker.latitude.toDouble(),
                             firstMarker.longitude.toDouble()
-                        ), 15f
+                        ), 11f
                     )
                 )
             } else {
@@ -439,7 +435,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         LatLng(
                             firstMarker.latitude.toDouble(),
                             firstMarker.longitude.toDouble()
-                        ), 15f
+                        ), 11f
                     )
                 )
             } else {
@@ -526,7 +522,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         LatLng(
                             firstMarker.latitude.toDouble(),
                             firstMarker.longitude.toDouble()
-                        ), 15f
+                        ), 11f
                     )
                 )
             } else {
@@ -611,7 +607,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         )
 
                         // Move camera to current location
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 11f))
 
                         // Add marker for current location
                         if (currentLocationMarker == null) {
@@ -677,7 +673,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     val currentLatLng = LatLng(it.latitude, it.longitude)
 
                     // Move camera to current location
-                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 11f))
 
                     // Add marker for current location
                     if (currentLocationMarker == null) {
@@ -724,7 +720,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 LatLng(
                     markersList[0].latitude.toDouble(),
                     markersList[0].longitude.toDouble()
-                ), 15f
+                ), 11f
             )
         )
     }

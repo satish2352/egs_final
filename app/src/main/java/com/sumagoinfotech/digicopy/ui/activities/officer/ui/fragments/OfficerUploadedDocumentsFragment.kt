@@ -150,7 +150,10 @@ class OfficerUploadedDocumentsFragment : Fragment() {
             binding.btnCloseTaluka.setOnClickListener {
 
                 binding.actSelectTaluka.setText("")
+                binding.actSelectVillage.setText("")
                 talukaId=""
+                binding.actSelectVillage.setAdapter(null)
+                villageId=""
                 getDocumentsList()
 
             }
@@ -278,23 +281,32 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                     {
                         listDocuments.clear()
                         if(response.body()?.status.equals("true")){
-                            listDocuments= (response.body()?.data as ArrayList<UploadedDocument>?)!!
-                            adapter= OfficerUploadedDocsAdapter(listDocuments)
-                            binding.recyclerView.adapter=adapter
-                            adapter.notifyDataSetChanged()
+                            if(response.body()?.data!=null){
+                                listDocuments= (response.body()?.data as ArrayList<UploadedDocument>?)!!
+                                if(listDocuments.size<1){
+                                    Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_SHORT).show()
+                                }
+                                adapter= OfficerUploadedDocsAdapter(listDocuments)
+                                binding.recyclerView.adapter=adapter
+                                adapter.notifyDataSetChanged()
+                            }
+                        }else{
+                            if(!response.body()?.message.isNullOrEmpty()){
+                                Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }else{
                         Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 override fun onFailure(call: Call<UploadedDocsModel>, t: Throwable) {
                     Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
             })
         }catch (e:Exception){
-
+            e.printStackTrace()
+            Log.d("mytag","getDocumentsList=>"+e.message)
         }
     }
 

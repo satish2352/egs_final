@@ -57,7 +57,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/edittext_background"
                 android:drawableEnd="@drawable/arrow_dropdown_small"
-                android:hint="@string/select_taluka"
+                android:hint="@string/select_village"
                 android:inputType="none"
                 android:paddingLeft="16dp"
                 android:textSize="12sp"></AutoCompleteTextView>

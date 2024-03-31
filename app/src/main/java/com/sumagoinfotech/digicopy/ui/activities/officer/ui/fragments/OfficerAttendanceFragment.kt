@@ -183,7 +183,11 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
 
             binding.btnCloseTaluka.setOnClickListener {
                 binding.actSelectTaluka.setText("")
+                binding.actSelectVillage.setText("")
                 talukaId=""
+                binding.actSelectVillage.setAdapter(null)
+                villageId=""
+
 
                 getAttendanceList()
             }
@@ -349,11 +353,23 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                 if(response.isSuccessful)
                 {
                     attendanceList.clear()
-                    if(response.body()?.status.equals("true")){
-                        attendanceList= (response.body()?.data as ArrayList<AttendanceData>?)!!
-                        adapter= ViewAttendanceAdapter(attendanceList,this@OfficerAttendanceFragment)
-                        binding.recyclerView.adapter=adapter
-                        adapter.notifyDataSetChanged()
+                    if(response.body()?.status.equals("true"))
+                    {
+                        if(response.body()?.data!=null)
+                        {
+                            attendanceList= (response.body()?.data as ArrayList<AttendanceData>?)!!
+                            if(attendanceList.size<1){
+                                Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_SHORT).show()
+                            }
+                            adapter= ViewAttendanceAdapter(attendanceList,this@OfficerAttendanceFragment)
+                            binding.recyclerView.adapter=adapter
+                            adapter.notifyDataSetChanged()
+                        }else{
+                            if(!response.body()?.message.isNullOrEmpty()){
+                                Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
                     }
                 }else{
                     Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()

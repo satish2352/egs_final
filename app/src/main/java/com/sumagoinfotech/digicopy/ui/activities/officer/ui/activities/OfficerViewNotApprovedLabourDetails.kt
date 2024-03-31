@@ -114,6 +114,12 @@ private fun getLabourDetails(mgnregaCardId:String) {
                         }
                         if(!list?.get(0)?.status_name.isNullOrEmpty()){
                             binding.tvRegistrationStatus.text=list?.get(0)?.status_name
+                            if(list?.get(0)?.status_name.equals("Approved")){
+                                binding.tvReason.visibility=View.GONE
+                                binding.tvLabelReason.visibility=View.GONE
+                                binding.tvRemarks.visibility=View.GONE
+                                binding.tvLabelRemarks.visibility=View.GONE
+                            }
                         }
                         if(!list?.get(0)?.reason_name.isNullOrEmpty()){
                             if(!list?.get(0)?.reason_name.equals("null")){
