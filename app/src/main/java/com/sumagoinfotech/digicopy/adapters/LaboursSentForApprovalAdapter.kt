@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
 import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
+import com.sumagoinfotech.digicopy.ui.activities.ViewNotApprovedLabourDetailsActivity
 import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerViewEditReceivedLabourDetails
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 
@@ -52,8 +53,9 @@ class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : Re
                     holder.itemView.context.startActivity(intent)
                 }else if(pref.getRoleId()==3)
                 {
-                val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
+                val intent= Intent(holder.itemView.context, ViewNotApprovedLabourDetailsActivity::class.java)
                 intent.putExtra("id",labourList.get(position).mgnrega_card_id)
+                intent.putExtra("type","not_approved")
                 holder.itemView.context.startActivity(intent)
                 }
 

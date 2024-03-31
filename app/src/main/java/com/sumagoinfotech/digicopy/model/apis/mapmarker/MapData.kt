@@ -12,4 +12,5 @@ data class MapData(
     val user_district: String,
     val user_taluka: String,
     val user_village: String,
+    val mgnrega_card_id: String,
 )

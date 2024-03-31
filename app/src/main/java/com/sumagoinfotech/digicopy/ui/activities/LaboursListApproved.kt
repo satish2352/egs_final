@@ -39,11 +39,16 @@ class LaboursListApproved : AppCompatActivity() {
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-            getDataFromServer()
+
         } catch (e: Exception) {
             Log.d("mytag", " : onCreate : Exception => " + e.message)
             e.printStackTrace()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getDataFromServer()
     }
     private fun getDataFromServer() {
         try {

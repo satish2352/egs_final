@@ -240,9 +240,9 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
                 if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
                     var dayType = ""
                     if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
-                        dayType = "Half Day"
+                        dayType = "half_day"
                     } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
-                        dayType = "Full Day"
+                        dayType = "full_day"
                     }
                     Log.d("mytag","showAttendanceDialog : "+dayType)
                     val call = apiService.updateAttendance(projectId = data.project_id, mgnregaId = data.mgnrega_card_id, attendanceDay = dayType)

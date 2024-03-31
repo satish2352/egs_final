@@ -461,8 +461,8 @@
 
                     <TextView
                         android:id="@+id/tvRegistrationStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="4dp"
+                        android:layout_height="23dp"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins"
                         android:textSize="14dp"></TextView>

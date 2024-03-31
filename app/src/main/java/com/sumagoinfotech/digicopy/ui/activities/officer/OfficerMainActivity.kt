@@ -119,11 +119,24 @@ class OfficerMainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==R.id.action_logout)
         {
-            val mySharedPref= MySharedPref(this@OfficerMainActivity)
-            mySharedPref.clearAll()
-            val intent= Intent(this@OfficerMainActivity, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
+
+            AlertDialog.Builder(this)
+                .setMessage("Are you sure you want to logout ?")
+                .setPositiveButton("Yes") { dialog, _ ->
+                    // Open the location settings to enable GPS
+                    val mySharedPref= MySharedPref(this@OfficerMainActivity)
+                    mySharedPref.clearAll()
+                    val intent= Intent(this@OfficerMainActivity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    dialog.dismiss()
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                    // Handle the case when the user chooses not to enable GPS
+                }
+                .show()
+
         }
         return super.onOptionsItemSelected(item)
     }

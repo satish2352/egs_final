@@ -47,7 +47,12 @@ class ViewAttendanceAdapter(var list:List<AttendanceData>,var attendanceEditList
             holder.tvAddress.text = address
             holder.tvMgnregaId.text= list[position].mgnrega_card_id
             Glide.with(holder.itemView.context).load(list.get(position).profile_image).into(holder.ivPhoto)
-            holder.tvAttendance.setText(list.get(position).attendance_day)
+            if(list.get(position).attendance_day.equals("half_day")){
+                holder.tvAttendance.setText("Half Day")
+            }else if(list.get(position).attendance_day.equals("full_day")){
+                holder.tvAttendance.setText("Full Day")
+            }
+
             holder.tvDate.setText(formatDate(list.get(position).updated_at))
             if(pref.getRoleId()==2)
             {

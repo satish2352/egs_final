@@ -38,11 +38,16 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity() {
             adapter= LaboursSentForApprovalAdapter(labourList)
             binding.recyclerView.adapter=adapter
             binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
-            getDataFromServer()
+            //getDataFromServer()
         } catch (e: Exception) {
             Log.d("mytag","ViewLabourSentForApprovalActivity : onCreate : Exception => "+e.message)
             e.printStackTrace()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getDataFromServer()
     }
     private fun getDataFromServer() {
         try {
@@ -58,10 +63,20 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity() {
                     {
                         if(response.body()?.status.equals("true"))
                         {
-                            labourList= (response?.body()?.data as ArrayList<LaboursList>?)!!
-                            adapter= LaboursSentForApprovalAdapter(labourList)
-                            binding.recyclerView.adapter=adapter
-                            adapter.notifyDataSetChanged()
+                            if(!response?.body()?.data.isNullOrEmpty())
+                            {
+                                labourList= (response?.body()?.data as ArrayList<LaboursList>?)!!
+                                adapter= LaboursSentForApprovalAdapter(labourList)
+                                binding.recyclerView.adapter=adapter
+                                adapter.notifyDataSetChanged()
+                                Toast.makeText(this@ViewLaboursListSentForApprovalActivity,resources.getString(R.string.no_records_founds),Toast.LENGTH_SHORT).show()
+                            }else{
+                                labourList= (response?.body()?.data as ArrayList<LaboursList>?)!!
+                                adapter= LaboursSentForApprovalAdapter(labourList)
+                                binding.recyclerView.adapter=adapter
+                                adapter.notifyDataSetChanged()
+                            }
+
                         }else{
                             Toast.makeText(this@ViewLaboursListSentForApprovalActivity,resources.getString(R.string.please_try_again),Toast.LENGTH_SHORT).show()
                         }

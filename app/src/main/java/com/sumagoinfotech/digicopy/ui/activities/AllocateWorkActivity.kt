@@ -111,7 +111,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                                 adapter.notifyDataSetChanged()
                                                 val toast = Toast.makeText(
                                                     this@AllocateWorkActivity, "Labour not found",
-                                                    Toast.LENGTH_SHORT
+                                                    Toast.LENGTH_LONG
                                                 )
                                                 toast.show()
                                             }
@@ -137,7 +137,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
             } else {
                 val toast = Toast.makeText(
                     this@AllocateWorkActivity, "Please enter details",
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 )
                 toast.show()
             }
@@ -238,9 +238,9 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
 
                     var dayType = ""
                     if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
-                        dayType = "Half Day"
+                        dayType = "half_day"
                     } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
-                        dayType = "Full Day"
+                        dayType = "full_day"
                     }
                     val call =
                         apiService.markAttendance(selectedProjectId, mgnregaId = mgnregaId, dayType)
@@ -256,7 +256,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                 if (response.body()?.status.equals("true")) {
                                     val toast = Toast.makeText(
                                         this@AllocateWorkActivity, "Attendance marked successfully",
-                                        Toast.LENGTH_SHORT
+                                        Toast.LENGTH_LONG
                                     )
                                     toast.show()
                                     labourDataList.clear()
@@ -269,7 +269,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                 }else{
                                     val toast = Toast.makeText(
                                         this@AllocateWorkActivity, response.body()?.message,
-                                        Toast.LENGTH_SHORT
+                                        Toast.LENGTH_LONG
                                     )
                                     toast.show()
                                     labourDataList.clear()
@@ -283,7 +283,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                             }else{
                                 val toast = Toast.makeText(
                                     this@AllocateWorkActivity, "Unable to mark  please try again",
-                                    Toast.LENGTH_SHORT
+                                    Toast.LENGTH_LONG
                                 )
                                 toast.show()
                             }
@@ -294,7 +294,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                             dialog.dismiss()
                             val toast = Toast.makeText(
                                 this@AllocateWorkActivity, "Error occured during api call",
-                                Toast.LENGTH_SHORT
+                                Toast.LENGTH_LONG
                             )
                             toast.show()
                         }
@@ -303,7 +303,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                 } else {
                     val toast = Toast.makeText(
                         this@AllocateWorkActivity, "Select Day",
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                     )
                     toast.show()
                 }
@@ -351,7 +351,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                     } else {
                         val toast = Toast.makeText(
                             this@AllocateWorkActivity, "No data found",
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                         )
                         toast.show()
 
@@ -360,7 +360,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                     Toast.makeText(
                         this@AllocateWorkActivity,
                         "response unsuccessful",
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             }
@@ -370,7 +370,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                 Toast.makeText(
                     this@AllocateWorkActivity,
                     "Error occured during api unsuccessful",
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
             }
         })
@@ -393,7 +393,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                     } else {
                         val toast = Toast.makeText(
                             this@AllocateWorkActivity, "No data found",
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                         )
                         toast.show()
 
@@ -402,7 +402,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                     Toast.makeText(
                         this@AllocateWorkActivity,
                         "response unsuccessful",
-                        Toast.LENGTH_SHORT
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             }
@@ -412,7 +412,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                 Toast.makeText(
                     this@AllocateWorkActivity,
                     "Error occured during api unsuccessful",
-                    Toast.LENGTH_SHORT
+                    Toast.LENGTH_LONG
                 ).show()
             }
         })

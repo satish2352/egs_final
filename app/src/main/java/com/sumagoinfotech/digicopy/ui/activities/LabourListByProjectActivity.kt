@@ -18,6 +18,7 @@ import retrofit2.Response
 class LabourListByProjectActivity : AppCompatActivity() {
     private lateinit var binding:ActivityLabourListByProjectBinding
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityLabourListByProjectBinding.inflate(layoutInflater)
@@ -28,6 +29,7 @@ class LabourListByProjectActivity : AppCompatActivity() {
        val project_id=intent.getStringExtra("id")
         getLabourDetails(project_id!!)
     }
+
 
     private fun getLabourDetails(project_id:String) {
 

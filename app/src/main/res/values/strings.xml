@@ -126,4 +126,6 @@
     <string name="normal">Normal</string>
     <string name="satellite">Satellite</string>
     <string name="hybrid">Hybrid</string>
+    <string name="no_records_found">No records found</string>
+    <string name="no_records_founds">no_records_found</string>
 </resources>

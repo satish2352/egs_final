@@ -278,8 +278,10 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                 ) {
                     dialog.dismiss()
                     if(response.isSuccessful)
-                    {
-                        listDocuments.clear()
+                    { listDocuments.clear()
+                        adapter= OfficerUploadedDocsAdapter(listDocuments)
+                        binding.recyclerView.adapter=adapter
+                        adapter.notifyDataSetChanged()
                         if(response.body()?.status.equals("true")){
                             if(response.body()?.data!=null){
                                 listDocuments= (response.body()?.data as ArrayList<UploadedDocument>?)!!
@@ -289,6 +291,8 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                                 adapter= OfficerUploadedDocsAdapter(listDocuments)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
+                            }else{
+
                             }
                         }else{
                             if(!response.body()?.message.isNullOrEmpty()){
