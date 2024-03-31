@@ -69,7 +69,7 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity() {
                                 adapter= LaboursSentForApprovalAdapter(labourList)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
-                                Toast.makeText(this@ViewLaboursListSentForApprovalActivity,resources.getString(R.string.no_records_founds),Toast.LENGTH_SHORT).show()
+                                //Toast.makeText(this@ViewLaboursListSentForApprovalActivity,resources.getString(R.string.no_records_founds),Toast.LENGTH_SHORT).show()
                             }else{
                                 labourList= (response?.body()?.data as ArrayList<LaboursList>?)!!
                                 adapter= LaboursSentForApprovalAdapter(labourList)

@@ -1,7 +1,7 @@
 package com.sumagoinfotech.digicopy.model.apis.mapmarker
 
 data class MapData(
-    val id: Int,
+    val id: String,
     val latitude: String,
     val longitude: String,
     val name: String,

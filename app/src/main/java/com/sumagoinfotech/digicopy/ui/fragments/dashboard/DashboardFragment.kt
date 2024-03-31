@@ -480,7 +480,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     {
         try {
             var currentMarker: Marker? = null
-            val markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)
+            val markerIcon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
             currentMarker = map.addMarker(
                 MarkerOptions().icon(markerIcon).position(LatLng(latitude.toDouble(),longitude.toDouble()))
                     .title("You are here")
@@ -562,7 +562,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         // Add marker for current location
                         if (currentLocationMarker == null) {
                             val markerIcon =
-                                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)
+                                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
                             currentLocationMarker = map.addMarker(
                                 MarkerOptions().position(currentLatLng).title("You are here")
                                     .icon(markerIcon).snippet("${it.latitude}, ${it.longitude}")
@@ -676,8 +676,11 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
                 override fun onFailure(call: Call<MapMarkerModel>, t: Throwable) {
                     Toast.makeText(
-                        requireContext(), "Error Occurred during api call", Toast.LENGTH_LONG
+                        requireContext(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
                     ).show()
+
+                    Log.d("mytag",t.message.toString())
+                        t.printStackTrace()
                     dialog.dismiss()
                 }
             })
