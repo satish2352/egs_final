@@ -86,8 +86,14 @@ import com.itextpdf.layout.element.Image
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
 import com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown
+import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
+import com.sumagoinfotech.digicopy.webservice.ApiClient
+import com.sumagoinfotech.digicopy.webservice.ApiService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Hashtable
 
 class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
@@ -115,6 +121,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private var userVillageName=""
     private var userTalukaName=""
     private lateinit var mySharedPref: MySharedPref
+    private lateinit var apiService: ApiService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_pages)
@@ -127,6 +134,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         documentList = ArrayList()
         mySharedPref= MySharedPref(this)
         dialog=CustomProgressDialog(this)
+        apiService=ApiClient.create(this)
         adapter = DocumentPagesAdapter(documentList, this)
         binding.recyclerViewDocumentPages.adapter = adapter
         documentName = ""
@@ -488,11 +496,16 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                     .setTextAlignment(TextAlignment.CENTER) // Adjust alignment as needed
                     .setBold()
                     .setFontSize(30f) // Adjust font size as needed
+                val scanInfo = Paragraph("Scan QR Code To View Document")
+                    .setTextAlignment(TextAlignment.CENTER) // Adjust alignment as needed
+                    .setBold()
+                    .setFontSize(18f)
                 val imageQr=Image(ImageDataFactory.create(generateQRCodeByteArray("$documentName",500,500)))
                 pdfDoc.addNewPage(1, PageSize.A4)
                 val resultDocument=com.itextpdf.layout.Document(pdfDoc)
                 resultDocument.add(title)
                 resultDocument.add(imageQr)
+                resultDocument.add(scanInfo)
                 pdfDoc.close()
                 val buffer = ByteArray(1024)
                 var bytesRead: Int
@@ -525,6 +538,36 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         //updateDocumentList()
         checkAndPromptGps()
         setCount()
+        setUploadedDocsCount()
+    }
+
+    private fun setUploadedDocsCount() {
+        try {
+            val call=apiService.getUploadedDocsCountForGramsevak();
+            call.enqueue(object :Callback<ReportsCount>{
+                override fun onResponse(
+                    call: Call<ReportsCount>,
+                    response: Response<ReportsCount>
+                ) {
+                    if(response.isSuccessful){
+                        if(response.body()?.status.equals("true")){
+                            binding.tvUploadedDocsCount.setText(response.body()?.document_count)
+                        }else{
+                            Log.d("mytag","setUploadedDocsCount =>  Response false  ");
+                        }
+                    }else{
+                        Log.d("mytag","setUploadedDocsCount => Response unsuccessfull ");
+                    }
+                }
+
+                override fun onFailure(call: Call<ReportsCount>, t: Throwable) {
+
+                }
+            })
+        }catch (e:Exception){
+            Log.d("mytag","setUploadedDocsCount=>Exception= > "+e.message)
+            e.printStackTrace()
+        }
     }
 
     override fun onPause() {

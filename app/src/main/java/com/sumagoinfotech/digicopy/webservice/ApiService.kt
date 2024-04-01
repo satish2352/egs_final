@@ -289,14 +289,16 @@ interface ApiService {
     fun getReportCountInGramsevakLogin():Call<ReportsCount>
 
 
-
+// pdf download from qr
     @POST("auth/download-document")
     fun downloadPDF(
         @Query("document_name")document_pdf:String,
     ):Call<QRDocumentDownloadModel>
 
 
-
+// get uploaded docs count for gramsevak
+@POST("auth/count-gramsevak-document")
+fun getUploadedDocsCountForGramsevak():Call<ReportsCount>
 
 
 

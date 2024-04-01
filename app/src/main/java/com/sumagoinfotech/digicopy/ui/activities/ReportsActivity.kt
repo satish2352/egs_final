@@ -102,7 +102,6 @@ class ReportsActivity : AppCompatActivity() {
                     Toast.makeText(this@ReportsActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
-
                 override fun onResponse(call: Call<ReportsCount>, response: Response<ReportsCount>) {
                     dialog.dismiss()
                     if(response.isSuccessful)
@@ -112,6 +111,8 @@ class ReportsActivity : AppCompatActivity() {
                             binding.tvSentForApproval.text=response?.body()?.sent_for_approval_count.toString()
                             binding.tvNotApproved.text=response?.body()?.not_approved_count.toString()
                             binding.tvApproved.text=response?.body()?.approved_count.toString()
+                            binding.tvTodayCount.text=response?.body()?.today_count.toString()
+                            binding.tvYearlyCount.text=response?.body()?.current_year_count.toString()
                         }
                     }else{
                         Toast.makeText(this@ReportsActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
