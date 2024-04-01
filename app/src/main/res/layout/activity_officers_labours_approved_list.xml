@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.activities.officer.ui.activities.OfficersLaboursApprovedListActivity">
+    tools:context=".ui.officer.activities.OfficersLaboursApprovedListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_margin="16dp"

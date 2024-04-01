@@ -11,9 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
-import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
-import com.sumagoinfotech.digicopy.ui.activities.ViewNotApprovedLabourDetailsActivity
-import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerViewNotApprovedLabourDetails
+import com.sumagoinfotech.digicopy.ui.gramsevak.ViewLabourFromMarkerClick
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerViewNotApprovedLabourDetails
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 
 class LabourApprovedListAdapter(var labourList: ArrayList<LaboursList>): RecyclerView.Adapter<LabourApprovedListAdapter.ViewHolder>() {
@@ -52,7 +51,7 @@ class LabourApprovedListAdapter(var labourList: ArrayList<LaboursList>): Recycle
                     holder.itemView.context.startActivity(intent)
                 }
                 if (pref.getRoleId() == 3) {
-                    val intent= Intent(holder.itemView.context,ViewLabourFromMarkerClick::class.java)
+                    val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
                     intent.putExtra("id",labourList.get(position).mgnrega_card_id)
                     holder.itemView.context.startActivity(intent)
                 }

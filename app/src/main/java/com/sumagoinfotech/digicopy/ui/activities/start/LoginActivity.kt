@@ -11,7 +11,7 @@ import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.UserDao
 import com.sumagoinfotech.digicopy.databinding.ActivityLoginBinding
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
-import com.sumagoinfotech.digicopy.ui.activities.officer.OfficerMainActivity
+import com.sumagoinfotech.digicopy.ui.officer.OfficerMainActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.DeviceUtils
 import com.sumagoinfotech.digicopy.utils.MySharedPref

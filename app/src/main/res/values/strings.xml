@@ -128,4 +128,9 @@
     <string name="hybrid">Hybrid</string>
     <string name="no_records_found">No records found</string>
     <string name="no_records_founds">no_records_found</string>
+    <string name="received_for_approval">Received For Approval</string>
+    <string name="documents">Documents</string>
+    <string name="labour_registrations">Labour Registrations</string>
+    <string name="action">Action</string>
+    <string name="document_status">Document Status</string>
 </resources>

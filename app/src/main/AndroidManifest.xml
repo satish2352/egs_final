@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
@@ -24,63 +27,81 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activities.registration.LabourUpdateOnline2Activity"
+            android:name=".ui.gramsevak.documents.DocumentListNotApprovedActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.registration.LabourUpdateOnline1Activity"
+            android:name=".ui.gramsevak.documents.DocumentListApprovedActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.LaboursListRejectedActivity"
+            android:name=".ui.gramsevak.documents.DocumentListSentForApprovalActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficerLaboursRejectedListActivity"
+            android:name=".ui.officer.activities.OfficerDocsEditActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficerViewNotApprovedLabourDetails"
+            android:name=".ui.officer.activities.OfficerDocsNotApprovedListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficerViewEditReceivedLabourDetails"
+            android:name=".ui.officer.activities.OfficerDocsApprovedListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficersLaboursApprovedListActivity"
+            android:name=".ui.officer.activities.OfficerDocsReceivedForApprovalListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficerLabourNotApprovedListActivity"
+            android:name=".ui.registration.LabourUpdateOnline2Activity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.ui.activities.OfficerLaboursReceivedForApprovalActivity"
+            android:name=".ui.registration.LabourUpdateOnline1Activity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ViewNotApprovedLabourDetailsActivity"
+            android:name=".ui.officer.activities.OfficerLaboursRejectedListActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.officer.OfficerMainActivity"
+            android:name=".ui.officer.activities.OfficerViewNotApprovedLabourDetails"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.activities.OfficerViewEditReceivedLabourDetails"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.activities.OfficersLaboursApprovedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.activities.OfficerLabourNotApprovedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.activities.OfficerLaboursReceivedForApprovalActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.gramsevak.ViewNotApprovedLabourDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.OfficerMainActivity"
             android:exported="false"
             android:label="@string/title_activity_officer_main" />
         <activity
-            android:name=".ui.activities.LaboursListApproved"
+            android:name=".ui.gramsevak.LaboursListApproved"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.LaboursListNotApproved"
+            android:name=".ui.gramsevak.LaboursListNotApproved"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ViewLaboursListSentForApprovalActivity"
+            android:name=".ui.gramsevak.ViewLaboursListSentForApprovalActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ViewUploadedDocumentsActivity"
+            android:name=".ui.gramsevak.ViewUploadedDocumentsActivity"
             android:exported="false"
-            android:parentActivityName=".ui.activities.ScanDocumentsActivity" />
+            android:parentActivityName=".ui.gramsevak.ScanDocumentsActivity" />
         <activity
-            android:name=".ui.activities.ViewAttendanceActivity"
+            android:name=".ui.gramsevak.ViewAttendanceActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ViewLabourFromMarkerClick"
+            android:name=".ui.gramsevak.ViewLabourFromMarkerClick"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.LabourListByProjectActivity"
+            android:name=".ui.gramsevak.LabourListByProjectActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ViewLabourDetailsActivity"
+            android:name=".ui.gramsevak.ViewLabourDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.start.SplashActivity"
@@ -93,46 +114,46 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.registration.LabourRegistrationEdit1"
+            android:name=".ui.registration.LabourRegistrationEdit1"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.registration.LabourRegistrationEdit2"
+            android:name=".ui.registration.LabourRegistrationEdit2"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ImageCaptureActivity"
+            android:name=".ui.gramsevak.ImageCaptureActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ScannerActivity"
+            android:name=".ui.gramsevak.ScannerActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ScanDocumentsActivity"
+            android:name=".ui.gramsevak.ScanDocumentsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.ScanBarcodeActivity"
+            android:name=".ui.gramsevak.ScanBarcodeActivity"
             android:exported="false" />
         <activity
-            android:parentActivityName=".MainActivity"
-            android:name=".ui.activities.ReportsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.activities.SyncLabourDataActivity"
+            android:name=".ui.gramsevak.ReportsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".ui.activities.SyncLandDocumentsActivity"
+            android:name=".ui.gramsevak.SyncLabourDataActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".ui.gramsevak.SyncLandDocumentsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.registration.LabourRegistration2Activity"
+            android:name=".ui.registration.LabourRegistration2Activity"
             android:exported="false" />
         <activity
             android:name=".ui.activities.start.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
-            android:name=".ui.activities.AllocateWorkActivity"
+            android:name=".ui.gramsevak.AllocateWorkActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.activities.registration.LabourRegistration1Activity"
+            android:name=".ui.registration.LabourRegistration1Activity"
             android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.

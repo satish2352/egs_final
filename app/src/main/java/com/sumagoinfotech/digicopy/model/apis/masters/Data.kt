@@ -7,5 +7,6 @@ data class Data(
     val relation: List<Relation>,
     val skills: List<Skill>,
     val registrationstatus: List<RegistrationStatus>,
-    val reasons: List<Reasons>
+    val reasons: List<Reasons>,
+    val documentreasons: List<Reasons>,
 )

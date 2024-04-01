@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourInfo
-import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
+import com.sumagoinfotech.digicopy.ui.gramsevak.ViewLabourFromMarkerClick
 
 class LabourListByProjectAdapter(var list: List<LabourInfo>?) : RecyclerView.Adapter<LabourListByProjectAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

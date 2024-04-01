@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentDao
+import com.sumagoinfotech.digicopy.database.dao.DocumentReasonsDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
 import com.sumagoinfotech.digicopy.database.dao.GenderDao
@@ -19,6 +20,7 @@ import com.sumagoinfotech.digicopy.database.dao.SkillsDao
 import com.sumagoinfotech.digicopy.database.dao.UserDao
 import com.sumagoinfotech.digicopy.database.entity.AreaItem
 import com.sumagoinfotech.digicopy.database.entity.Document
+import com.sumagoinfotech.digicopy.database.entity.DocumentReasons
 import com.sumagoinfotech.digicopy.database.entity.DocumentType
 import com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown
 import com.sumagoinfotech.digicopy.database.entity.Gender
@@ -31,7 +33,7 @@ import com.sumagoinfotech.digicopy.database.entity.Skills
 import com.sumagoinfotech.digicopy.database.entity.User
 import java.util.concurrent.Executors
 
-@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class], version = 3)
+@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class,DocumentReasons::class], version = 4)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun labourDao(): LabourDao
     abstract fun documentDao(): DocumentDao
@@ -45,6 +47,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun documentDropDownDao():DocumentTypeDropDownDao
     abstract fun registrationStatusDao():RegistrationStatusDao
     abstract fun reasonsDao():ReasonsDao
+    abstract fun documentsReasonsDao():DocumentReasonsDao
 
     companion object {
         @Volatile

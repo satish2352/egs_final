@@ -6,7 +6,7 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="16dp"
-    tools:context=".ui.fragments.dashboard.sync.SyncOfflineData">
+    tools:context=".ui.activities.gramsevak.dashboard.sync.SyncOfflineData">
 
     <LinearLayout
         android:layout_width="match_parent"

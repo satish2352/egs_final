@@ -11,9 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
-import com.sumagoinfotech.digicopy.ui.activities.ViewNotApprovedLabourDetailsActivity
-import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerLabourNotApprovedListActivity
-import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerViewNotApprovedLabourDetails
+import com.sumagoinfotech.digicopy.ui.gramsevak.ViewNotApprovedLabourDetailsActivity
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerViewNotApprovedLabourDetails
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 
 class LaboursNotApprovedAdapter(var labourList: ArrayList<LaboursList>) :

@@ -9,10 +9,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
-import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.model.LabourWithAreaNames
-import com.sumagoinfotech.digicopy.ui.activities.ViewLabourDetailsActivity
-import com.sumagoinfotech.digicopy.ui.activities.registration.LabourRegistrationEdit1
+import com.sumagoinfotech.digicopy.ui.gramsevak.ViewLabourDetailsActivity
+import com.sumagoinfotech.digicopy.ui.registration.LabourRegistrationEdit1
 
 class LabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerView.Adapter<LabourListAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,12 +41,12 @@ class LabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerView.Adap
         holder.tvAddress.text = address
         holder.tvMgnregaId.text= list[position].mgnregaId
         holder.ivEdit.setOnClickListener {
-            val intent= Intent(holder.itemView.context,LabourRegistrationEdit1::class.java)
+            val intent= Intent(holder.itemView.context, LabourRegistrationEdit1::class.java)
             intent.putExtra("id",list[position].id.toString())
             holder.itemView.context.startActivity(intent)
         }
         holder.ivView.setOnClickListener {
-            val intent= Intent(holder.itemView.context,ViewLabourDetailsActivity::class.java)
+            val intent= Intent(holder.itemView.context, ViewLabourDetailsActivity::class.java)
             intent.putExtra("id",list[position].id.toString())
             holder.itemView.context.startActivity(intent)
         }

@@ -12,6 +12,7 @@ import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
+import com.sumagoinfotech.digicopy.database.dao.DocumentReasonsDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
 import com.sumagoinfotech.digicopy.database.dao.GenderDao
@@ -33,7 +34,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.Reasons
 import com.sumagoinfotech.digicopy.model.apis.masters.RegistrationStatus
 import com.sumagoinfotech.digicopy.model.apis.masters.Relation
 import com.sumagoinfotech.digicopy.model.apis.masters.Skill
-import com.sumagoinfotech.digicopy.ui.activities.officer.OfficerMainActivity
+import com.sumagoinfotech.digicopy.ui.officer.OfficerMainActivity
 import com.sumagoinfotech.digicopy.utils.DeviceUtils
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -61,6 +62,7 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var documentTypeDropDownDao: DocumentTypeDropDownDao
     private lateinit var maritalStatusDao: MaritalStatusDao
     private lateinit var reasonsDao: ReasonsDao
+    private lateinit var documentReasonsDao: DocumentReasonsDao
     private lateinit var mySharedPref:MySharedPref
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +77,7 @@ class SplashActivity : AppCompatActivity() {
         areaDao=appDatabase.areaDao()
         genderDao=appDatabase.genderDao()
         relationDao=appDatabase.relationDao()
+        documentReasonsDao=appDatabase.documentsReasonsDao()
         registrationStatusDao=appDatabase.registrationStatusDao()
         documentTypeDropDownDao=appDatabase.documentDropDownDao()
         maritalStatusDao=appDatabase.martialStatusDao()
@@ -113,7 +116,7 @@ class SplashActivity : AppCompatActivity() {
                        finish()
                    }else if(mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId()==2){
                        binding.progressBar.visibility = View.GONE
-                       val intent= Intent(this@SplashActivity,OfficerMainActivity::class.java)
+                       val intent= Intent(this@SplashActivity, OfficerMainActivity::class.java)
                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                        startActivity(intent)
                        finish()
@@ -169,6 +172,7 @@ class SplashActivity : AppCompatActivity() {
                             val documentTypeConverted=mapToDocumentType(response?.body()?.data?.documenttype!!)
                             val registrationStatusConverted=mapToRegistrationStatus(response?.body()?.data?.registrationstatus!!)
                             val reasonsConverted=mapToReasons(response?.body()?.data?.reasons!!)
+                            val documentReasonsConverted=mapToDocumentReasons(response?.body()?.data?.documentreasons!!)
                             CoroutineScope(Dispatchers.IO).launch {
                                 skillsDao.insertInitialRecords(skillsConverted)
                                 maritalStatusDao.insertInitialRecords(maritalStatusConverted)
@@ -178,6 +182,7 @@ class SplashActivity : AppCompatActivity() {
                                 registrationStatusDao.insertInitialRecords(registrationStatusConverted)
                                 registrationStatusDao.insertInitialRecords(registrationStatusConverted)
                                 reasonsDao.insertInitialRecords(reasonsConverted)
+                                documentReasonsDao.insertInitialRecords(documentReasonsConverted)
                             }
                         }else {
                             Log.d("mytag","fetchMastersFromServer:Response Not success")
@@ -274,6 +279,18 @@ class SplashActivity : AppCompatActivity() {
     fun  mapToReasons(apiResponseList: List<Reasons>): List<com.sumagoinfotech.digicopy.database.entity.Reasons> {
         return apiResponseList.map { apiResponse ->
             com.sumagoinfotech.digicopy.database.entity.Reasons(
+                id = apiResponse.id,
+                is_deleted =apiResponse.is_deleted,
+                is_active = apiResponse.is_active,
+                created_at = apiResponse.created_at,
+                updated_at = apiResponse.updated_at,
+                reason_name = apiResponse.reason_name
+            )
+        }
+    }
+    fun  mapToDocumentReasons(apiResponseList: List<Reasons>): List<com.sumagoinfotech.digicopy.database.entity.DocumentReasons> {
+        return apiResponseList.map { apiResponse ->
+            com.sumagoinfotech.digicopy.database.entity.DocumentReasons(
                 id = apiResponse.id,
                 is_deleted =apiResponse.is_deleted,
                 is_active = apiResponse.is_active,

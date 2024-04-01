@@ -1,7 +1,6 @@
 package com.sumagoinfotech.digicopy.adapters
 
 import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,9 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
-import com.sumagoinfotech.digicopy.ui.activities.ViewLabourFromMarkerClick
-import com.sumagoinfotech.digicopy.ui.activities.ViewNotApprovedLabourDetailsActivity
-import com.sumagoinfotech.digicopy.ui.activities.officer.ui.activities.OfficerViewEditReceivedLabourDetails
+import com.sumagoinfotech.digicopy.ui.gramsevak.ViewNotApprovedLabourDetailsActivity
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerViewEditReceivedLabourDetails
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 
 class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : RecyclerView.Adapter<LaboursSentForApprovalAdapter.ViewHolder>() {
