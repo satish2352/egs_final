@@ -638,7 +638,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 val intent = Intent(context, ViewLabourFromMarkerClick::class.java)
                 intent.putExtra("id", "" + customMarkerObject.id)
                 context?.startActivity(intent)
-            } else {
+            } else if (customMarkerObject.type.equals("current_marker")){
 
             }
         } catch (e: Exception) {
