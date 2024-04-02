@@ -66,15 +66,15 @@ class OfficerReportsFragment : Fragment() {
             val intent= Intent(requireActivity(), OfficerLabourNotApprovedListActivity::class.java)
             startActivity(intent)
         }
-        binding.cardDocsReceivedForApprovalToOfficer.setOnClickListener {
+        binding.cardDocsSentForApproval.setOnClickListener {
             val intent= Intent(requireActivity(), OfficerDocsReceivedForApprovalListActivity::class.java)
             startActivity(intent)
         }
-        binding.cardApprovedDocuments.setOnClickListener {
+        binding.cardApprovedDocumets.setOnClickListener {
             val intent= Intent(requireActivity(), OfficerDocsApprovedListActivity::class.java)
             startActivity(intent)
         }
-        binding.cardNotApprovedDocuments.setOnClickListener {
+        binding.cardNotApprovedDocumets.setOnClickListener {
             val intent= Intent(requireActivity(), OfficerDocsNotApprovedListActivity::class.java)
             startActivity(intent)
         }
@@ -131,7 +131,7 @@ class OfficerReportsFragment : Fragment() {
                         {
                             binding.tvApprovedCount.text=response?.body()?.approved_count.toString()
                             binding.tvNotApproved.text=response?.body()?.not_approved_count.toString()
-                            binding.tvReceivedCount.text=response?.body()?.sent_for_approval_count.toString()
+                            binding.tvSentForApproval.text=response?.body()?.sent_for_approval_count.toString()
                         }
                     }else{
                         Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()

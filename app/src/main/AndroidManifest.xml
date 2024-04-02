@@ -27,6 +27,22 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
+            android:name=".ui.gramsevak.LabourReSubmittedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.activities.OfficerLabourReSubmittedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.gramsevak.documents.DocumentReSubmittedActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.activities.OfficerDocsReSubmittedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.gramsevak.documents.DocumentUpdateActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.gramsevak.documents.DocumentListNotApprovedActivity" />
+        <activity
             android:name=".ui.gramsevak.documents.DocumentListNotApprovedActivity"
             android:exported="false" />
         <activity

@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.officer.activities.OfficerDocsEditActivity">
-    <ScrollView
-        android:nestedScrollingEnabled="false"
-        android:id="@+id/scrollView2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+    android:nestedScrollingEnabled="false"
+    tools:context=".ui.gramsevak.documents.DocumentUpdateActivity">
 
         <RelativeLayout
+            android:id="@+id/layoutMain"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
@@ -28,28 +20,26 @@
                 app:cardCornerRadius="5dp"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true">
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:orientation="horizontal">
                         <ImageView
+                            android:contentDescription="@string/imageview"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_document"
                             android:textColor="@color/black"
                             android:textSize="16sp"></ImageView>
-
                         <TextView
-                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
                             android:textColor="@color/black"
                             android:id="@+id/tvDocumentName"
                             android:layout_width="wrap_content"
@@ -64,8 +54,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:orientation="horizontal">
-
                         <ImageView
+                            android:contentDescription="@string/imageview"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_document"
@@ -73,7 +63,7 @@
                             android:textSize="16sp"></ImageView>
 
                         <TextView
-                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
                             android:textColor="@color/black"
                             android:id="@+id/tvDocumentType"
                             android:layout_width="wrap_content"
@@ -90,6 +80,7 @@
                         android:orientation="horizontal">
 
                         <ImageView
+                            android:contentDescription="@string/imageview"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/calendar"
@@ -97,7 +88,7 @@
                             android:textSize="16sp"></ImageView>
 
                         <TextView
-                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
                             android:textColor="@color/black"
                             android:id="@+id/tvDocumentDate"
                             android:layout_width="match_parent"
@@ -114,6 +105,7 @@
                         android:orientation="horizontal">
 
                         <ImageView
+                            android:contentDescription="@string/imageview"
                             app:tint="@color/appBlue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -122,7 +114,7 @@
                             android:textSize="16sp"></ImageView>
 
                         <TextView
-                            android:layout_marginLeft="16dp"
+                            android:layout_marginStart="16dp"
                             android:textColor="@color/black"
                             android:id="@+id/tvAddress"
                             android:layout_width="match_parent"
@@ -139,6 +131,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <ImageView
+                            android:contentDescription="@string/imageview"
                             android:layout_weight="1"
                             android:id="@+id/ivDownloadDocument"
                             android:elevation="5dp"
@@ -147,6 +140,7 @@
                             android:layout_height="36dp"
                             app:tint="@color/appBlue"></ImageView>
                         <ImageView
+                            android:contentDescription="@string/imageview"
                             android:id="@+id/ivViewDocument"
                             android:layout_width="36dp"
                             android:layout_height="36dp"
@@ -155,84 +149,75 @@
                             android:src="@drawable/ic_view_blue"></ImageView>
                     </LinearLayout>
                     <TextView
-                        android:id="@+id/tvHIstory"
+                        android:id="@+id/tvHistory"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:fontFamily="@font/poppins"
                         android:text="@string/history"
                         android:textColor="@color/appBlue"
-                        android:textSize="14dp"></TextView>
+                        android:textSize="14sp"></TextView>
 
                     <LinearLayout
-                        android:layout_weight="1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
                         <androidx.recyclerview.widget.RecyclerView
-                            android:layout_weight="1"
                             android:id="@+id/recyclerViewHistory"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:fontFamily="@font/poppins"
-                        android:text="@string/action"
-                        android:textColor="@color/appBlue"
-                        android:textSize="14dp"></TextView>
-                    <AutoCompleteTextView
-                        android:drawableEnd="@drawable/arrow_dropdown"
-                        android:id="@+id/actSelectDocumentStatus"
-                        android:inputType="none"
-                        android:paddingLeft="16dp"
-                        android:layout_weight="1"
-                        android:hint="@string/document_status"
-                        android:background="@drawable/edittext_background"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"></AutoCompleteTextView>
-                    <TextView
-                        android:visibility="gone"
-                        android:id="@+id/tvReason"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:fontFamily="@font/poppins"
-                        android:text="@string/select_reason"
-                        android:textColor="@color/appBlue"
-                        android:textSize="14dp"></TextView>
-                    <AutoCompleteTextView
-                        android:visibility="gone"
-                        android:drawableEnd="@drawable/arrow_dropdown"
-                        android:id="@+id/actSelectReason"
-                        android:inputType="none"
-                        android:paddingLeft="16dp"
-                        android:layout_weight="1"
-                        android:hint="@string/select_reason"
-                        android:background="@drawable/edittext_background"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"></AutoCompleteTextView>
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/etRemarkslayout"
-                        android:visibility="gone"
-                        android:layout_marginTop="16dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:paddingTop="10dp"
-                            android:id="@+id/etRemarks"
-                            android:gravity="start"
-                            android:hint="@string/remarks"
-                            android:layout_gravity="start"
-                            android:layout_width="match_parent"
-                            android:layout_height="100dp"></com.google.android.material.textfield.TextInputEditText>
-                    </com.google.android.material.textfield.TextInputLayout>
                     <Button
+                        android:layout_gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:drawableEnd="@drawable/add"
+                        android:text="@string/add_document"
+                        android:id="@+id/btnAddDocument"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <androidx.cardview.widget.CardView
+                        android:visibility="visible"
+                        android:layout_gravity="center"
+                        android:id="@+id/layoutDocThumb"
+                        android:layout_width="wrap_content"
+                        app:cardCornerRadius="1dp"
+                        app:cardPreventCornerOverlap="true"
+                        app:cardUseCompatPadding="true"
+                        app:cardElevation="1dp"
+                        android:layout_height="wrap_content">
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <ImageView
+                                android:contentDescription="@string/imageview"
+                                android:scaleType="center"
+                                android:id="@+id/ivDocumentThumb"
+                                android:layout_width="150dp"
+                                android:layout_height="150dp"></ImageView>
+                            <TextView
+                                android:visibility="gone"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="5dp"
+                                android:id="@+id/tvPageCount"
+                                android:textSize="12sp"
+                                android:gravity="center"
+                                android:layout_gravity="end"
+                                android:text=""
+                                android:background="@drawable/rounded_backgroud_blue"
+                                android:fontFamily="@font/poppins"
+                                android:textColor="@color/white"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"></TextView>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <Button
+                        android:visibility="invisible"
                         android:id="@+id/btnSubmit"
                         android:layout_marginBottom="24dp"
                         android:layout_marginTop="16dp"
@@ -246,5 +231,3 @@
 
         </RelativeLayout>
     </ScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>

@@ -288,10 +288,10 @@ interface ApiService {
     ): Call<MapMarkerModel>
 
 
-    @POST("auth/officer-count-labour")
+    @POST("auth/officer-reports-count")
     fun getLaboursReportCount(): Call<ReportsCount>
 
-    @POST("auth/gramsevak-count-labour")
+    @POST("auth/gramsevak-reports-count")
     fun getReportCountInGramsevakLogin(): Call<ReportsCount>
 
 
@@ -321,6 +321,20 @@ interface ApiService {
         @Query("is_approved") param1: String = "not_approved",
     ): Call<MainDocsModel>
 
+    @POST("auth/list-document")
+    fun getReSubmittedDocsListForGramsevak(
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("is_approved") is_approved: String = "resend",
+    ): Call<MainDocsModel>
+
+    @POST("auth/received-doc-list-for-app-notapp")
+    fun getReSubmittedDocsListForOfficer(
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("is_approved") is_approved: String = "resend",
+    ): Call<MainDocsModel>
+
+
+
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsReceivedForApprovalOfficer(
         @Query("is_approved") param1: String = "received",
@@ -335,6 +349,37 @@ interface ApiService {
     fun getDocsApprovedInOfficer(
         @Query("is_approved") param1: String = "approved",
     ): Call<MainDocsModel>
+
+    @POST("auth/received-doc-list-for-app-notapp")
+    fun getDocumentDetails(
+        @Query("gram_document_id") gram_document_id: String,
+    ): Call<MainDocsModel>
+    @POST("auth/update-officer-document-status-approved")
+    fun sendApprovedDocToServer(
+        @Query("gram_document_id") gram_document_id: String,
+        @Query("is_approved") mgnrega_card_id: String="2",
+    ): Call<LabourListModel>
+    @POST("auth/update-officer-document-status-not-approved")
+    fun sendNotApprovedDocToServer(
+        @Query("is_approved") isApproved: String="3",
+        @Query("gram_document_id") gram_document_id: String,
+        @Query("reason_doc_id") reason_doc_id: String,
+        @Query("other_remark") other_remark: String,
+    ): Call<LabourListModel>
+
+    @Multipart
+    @POST("auth/update-document")
+    suspend fun uploadNewDocumentByGramsevak(
+        @Query("id") id: String,
+        @Query("document_name") document_name: String,
+        @Query("latitude") latitude: String,
+        @Query("longitude") longitude: String,
+        @Part file: MultipartBody.Part
+    ): Response<MastersModel>
+
+
+
+
 
 
 

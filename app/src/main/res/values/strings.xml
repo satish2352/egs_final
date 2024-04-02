@@ -133,4 +133,8 @@
     <string name="labour_registrations">Labour Registrations</string>
     <string name="action">Action</string>
     <string name="document_status">Document Status</string>
+    <string name="imageview">ImageView</string>
+    <string name="add_document">Add Document</string>
+    <string name="response_unsuccessfull">response unsuccessfull</string>
+    <string name="resubmitted">Re-Submitted</string>
 </resources>

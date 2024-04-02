@@ -11,10 +11,8 @@ import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.OfficerDocsNotApprovedAdapter
-import com.sumagoinfotech.digicopy.adapters.OfficerDocsReceivedForApprovalAdapter
-import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsApprovedListBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsNotApprovedListBinding
-import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
+import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsReSubmittedListBinding
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
@@ -26,8 +24,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
-    private lateinit var binding:ActivityOfficerDocsNotApprovedListBinding
+class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityOfficerDocsReSubmittedListBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: OfficerDocsNotApprovedAdapter
@@ -35,7 +34,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
     private var isInternetAvailable:Boolean=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityOfficerDocsNotApprovedListBinding.inflate(layoutInflater)
+        binding= ActivityOfficerDocsReSubmittedListBinding.inflate(layoutInflater)
         setContentView(binding.root)
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -70,11 +69,10 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
         super.onResume()
         getDataFromServer()
     }
-
     private fun getDataFromServer() {
         try {
             dialog.show()
-            val call = apiService.getDocsNotApprovedOfficer()
+            val call = apiService.getReSubmittedDocsListForOfficergit
             call.enqueue(object : Callback<MainDocsModel> {
                 override fun onResponse(
                     call: Call<MainDocsModel>,
@@ -90,7 +88,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
                             adapter.notifyDataSetChanged()
                         } else {
                             Toast.makeText(
-                                this@OfficerDocsNotApprovedListActivity,
+                                this@OfficerDocsReSubmittedListActivity,
                                 resources.getString(R.string.please_try_again),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -98,7 +96,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
                     } else {
 
                         Toast.makeText(
-                            this@OfficerDocsNotApprovedListActivity,
+                            this@OfficerDocsReSubmittedListActivity,
                             resources.getString(R.string.please_try_again),
                             Toast.LENGTH_SHORT
                         ).show()
@@ -108,7 +106,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<MainDocsModel>, t: Throwable) {
                     dialog.dismiss()
                     Toast.makeText(
-                        this@OfficerDocsNotApprovedListActivity,
+                        this@OfficerDocsReSubmittedListActivity,
                         resources.getString(R.string.error_occured_during_api_call),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -117,7 +115,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
         } catch (e: Exception) {
             dialog.dismiss()
             Toast.makeText(
-                this@OfficerDocsNotApprovedListActivity,
+                this@OfficerDocsReSubmittedListActivity,
                 resources.getString(R.string.please_try_again),
                 Toast.LENGTH_SHORT
             ).show()

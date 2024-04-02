@@ -353,10 +353,10 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 if (etDocumentName.text.length > 0 && !etDocumentName.text.isNullOrEmpty()) {
 
                     documentName =
-                        "MH_${userDistrictName.trim()}_${userTalukaName.trim()}_${userVillageName.trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${removeSpaces(etDocumentName.text.toString().trim())}_${timeInMillis.trim()}.pdf"
+                        "MH_${removeSpaces(userDistrictName).trim()}_${removeSpaces(userTalukaName).trim()}_${removeSpaces(userVillageName).trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${removeSpaces(etDocumentName.text.toString().trim())}_${timeInMillis.trim()}.pdf"
                 } else {
                     documentName =
-                        "MH_${userDistrictName.trim()}_${userTalukaName.trim()}_${userVillageName.trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${timeInMillis.trim()}.pdf"
+                        "MH_${removeSpaces(userDistrictName).trim()}_${removeSpaces(userTalukaName).trim()}_${removeSpaces(userVillageName).trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${timeInMillis.trim()}.pdf"
                 }
                 Log.d("mytag", "Document Name >$documentName")
                 launchScanner()
@@ -477,7 +477,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                     val page = pdfDoc.getPage(pageNum)
                     val document = com.itextpdf.layout.Document(pdfDoc, PageSize.A4)
                     val paragraph = Paragraph("$latitude,$longitude \n $addressFromLatLong \n $formattedDateTime")
-                        .setFontSize(18f)
+                        .setFontSize(11f)
                         .setFontColor(ColorConstants.RED)
                         .setTextAlignment(TextAlignment.LEFT)
                     val bottomMargin = 50f // Adjust this value as needed

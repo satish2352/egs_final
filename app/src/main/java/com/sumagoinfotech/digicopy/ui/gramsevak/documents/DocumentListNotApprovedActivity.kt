@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
+import com.sumagoinfotech.digicopy.adapters.DocsNotApprovedAdapter
 import com.sumagoinfotech.digicopy.adapters.DocsSentForApprovalAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityDocumentListApprovedBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityDocumentListNotApprovedBinding
@@ -24,7 +25,7 @@ class DocumentListNotApprovedActivity : AppCompatActivity() {
     private lateinit var binding:ActivityDocumentListNotApprovedBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
-    private lateinit var adapter: DocsSentForApprovalAdapter
+    private lateinit var adapter: DocsNotApprovedAdapter
     private lateinit var documentList: MutableList<DocumentItem>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +33,11 @@ class DocumentListNotApprovedActivity : AppCompatActivity() {
         setContentView(binding.root)
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.sent_for_approval)
+            supportActionBar?.title = resources.getString(R.string.not_approved)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()
-            adapter = DocsSentForApprovalAdapter(documentList)
+            adapter = DocsNotApprovedAdapter(documentList)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -65,14 +66,14 @@ class DocumentListNotApprovedActivity : AppCompatActivity() {
                             if (!response?.body()?.data.isNullOrEmpty()) {
                                 documentList =
                                     (response?.body()?.data as MutableList<DocumentItem>?)!!
-                                adapter = DocsSentForApprovalAdapter(documentList)
+                                adapter = DocsNotApprovedAdapter(documentList)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
                                 //Toast.makeText(this@DocumentListNotApprovedActivity,resources.getString(R.string.no_records_founds),Toast.LENGTH_SHORT).show()
                             } else {
                                 documentList =
                                     (response?.body()?.data as MutableList<DocumentItem>?)!!
-                                adapter = DocsSentForApprovalAdapter(documentList)
+                                adapter = DocsNotApprovedAdapter(documentList)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
                             }

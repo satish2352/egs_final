@@ -14,15 +14,15 @@ interface DocumentReasonsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(items: List<DocumentReasons>)
 
-    @Query("DELETE FROM reasons")
+    @Query("DELETE FROM document_reasons")
     suspend fun deleteAllReasons()
     @Transaction
     suspend fun insertInitialRecords(items: List<DocumentReasons>) {
         deleteAllReasons()
         insertAll(items)
     }
-    @Query("SELECT * FROM reasons ORDER BY id ASC")
+    @Query("SELECT * FROM document_reasons ORDER BY id ASC")
     suspend fun getAllReasons(): List<DocumentReasons>
-    @Query("SELECT * FROM reasons WHERE id = :id")
+    @Query("SELECT * FROM document_reasons WHERE id = :id")
     suspend fun getReasonById(id: String): DocumentReasons
 }

@@ -1,4 +1,4 @@
-package com.sumagoinfotech.digicopy.ui.officer.activities
+package com.sumagoinfotech.digicopy.ui.gramsevak.documents
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,35 +7,28 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
-import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.R
-import com.sumagoinfotech.digicopy.adapters.OfficerDocsNotApprovedAdapter
-import com.sumagoinfotech.digicopy.adapters.OfficerDocsReceivedForApprovalAdapter
-import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsApprovedListBinding
-import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsNotApprovedListBinding
-import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
+import com.sumagoinfotech.digicopy.adapters.DocsNotApprovedAdapter
+import com.sumagoinfotech.digicopy.databinding.ActivityDocumentListNotApprovedBinding
+import com.sumagoinfotech.digicopy.databinding.ActivityDocumentReSubmittedBinding
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
-    private lateinit var binding:ActivityOfficerDocsNotApprovedListBinding
+class DocumentReSubmittedActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityDocumentReSubmittedBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
-    private lateinit var adapter: OfficerDocsNotApprovedAdapter
+    private lateinit var adapter: DocsNotApprovedAdapter
     private lateinit var documentList: MutableList<DocumentItem>
-    private var isInternetAvailable:Boolean=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityOfficerDocsNotApprovedListBinding.inflate(layoutInflater)
+        binding = ActivityDocumentReSubmittedBinding.inflate(layoutInflater)
         setContentView(binding.root)
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -43,38 +36,24 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()
-            adapter = OfficerDocsNotApprovedAdapter(documentList)
+            adapter = DocsNotApprovedAdapter(documentList)
             binding.recyclerView.adapter = adapter
-            binding.recyclerView.layoutManager = LinearLayoutManager(
-                this,
-                RecyclerView.VERTICAL,
-                false
-            )
-            ReactiveNetwork
-                .observeNetworkConnectivity(applicationContext)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ connectivity: Connectivity ->
-                    Log.d("##", "=>" + connectivity.state())
-                    if (connectivity.state().toString() == "CONNECTED") {
-                        isInternetAvailable = true
-                    } else {
-                        isInternetAvailable = false
-                    }
-                }) { throwable: Throwable? -> }
+            binding.recyclerView.layoutManager =
+                LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+            //getDataFromServer()
         } catch (e: Exception) {
-
+            Log.d("mytag","@DocumentReSubmittedActivity : onCreate : Exception => " + e.message)
+            e.printStackTrace()
         }
     }
     override fun onResume() {
         super.onResume()
         getDataFromServer()
     }
-
     private fun getDataFromServer() {
         try {
             dialog.show()
-            val call = apiService.getDocsNotApprovedOfficer()
+            val call = apiService.getReSubmittedDocsListForGramsevak()
             call.enqueue(object : Callback<MainDocsModel> {
                 override fun onResponse(
                     call: Call<MainDocsModel>,
@@ -82,23 +61,33 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
                 ) {
                     dialog.dismiss()
                     if (response.isSuccessful) {
-                        if (response.body()?.status.equals("true"))
-                        {
-                            documentList = (response?.body()?.data as MutableList<DocumentItem>?)!!
-                            adapter = OfficerDocsNotApprovedAdapter(documentList)
-                            binding.recyclerView.adapter = adapter
-                            adapter.notifyDataSetChanged()
+                        if (response.body()?.status.equals("true")) {
+                            if (!response?.body()?.data.isNullOrEmpty()) {
+                                documentList =
+                                    (response?.body()?.data as MutableList<DocumentItem>?)!!
+                                adapter = DocsNotApprovedAdapter(documentList)
+                                binding.recyclerView.adapter = adapter
+                                adapter.notifyDataSetChanged()
+                                //Toast.makeText(this@DocumentReSubmittedActivity,resources.getString(R.string.no_records_founds),Toast.LENGTH_SHORT).show()
+                            } else {
+                                documentList =
+                                    (response?.body()?.data as MutableList<DocumentItem>?)!!
+                                adapter = DocsNotApprovedAdapter(documentList)
+                                binding.recyclerView.adapter = adapter
+                                adapter.notifyDataSetChanged()
+                            }
+
                         } else {
                             Toast.makeText(
-                                this@OfficerDocsNotApprovedListActivity,
-                                resources.getString(R.string.please_try_again),
-                                Toast.LENGTH_SHORT
+                                this@DocumentReSubmittedActivity, resources.getString(
+                                    R.string.please_try_again
+                                ), Toast.LENGTH_SHORT
                             ).show()
                         }
                     } else {
 
                         Toast.makeText(
-                            this@OfficerDocsNotApprovedListActivity,
+                            this@DocumentReSubmittedActivity,
                             resources.getString(R.string.please_try_again),
                             Toast.LENGTH_SHORT
                         ).show()
@@ -108,7 +97,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
                 override fun onFailure(call: Call<MainDocsModel>, t: Throwable) {
                     dialog.dismiss()
                     Toast.makeText(
-                        this@OfficerDocsNotApprovedListActivity,
+                        this@DocumentReSubmittedActivity,
                         resources.getString(R.string.error_occured_during_api_call),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -117,8 +106,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
         } catch (e: Exception) {
             dialog.dismiss()
             Toast.makeText(
-                this@OfficerDocsNotApprovedListActivity,
-                resources.getString(R.string.please_try_again),
+                this@DocumentReSubmittedActivity, resources.getString(R.string.please_try_again),
                 Toast.LENGTH_SHORT
             ).show()
             Log.d(

@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsEditActivity
 import com.sumagoinfotech.digicopy.utils.FileDownloader
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -62,6 +63,12 @@ class OfficerDocsReceivedForApprovalAdapter(var list:MutableList<DocumentItem>):
             }
             holder.ivDownloadDocument.setOnClickListener {
                 FileDownloader.downloadFile(holder.itemView.context,list.get(position).document_pdf,list.get(position).document_name)
+            }
+
+            holder.itemView.setOnClickListener {
+                val intent=Intent(holder.itemView.context,OfficerDocsEditActivity::class.java)
+                intent.putExtra("id",list?.get(position)?.id.toString())
+                holder.itemView.context.startActivity(intent)
             }
         } catch (e: Exception) {
 

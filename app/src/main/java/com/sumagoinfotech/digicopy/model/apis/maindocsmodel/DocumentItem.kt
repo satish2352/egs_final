@@ -1,5 +1,7 @@
 package com.sumagoinfotech.digicopy.model.apis.maindocsmodel
 
+import com.sumagoinfotech.digicopy.model.apis.getlabour.HistoryDetailsItem
+
 data class DocumentItem(
     val district_name: String,
     val document_name: String,
@@ -12,5 +14,6 @@ data class DocumentItem(
     val user_district: String,
     val user_taluka: String,
     val user_village: String,
-    val village_name: String
+    val village_name: String,
+    val history_details:List<HistoryDetailsItem>
 )
