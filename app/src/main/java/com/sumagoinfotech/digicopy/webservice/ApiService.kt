@@ -321,5 +321,26 @@ interface ApiService {
         @Query("is_approved") param1: String = "not_approved",
     ): Call<MainDocsModel>
 
+    @POST("auth/received-doc-list-for-app-notapp")
+    fun getDocsReceivedForApprovalOfficer(
+        @Query("is_approved") param1: String = "received",
+    ): Call<MainDocsModel>
+
+    @POST("auth/received-doc-list-for-app-notapp")
+    fun getDocsNotApprovedOfficer(
+        @Query("is_approved") param1: String = "not_approved",
+    ): Call<MainDocsModel>
+
+    @POST("auth/received-doc-list-for-app-notapp")
+    fun getDocsApprovedInOfficer(
+        @Query("is_approved") param1: String = "approved",
+    ): Call<MainDocsModel>
+
+
+
+
+
+
+
 
 }

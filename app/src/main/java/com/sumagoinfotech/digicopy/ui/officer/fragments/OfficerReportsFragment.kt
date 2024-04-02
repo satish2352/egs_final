@@ -9,6 +9,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.sumagoinfotech.digicopy.databinding.FragmentOfficerReportsBinding
 import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsApprovedListActivity
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsNotApprovedListActivity
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsReceivedForApprovalListActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerLabourNotApprovedListActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerLaboursReceivedForApprovalActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficersLaboursApprovedListActivity
@@ -61,6 +64,18 @@ class OfficerReportsFragment : Fragment() {
         }
         binding.cardSentNotApproved.setOnClickListener {
             val intent= Intent(requireActivity(), OfficerLabourNotApprovedListActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cardDocsReceivedForApprovalToOfficer.setOnClickListener {
+            val intent= Intent(requireActivity(), OfficerDocsReceivedForApprovalListActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cardApprovedDocuments.setOnClickListener {
+            val intent= Intent(requireActivity(), OfficerDocsApprovedListActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cardNotApprovedDocuments.setOnClickListener {
+            val intent= Intent(requireActivity(), OfficerDocsNotApprovedListActivity::class.java)
             startActivity(intent)
         }
         dialog=CustomProgressDialog(requireContext())

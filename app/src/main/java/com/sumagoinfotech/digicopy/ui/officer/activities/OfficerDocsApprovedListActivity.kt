@@ -15,6 +15,8 @@ import com.sumagoinfotech.digicopy.adapters.OfficerDocsReceivedForApprovalAdapte
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsApprovedListBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsNotApprovedListBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
+import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
+import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -29,7 +31,7 @@ class OfficerDocsApprovedListActivity : AppCompatActivity() {
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: OfficerDocsApprovedAdapter
-    private lateinit var labourList: MutableList<Any>
+    private lateinit var documentList: MutableList<DocumentItem>
     private var isInternetAvailable:Boolean=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,8 +42,8 @@ class OfficerDocsApprovedListActivity : AppCompatActivity() {
             supportActionBar?.title = resources.getString(R.string.received_for_approval)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
-            labourList = ArrayList()
-            adapter = OfficerDocsApprovedAdapter(labourList)
+            documentList = ArrayList()
+            adapter = OfficerDocsApprovedAdapter(documentList)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager = LinearLayoutManager(
                 this,
@@ -73,17 +75,17 @@ class OfficerDocsApprovedListActivity : AppCompatActivity() {
     private fun getDataFromServer() {
         try {
             dialog.show()
-            val call = apiService.getListOfLaboursReceivedForApproval()
-            call.enqueue(object : Callback<LabourListModel> {
+            val call = apiService.getDocsApprovedInOfficer()
+            call.enqueue(object : Callback<MainDocsModel> {
                 override fun onResponse(
-                    call: Call<LabourListModel>,
-                    response: Response<LabourListModel>
+                    call: Call<MainDocsModel>,
+                    response: Response<MainDocsModel>
                 ) {
                     dialog.dismiss()
                     if (response.isSuccessful) {
                         if (response.body()?.status.equals("true")) {
-                            labourList = (response?.body()?.data as MutableList<Any>?)!!
-                            adapter = OfficerDocsApprovedAdapter(labourList)
+                            documentList = (response?.body()?.data as MutableList<DocumentItem>?)!!
+                            adapter = OfficerDocsApprovedAdapter(documentList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
                         } else {
@@ -103,7 +105,7 @@ class OfficerDocsApprovedListActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<LabourListModel>, t: Throwable) {
+                override fun onFailure(call: Call<MainDocsModel>, t: Throwable) {
                     dialog.dismiss()
                     Toast.makeText(
                         this@OfficerDocsApprovedListActivity,
