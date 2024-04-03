@@ -1,6 +1,5 @@
 package com.sumagoinfotech.digicopy.webservice
 
-import com.sumagoinfotech.digicopy.model.apis.DocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.LabourEditDetailsOnline
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
@@ -9,27 +8,23 @@ import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
 import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapMarkerModel
-import com.sumagoinfotech.digicopy.model.apis.maritalstatus.MaritalStatusModel
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectListForOfficerModel
+import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportCountOfficer
 import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
-import com.sumagoinfotech.digicopy.model.apis.skills.SkillsModel
 import com.sumagoinfotech.digicopy.model.apis.update.LabourUpdateDetails
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
-import javax.annotation.Nullable
 
 interface ApiService {
 
@@ -207,6 +202,7 @@ interface ApiService {
     @POST("auth/list-labour")
     fun getLaboursListSentForApproval(
         @Query("is_approved") param1: String = "added",
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
     ): Call<LabourListModel>
 
     // change to => list-not-approved-labour => list-labour
@@ -223,6 +219,12 @@ interface ApiService {
     @POST("auth/list-labour")
     fun getLabourListApproved(
         @Query("is_approved") param1: String = "approved"
+    ): Call<LabourListModel>
+
+    @POST("auth/list-labour")
+    fun getLabourListReSubmittedForGramSevak(
+        @Query("is_approved") is_approved: String = "approved",
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted"
     ): Call<LabourListModel>
 
 
@@ -250,13 +252,27 @@ interface ApiService {
 
 
     @POST("auth/list-labour-received-to-officer-for-approval")
-    fun getListOfLaboursReceivedForApproval(): Call<LabourListModel>
+    fun getListOfLaboursReceivedForApproval(
+        @Query("is_approved") isApproved: String="added",
+        @Query("is_resubmitted") is_resubmitted: String="resubmitted",
+    ): Call<LabourListModel>
 
-    @POST("auth/list-labour-approved-by-officer")
-    fun getListOfLaboursApprovedByOfficer(): Call<LabourListModel>
+    // list-labour-approved-by-officer old
+    @POST("auth/list-labour-received-to-officer-for-approval")
+    fun getListOfLaboursApprovedByOfficer(
+        @Query("is_approved") isApproved: String="approved",
+        ): Call<LabourListModel>
 
-    @POST("auth/list-labour-not-approved-by-officer")
-    fun getListOfLaboursNotApprovedByOfficer(): Call<LabourListModel>
+    @POST("auth/list-labour-received-to-officer-for-approval")
+    fun getListOfLaboursReSubmittedToOfficer(
+        @Query("is_approved") isApproved: String="resend",
+        @Query("is_resubmitted") is_resubmitted: String="resubmitted",
+    ): Call<LabourListModel>
+
+    @POST("auth/list-labour-received-to-officer-for-approval")
+    fun getListOfLaboursNotApprovedByOfficer(
+        @Query("is_approved") isApproved: String="not_approved",
+    ): Call<LabourListModel>
 
     @POST("auth/list-labour-rejected-by-officer")
     fun getListOfLaboursRejectedByOfficer(): Call<LabourListModel>
@@ -289,7 +305,7 @@ interface ApiService {
 
 
     @POST("auth/officer-reports-count")
-    fun getLaboursReportCount(): Call<ReportsCount>
+    fun getLaboursReportCount(): Call<ReportCountOfficer>
 
     @POST("auth/gramsevak-reports-count")
     fun getReportCountInGramsevakLogin(): Call<ReportsCount>
@@ -309,6 +325,7 @@ interface ApiService {
     @POST("auth/list-document")
     fun getSentForApprovalDocsList(
         @Query("is_approved") param1: String = "added",
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
         ): Call<MainDocsModel>
 
     @POST("auth/list-document")
@@ -338,7 +355,8 @@ interface ApiService {
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsReceivedForApprovalOfficer(
         @Query("is_approved") param1: String = "received",
-    ): Call<MainDocsModel>
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted"
+        ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsNotApprovedOfficer(

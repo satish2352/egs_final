@@ -551,7 +551,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 ) {
                     if(response.isSuccessful){
                         if(response.body()?.status.equals("true")){
-                            binding.tvUploadedDocsCount.setText(response.body()?.document_count)
+                            //binding.tvUploadedDocsCount.setText(response.body()?.document_count)
                         }else{
                             Log.d("mytag","setUploadedDocsCount =>  Response false  ");
                         }

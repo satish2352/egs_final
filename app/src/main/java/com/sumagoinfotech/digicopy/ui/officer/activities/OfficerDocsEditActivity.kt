@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -64,6 +65,8 @@ class OfficerDocsEditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding= ActivityOfficerDocsEditBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setTitle(resources.getString(R.string.verify_documents))
         gram_document_id=intent.getStringExtra("id").toString()!!
         appDatabase=AppDatabase.getDatabase(this)
         documentReasonsDao=appDatabase.documentsReasonsDao()
@@ -386,5 +389,15 @@ class OfficerDocsEditActivity : AppCompatActivity() {
             Log.d("mytag","Exception : sendApprovedToServer "+e.message)
             e.printStackTrace()
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if(item.itemId==android.R.id.home){
+
+            finish()
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 }

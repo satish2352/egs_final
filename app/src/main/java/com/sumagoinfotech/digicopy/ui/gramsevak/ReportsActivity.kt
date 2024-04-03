@@ -3,6 +3,7 @@ package com.sumagoinfotech.digicopy.ui.gramsevak
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import com.sumagoinfotech.digicopy.R
@@ -15,6 +16,7 @@ import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.ui.gramsevak.documents.DocumentListApprovedActivity
 import com.sumagoinfotech.digicopy.ui.gramsevak.documents.DocumentListNotApprovedActivity
 import com.sumagoinfotech.digicopy.ui.gramsevak.documents.DocumentListSentForApprovalActivity
+import com.sumagoinfotech.digicopy.ui.gramsevak.documents.DocumentReSubmittedActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import retrofit2.Call
@@ -66,6 +68,14 @@ class ReportsActivity : AppCompatActivity() {
                 val intent= Intent(this, DocumentListNotApprovedActivity::class.java)
                 startActivity(intent)
             }
+            binding.cardReSubmittedLabour.setOnClickListener {
+                val intent= Intent(this, LabourReSubmittedActivity::class.java)
+                startActivity(intent)
+            }
+            binding.cardReSubmittedDocs.setOnClickListener {
+                val intent= Intent(this, DocumentReSubmittedActivity::class.java)
+                startActivity(intent)
+            }
 
         } catch (e: Exception) {
 
@@ -91,7 +101,9 @@ class ReportsActivity : AppCompatActivity() {
             val call=ApiClient.create(this@ReportsActivity).getReportCountInGramsevakLogin();
             call.enqueue(object : Callback<ReportsCount> {
                 override fun onFailure(call: Call<ReportsCount>, t: Throwable) {
-                    Toast.makeText(this@ReportsActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    Log.d("mytag",t.message.toString())
+                    t.printStackTrace()
+                    Toast.makeText(this@ReportsActivity, "Error Occurred during api call 1", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
                 override fun onResponse(call: Call<ReportsCount>, response: Response<ReportsCount>) {
@@ -105,9 +117,12 @@ class ReportsActivity : AppCompatActivity() {
                             binding.tvApprovedCount.text=response?.body()?.approved_count.toString()
                             binding.tvTodayCount.text=response?.body()?.today_count.toString()
                             binding.tvYearlyCount.text=response?.body()?.current_year_count.toString()
+                            binding.tvApprovedDocsCount.text=response?.body()?.approved_document_count.toString()
+                            binding.tvNotApprovedDocsCount.text=response?.body()?.not_approved_document_count.toString()
+                            binding.tvCountReSubmittedDocs.text=response?.body()?.resubmitted_document_count.toString()
                         }
                     }else{
-                        Toast.makeText(this@ReportsActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ReportsActivity, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
                     }
                 }
             })

@@ -351,7 +351,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
             myDialog.show()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val documentName = "MH_${removeSpaces(userDistrictName.trim())}_${removeSpaces(userTalukaName.trim())}_${removeSpaces(userVillageName.trim())}_${removeSpaces(userDocumentTypeName.trim())}__${timeInMillis.trim()}.pdf"
+                val documentName = "MH_${removeSpaces(userDistrictName.trim())}_${removeSpaces(userTalukaName.trim())}_${removeSpaces(userVillageName.trim())}_${removeSpaces(userDocumentTypeName.trim())}_${timeInMillis.trim()}.pdf"
                 fileName=documentName;
                 val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
                 if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {

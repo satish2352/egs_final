@@ -54,7 +54,7 @@ class LabourReSubmittedActivity : AppCompatActivity() {
     private fun getDataFromServer() {
         try {
             dialog.show()
-            val call = apiService.getLabourListApproved()
+            val call = apiService.getLabourListReSubmittedForGramSevak()
             call.enqueue(object : Callback<LabourListModel> {
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -70,7 +70,7 @@ class LabourReSubmittedActivity : AppCompatActivity() {
                         } else {
                             Toast.makeText(
                                 this@LabourReSubmittedActivity,
-                                resources.getString(R.string.please_try_again),
+                                resources.getString(R.string.response_unsuccessfull),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

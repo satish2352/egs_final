@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.LabourApprovedListAdapter
+import com.sumagoinfotech.digicopy.adapters.LaboursSentForApprovalAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerLabourReSubmittedListBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficersLaboursApprovedListBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
@@ -24,7 +25,7 @@ class OfficerLabourReSubmittedListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOfficerLabourReSubmittedListBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
-    private lateinit var adapter: LabourApprovedListAdapter
+    private lateinit var adapter: LaboursSentForApprovalAdapter
     private lateinit var labourList: ArrayList<LaboursList>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,23 +33,22 @@ class OfficerLabourReSubmittedListActivity : AppCompatActivity() {
             binding = ActivityOfficerLabourReSubmittedListBinding.inflate(layoutInflater)
             setContentView(binding.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.approved_list)
+            supportActionBar?.title = resources.getString(R.string.resubmitted_labour_list)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             labourList = ArrayList()
-            adapter = LabourApprovedListAdapter(labourList)
+            adapter = LaboursSentForApprovalAdapter(labourList)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         } catch (e: Exception) {
             Log.d(
                 "mytag",
-                "OfficersLaboursApprovedList : onCreate : Exception => " + e.message
+                "OfficerLabourReSubmittedListActivity : onCreate : Exception => " + e.message
             )
             e.printStackTrace()
         }
     }
-
     override fun onResume() {
         super.onResume()
         getDataFromServer()
@@ -57,7 +57,7 @@ class OfficerLabourReSubmittedListActivity : AppCompatActivity() {
     private fun getDataFromServer() {
         try {
             dialog.show()
-            val call = apiService.getListOfLaboursApprovedByOfficer()
+            val call = apiService.getListOfLaboursReSubmittedToOfficer()
             call.enqueue(object : Callback<LabourListModel> {
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -67,7 +67,7 @@ class OfficerLabourReSubmittedListActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         if (response.body()?.status.equals("true")) {
                             labourList = (response?.body()?.data as ArrayList<LaboursList>?)!!
-                            adapter = LabourApprovedListAdapter(labourList)
+                            adapter = LaboursSentForApprovalAdapter(labourList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
                         } else {
@@ -105,7 +105,7 @@ class OfficerLabourReSubmittedListActivity : AppCompatActivity() {
             ).show()
             Log.d(
                 "mytag",
-                "OfficersLaboursApprovedList : getDataFromServer : Exception => " + e.message
+                "OfficerLabourReSubmittedListActivity : getDataFromServer : Exception => " + e.message
             )
             e.printStackTrace()
         }

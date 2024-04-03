@@ -160,7 +160,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             }
             binding.actSelectReason.setOnItemClickListener { parent, view, position, id ->
                 selectedReasonsId=reasonsList[position].id.toString()
-                if(reasonsNames[position].equals("Other")){
+                if(reasonsList[position].id.toString().equals("1001")){
                     binding.etRemarks.visibility=View.VISIBLE
                     binding.etRemarkslayout.visibility=View.VISIBLE
                 }else{

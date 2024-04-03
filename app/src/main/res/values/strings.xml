@@ -5,7 +5,7 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name="report">Report</string>
     <string name="upload_document">Upload Document</string>
-    <string name="attendence">Attendence</string>
+    <string name="attendence">Attendance</string>
     <string name="sync">Sync</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sync_offline_data">Sync Offline Data</string>
@@ -135,6 +135,9 @@
     <string name="document_status">Document Status</string>
     <string name="imageview">ImageView</string>
     <string name="add_document">Add Document</string>
-    <string name="response_unsuccessfull">response unsuccessfull</string>
+    <string name="response_unsuccessfull">response unsuccessful</string>
     <string name="resubmitted">Re-Submitted</string>
+    <string name="resubmitted_labour_list">Re-Submitted Labour List</string>
+    <string name="re_submitted_docs">Re-Submitted Documents</string>
+    <string name="verify_documents">Verify Document</string>
 </resources>

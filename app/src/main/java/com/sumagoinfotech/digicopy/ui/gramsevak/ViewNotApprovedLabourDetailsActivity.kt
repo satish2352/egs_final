@@ -100,6 +100,10 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                             binding.tvSkills.text=list?.get(0)?.skills
                             if(!list?.get(0)?.other_remark.isNullOrEmpty()){
                                 if(!list?.get(0)?.other_remark.equals("null")){
+
+                                    binding.tvRemarks.text=list?.get(0)?.other_remark
+                                    binding.tvRemarks.visibility=View.VISIBLE
+                                    binding.tvLabelRemarks.visibility=View.VISIBLE
                           }else{
                                     binding.tvRemarks.text=list?.get(0)?.other_remark
                                     binding.tvRemarks.visibility=View.GONE

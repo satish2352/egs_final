@@ -2,17 +2,21 @@ package com.sumagoinfotech.digicopy.ui.officer.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.databinding.FragmentOfficerReportsBinding
-import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
+import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportCountOfficer
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsApprovedListActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsNotApprovedListActivity
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsReSubmittedListActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerDocsReceivedForApprovalListActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerLabourNotApprovedListActivity
+import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerLabourReSubmittedListActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficerLaboursReceivedForApprovalActivity
 import com.sumagoinfotech.digicopy.ui.officer.activities.OfficersLaboursApprovedListActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
@@ -78,6 +82,14 @@ class OfficerReportsFragment : Fragment() {
             val intent= Intent(requireActivity(), OfficerDocsNotApprovedListActivity::class.java)
             startActivity(intent)
         }
+        binding.cardReSubmittedDocs.setOnClickListener {
+            val intent= Intent(requireActivity(), OfficerDocsReSubmittedListActivity::class.java)
+            startActivity(intent)
+        }
+        binding.cardReSubmittedLabour.setOnClickListener {
+            val intent= Intent(requireActivity(), OfficerLabourReSubmittedListActivity::class.java)
+            startActivity(intent)
+        }
         dialog=CustomProgressDialog(requireContext())
         apiService=ApiClient.create(requireContext())
 
@@ -118,20 +130,26 @@ class OfficerReportsFragment : Fragment() {
         try {
             dialog.show()
             val call=apiService.getLaboursReportCount();
-            call.enqueue(object : Callback<ReportsCount> {
-                override fun onFailure(call: Call<ReportsCount>, t: Throwable) {
+            call.enqueue(object : Callback<ReportCountOfficer> {
+                override fun onFailure(call: Call<ReportCountOfficer>, t: Throwable) {
                     Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
-                override fun onResponse(call: Call<ReportsCount>, response: Response<ReportsCount>) {
+                override fun onResponse(call: Call<ReportCountOfficer>, response: Response<ReportCountOfficer>) {
                     dialog.dismiss()
                     if(response.isSuccessful)
                     {
                         if(response.body()?.status.equals("true"))
                         {
+                            Log.d("mytag",Gson().toJson(response.body()))
                             binding.tvApprovedCount.text=response?.body()?.approved_count.toString()
                             binding.tvNotApproved.text=response?.body()?.not_approved_count.toString()
                             binding.tvSentForApproval.text=response?.body()?.sent_for_approval_count.toString()
+
+                            binding.tvDocsReceivedForApprovalCount.text=response?.body()?.sent_for_approval_document_count.toString()
+                            binding.tvDocsNotApprovedCount.text=response?.body()?.not_approved_document_count.toString()
+                            binding.tvDocsApprovedCount.text=response?.body()?.approved_document_count.toString()
+                            binding.tvDocsReSubmittedCount.text=response?.body()?.resubmitted_document_count.toString()
                         }
                     }else{
                         Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()

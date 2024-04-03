@@ -11,6 +11,7 @@ import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.OfficerDocsNotApprovedAdapter
+import com.sumagoinfotech.digicopy.adapters.OfficerDocsReceivedForApprovalAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsNotApprovedListBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsReSubmittedListBinding
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
@@ -29,7 +30,7 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityOfficerDocsReSubmittedListBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
-    private lateinit var adapter: OfficerDocsNotApprovedAdapter
+    private lateinit var adapter: OfficerDocsReceivedForApprovalAdapter
     private lateinit var documentList: MutableList<DocumentItem>
     private var isInternetAvailable:Boolean=false
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,11 +39,11 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
         setContentView(binding.root)
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.not_approved)
+            supportActionBar?.title = resources.getString(R.string.re_submitted_docs)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()
-            adapter = OfficerDocsNotApprovedAdapter(documentList)
+            adapter = OfficerDocsReceivedForApprovalAdapter(documentList)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager = LinearLayoutManager(
                 this,
@@ -72,7 +73,7 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
     private fun getDataFromServer() {
         try {
             dialog.show()
-            val call = apiService.getReSubmittedDocsListForOfficergit
+            val call = apiService.getReSubmittedDocsListForOfficer()
             call.enqueue(object : Callback<MainDocsModel> {
                 override fun onResponse(
                     call: Call<MainDocsModel>,
@@ -83,7 +84,7 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
                         if (response.body()?.status.equals("true"))
                         {
                             documentList = (response?.body()?.data as MutableList<DocumentItem>?)!!
-                            adapter = OfficerDocsNotApprovedAdapter(documentList)
+                            adapter = OfficerDocsReceivedForApprovalAdapter(documentList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
                         } else {
