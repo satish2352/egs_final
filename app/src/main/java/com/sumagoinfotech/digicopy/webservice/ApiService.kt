@@ -223,10 +223,9 @@ interface ApiService {
 
     @POST("auth/list-labour")
     fun getLabourListReSubmittedForGramSevak(
-        @Query("is_approved") is_approved: String = "approved",
+        @Query("is_approved") is_approved: String = "resend",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted"
     ): Call<LabourListModel>
-
 
     @POST("auth/update-officer-labour-status-approved")
     fun sendApprovedLabourResponseToServer(
@@ -240,7 +239,6 @@ interface ApiService {
         @Query("is_approved") isApproved: String,
         @Query("mgnrega_card_id") mgnrega_card_id: String,
     ): Call<LabourListModel>
-
 
     @POST("auth/update-officer-labour-status-not-approved")
     fun sendNotApprovedLabourResponseToServer(
@@ -354,7 +352,7 @@ interface ApiService {
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsReceivedForApprovalOfficer(
-        @Query("is_approved") param1: String = "received",
+        @Query("is_approved") param1: String = "added",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted"
         ): Call<MainDocsModel>
 

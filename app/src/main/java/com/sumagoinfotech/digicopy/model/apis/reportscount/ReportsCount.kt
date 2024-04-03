@@ -11,5 +11,6 @@ data class ReportsCount(
     val sent_for_approval_count: Int,
     val sent_for_approval_document_count: Int,
     val status: String,
-    val today_count: Int
+    val today_count: Int,
+    val document_count: Int,
 )
