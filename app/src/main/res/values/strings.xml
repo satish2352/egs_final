@@ -140,4 +140,5 @@
     <string name="resubmitted_labour_list">Re-Submitted Labour List</string>
     <string name="re_submitted_docs">Re-Submitted Documents</string>
     <string name="verify_documents">Verify Document</string>
+    <string name="re_submitted_labour_list">Resubmitted Labour List</string>
 </resources>

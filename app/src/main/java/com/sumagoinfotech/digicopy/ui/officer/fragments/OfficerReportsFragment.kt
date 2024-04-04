@@ -145,7 +145,7 @@ class OfficerReportsFragment : Fragment() {
                             binding.tvApprovedCount.text=response?.body()?.approved_count.toString()
                             binding.tvNotApproved.text=response?.body()?.not_approved_count.toString()
                             binding.tvSentForApproval.text=response?.body()?.sent_for_approval_count.toString()
-
+                            binding.tvCountReSubmittedLabour.text=response?.body()?.resubmitted_labour_count.toString()
                             binding.tvDocsReceivedForApprovalCount.text=response?.body()?.sent_for_approval_document_count.toString()
                             binding.tvDocsNotApprovedCount.text=response?.body()?.not_approved_document_count.toString()
                             binding.tvDocsApprovedCount.text=response?.body()?.approved_document_count.toString()

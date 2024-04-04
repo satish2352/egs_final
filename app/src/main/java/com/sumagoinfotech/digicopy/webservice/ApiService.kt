@@ -196,12 +196,14 @@ interface ApiService {
     ): Response<MastersModel>
 
     @POST("auth/list-document")
-    fun getUploadedDocumentsList(): Call<UploadedDocsModel>
+    fun getUploadedDocumentsList(
+        @Query("is_approved") param1: String = "approved",
+    ): Call<UploadedDocsModel>
 
     // changed to list-send-approved-labour => list-labour
     @POST("auth/list-labour")
     fun getLaboursListSentForApproval(
-        @Query("is_approved") param1: String = "added",
+        @Query("is_approved") param1: String = "received",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
     ): Call<LabourListModel>
 
@@ -352,7 +354,7 @@ interface ApiService {
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsReceivedForApprovalOfficer(
-        @Query("is_approved") param1: String = "added",
+        @Query("is_approved") param1: String = "received",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted"
         ): Call<MainDocsModel>
 

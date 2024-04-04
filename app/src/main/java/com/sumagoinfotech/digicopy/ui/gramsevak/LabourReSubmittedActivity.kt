@@ -32,7 +32,7 @@ class LabourReSubmittedActivity : AppCompatActivity() {
             binding = ActivityLabourReSubmittedBinding.inflate(layoutInflater)
             setContentView(binding.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.approved_list)
+            supportActionBar?.title = resources.getString(R.string.re_submitted_labour_list)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             labourList = ArrayList()

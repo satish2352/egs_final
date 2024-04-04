@@ -116,6 +116,7 @@ class ReportsActivity : AppCompatActivity() {
                             binding.tvNotApproved.text=response?.body()?.not_approved_count.toString()
                             binding.tvApprovedCount.text=response?.body()?.approved_count.toString()
                             binding.tvTodayCount.text=response?.body()?.today_count.toString()
+                            binding.tvCountReSubmittedLabour.text=response?.body()?.resubmitted_labour_count.toString()
                             binding.tvYearlyCount.text=response?.body()?.current_year_count.toString()
                             binding.tvDocsSentForApproval.text=response?.body()?.sent_for_approval_document_count.toString()
                             binding.tvApprovedDocsCount.text=response?.body()?.approved_document_count.toString()

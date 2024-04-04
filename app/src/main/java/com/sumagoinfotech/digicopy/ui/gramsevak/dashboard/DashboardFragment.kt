@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.permissionx.guolindev.PermissionX
+import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
 import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
@@ -47,6 +48,7 @@ import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongMod
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectMarkerData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.LabourData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
+import com.sumagoinfotech.digicopy.ui.activities.start.LoginActivity
 import com.sumagoinfotech.digicopy.ui.gramsevak.LabourListByProjectActivity
 import com.sumagoinfotech.digicopy.ui.gramsevak.ScannerActivity
 import com.sumagoinfotech.digicopy.ui.gramsevak.ViewLabourFromMarkerClick
@@ -656,22 +658,31 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     call: Call<MapMarkerModel>, response: Response<MapMarkerModel>
                 ) {
                     dialog.dismiss()
-                    if (response.isSuccessful) {
-                        Log.d("mytag", Gson().toJson(response.body()))
-                        if (!response.body()?.map_data.isNullOrEmpty()) {
-                            mapMarkerData = response.body()?.map_data as MutableList<MapData>
-                            if (mapMarkerData.size > 0) {
-                                showProjectMarkersNew(mapMarkerData)
+                    if(response.code()!=401){
+                        if (response.isSuccessful) {
+                            Log.d("mytag", Gson().toJson(response.body()))
+                            if (!response.body()?.map_data.isNullOrEmpty()) {
+                                mapMarkerData = response.body()?.map_data as MutableList<MapData>
+                                if (mapMarkerData.size > 0) {
+                                    showProjectMarkersNew(mapMarkerData)
+                                }
+                            } else {
+                                Toast.makeText(requireContext(), "No records found", Toast.LENGTH_LONG)
+                                    .show()
                             }
                         } else {
-                            Toast.makeText(requireContext(), "No records found", Toast.LENGTH_LONG)
-                                .show()
+                            Toast.makeText(
+                                requireContext(), "Response unsuccessful", Toast.LENGTH_LONG
+                            ).show()
                         }
-                    } else {
-                        Toast.makeText(
-                            requireContext(), "Response unsuccessful", Toast.LENGTH_LONG
-                        ).show()
+                    }else{
+
+                        val intent= Intent(requireContext(), LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        requireActivity().finish()
                     }
+
                 }
 
                 override fun onFailure(call: Call<MapMarkerModel>, t: Throwable) {

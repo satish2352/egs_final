@@ -9,5 +9,6 @@ data class ReportCountOfficer(
     val sent_for_approval_count: Int,
     val sent_for_approval_document_count: Int,
     val resubmitted_document_count: Int,
+    val resubmitted_labour_count: Int,
     val status: String
 )
