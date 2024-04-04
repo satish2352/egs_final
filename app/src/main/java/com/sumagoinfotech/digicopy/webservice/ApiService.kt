@@ -203,7 +203,7 @@ interface ApiService {
     // changed to list-send-approved-labour => list-labour
     @POST("auth/list-labour")
     fun getLaboursListSentForApproval(
-        @Query("is_approved") param1: String = "received",
+        @Query("is_approved") param1: String = "added",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
     ): Call<LabourListModel>
 
@@ -253,7 +253,7 @@ interface ApiService {
 
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursReceivedForApproval(
-        @Query("is_approved") isApproved: String="added",
+        @Query("is_approved") isApproved: String="received",
         @Query("is_resubmitted") is_resubmitted: String="resubmitted",
     ): Call<LabourListModel>
 
