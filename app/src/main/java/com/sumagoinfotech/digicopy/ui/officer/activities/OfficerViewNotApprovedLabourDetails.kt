@@ -94,8 +94,8 @@ private fun getLabourDetails(mgnregaCardId:String) {
                         Log.d("mytag",""+ Gson().toJson(response.body()));
                         binding.tvFullName.text=list?.get(0)?.full_name
                         binding.tvGender.text=list?.get(0)?.gender_name
-                        binding.tvDistritct.text=list?.get(0)?.district_id
-                        binding.tvTaluka.text=list?.get(0)?.taluka_id
+                        binding.tvDistritct.text=list?.get(0)?.district_name
+                        binding.tvTaluka.text=list?.get(0)?.taluka_name
                         binding.tvVillage.text=list?.get(0)?.village_id
                         binding.tvMobile.text=list?.get(0)?.mobile_number
                         binding.tvLandline.text=list?.get(0)?.landline_number

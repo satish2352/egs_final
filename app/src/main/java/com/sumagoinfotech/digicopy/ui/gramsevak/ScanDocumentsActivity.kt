@@ -82,6 +82,7 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.qrcode.QRCodeWriter
 import com.itextpdf.io.image.ImageDataFactory
+import com.itextpdf.kernel.pdf.WriterProperties
 import com.itextpdf.layout.element.Image
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
@@ -181,10 +182,11 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 if (result.resultCode == RESULT_OK) {
                     val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
                     val job = CoroutineScope(Dispatchers.IO).launch {
-                        /*result?.getPages()?.let { pages ->
+                        result?.getPages()?.let { pages ->
                             for (page in pages) {
+                                val imageUri = pages.get(0).getImageUri()
                             }
-                            }*/
+                        }
                     }
                     result?.getPdf()?.let { pdf ->
                         val pdfUri = pdf.uri
@@ -459,6 +461,9 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
                     Log.e("Error", "Directory not created")
                 }
+                val writerProperties = WriterProperties()
+                writerProperties.setFullCompressionMode(true)
+                writerProperties.setCompressionLevel(9)
                 val myFile = File(mediaStorageDir, "$documentName")
                 val fileOutputStream = FileOutputStream(myFile)
                 val inputStream = contentResolver.openInputStream(uri!!)
@@ -468,7 +473,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 // Log the URI of the saved file
                 val savedFileUri = Uri.fromFile(myFile)
                 val reader = PdfReader(inputStream)
-                val writer = PdfWriter(fileOutputStream)
+                val writer = PdfWriter(fileOutputStream,writerProperties)
                 val pdfDoc = PdfDocument(reader, writer)
                 val pageSize = pdfDoc.getFirstPage().getPageSize()
                 for (pageNum in 1..pdfDoc.numberOfPages)
@@ -799,7 +804,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
 
             // Convert Bitmap to byte array
             val outputStream = ByteArrayOutputStream()
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            bmp.compress(Bitmap.CompressFormat.PNG, 10, outputStream)
             return outputStream.toByteArray()
         } catch (e: Exception) {
             e.printStackTrace()

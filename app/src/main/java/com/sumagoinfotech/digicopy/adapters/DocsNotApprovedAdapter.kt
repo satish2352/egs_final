@@ -29,13 +29,14 @@ class DocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
         val tvAddress: TextView =itemView.findViewById(R.id.tvAddress)
         val ivViewDocument: ImageView =itemView.findViewById(R.id.ivViewDocument)
         val ivDownloadDocument: ImageView =itemView.findViewById(R.id.ivDownloadDocument)
+        val ivEdit: ImageView =itemView.findViewById(R.id.ivEdit)
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): DocsNotApprovedAdapter.ViewHolder {
-        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_document_received_for_approval,parent,false)
+        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_documents_not_approved,parent,false)
         return ViewHolder(view)
     }
     override fun onBindViewHolder(
@@ -65,6 +66,12 @@ class DocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
         }
 
         holder.itemView.setOnClickListener {
+            val intent=Intent(holder.itemView.context, DocumentUpdateActivity::class.java)
+            intent.putExtra("id",list?.get(position)?.id.toString())
+            holder.itemView.context.startActivity(intent)
+        }
+
+        holder.ivEdit.setOnClickListener {
             val intent=Intent(holder.itemView.context, DocumentUpdateActivity::class.java)
             intent.putExtra("id",list?.get(position)?.id.toString())
             holder.itemView.context.startActivity(intent)

@@ -84,6 +84,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                             binding.tvLandline.text=list?.get(0)?.landline_number
                             binding.tvMnregaId.text=list?.get(0)?.mgnrega_card_id
                             binding.tvDob.text=list?.get(0)?.date_of_birth
+                            binding.tvSkill.text=list?.get(0)?.skills
                             photo= list?.get(0)?.profile_image.toString()
                             mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                             aadharImage= list?.get(0)?.aadhar_image.toString()

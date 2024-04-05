@@ -27,6 +27,9 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
+            android:name=".ui.gramsevak.EditDocumentActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.gramsevak.LabourReSubmittedActivity"
             android:exported="false" />
         <activity
