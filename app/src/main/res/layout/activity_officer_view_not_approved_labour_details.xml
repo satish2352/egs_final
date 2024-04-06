@@ -307,6 +307,7 @@
                             android:textSize="16sp"></TextView>
 
                         <TextView
+
                             android:textColor="@color/black"
                             android:id="@+id/tvSkills"
                             android:layout_width="match_parent"

@@ -68,12 +68,18 @@ class DocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
         holder.itemView.setOnClickListener {
             val intent=Intent(holder.itemView.context, DocumentUpdateActivity::class.java)
             intent.putExtra("id",list?.get(position)?.id.toString())
+            intent.putExtra("url",list?.get(position)?.document_pdf.toString())
+            intent.putExtra("fileName",list?.get(position)?.document_name.toString())
+            intent.putExtra("documentType",list?.get(position)?.document_type_name.toString())
             holder.itemView.context.startActivity(intent)
         }
 
         holder.ivEdit.setOnClickListener {
             val intent=Intent(holder.itemView.context, DocumentUpdateActivity::class.java)
             intent.putExtra("id",list?.get(position)?.id.toString())
+            intent.putExtra("url",list?.get(position)?.document_pdf.toString())
+            intent.putExtra("fileName",list?.get(position)?.document_name.toString())
+            intent.putExtra("documentType",list?.get(position)?.document_type_name.toString())
             holder.itemView.context.startActivity(intent)
         }
     }

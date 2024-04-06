@@ -59,11 +59,13 @@
                 android:layout_height="wrap_content"></TextView>
 
             <ImageView
+                android:visibility="gone"
                 android:layout_width="8dp"
                 android:layout_height="24dp"
                 android:layout_marginLeft="24dp"
                 android:src="@drawable/ic_document" />
             <TextView
+                android:visibility="gone"
                 android:lines="1"
                 android:maxLines="1"
                 android:singleLine="true"

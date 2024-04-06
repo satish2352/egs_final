@@ -156,6 +156,12 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                         var mobile= binding.etMobileNumber.text.toString()
                         var landline= binding.etLandLine.text.toString()
                         val mgnregaId= binding.etMgnregaIdNumber.text.toString()
+
+
+
+
+
+
                         val response=apiService.updateLabourFirstForm(
                             fullName = name,
                             genderId=gender,
@@ -246,10 +252,11 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
 
     private fun initializeFields() {
         genderId=prevSelectedGender.id.toString()
-        villageId=prevSelectedVillage.id.toString()
+        villageId=prevSelectedVillage.location_id.toString()
         skillId=prevSelectedSkill.id.toString()
-        districtId=prevselectedDistrict.id.toString()
-        talukaId=prevSelectedTaluka.id.toString()
+        districtId=prevselectedDistrict.location_id.toString()
+        talukaId=prevSelectedTaluka.location_id.toString()
+
         binding.actGender.setOnFocusChangeListener { abaad, asd ->
             binding.actGender.showDropDown()
         }
@@ -477,9 +484,25 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                             val labourInfo=list?.get(0);
                             labourId=labourInfo?.id.toString()
                             Log.d("mytag","===>"+labourInfo?.district_id.toString());
+                            Log.d("mytag","===>"+labourInfo?.taluka_id.toString());
+                            Log.d("mytag","===>"+labourInfo?.village_id.toString());
+                            districtId=labourInfo?.district_id.toString();
+                            talukaId=labourInfo?.taluka_name.toString();
+                            villageId=labourInfo?.village_id.toString();
                             prevselectedDistrict=areaDao.getAreaByLocationId(labourInfo?.district_id.toString())
                             prevSelectedTaluka=areaDao.getAreaByLocationId(labourInfo?.taluka_id.toString())
                             prevSelectedVillage=areaDao.getAreaByLocationId(labourInfo?.village_id.toString())
+
+
+                            Log.d("mytag","prevselectedDistrict===>"+prevselectedDistrict.name);
+                            Log.d("mytag","prevselectedDistrict===>"+prevselectedDistrict.location_id);
+                            Log.d("mytag","prevSelectedTaluka===>"+prevSelectedTaluka.name);
+                            Log.d("mytag","prevselectedDistrict===>"+prevSelectedTaluka.id);
+                            Log.d("mytag","prevSelectedVillage===>"+prevSelectedVillage.name);
+                            Log.d("mytag","prevSelectedVillage===>"+prevSelectedVillage.id);
+
+
+
                             prevSelectedGender=genderDao.getGenderById(labourInfo?.gender_id.toString())
                             prevSelectedSkill=skillsDao.getSkillById(labourInfo?.skill_id.toString())
                             talukaList=areaDao.getAllTalukas(labourInfo?.district_id.toString())
@@ -530,6 +553,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                                     this@LabourUpdateOnline1Activity, android.R.layout.simple_list_item_1, genderNames
                                 )
                                 binding.actGender.setAdapter(genderAdapter)
+
                                 initializeFields()
                             }
                         }else{

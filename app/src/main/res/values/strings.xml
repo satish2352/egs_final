@@ -142,4 +142,10 @@
     <string name="verify_documents">Verify Document</string>
     <string name="re_submitted_labour_list">Resubmitted Labour List</string>
     <string name="skill">Skill</string>
+    <string name="pdf_download_failed_try_again">Document download failed please try again</string>
+    <string name="update_document">Update Document</string>
+    <string name="edit_document">Edit Document</string>
+    <string name="please_make_changes_to_document_before_submitting">Please Make Changes To Document Before Submitting</string>
+    <string name="retry">Retry</string>
+    <string name="approved_document_list">Approved Document List</string>
 </resources>

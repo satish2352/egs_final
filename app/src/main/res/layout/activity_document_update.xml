@@ -124,30 +124,6 @@
                             android:maxLines="1"
                             android:textSize="16sp"></TextView>
                     </LinearLayout>
-                    <LinearLayout
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <ImageView
-                            android:contentDescription="@string/imageview"
-                            android:layout_weight="1"
-                            android:id="@+id/ivDownloadDocument"
-                            android:elevation="5dp"
-                            android:src="@drawable/ic_download"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            app:tint="@color/appBlue"></ImageView>
-                        <ImageView
-                            android:contentDescription="@string/imageview"
-                            android:id="@+id/ivViewDocument"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:layout_weight="1"
-                            android:elevation="5dp"
-                            android:src="@drawable/ic_view_blue"></ImageView>
-                    </LinearLayout>
                     <TextView
                         android:id="@+id/tvHistory"
                         android:layout_width="wrap_content"
@@ -169,8 +145,55 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="5dp" />
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <View
+                            android:layout_weight="1"
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"></View>
+                        <ImageView
+                            android:contentDescription="@string/imageview"
+                            android:id="@+id/ivDownloadDocument"
+                            android:elevation="5dp"
+                            android:src="@drawable/ic_download"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            app:tint="@color/appBlue"></ImageView>
+                        <View
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="1dp"></View>
+                        <ImageView
+                            android:contentDescription="@string/imageview"
+                            android:id="@+id/ivViewDocument"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:elevation="5dp"
+                            android:src="@drawable/ic_view_blue"></ImageView>
+                        <View
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="1dp"></View>
+                        <ImageView
+                            android:contentDescription="@string/imageview"
+                            android:id="@+id/ivEdit"
+                            android:elevation="5dp"
+                            android:src="@drawable/ic_edit"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            app:tint="@color/appBlue"></ImageView>
+                        <View
+                            android:layout_weight="1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="1dp"></View>
+                    </LinearLayout>
 
                     <Button
+                        android:visibility="gone"
                         android:layout_gravity="center"
                         android:layout_marginTop="16dp"
                         android:drawableEnd="@drawable/add"

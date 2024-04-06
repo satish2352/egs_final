@@ -100,13 +100,14 @@ class DocumentUpdateActivity : AppCompatActivity() {
     private var prevFileName=""
     private var pdfUrl=""
     private var documentId=""
+    private var documentType=""
     private var historyList=ArrayList<HistoryDetailsItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityDocumentUpdateBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar?.title="Update Document"
+        supportActionBar?.title=resources.getString(R.string.update_document)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.tvHistory.visibility= View.GONE
         binding.recyclerViewHistory.visibility= View.GONE
@@ -116,6 +117,9 @@ class DocumentUpdateActivity : AppCompatActivity() {
         binding.recyclerViewHistory.adapter=adapter
         adapter.notifyDataSetChanged()
         gram_document_id=intent.getStringExtra("id").toString()
+        pdfUrl=intent.getStringExtra("url").toString()
+        prevFileName=intent.getStringExtra("fileName").toString()
+        documentType=intent.getStringExtra("documentType").toString()
         dialog= CustomProgressDialog(this)
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(false)
@@ -177,6 +181,16 @@ class DocumentUpdateActivity : AppCompatActivity() {
         checkAndPromptGps()
         getTheLocation()
         requestThePermissions()
+        binding.ivEdit.setOnClickListener {
+
+            val intent=Intent(this,EditDocumentActivity::class.java)
+            intent.putExtra("url",pdfUrl)
+            intent.putExtra("document_id",gram_document_id)
+            intent.putExtra("fileName",prevFileName)
+            intent.putExtra("documentType",documentType)
+            startActivity(intent)
+
+        }
     }
     private fun showEnableLocationDialog() {
         val builder = AlertDialog.Builder(this@DocumentUpdateActivity)
@@ -234,7 +248,6 @@ class DocumentUpdateActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         getDocumentDetailsFromServer(gram_document_id);
     }
 

@@ -18,6 +18,7 @@ import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.model.apis.update.LabourUpdateDetails
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.GET
@@ -25,6 +26,8 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
+import retrofit2.http.Streaming
+import retrofit2.http.Url
 
 interface ApiService {
 
@@ -396,6 +399,9 @@ interface ApiService {
     ): Response<MastersModel>
 
 
+    @GET
+    @Streaming
+    suspend fun downloadPdf(@Url url: String): Response<ResponseBody>
 
 
 

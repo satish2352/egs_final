@@ -32,7 +32,7 @@ class DocumentListApprovedActivity : AppCompatActivity() {
         setContentView(binding.root)
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.sent_for_approval)
+            supportActionBar?.title = resources.getString(R.string.approved_document_list)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardUseCompatPadding="true"
+    app:cardElevation="1dp"
+    android:layout_height="wrap_content">
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="250dp">
+
+    <ImageView
+        android:background="#D3D3D3"
+        android:padding="4dp"
+        android:elevation="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_delete"
+        android:id="@+id/ivDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></ImageView>
+
+    <ImageView
+        android:visibility="gone"
+        android:background="#AEAEAE"
+        android:padding="4dp"
+        android:elevation="5dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_edit"
+        android:id="@+id/ivEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></ImageView>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true" />
+    <TextView
+        android:id="@+id/tvPageNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="5dp"
+        android:background="#D3D3D3"
+        android:padding="4dp"
+        android:text="1"></TextView>
+</RelativeLayout>
+    <!-- item_pdf_page.xml -->
+
+
+
+</androidx.cardview.widget.CardView>

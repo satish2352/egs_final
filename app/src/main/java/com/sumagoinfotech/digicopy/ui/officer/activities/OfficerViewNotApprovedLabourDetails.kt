@@ -96,7 +96,7 @@ private fun getLabourDetails(mgnregaCardId:String) {
                         binding.tvGender.text=list?.get(0)?.gender_name
                         binding.tvDistritct.text=list?.get(0)?.district_name
                         binding.tvTaluka.text=list?.get(0)?.taluka_name
-                        binding.tvVillage.text=list?.get(0)?.village_id
+                        binding.tvVillage.text=list?.get(0)?.village_name
                         binding.tvMobile.text=list?.get(0)?.mobile_number
                         binding.tvLandline.text=list?.get(0)?.landline_number
                         binding.tvMnregaId.text=list?.get(0)?.mgnrega_card_id
@@ -119,6 +119,8 @@ private fun getLabourDetails(mgnregaCardId:String) {
                                 binding.tvLabelReason.visibility=View.GONE
                                 binding.tvRemarks.visibility=View.GONE
                                 binding.tvLabelRemarks.visibility=View.GONE
+                                binding.tvRegistrationStatus.visibility=View.GONE
+                                binding.tvRegistrationStatusLabel.visibility=View.GONE
                             }
                         }
                         if(!list?.get(0)?.reason_name.isNullOrEmpty()){

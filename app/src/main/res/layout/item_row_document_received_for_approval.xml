@@ -40,11 +40,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <ImageView
+                        android:visibility="gone"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_document"
                         android:layout_width="12dp"
                         android:layout_height="12dp"/>
                     <TextView
+                        android:visibility="gone"
                         android:layout_marginLeft="8dp"
                         android:lines="1"
                         android:maxLines="1"
