@@ -110,6 +110,7 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
     private fun loadWithGlideFromUri(uri: String, imageView: ImageView) {
         Glide.with(this@ViewLabourDetailsActivity)
             .load(uri)
+            .override(200,200)
             .into(imageView)
     }
 

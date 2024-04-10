@@ -21,7 +21,7 @@
         >
 
         <EditText
-            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            android:digits="@string/letter_number_validation_string_with_space"
             android:maxLines="1"
             android:lines="1"
             android:singleLine="true"

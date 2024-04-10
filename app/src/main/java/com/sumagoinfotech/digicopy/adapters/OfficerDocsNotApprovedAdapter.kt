@@ -28,13 +28,15 @@ class OfficerDocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
         val tvAddress: TextView =itemView.findViewById(R.id.tvAddress)
         val ivViewDocument: ImageView =itemView.findViewById(R.id.ivViewDocument)
         val ivDownloadDocument: ImageView =itemView.findViewById(R.id.ivDownloadDocument)
+        val tvGramsevakName: TextView = itemView.findViewById(R.id.tvGramsevakName)
+
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): OfficerDocsNotApprovedAdapter.ViewHolder {
-        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_document_received_for_approval,parent,false)
+        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_docs_officer_list,parent,false)
         return ViewHolder(view)
     }
 
@@ -44,6 +46,7 @@ class OfficerDocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
     ) {
 
         try {
+            holder.tvGramsevakName.text=list[position].gramsevak_full_name
             holder.tvDocumentName.setText(list[position].document_name)
             holder.tvDocumentType.setText(list[position].document_type_name)
             holder.tvDocumentStatus.setText(list[position].status_name)

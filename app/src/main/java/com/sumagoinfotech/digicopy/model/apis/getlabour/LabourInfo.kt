@@ -3,6 +3,7 @@ package com.sumagoinfotech.digicopy.model.apis.getlabour
 data class LabourInfo(
     val aadhar_image: String,
     val date_of_birth: String,
+    val gramsevak_full_name: String,
     val district_id: String,
     val family_details: List<FamilyDetail>,
     val full_name: String,

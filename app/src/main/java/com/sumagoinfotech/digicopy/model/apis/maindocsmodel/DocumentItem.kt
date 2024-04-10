@@ -7,6 +7,7 @@ data class DocumentItem(
     val document_name: String,
     val document_pdf: String,
     val document_type_name: String,
+    val gramsevak_full_name:String,
     val id: Int,
     val status_name: String,
     val taluka_name: String,

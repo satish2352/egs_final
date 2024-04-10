@@ -212,7 +212,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                     val uriAadhar = uriMap[REQUEST_CODE_AADHAR_CARD]
                     if (uriAadhar != null) {
                         Log.d("myatg", "URI for Aadhar Card: $uriAadhar")
-                        binding.ivAadhar.setImageURI(uriAadhar)
+                        //binding.ivAadhar.setImageURI(uriAadhar)
+                        Glide.with(this@LabourRegistrationEdit2).load(uriAadhar).override(200,200).into(binding.ivAadhar)
                         aadharIdImagePath= uriAadhar.toString()
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriAadhar.toString(),binding.etLocation.text.toString(),addressFromLatLong)
@@ -228,7 +229,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                     val uriMgnregaCard = uriMap[REQUEST_CODE_MGNREGA_CARD]
                     if (uriMgnregaCard != null) {
                         Log.d("myatg", "URI for MGNREGA Card: $uriMgnregaCard")
-                        binding.ivMgnregaCard.setImageURI(uriMgnregaCard)
+                        //binding.ivMgnregaCard.setImageURI(uriMgnregaCard)
+                        Glide.with(this@LabourRegistrationEdit2).load(uriMgnregaCard).override(200,200).into(binding.ivMgnregaCard)
                         mgnregaIdImagePath= uriMgnregaCard.toString()
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriMgnregaCard.toString(),binding.etLocation.text.toString(),addressFromLatLong)
@@ -249,7 +251,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                     val uriPhoto = uriMap[REQUEST_CODE_PHOTO]
                     if (uriPhoto != null) {
                         Log.d("myatg", "URI for Photo: $uriPhoto")
-                        binding.ivPhoto.setImageURI(uriPhoto)
+                        //binding.ivPhoto.setImageURI(uriPhoto)
+                        Glide.with(this@LabourRegistrationEdit2).load(uriPhoto).override(200,200).into(binding.ivPhoto)
                         photoImagePath= uriPhoto.toString()
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriPhoto.toString(),binding.etLocation.text.toString(),addressFromLatLong)
@@ -265,7 +268,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                     val uriVoterId = uriMap[REQUEST_CODE_VOTER_ID]
                     if (uriVoterId != null) {
                         Log.d("myatg", "URI for Voter ID: $uriVoterId")
-                        binding.ivVoterId.setImageURI(uriVoterId)
+                        //binding.ivVoterId.setImageURI(uriVoterId)
+                        Glide.with(this@LabourRegistrationEdit2).load(uriVoterId).override(200,200).into(binding.ivVoterId)
                         voterIdImagePath= uriVoterId.toString()
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourRegistrationEdit2,uriVoterId.toString(),binding.etLocation.text.toString(),addressFromLatLong)

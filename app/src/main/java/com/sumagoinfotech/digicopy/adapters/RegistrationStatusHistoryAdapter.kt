@@ -10,6 +10,8 @@ import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.model.apis.getlabour.HistoryDetailsItem
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class RegistrationStatusHistoryAdapter(var list:ArrayList<HistoryDetailsItem>):RecyclerView.Adapter<RegistrationStatusHistoryAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
@@ -50,8 +52,7 @@ class RegistrationStatusHistoryAdapter(var list:ArrayList<HistoryDetailsItem>):R
     @SuppressLint("SimpleDateFormat")
     fun formatDate(inputDate: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")
-        val outputFormat = SimpleDateFormat("dd-MM-yyyy hh:mm a")
-
+        val outputFormat = SimpleDateFormat("dd-MM-yyyy hh:mm a", Locale.getDefault())
         return try {
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)

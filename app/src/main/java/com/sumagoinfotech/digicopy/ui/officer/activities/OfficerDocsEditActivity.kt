@@ -32,6 +32,7 @@ import com.sumagoinfotech.digicopy.model.apis.getlabour.HistoryDetailsItem
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
+import com.sumagoinfotech.digicopy.ui.officer.OfficerMainActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.FileDownloader
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -259,7 +260,8 @@ class OfficerDocsEditActivity : AppCompatActivity() {
                             }
                             binding.tvDocumentType.text=list?.get(0)?.document_type_name
                             val address="${list?.get(0)?.district_name}->${list?.get(0)?.taluka_name}->${list?.get(0)?.village_name}"
-                            binding.tvDocumentType.text=address
+                            binding.tvAddress.text=address
+                            binding.tvGramsevakName.text=list?.get(0)?.gramsevak_full_name
                             binding.ivViewDocument.setOnClickListener {
                                 val intent = Intent(Intent.ACTION_VIEW)
                                 intent.setDataAndType(Uri.parse(list?.get(0)?.document_pdf), "application/pdf")
@@ -335,8 +337,12 @@ class OfficerDocsEditActivity : AppCompatActivity() {
                         if(response.body()?.status.equals("true"))
                         {
                             Toast.makeText(this@OfficerDocsEditActivity, response.body()?.message, Toast.LENGTH_SHORT).show()
-                            finish()
-                        }else {
+
+                            val intent= Intent(this@OfficerDocsEditActivity,
+                                OfficerMainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                            finish()                        }else {
                             Toast.makeText(this@OfficerDocsEditActivity, response.body()?.message, Toast.LENGTH_SHORT).show()
                         }
                     } else{

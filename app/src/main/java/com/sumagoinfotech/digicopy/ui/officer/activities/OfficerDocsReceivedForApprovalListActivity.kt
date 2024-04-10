@@ -41,7 +41,7 @@ class OfficerDocsReceivedForApprovalListActivity : AppCompatActivity() {
         setContentView(binding.root)
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title = resources.getString(R.string.received_for_approval)
+            supportActionBar?.title = resources.getString(R.string.documents_received_for_approval)
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()

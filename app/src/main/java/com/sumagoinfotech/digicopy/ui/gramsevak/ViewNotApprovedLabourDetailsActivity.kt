@@ -122,10 +122,15 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                             if(!list?.get(0)?.reason_name.isNullOrEmpty()){
                                 if(!list?.get(0)?.reason_name.equals("null")){
                                     binding.tvReason.text=list?.get(0)?.reason_name
+                                    binding.tvReason.visibility=View.VISIBLE
+                                    binding.tvLabelReason.visibility=View.VISIBLE
                                 }else{
                                     binding.tvReason.visibility=View.GONE
                                     binding.tvLabelReason.visibility=View.GONE
                                 }
+                            }else{
+                                binding.tvReason.visibility=View.GONE
+                                binding.tvLabelReason.visibility=View.GONE
                             }
                             if(!list?.get(0)?.history_details.isNullOrEmpty())
                             {
@@ -146,10 +151,10 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                             mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                             aadharImage= list?.get(0)?.aadhar_image.toString()
                             voterIdImage= list?.get(0)?.voter_image.toString()
-                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(mgnregaIdImage).into(binding.ivMnregaCard)
-                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(photo).into(binding.ivPhoto)
-                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(aadharImage).into(binding.ivAadhar)
-                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(voterIdImage).into(binding.ivVoterId)
+                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(mgnregaIdImage).override(200,200).into(binding.ivMnregaCard)
+                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(photo).override(200,200).into(binding.ivPhoto)
+                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(aadharImage).override(200,200).into(binding.ivAadhar)
+                            Glide.with(this@ViewNotApprovedLabourDetailsActivity).load(voterIdImage).override(200,200).into(binding.ivVoterId)
                             val familyList=response.body()?.data?.get(0)?.family_details
                             Log.d("mytag",""+familyList?.size);
                             var adapterFamily= FamilyDetailsListOnlineAdapter(familyList)

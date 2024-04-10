@@ -133,6 +133,31 @@
                             android:textSize="16sp"></TextView>
                     </LinearLayout>
                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            app:tint="@color/appBlue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_user_check"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"></ImageView>
+
+                        <TextView
+                            android:layout_marginLeft="16dp"
+                            android:textColor="@color/black"
+                            android:id="@+id/tvGramsevakName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:textSize="16sp"></TextView>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_marginBottom="10dp"
                         android:layout_marginTop="10dp"
                         android:orientation="horizontal"
@@ -217,7 +242,7 @@
                         android:background="@drawable/edittext_background"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"></AutoCompleteTextView>
-                    <com.google.android.material.textfield.TextInputLayout
+                    <LinearLayout
                         android:id="@+id/etRemarkslayout"
                         android:visibility="gone"
                         android:layout_marginTop="16dp"
@@ -226,12 +251,13 @@
                         <com.google.android.material.textfield.TextInputEditText
                             android:paddingTop="10dp"
                             android:id="@+id/etRemarks"
+                            android:background="@drawable/rounded_blue_border"
                             android:gravity="start"
                             android:hint="@string/remarks"
                             android:layout_gravity="start"
                             android:layout_width="match_parent"
                             android:layout_height="100dp"></com.google.android.material.textfield.TextInputEditText>
-                    </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
                     <Button
                         android:id="@+id/btnSubmit"
                         android:layout_marginBottom="24dp"

@@ -17,8 +17,8 @@ import com.sumagoinfotech.digicopy.utils.FileDownloader
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class OfficerDocsApprovedAdapter (var list:MutableList<DocumentItem>):
-    RecyclerView.Adapter<OfficerDocsApprovedAdapter.ViewHolder>() {
+class OfficerDocsReSubmittedAdapter (var list:MutableList<DocumentItem>):
+    RecyclerView.Adapter<OfficerDocsReSubmittedAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDocumentName: TextView = itemView.findViewById(R.id.tvDocumentName)
         val tvDocumentType: TextView = itemView.findViewById(R.id.tvDocumentType)
@@ -33,14 +33,14 @@ class OfficerDocsApprovedAdapter (var list:MutableList<DocumentItem>):
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): OfficerDocsApprovedAdapter.ViewHolder {
+    ): OfficerDocsReSubmittedAdapter.ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_row_docs_officer_list, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(
-        holder: OfficerDocsApprovedAdapter.ViewHolder,
+        holder: OfficerDocsReSubmittedAdapter.ViewHolder,
         position: Int
     ) {
 

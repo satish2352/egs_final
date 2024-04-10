@@ -94,6 +94,7 @@ private fun getLabourDetails(mgnregaCardId:String) {
                         Log.d("mytag",""+ Gson().toJson(response.body()));
                         binding.tvFullName.text=list?.get(0)?.full_name
                         binding.tvGender.text=list?.get(0)?.gender_name
+                        binding.tvGramsevakName.text=list?.get(0)?.gramsevak_full_name
                         binding.tvDistritct.text=list?.get(0)?.district_name
                         binding.tvTaluka.text=list?.get(0)?.taluka_name
                         binding.tvVillage.text=list?.get(0)?.village_name
@@ -128,10 +129,10 @@ private fun getLabourDetails(mgnregaCardId:String) {
                                 binding.tvReason.text=list?.get(0)?.reason_name
                             }
                         }
-                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(mgnregaIdImage).into(binding.ivMnregaCard)
-                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(photo).into(binding.ivPhoto)
-                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(aadharImage).into(binding.ivAadhar)
-                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(voterIdImage).into(binding.ivVoterId)
+                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(mgnregaIdImage).override(200,200).into(binding.ivMnregaCard)
+                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(photo).override(200,200).into(binding.ivPhoto)
+                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(aadharImage).override(200,200).into(binding.ivAadhar)
+                        Glide.with(this@OfficerViewNotApprovedLabourDetails).load(voterIdImage).override(200,200).into(binding.ivVoterId)
                         val familyList=response.body()?.data?.get(0)?.family_details
                         Log.d("mytag",""+familyList?.size);
                         var adapterFamily= FamilyDetailsListOnlineAdapter(familyList)

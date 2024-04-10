@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,6 +25,8 @@ class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : Re
         val ivPhoto=itemView.findViewById<ImageView>(R.id.ivPhoto)
         val tvMgnregaId=itemView.findViewById<TextView>(R.id.tvMgnregaId)
         val tvStatus=itemView.findViewById<TextView>(R.id.tvStatus)
+        val tvGramsevakName = itemView.findViewById<TextView>(R.id.tvGramsevakName)
+        val layoutGramsevakName = itemView.findViewById<LinearLayout>(R.id.layoutGramsevakName)
     }
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -40,8 +43,14 @@ class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : Re
             holder.tvAddress.text = address
             holder.tvMgnregaId.text= labourList[position].mgnrega_card_id
             holder.tvStatus.text=labourList[position].status_name
-            Glide.with(holder.itemView.context).load(labourList[position].profile_image).into(holder.ivPhoto)
-
+            Glide.with(holder.itemView.context).load(labourList[position].profile_image)
+                .override(75,75).into(holder.ivPhoto)
+            val pref = MySharedPref(holder.itemView.context)
+            if(pref.getRoleId()==2){
+                holder.tvGramsevakName.text=labourList[position].gramsevak_full_name
+            }else{
+                holder.layoutGramsevakName.visibility=View.GONE
+            }
             holder.itemView.setOnClickListener {
 
                 val pref=MySharedPref(holder.itemView.context)

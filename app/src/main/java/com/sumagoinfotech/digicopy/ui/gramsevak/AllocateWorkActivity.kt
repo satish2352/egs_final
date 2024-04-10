@@ -35,6 +35,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.adapters.AttendanceAdapter
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -56,6 +57,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     private var selectedProjectId = ""
     private lateinit var apiService: ApiService
     lateinit var pref:MySharedPref
+    private lateinit var progressDialog: CustomProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAllocateWorkBinding.inflate(layoutInflater)
@@ -66,6 +68,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
         supportActionBar?.title = resources.getString(R.string.allocate_work)
         apiService = ApiClient.create(this)
         pref=MySharedPref(this)
+        progressDialog= CustomProgressDialog(this)
         getProjectFromServer()
         labourList = ArrayList<Labour>()
         labourDataList = ArrayList<LabourInfo>()
@@ -80,15 +83,16 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
         }
         binding.ivSearchByLabourId.setOnClickListener {
             if (validateFields()) {
+                progressDialog.show()
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
+
                         val call = apiService.getLabourDataByIdForAttendance(mgnrega_card_id = binding.etLabourId.text.toString())
                         call.enqueue(object : Callback<LabourByMgnregaId> {
                             override fun onResponse(
                                 call: Call<LabourByMgnregaId>,
                                 response: Response<LabourByMgnregaId>
                             ) {
-
                                 if (response.isSuccessful) {
                                     (labourDataList as ArrayList<LabourInfo>).clear()
                                     if (response.body()?.status.equals("true")) {
@@ -110,21 +114,45 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                                 binding.recyclerViewAttendance.adapter = adapter;
                                                 adapter.notifyDataSetChanged()
                                                 val toast = Toast.makeText(
-                                                    this@AllocateWorkActivity, "Labour not found",
+                                                    this@AllocateWorkActivity,
+                                                    getString(R.string.labour_not_found),
                                                     Toast.LENGTH_LONG
                                                 )
                                                 toast.show()
                                             }
                                         }
                                     } else {
-
+                                        runOnUiThread {
+                                            val toast = Toast.makeText(
+                                                this@AllocateWorkActivity, resources.getString(R.string.please_try_again),
+                                                Toast.LENGTH_LONG
+                                            )
+                                            toast.show()
+                                        }
+                                    }
+                                }else{
+                                    runOnUiThread {
+                                        val toast = Toast.makeText(
+                                            this@AllocateWorkActivity, resources.getString(R.string.response_unsuccessfull),
+                                            Toast.LENGTH_LONG
+                                        )
+                                        toast.show()
                                     }
                                 }
+                                runOnUiThread { progressDialog.dismiss() }
                             }
 
                             override fun onFailure(call: Call<LabourByMgnregaId>, t: Throwable) {
                                 Log.d("mytag", "onFailure getLabourDataById : ${t.message}")
                                 t.printStackTrace()
+                                runOnUiThread { progressDialog.dismiss() }
+                                runOnUiThread {
+                                    val toast = Toast.makeText(
+                                        this@AllocateWorkActivity, resources.getString(R.string.error_occured_during_api_call),
+                                        Toast.LENGTH_LONG
+                                    )
+                                    toast.show()
+                                }
                             }
                         })
 
@@ -132,6 +160,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                     } catch (e: Exception) {
                         Log.d("mytag", "Exception Inserted : ${e.message}")
                         e.printStackTrace()
+                        runOnUiThread { progressDialog.dismiss() }
                     }
                 }
             } else {
@@ -234,6 +263,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
             Glide.with(this@AllocateWorkActivity).load(labourImage).into(ivPhoto)
             val btnSubmit = dialog.findViewById<Button>(R.id.btnSubmit)
             btnSubmit.setOnClickListener {
+                progressDialog.show()
                 if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
 
                     var dayType = ""
@@ -249,13 +279,15 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                             call: Call<MastersModel>,
                             response: Response<MastersModel>
                         ) {
+                            progressDialog.dismiss()
                             Log.d("mytag","showAttendanceDialog : onResponse ");
                             dialog.dismiss()
                             if (response.isSuccessful) {
 
                                 if (response.body()?.status.equals("true")) {
                                     val toast = Toast.makeText(
-                                        this@AllocateWorkActivity, "Attendance marked successfully",
+                                        this@AllocateWorkActivity,
+                                        getString(R.string.attendance_marked_successfully),
                                         Toast.LENGTH_LONG
                                     )
                                     toast.show()
@@ -266,6 +298,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                     binding.tvProjectAddress.setText("")
                                     binding.projectArea.clearListSelection()
                                     binding.projectArea.setText("")
+                                    binding.tvProjectDuration.setText("")
                                 }else{
                                     val toast = Toast.makeText(
                                         this@AllocateWorkActivity, response.body()?.message,
@@ -279,10 +312,12 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                     binding.tvProjectAddress.setText("")
                                     binding.projectArea.clearListSelection()
                                     binding.projectArea.setText("")
+                                    binding.tvProjectDuration.setText("")
                                 }
                             }else{
                                 val toast = Toast.makeText(
-                                    this@AllocateWorkActivity, "Unable to mark  please try again",
+                                    this@AllocateWorkActivity,
+                                    getString(R.string.unable_to_mark_please_try_again),
                                     Toast.LENGTH_LONG
                                 )
                                 toast.show()
@@ -290,10 +325,11 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                         }
 
                         override fun onFailure(call: Call<MastersModel>, t: Throwable) {
+                            progressDialog.dismiss()
                             Log.d("mytag","showAttendanceDialog : onFailure "+t.message);
                             dialog.dismiss()
                             val toast = Toast.makeText(
-                                this@AllocateWorkActivity, "Error occured during api call",
+                                this@AllocateWorkActivity, resources.getString(R.string.error_occured_during_api_call),
                                 Toast.LENGTH_LONG
                             )
                             toast.show()
@@ -310,6 +346,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
 
             }
         } catch (e: Exception) {
+            progressDialog.dismiss()
             Log.d("mytag","showAttendanceDialog : Exception "+e.message);
             e.printStackTrace()
         }
@@ -323,57 +360,66 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
         binding.tvProjectAddress.setText("")
         binding.projectArea.clearListSelection()
         binding.projectArea.setText("")
+        binding.tvProjectDuration.setText("")
     }
 
     private fun getProjectFromServer()
     {
-        val apiService = ApiClient.create(this@AllocateWorkActivity)
-        val call = apiService.getProjectListForAttendance(latitude = pref.getLatitude()!!, longitude = pref.getLongitude()!!)
-        call.enqueue(object : Callback<ProjectLabourListForMarker> {
-            override fun onResponse(
-                call: Call<ProjectLabourListForMarker>,
-                response: Response<ProjectLabourListForMarker>
-            ) {
-                Log.d("mytag", Gson().toJson(response.body()))
-                if (response.isSuccessful) {
-                    if (!response.body()?.project_data.isNullOrEmpty()) {
-                        listProject = response.body()?.project_data!!
-                        val projectNames = mutableListOf<String>()
-                        for (project in listProject) {
-                            projectNames.add(project.project_name)
-                        }
-                        val projectNamesAdapter = ArrayAdapter(
-                            this@AllocateWorkActivity,
-                            android.R.layout.simple_list_item_1,
-                            projectNames
-                        )
-                        binding.projectArea.setAdapter(projectNamesAdapter)
-                    } else {
-                        val toast = Toast.makeText(
-                            this@AllocateWorkActivity, "No data found",
-                            Toast.LENGTH_LONG
-                        )
-                        toast.show()
+        try {
+            progressDialog.show()
+            val apiService = ApiClient.create(this@AllocateWorkActivity)
+            val call = apiService.getProjectListForAttendance(latitude = pref.getLatitude()!!, longitude = pref.getLongitude()!!)
+            call.enqueue(object : Callback<ProjectLabourListForMarker> {
+                override fun onResponse(
+                    call: Call<ProjectLabourListForMarker>,
+                    response: Response<ProjectLabourListForMarker>
+                ) {
+                    progressDialog.dismiss()
+                    Log.d("mytag", Gson().toJson(response.body()))
+                    if (response.isSuccessful) {
+                        if (!response.body()?.project_data.isNullOrEmpty()) {
+                            listProject = response.body()?.project_data!!
+                            val projectNames = mutableListOf<String>()
+                            for (project in listProject) {
+                                projectNames.add(project.project_name)
+                            }
+                            val projectNamesAdapter = ArrayAdapter(
+                                this@AllocateWorkActivity,
+                                android.R.layout.simple_list_item_1,
+                                projectNames
+                            )
+                            binding.projectArea.setAdapter(projectNamesAdapter)
+                        } else {
+                            val toast = Toast.makeText(
+                                this@AllocateWorkActivity,
+                                getString(R.string.project_list_not_found),
+                                Toast.LENGTH_LONG
+                            )
+                            toast.show()
 
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@AllocateWorkActivity,
+                            resources.getString(R.string.response_unsuccessfull),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
-                } else {
+                }
+
+                override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
+                    progressDialog.dismiss()
+                    Log.d("mytag", "onFailure getProjectFromServer " + t.message)
                     Toast.makeText(
                         this@AllocateWorkActivity,
-                        "response unsuccessful",
+                        resources.getString(R.string.error_occured_during_api_call),
                         Toast.LENGTH_LONG
                     ).show()
                 }
-            }
-
-            override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
-                Log.d("mytag", "onFailure getProjectFromServer " + t.message)
-                Toast.makeText(
-                    this@AllocateWorkActivity,
-                    "Error occured during api unsuccessful",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        })
+            })
+        } catch (e: Exception) {
+            progressDialog.dismiss()
+        }
     }
 
     private fun getLabourByIdFromServer(mgnregaId: String) {

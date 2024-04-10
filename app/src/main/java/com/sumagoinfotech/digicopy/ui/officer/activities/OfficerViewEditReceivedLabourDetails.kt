@@ -1,6 +1,7 @@
 package com.sumagoinfotech.digicopy.ui.officer.activities
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +32,7 @@ import com.sumagoinfotech.digicopy.model.apis.getlabour.HistoryDetailsItem
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
+import com.sumagoinfotech.digicopy.ui.officer.OfficerMainActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.NonScrollableLayoutManager
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -198,6 +200,9 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                         {
                             Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
                                 getString(R.string.labour_registration_approved), Toast.LENGTH_SHORT).show()
+                            val intent= Intent(this@OfficerViewEditReceivedLabourDetails,OfficerMainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
                             finish()
                         }else {
                             Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
@@ -314,6 +319,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                             val list=response.body()?.data
                             Log.d("mytag",""+ Gson().toJson(response.body()));
                             binding.tvFullName.text=list?.get(0)?.full_name
+                            binding.tvGramsevakName.text=list?.get(0)?.gramsevak_full_name
                             binding.tvGender.text=list?.get(0)?.gender_name
                             binding.tvDistritct.text=list?.get(0)?.district_name
                             binding.tvTaluka.text=list?.get(0)?.taluka_name
@@ -344,10 +350,10 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                             }
 
                             Log.d("mytag","=>"+historyList.size);
-                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(mgnregaIdImage).into(binding.ivMnregaCard)
-                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(photo).into(binding.ivPhoto)
-                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(aadharImage).into(binding.ivAadhar)
-                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(voterIdImage).into(binding.ivVoterId)
+                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(mgnregaIdImage).override(200,200).into(binding.ivMnregaCard)
+                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(photo).override(200,200).into(binding.ivPhoto)
+                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(aadharImage).override(200,200).into(binding.ivAadhar)
+                            Glide.with(this@OfficerViewEditReceivedLabourDetails).load(voterIdImage).override(200,200).into(binding.ivVoterId)
                             val familyList=response.body()?.data?.get(0)?.family_details
                             Log.d("mytag",""+familyList?.size);
                             var adapterFamily= FamilyDetailsListOnlineAdapter(familyList)

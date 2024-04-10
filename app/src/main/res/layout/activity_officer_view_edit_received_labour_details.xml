@@ -314,6 +314,32 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"></TextView>
                         </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="7"
+                                android:text="@string/Gramsevak"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"></TextView>
+
+                            <TextView
+
+                                android:textColor="@color/black"
+                                android:id="@+id/tvGramsevakName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="4"
+                                android:ellipsize="end"
+                                android:lines="1"
+                                android:maxLines="1"
+                                android:textSize="16sp"></TextView>
+                        </LinearLayout>
 
 
                         <TextView
@@ -366,7 +392,7 @@
                                         android:layout_height="120dp"
                                         android:layout_gravity="center"
                                         android:layout_weight="1"
-                                        android:scaleType="fitCenter"
+                                        android:scaleType="center"
                                         android:src="@drawable/document"></ImageView>
 
                                     <TextView
@@ -400,7 +426,7 @@
                                         android:layout_height="120dp"
                                         android:layout_gravity="center"
                                         android:layout_weight="1"
-                                        android:scaleType="fitCenter"
+                                        android:scaleType="center"
                                         android:src="@drawable/document"></ImageView>
 
                                     <TextView
@@ -433,7 +459,7 @@
                                         android:layout_height="120dp"
                                         android:layout_gravity="center"
                                         android:layout_weight="1"
-                                        android:scaleType="fitCenter"
+                                        android:scaleType="center"
                                         android:src="@drawable/document"></ImageView>
 
                                     <TextView
@@ -512,13 +538,14 @@
                             android:background="@drawable/edittext_background"
                             android:layout_width="match_parent"
                             android:layout_height="48dp"></AutoCompleteTextView>
-                            <com.google.android.material.textfield.TextInputLayout
+                            <LinearLayout
                                 android:id="@+id/etRemarkslayout"
                                 android:visibility="gone"
                                 android:layout_marginTop="16dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
                                 <com.google.android.material.textfield.TextInputEditText
+                                    android:background="@drawable/rounded_blue_border"
                                     android:paddingTop="10dp"
                                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
                                     android:id="@+id/etRemarks"
@@ -527,7 +554,7 @@
                                     android:layout_gravity="start"
                                     android:layout_width="match_parent"
                                     android:layout_height="100dp"></com.google.android.material.textfield.TextInputEditText>
-                            </com.google.android.material.textfield.TextInputLayout>
+                            </LinearLayout>
 
 
 

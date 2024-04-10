@@ -28,13 +28,15 @@ class OfficerDocsReceivedForApprovalAdapter(var list:MutableList<DocumentItem>):
         val tvAddress: TextView =itemView.findViewById(R.id.tvAddress)
         val ivViewDocument: ImageView =itemView.findViewById(R.id.ivViewDocument)
         val ivDownloadDocument: ImageView =itemView.findViewById(R.id.ivDownloadDocument)
+        val tvGramsevakName: TextView = itemView.findViewById(R.id.tvGramsevakName)
+        val ivEdit: ImageView = itemView.findViewById(R.id.ivEdit)
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): OfficerDocsReceivedForApprovalAdapter.ViewHolder {
-        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_row_document_received_for_approval,parent,false)
+        val view=LayoutInflater.from(parent.context).inflate(R.layout.item_row_docs_officer_list_received_for_approval,parent,false)
         return ViewHolder(view)
     }
 
@@ -44,6 +46,7 @@ class OfficerDocsReceivedForApprovalAdapter(var list:MutableList<DocumentItem>):
     ) {
 
         try {
+            holder.tvGramsevakName.text=list[position].gramsevak_full_name
             holder.tvDocumentName.setText(list[position].document_name)
             holder.tvDocumentType.setText(list[position].document_type_name)
             holder.tvDocumentStatus.setText(list[position].status_name)
@@ -65,7 +68,7 @@ class OfficerDocsReceivedForApprovalAdapter(var list:MutableList<DocumentItem>):
                 FileDownloader.downloadFile(holder.itemView.context,list.get(position).document_pdf,list.get(position).document_name)
             }
 
-            holder.itemView.setOnClickListener {
+            holder.ivEdit.setOnClickListener {
                 val intent=Intent(holder.itemView.context,OfficerDocsEditActivity::class.java)
                 intent.putExtra("id",list?.get(position)?.id.toString())
                 holder.itemView.context.startActivity(intent)

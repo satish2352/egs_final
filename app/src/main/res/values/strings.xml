@@ -148,4 +148,12 @@
     <string name="please_make_changes_to_document_before_submitting">Please Make Changes To Document Before Submitting</string>
     <string name="retry">Retry</string>
     <string name="approved_document_list">Approved Document List</string>
+    <string name="Gramsevak">Gramsevak Name</string>
+    <string name="labour_not_found">Labour not found</string>
+    <string name="project_list_not_found">project list not found</string>
+    <string name="unable_to_mark_please_try_again">Unable to mark  please try again</string>
+    <string name="attendance_marked_successfully">Attendance marked successfully</string>
+    <string name="letter_number_validation_string_with_space">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
+    <string name="not_approved_documents">Not Approved Documents</string>
+    <string name="documents_received_for_approval">Documents Received For Approval</string>
 </resources>

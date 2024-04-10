@@ -57,6 +57,7 @@ import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.PdfPageAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityEditDocumentBinding
+import com.sumagoinfotech.digicopy.ui.gramsevak.ReportsActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.FileInfo
@@ -780,7 +781,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                             Toast.makeText(this@EditDocumentActivity,response.body()?.message,Toast.LENGTH_LONG).show()
                         }
 
-                        val intent = Intent(this@EditDocumentActivity, DocumentListNotApprovedActivity::class.java)
+                        val intent = Intent(this@EditDocumentActivity, ReportsActivity::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         startActivity(intent)
                         finish()

@@ -89,10 +89,10 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                             mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
                             aadharImage= list?.get(0)?.aadhar_image.toString()
                             voterIdImage= list?.get(0)?.voter_image.toString()
-                            Glide.with(this@ViewLabourFromMarkerClick).load(mgnregaIdImage).into(binding.ivMnregaCard)
-                            Glide.with(this@ViewLabourFromMarkerClick).load(photo).into(binding.ivPhoto)
-                            Glide.with(this@ViewLabourFromMarkerClick).load(aadharImage).into(binding.ivAadhar)
-                            Glide.with(this@ViewLabourFromMarkerClick).load(voterIdImage).into(binding.ivVoterId)
+                            Glide.with(this@ViewLabourFromMarkerClick).load(mgnregaIdImage).override(200,200).into(binding.ivMnregaCard)
+                            Glide.with(this@ViewLabourFromMarkerClick).load(photo).override(200,200).into(binding.ivPhoto)
+                            Glide.with(this@ViewLabourFromMarkerClick).load(aadharImage).override(200,200).into(binding.ivAadhar)
+                            Glide.with(this@ViewLabourFromMarkerClick).load(voterIdImage).override(200,200).into(binding.ivVoterId)
                             val familyList=response.body()?.data?.get(0)?.family_details
                             Log.d("mytag",""+familyList?.size);
 
