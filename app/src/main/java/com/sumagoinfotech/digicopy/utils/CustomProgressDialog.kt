@@ -12,6 +12,7 @@ import com.sumagoinfotech.digicopy.R
 
 class CustomProgressDialog(private val context: Context) {
     private val dialog: CustomDialog
+    private var isDialogVisible: Boolean = false // Track dialog visibility
 
     init {
         val inflater = (context as Activity).layoutInflater
@@ -23,14 +24,22 @@ class CustomProgressDialog(private val context: Context) {
         // Custom Dialog initialization
         dialog = CustomDialog(context)
         dialog.setContentView(view)
+        isDialogVisible = false // Initially set to false
+
     }
 
     public fun show() {
         dialog.show()
+        isDialogVisible = true // U
     }
 
     public fun dismiss() {
         dialog.dismiss()
+        isDialogVisible = false // Update dialog visibility status
+
+    }
+    fun isDialogVisible(): Boolean {
+        return isDialogVisible
     }
 
     private fun setColorFilter(drawable: Drawable, color: Int) {

@@ -23,7 +23,7 @@
         android:textSize="10dp" />
 
     <AutoCompleteTextView
-        android:hint="Select Project Area"
+        android:hint="@string/select_project"
         android:paddingLeft="25dp"
         android:paddingRight="15dp"
         android:paddingTop="5dp"
