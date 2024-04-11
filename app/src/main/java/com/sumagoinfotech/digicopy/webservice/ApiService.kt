@@ -1,6 +1,7 @@
 package com.sumagoinfotech.digicopy.webservice
 
 import com.sumagoinfotech.digicopy.model.apis.LaboureEditDetailsOnline.LabourEditDetailsOnline
+import com.sumagoinfotech.digicopy.model.apis.MgnregaIdAutoSuggestionModel
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
 import com.sumagoinfotech.digicopy.model.apis.getlabour.LabourByMgnregaId
@@ -9,6 +10,7 @@ import com.sumagoinfotech.digicopy.model.apis.login.LoginModel
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
 import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapMarkerModel
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
+import com.sumagoinfotech.digicopy.model.apis.mastersupdate.AreaMastersUpdateModel
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
@@ -18,6 +20,7 @@ import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.model.apis.update.LabourUpdateDetails
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
@@ -25,6 +28,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.PartMap
 import retrofit2.http.Query
 import retrofit2.http.Streaming
 import retrofit2.http.Url
@@ -34,6 +38,11 @@ interface ApiService {
     // masters initial
     @POST("list-masters")
     fun getAllMasters(): Call<MastersModel>
+
+    @POST("list-updated-master")
+    fun getAreaMastersToUpdate(): Call<AreaMastersUpdateModel>
+
+
 
     @POST("login")
     fun loginUser(
@@ -187,6 +196,25 @@ interface ApiService {
         @Part file3: MultipartBody.Part,
         @Part file4: MultipartBody.Part
     ): Response<MastersModel>
+    @Multipart
+    @POST("auth/update-labour-second-form")
+    suspend fun updateLabourFormTwoImageOptional(
+        @Query("id") id: String,
+        @Query("family") family: String,
+        @Query("longitude") longitude: String,
+        @Query("latitude") latitude: String,
+        @PartMap files: Map<String, @JvmSuppressWildcards RequestBody>,
+    ): Response<MastersModel>
+
+    @Multipart
+    @POST("auth/update-labour-second-form")
+    suspend fun updateLabourFormTwoImageOptionalFileList(
+        @Query("id") id: String,
+        @Query("family") family: String,
+        @Query("longitude") longitude: String,
+        @Query("latitude") latitude: String,
+        @Part files: List<MultipartBody.Part>,
+    ): Response<MastersModel>
 
     @Multipart
     @POST("auth/add-document")
@@ -197,6 +225,13 @@ interface ApiService {
         @Query("longitude") longitude: String,
         @Part file: MultipartBody.Part
     ): Response<MastersModel>
+
+    @POST("auth/autosugg-mgnrega-card-id")
+    suspend fun getSuggestionForMgnregaId(
+        @Query("mgnrega_card_id") mgnregaId: String
+    ): Response<MgnregaIdAutoSuggestionModel>
+
+
 
     @POST("auth/list-document")
     fun getUploadedDocumentsList(

@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         >
 
-        <EditText
+        <AutoCompleteTextView
             android:digits="@string/letter_number_validation_string_with_space"
             android:maxLines="1"
             android:lines="1"
@@ -33,7 +33,7 @@
             android:paddingLeft="16dp"
             android:layout_weight="1"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"></EditText>
+            android:layout_height="48dp"></AutoCompleteTextView>
         <LinearLayout
             android:layout_marginLeft="16dp"
             android:orientation="horizontal"

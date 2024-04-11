@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.gson.Gson
 import com.sumagoinfotech.digicopy.MainActivity
+import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentReasonsDao
@@ -34,12 +35,15 @@ import com.sumagoinfotech.digicopy.model.apis.masters.Reasons
 import com.sumagoinfotech.digicopy.model.apis.masters.RegistrationStatus
 import com.sumagoinfotech.digicopy.model.apis.masters.Relation
 import com.sumagoinfotech.digicopy.model.apis.masters.Skill
+import com.sumagoinfotech.digicopy.model.apis.mastersupdate.AreaMaster
+import com.sumagoinfotech.digicopy.model.apis.mastersupdate.AreaMastersUpdateModel
 import com.sumagoinfotech.digicopy.ui.officer.OfficerMainActivity
 import com.sumagoinfotech.digicopy.utils.DeviceUtils
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -105,7 +109,15 @@ class SplashActivity : AppCompatActivity() {
                    }else{
                        Log.d("mytag","Not empty")
                    }
-               fetchMastersFromServer()
+              /* fetchMastersFromServer()
+               fetchAreaMastersToUpdateFromServer()*/
+               val fetchMastersDeferred = async { fetchMastersFromServer() }
+               val fetchAreaMastersDeferred = async { fetchAreaMastersToUpdateFromServer() }
+
+               // Await for both fetch operations to complete
+               fetchMastersDeferred.await()
+               fetchAreaMastersDeferred.await()
+
                withContext(Dispatchers.Main) {
                    val mySharedPref=MySharedPref(this@SplashActivity)
                    if(mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId()==3){
@@ -154,7 +166,7 @@ class SplashActivity : AppCompatActivity() {
         return items
     }
 
-    private  fun fetchMastersFromServer(){
+    private  fun  fetchMastersFromServer(){
         try {
             val apiService= ApiClient.create(this@SplashActivity)
             apiService.getAllMasters().enqueue(object :
@@ -165,6 +177,7 @@ class SplashActivity : AppCompatActivity() {
                 ) {
                     if(response.isSuccessful){
                         if(response.body()?.status.equals("success")) {
+                            Log.d("mytag","fetchMastersFromServer:success")
                             val skillsConverted=mapToSkills(response?.body()?.data?.skills!!)
                             val maritalStatusConverted=mapToMaritalStatus(response?.body()?.data?.maritalstatus!!)
                             val genderConverted=mapToMaritalGender(response?.body()?.data?.gender!!)
@@ -186,18 +199,18 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }else {
                             Log.d("mytag","fetchMastersFromServer:Response Not success")
-                            Toast.makeText(this@SplashActivity, "No records found", Toast.LENGTH_SHORT)
+                            Toast.makeText(this@SplashActivity, resources.getString(R.string.no_records_found), Toast.LENGTH_SHORT)
                                 .show()
                         }
                     } else{
                         Log.d("mytag","fetchMastersFromServer:Response unsuccessful")
-                        Toast.makeText(this@SplashActivity, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SplashActivity, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
                     }
 
                 }
                 override fun onFailure(call: Call<MastersModel>, t: Throwable) {
                     Log.d("mytag","fetchMastersFromServer:onFailure ${t.message}")
-                    Toast.makeText(this@SplashActivity, "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@SplashActivity, resources.getString(R.string.error_occured_during_api_call), Toast.LENGTH_SHORT).show()
                 }
             })
         } catch (e: Exception) {
@@ -205,6 +218,71 @@ class SplashActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
+    private  fun fetchAreaMastersToUpdateFromServer(){
+        try {
+            val apiService= ApiClient.create(this@SplashActivity)
+            apiService.getAreaMastersToUpdate().enqueue(object :
+                Callback<AreaMastersUpdateModel> {
+                override fun onResponse(
+                    call: Call<AreaMastersUpdateModel>,
+                    response: Response<AreaMastersUpdateModel>
+                ) {
+                    if(response.isSuccessful){
+                        if(response.body()?.status.equals("true")) {
+                            if(response.body()?.data?.size!!>0){
+                                Log.d("mytag","Update Size =>"+response.body()?.data?.size)
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val areaDataConverted=mapDataToArea(response?.body()?.data!!)
+                                    areaDataConverted.forEach { entity ->
+                                        val existingEntity = areaDao.getAreaByLocationId(entity.location_id)
+                                        if (existingEntity != null) {
+                                            // Update existing entity
+                                            entity.id = existingEntity.id
+                                            areaDao.update(entity)
+                                        } else {
+                                            // Insert new entity
+                                            areaDao.insert(entity)
+                                        }
+                                    }
+                                }
+                            }else{
+                                Log.d("mytag","No records found in area masters update =>"+response.body()?.data?.size)
+                            }
+                        }else {
+                            Log.d("mytag","fetchMastersFromServer:Response Not success")
+                            Toast.makeText(this@SplashActivity, resources.getString(R.string.no_records_found), Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    } else{
+                        Log.d("mytag","fetchMastersFromServer:Response unsuccessful")
+                        Toast.makeText(this@SplashActivity, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+                override fun onFailure(call: Call<AreaMastersUpdateModel>, t: Throwable) {
+                    Log.d("mytag","fetchMastersFromServer:onFailure ${t.message}")
+                    Toast.makeText(this@SplashActivity, resources.getString(R.string.error_occured_during_api_call), Toast.LENGTH_SHORT).show()
+                }
+            })
+        } catch (e: Exception) {
+            Log.d("mytag","Exception: "+e.message)
+            e.printStackTrace()
+        }
+    }
+    fun mapDataToArea(apiResponseList: List<AreaMaster>): List<AreaItem> {
+        return apiResponseList.map { apiResponse ->
+            AreaItem(
+                parent_id = apiResponse.parent_id.toString(),
+                is_active = apiResponse.is_active,
+                is_visible = apiResponse.is_visible,
+                location_id = apiResponse.location_id.toString(),
+                location_type = apiResponse.location_type,
+                name = apiResponse.name
+            )
+        }
+    }
+
 
     fun mapToSkills(apiResponseList: List<Skill>): List<Skills> {
         return apiResponseList.map { apiResponse ->

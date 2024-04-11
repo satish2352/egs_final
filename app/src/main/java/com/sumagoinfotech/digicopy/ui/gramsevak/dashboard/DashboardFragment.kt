@@ -12,10 +12,13 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
@@ -58,6 +61,10 @@ import com.sumagoinfotech.digicopy.utils.CustomMarkerObject
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -74,6 +81,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     lateinit var dialog: CustomProgressDialog
     private var latitude = ""
     private var longitude = ""
+    private lateinit var adapter: ArrayAdapter<String>
+    private var suggestionList= mutableListOf<String>()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -145,10 +154,81 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 bottomSheetDialogFragment.setBottomSheetListener(this@DashboardFragment)
                 bottomSheetDialogFragment.show(childFragmentManager, bottomSheetDialogFragment.tag)
             }
+
+            adapter= ArrayAdapter(requireContext(),android.R.layout.simple_dropdown_item_1line,suggestionList)
+            binding.etInput.setAdapter(adapter)
+            binding.etInput.threshold=3
+
+            binding.etInput.addTextChangedListener(object :TextWatcher{
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                    if(s?.length!!>=3){
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            getSuggestionsForMgnregaId(s.toString())
+                        }
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    if(s?.length!!>=3){
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            getSuggestionsForMgnregaId(s.toString())
+                        }
+                    }
+                }
+            })
         } catch (e: Exception) {
             Log.d("mytag", "Exception " + e.message)
         }
         return root
+    }
+
+    suspend fun getSuggestionsForMgnregaId(text:String){
+
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                val apiService=ApiClient.create(requireContext())
+
+                val response=apiService.getSuggestionForMgnregaId(text)
+                if(response.isSuccessful){
+
+                    if(response.body()?.status.equals("true"))
+                    {
+                        if(!response.body()?.data?.isNullOrEmpty()!!){
+                            Log.d("mytag",""+ response.body()?.data!!.size)
+                            withContext(Dispatchers.Main){
+                                adapter.clear()
+                                suggestionList.clear()
+                                suggestionList= response.body()?.data?.toMutableList()!!
+                                adapter= ArrayAdapter(requireContext(),android.R.layout.simple_dropdown_item_1line,suggestionList)
+                                binding.etInput.setAdapter(adapter)
+                                adapter.notifyDataSetChanged()
+                            }
+                        }
+
+                    }else{
+
+                    }
+                }else{
+
+                }
+
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "Exception " + e.message)
+            e.printStackTrace()
+        }
     }
 
     private fun requestLocationUpdates() {

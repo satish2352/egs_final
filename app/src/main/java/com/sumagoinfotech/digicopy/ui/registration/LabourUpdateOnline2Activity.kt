@@ -104,6 +104,9 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private lateinit var aadharIdImagePath:String
     private lateinit var photoImagePath:String
     private lateinit var mgnregaIdImagePath:String
+
+
+
     private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var labourInputData: LabourInputData
     private lateinit var labourDao: LabourDao
@@ -126,6 +129,11 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private var labourId=""
     private lateinit var dialog:CustomProgressDialog
     private var isInternetAvailable=false
+
+    private  var voterIdImagePathNew:String=""
+    private  var aadharIdImagePathNew:String=""
+    private  var photoImagePathNew:String=""
+    private  var mgnregaIdImagePathNew:String=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLabourUpdateOnline2Binding.inflate(layoutInflater)
@@ -190,7 +198,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                     val familyDetails= Gson().toJson(familyDetailsList).toString()
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            uploadLabourOnline()
+                            //uploadLabourOnline()
+                            uploadLabourOnlineImageOptional()
                         } catch (e: Exception) {
                             Log.d("mytag","Exception on update : ${e.message}")
                             e.printStackTrace()
@@ -218,11 +227,13 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         Log.d("myatg", "URI for Aadhar Card: $uriAadhar")
                         binding.ivAadhar.setImageURI(uriAadhar)
                         Glide.with(this@LabourUpdateOnline2Activity).load(uriAadhar).override(200,200).into(binding.ivAadhar)
+                        aadharIdImagePathNew=uriAadhar.toString();
                         aadharIdImagePath= uriAadhar.toString()
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriAadhar.toString(),binding.etLocation.text.toString(),addressFromLatLong)
                             withContext(Dispatchers.Main){
                                 // binding.ivPhoto.setImageBitmap(bitmap)
+                                aadharIdImagePath=uri.toString()
                             }
 
                         }
@@ -236,8 +247,10 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         //binding.ivMgnregaCard.setImageURI(uriMgnregaCard)
                         Glide.with(this@LabourUpdateOnline2Activity).load(uriMgnregaCard).override(200,200).into(binding.ivMgnregaCard)
                         mgnregaIdImagePath= uriMgnregaCard.toString()
+                        mgnregaIdImagePathNew=uriMgnregaCard.toString();
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriMgnregaCard.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            mgnregaIdImagePathNew=uri.toString();
                             try {
                                 getAddressFromLatLong()
                             } finally {
@@ -245,6 +258,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                             }
                             withContext(Dispatchers.Main){
                                 // binding.ivPhoto.setImageBitmap(bitmap)
+
                             }
 
                         }
@@ -258,8 +272,10 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         //binding.ivPhoto.setImageURI(uriPhoto)
                         Glide.with(this@LabourUpdateOnline2Activity).load(uriPhoto).override(200,200).into(binding.ivPhoto)
                         photoImagePath= uriPhoto.toString()
+                        photoImagePathNew=uriPhoto.toString()
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriPhoto.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            photoImagePathNew=uri.toString()
                             withContext(Dispatchers.Main){
                                 // binding.ivPhoto.setImageBitmap(bitmap)
                             }
@@ -275,8 +291,11 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         //binding.ivVoterId.setImageURI(uriVoterId)
                         Glide.with(this@LabourUpdateOnline2Activity).load(uriVoterId).override(200,200).into(binding.ivVoterId)
                         voterIdImagePath= uriVoterId.toString()
+                        voterIdImagePathNew=uriVoterId.toString()
+
                         CoroutineScope(Dispatchers.IO).launch {
                             val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriVoterId.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            voterIdImagePathNew=uri.toString()
                             withContext(Dispatchers.Main){
                                 // binding.ivPhoto.setImageBitmap(bitmap)
                             }
@@ -874,7 +893,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         createFilePart(FileInfo("profile_image", photoImagePath))
                     val mgnregaIdImage =
                         createFilePart(FileInfo("mgnrega_image",mgnregaIdImagePath))
-                    val response= apiService.updateLabourFormTwo(
+
+                val response= apiService.updateLabourFormTwo(
                         latitude=latitude.toString(),
                         longitude = longitude.toString(),
                         family = familyDetails,
@@ -920,5 +940,94 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             }
         }
     }
+
+    private suspend fun uploadLabourOnlineImageOptional(){
+        runOnUiThread {
+            dialog.show()
+        }
+
+        val apiService = ApiClient.create(this@LabourUpdateOnline2Activity)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val familyDetails= Gson().toJson(familyDetailsList).toString()
+                val filesList = mutableListOf<MultipartBody.Part>()
+                if(aadharIdImagePathNew.length>0){
+                    val aadharCardImage =
+                        createFilePart(FileInfo("aadhar_image", aadharIdImagePathNew))
+                    filesList.add(aadharCardImage!!)
+                }
+                if(voterIdImagePathNew.length>0){
+                    val voterImage =
+                        createFilePart(FileInfo("voter_image", voterIdImagePathNew))
+                    filesList.add(voterImage!!)
+                }
+                if(photoImagePathNew.length>0){
+                    val photImage =
+                        createFilePart(FileInfo("profile_image", photoImagePathNew))
+                    filesList.add(photImage!!)
+                }
+                if(mgnregaIdImagePathNew.length>0){
+                    val aadharCardImage =
+                        createFilePart(FileInfo("mgnrega_image", mgnregaIdImagePathNew))
+                    filesList.add(aadharCardImage!!)
+                }
+                val response= apiService.updateLabourFormTwoImageOptionalFileList(
+                    latitude=latitude.toString(),
+                    longitude = longitude.toString(),
+                    family = familyDetails,
+                    id = labourId,
+                    files =filesList
+                    )
+                if(response.isSuccessful){
+                    if(response.body()?.status.equals("true")){
+
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.labour_details_upaded),
+                                Toast.LENGTH_SHORT).show()
+                            val intent= Intent(this@LabourUpdateOnline2Activity, ReportsActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        }
+                    }else{
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour),
+                                Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    Log.d("mytag",""+response.body()?.message)
+                    Log.d("mytag",""+response.body()?.status)
+                }else{
+                    withContext(Dispatchers.Main){
+                        Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour_response),
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
+                runOnUiThread {dialog.dismiss()  }
+            } catch (e: Exception) {
+                runOnUiThread { dialog.dismiss() }
+                withContext(Dispatchers.Main){
+                    Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour_response),
+                        Toast.LENGTH_SHORT).show()
+                }
+                Log.d("mytag","uploadLabourOnline "+e.message)
+            }
+        }
+    }
+
+
+
+    private suspend fun createRequestBodyFromUri(fileUri: String): RequestBody? {
+        try {
+            Log.d("mytag", "$fileUri")
+            val file: File? = uriToFile(applicationContext, fileUri.toString())
+            return file?.let {
+                RequestBody.create("image/*".toMediaTypeOrNull(), it)
+            }
+        } catch (e: Exception) {
+            Log.e("mytag", "Error creating RequestBody from Uri: ${e.message}")
+            return null
+        }
+    }
+
 
 }
