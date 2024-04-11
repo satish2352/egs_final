@@ -6,11 +6,14 @@ import android.util.Log
 import com.sumagoinfotech.digicopy.ui.activities.start.LoginActivity
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import okhttp3.Interceptor
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Protocol
 import okhttp3.Response
+import okhttp3.ResponseBody
 
 class AuthInterceptor(private val context: Context) : Interceptor {
     override fun  intercept(chain: Interceptor.Chain): Response {
-        val response: Response? =null
         try {
             val token = getTokenFromSharedPreferences()
             val request = chain.request().newBuilder()
@@ -27,7 +30,13 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             return response
         } catch (e: Exception) {
             Log.d("mytag","intercept "+e.message)
-            return response!!
+            return Response.Builder()
+                .code(500)
+                .request(chain.request())
+                .protocol(Protocol.HTTP_1_1)
+                .message("Internal Server Error")
+                .body(ResponseBody.create("text/plain".toMediaTypeOrNull(), "Internal Server Error"))
+                .build()
         }
     }
 

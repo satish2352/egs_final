@@ -40,7 +40,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.permissionx.guolindev.PermissionX
-import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.databinding.FragmentDashboardBinding
 import com.sumagoinfotech.digicopy.model.apis.documetqrdownload.QRDocumentDownloadModel
@@ -48,7 +47,7 @@ import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapData
 import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapMarkerModel
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectDataFromLatLong
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
-import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectMarkerData
+import com.sumagoinfotech.digicopy.model.apis.projectlistforofficermap.ProjectMarkerData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.LabourData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.ui.activities.start.LoginActivity
@@ -680,6 +679,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
+
         return false
     }
 

@@ -11,8 +11,9 @@ import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
 import com.sumagoinfotech.digicopy.model.apis.mapmarker.MapMarkerModel
 import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.mastersupdate.AreaMastersUpdateModel
+import com.sumagoinfotech.digicopy.model.apis.officermapdash.DashboardMapOfficerModel
 import com.sumagoinfotech.digicopy.model.apis.projectlist.ProjectsFromLatLongModel
-import com.sumagoinfotech.digicopy.model.apis.projectlistformap.ProjectListModel
+import com.sumagoinfotech.digicopy.model.apis.projectlistforofficermap.ProjectListModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectListForOfficerModel
 import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportCountOfficer
@@ -442,6 +443,8 @@ interface ApiService {
     @Streaming
     suspend fun downloadPdf(@Url url: String): Response<ResponseBody>
 
+    @POST("auth/list-project-for-officer")
+     fun getDashboardProjectListForOfficer(): Call<DashboardMapOfficerModel>
 
 
 

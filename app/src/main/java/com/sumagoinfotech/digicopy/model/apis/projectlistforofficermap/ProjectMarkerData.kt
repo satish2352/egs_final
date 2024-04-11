@@ -1,4 +1,4 @@
-package com.sumagoinfotech.digicopy.model.apis.projectlistformap
+package com.sumagoinfotech.digicopy.model.apis.projectlistforofficermap
 
 data class ProjectMarkerData(
     val description: String,
