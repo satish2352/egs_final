@@ -59,6 +59,7 @@ import com.sumagoinfotech.digicopy.database.entity.Relation
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourUpdateOnline2Binding
 import com.sumagoinfotech.digicopy.interfaces.OnDeleteListener
 import com.sumagoinfotech.digicopy.model.apis.getlabour.FamilyDetail
+import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.ui.gramsevak.ReportsActivity
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
@@ -81,6 +82,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import retrofit2.Response
 
 class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private lateinit var binding:ActivityLabourUpdateOnline2Binding
@@ -354,6 +356,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             }
         })
     }
+
     private fun initializeFields() {
 
         /*binding.etLocation.setText(labour.location)
@@ -952,32 +955,43 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 val familyDetails= Gson().toJson(familyDetailsList).toString()
                 val filesList = mutableListOf<MultipartBody.Part>()
                 if(aadharIdImagePathNew.length>0){
-                    val aadharCardImage =
+                    val aadharCardImageFile =
                         createFilePart(FileInfo("aadhar_image", aadharIdImagePathNew))
-                    filesList.add(aadharCardImage!!)
+                    filesList.add(aadharCardImageFile!!)
                 }
                 if(voterIdImagePathNew.length>0){
-                    val voterImage =
+                    val voterImageFile =
                         createFilePart(FileInfo("voter_image", voterIdImagePathNew))
-                    filesList.add(voterImage!!)
+                    filesList.add(voterImageFile!!)
                 }
                 if(photoImagePathNew.length>0){
-                    val photImage =
+                    val photImageFile =
                         createFilePart(FileInfo("profile_image", photoImagePathNew))
-                    filesList.add(photImage!!)
+                    filesList.add(photImageFile!!)
                 }
                 if(mgnregaIdImagePathNew.length>0){
-                    val aadharCardImage =
+                    val mgnregaIdCardImageFile =
                         createFilePart(FileInfo("mgnrega_image", mgnregaIdImagePathNew))
-                    filesList.add(aadharCardImage!!)
+                    filesList.add(mgnregaIdCardImageFile!!)
                 }
-                val response= apiService.updateLabourFormTwoImageOptionalFileList(
-                    latitude=latitude.toString(),
-                    longitude = longitude.toString(),
-                    family = familyDetails,
-                    id = labourId,
-                    files =filesList
+                var response: Response<MastersModel>? =null
+                if(filesList.size>0){
+                     response= apiService.updateLabourFormTwoImageOptionalFileList(
+                        latitude=latitude.toString(),
+                        longitude = longitude.toString(),
+                        family = familyDetails,
+                        id = labourId,
+                        files =filesList
                     )
+                }else{
+                     response= apiService.updateLabourFormTwoWithoutImage(
+                        latitude=latitude.toString(),
+                        longitude = longitude.toString(),
+                        family = familyDetails,
+                        id = labourId,
+                    )
+                }
+
                 if(response.isSuccessful){
                     if(response.body()?.status.equals("true")){
 

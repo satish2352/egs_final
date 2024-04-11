@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "https://egswebfinal.sumagotest.in/api/"
+    private const val BASE_URL = "https://egswebfinal.sumagodemo.com/api/"
 
     val loggingInterceptor = HttpLoggingInterceptor()
 

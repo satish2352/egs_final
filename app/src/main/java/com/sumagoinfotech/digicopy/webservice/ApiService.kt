@@ -196,14 +196,12 @@ interface ApiService {
         @Part file3: MultipartBody.Part,
         @Part file4: MultipartBody.Part
     ): Response<MastersModel>
-    @Multipart
     @POST("auth/update-labour-second-form")
-    suspend fun updateLabourFormTwoImageOptional(
+    suspend fun updateLabourFormTwoWithoutImage(
         @Query("id") id: String,
         @Query("family") family: String,
         @Query("longitude") longitude: String,
         @Query("latitude") latitude: String,
-        @PartMap files: Map<String, @JvmSuppressWildcards RequestBody>,
     ): Response<MastersModel>
 
     @Multipart
@@ -226,12 +224,18 @@ interface ApiService {
         @Part file: MultipartBody.Part
     ): Response<MastersModel>
 
+
+
     @POST("auth/autosugg-mgnrega-card-id")
     suspend fun getSuggestionForMgnregaId(
         @Query("mgnrega_card_id") mgnregaId: String
     ): Response<MgnregaIdAutoSuggestionModel>
 
 
+    @POST("auth/mgnregacardid-alreadyexist")
+    suspend fun checkMgnregaCardIdExists(
+        @Query("mgnrega_card_id") mgnrega_card_id: String,
+    ): Response<MastersModel>
 
     @POST("auth/list-document")
     fun getUploadedDocumentsList(

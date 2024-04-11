@@ -23,7 +23,7 @@
     <string name="select_district">Select District</string>
     <string name="select_village">Select Village</string>
     <string name="select_taluka">Select Taluka</string>
-    <string name="enter_valid_id_card_number">Enter MNREGA ID Card Number</string>
+    <string name="enter_valid_id_card_number">Enter 8 Digit MGNREGA ID Card Number</string>
     <string name="select_relationship">Select Relationship</string>
     <string name="select_marital_status">Select Marital Status</string>
     <string name="select_document">Select Document</string>
@@ -157,4 +157,6 @@
     <string name="not_approved_documents">Not Approved Documents</string>
     <string name="documents_received_for_approval">Documents Received For Approval</string>
     <string name="no_data_found">No data found</string>
+    <string name="response_failed">Response Failed</string>
+    <string name="labour_details_sent_for_approval">Labour Details Sent For Approval</string>
 </resources>

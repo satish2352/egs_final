@@ -3,6 +3,8 @@ package com.sumagoinfotech.digicopy.ui.registration
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
 import android.widget.ArrayAdapter
@@ -22,8 +24,10 @@ import com.sumagoinfotech.digicopy.database.entity.AreaItem
 import com.sumagoinfotech.digicopy.database.entity.Gender
 import com.sumagoinfotech.digicopy.database.entity.Skills
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistration1Binding
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
+import com.sumagoinfotech.digicopy.webservice.ApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -60,10 +64,13 @@ class LabourRegistration1Activity : AppCompatActivity() {
     private var talukaId=""
     private var genderId=""
     private var skillId=""
+    private lateinit var progressDialog:CustomProgressDialog
+    private var isMgnregaIdVerified=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourRegistration1Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        progressDialog= CustomProgressDialog(this)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title=resources.getString(R.string.registration_step_1)
         appDatabase=AppDatabase.getDatabase(this)
@@ -84,33 +91,40 @@ class LabourRegistration1Activity : AppCompatActivity() {
                     isInternetAvailable = false
                 }
             }) { throwable: Throwable? -> }
+
+
+        binding.etMgnregaIdNumber.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+            override fun afterTextChanged(s: Editable?) {
+                if(s?.length==8){
+                    if(isInternetAvailable){
+                        CoroutineScope(Dispatchers.IO).launch {
+                            checkIfMgnregaIdExists(s.toString())
+                        }
+                    }
+                }
+            }
+        })
+
+
         binding.btnNext.setOnClickListener {
 
             if (validateFieldsX()) {
-                labourInputData=LabourInputData()
-                labourInputData.fullName= binding.etFullName.text.toString()
-                labourInputData.dateOfBirth= binding.etDob.text.toString()
-                labourInputData.district=districtId
-                labourInputData.village= villageId
-                labourInputData.skill=skillId
-                labourInputData.gender=genderId
-                labourInputData.taluka= talukaId
-                labourInputData.mobile= binding.etMobileNumber.text.toString()
-                labourInputData.landline= binding.etLandLine.text.toString()
-                labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
-                registrationViewModel.setData(labourInputData)
-                registrationViewModel.fullName= "binding.etFullName.text.toString()"
-                registrationViewModel.dateOfBirth= binding.etDob.text.toString()
-                registrationViewModel.gender= binding.actGender.text.toString()
-                registrationViewModel.district= binding.actDistrict.text.toString()
-                registrationViewModel.village= binding.actVillage.text.toString()
-                registrationViewModel.taluka= binding.actTaluka.text.toString()
-                registrationViewModel.mobile= binding.etMobileNumber.text.toString()
-                registrationViewModel.landline= binding.etLandLine.text.toString()
-                registrationViewModel.idCard= binding.etMgnregaIdNumber.text.toString()
-                val intent = Intent(this, LabourRegistration2Activity::class.java)
-                intent.putExtra("LabourInputData", labourInputData)
-                startActivity(intent)
+                if(isInternetAvailable && isMgnregaIdVerified==false){
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
+                    }
+                }else{
+                    saveAndGoToNextPage()
+                }
+
             } else {
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
                 toast.show()
@@ -132,6 +146,80 @@ class LabourRegistration1Activity : AppCompatActivity() {
             }
         })
     }
+    private fun saveAndGoToNextPage(){
+        labourInputData=LabourInputData()
+        labourInputData.fullName= binding.etFullName.text.toString()
+        labourInputData.dateOfBirth= binding.etDob.text.toString()
+        labourInputData.district=districtId
+        labourInputData.village= villageId
+        labourInputData.skill=skillId
+        labourInputData.gender=genderId
+        labourInputData.taluka= talukaId
+        labourInputData.mobile= binding.etMobileNumber.text.toString()
+        labourInputData.landline= binding.etLandLine.text.toString()
+        labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
+        registrationViewModel.setData(labourInputData)
+        registrationViewModel.fullName= binding.etFullName.text.toString()
+        registrationViewModel.dateOfBirth= binding.etDob.text.toString()
+        registrationViewModel.gender= binding.actGender.text.toString()
+        registrationViewModel.district= binding.actDistrict.text.toString()
+        registrationViewModel.village= binding.actVillage.text.toString()
+        registrationViewModel.taluka= binding.actTaluka.text.toString()
+        registrationViewModel.mobile= binding.etMobileNumber.text.toString()
+        registrationViewModel.landline= binding.etLandLine.text.toString()
+        registrationViewModel.idCard= binding.etMgnregaIdNumber.text.toString()
+        val intent = Intent(this, LabourRegistration2Activity::class.java)
+        intent.putExtra("LabourInputData", labourInputData)
+        startActivity(intent)
+    }
+
+    private suspend fun checkIfMgnregaIdExists(mgnregaId: String) {
+        runOnUiThread {
+            progressDialog.show()
+        }
+        val apiService = ApiClient.create(this@LabourRegistration1Activity)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+
+                val response= apiService.checkMgnregaCardIdExists(mgnregaId)
+                if(response.isSuccessful){
+                    runOnUiThread { progressDialog.dismiss() }
+                    if(!response.body()?.status.equals("true"))
+                    {
+                        isMgnregaIdVerified=false
+                        runOnUiThread {
+                            binding.etMgnregaIdNumber.error="Mgnrega Card Id already exists with another user"
+                        }
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(this@LabourRegistration1Activity,response.body()?.message,
+                                Toast.LENGTH_SHORT).show()
+                        }
+                    }else{
+                       isMgnregaIdVerified=true
+                        runOnUiThread { binding.etMgnregaIdNumber.error=null }
+                        withContext(Dispatchers.Main){
+                        }
+                    }
+                }else{
+                    withContext(Dispatchers.Main){
+                        progressDialog.dismiss()
+                        Toast.makeText(this@LabourRegistration1Activity,resources.getString(R.string.failed_updating_labour_response),
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
+                //runOnUiThread {dialog.dismiss()  }
+            } catch (e: Exception) {
+                runOnUiThread { progressDialog.dismiss() }
+                withContext(Dispatchers.Main){
+                    Toast.makeText(this@LabourRegistration1Activity,resources.getString(R.string.response_failed),
+                        Toast.LENGTH_SHORT).show()
+                }
+                Log.d("mytag","checkIfAadharCardExists "+e.message)
+            }
+        }
+
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
             val builder = AlertDialog.Builder(this@LabourRegistration1Activity)
@@ -348,7 +436,7 @@ class LabourRegistration1Activity : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length > 0 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length ==8 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {

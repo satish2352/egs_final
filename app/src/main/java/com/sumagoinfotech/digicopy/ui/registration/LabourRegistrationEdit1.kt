@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
 import android.widget.ArrayAdapter
@@ -23,8 +25,10 @@ import com.sumagoinfotech.digicopy.database.entity.Gender
 import com.sumagoinfotech.digicopy.database.entity.Labour
 import com.sumagoinfotech.digicopy.database.entity.Skills
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourRegistrationEdit1Binding
+import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.LabourInputData
 import com.sumagoinfotech.digicopy.utils.MyValidator
+import com.sumagoinfotech.digicopy.webservice.ApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +71,8 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     private var skillsNames= mutableListOf<String>()
     private var genderId=""
     private var skillId=""
+    private lateinit var progressDialog:CustomProgressDialog
+    private var isMgnregaIdVerified=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +82,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         supportActionBar?.title=resources.getString(R.string.update_details_step_1)
         appDatabase=AppDatabase.getDatabase(this)
         areaDao=appDatabase.areaDao()
+        progressDialog= CustomProgressDialog(this)
         var labourId=intent.extras?.getString("id")
         labourDao=appDatabase.labourDao()
         genderDao=appDatabase.genderDao()
@@ -128,7 +135,27 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, genderNames
                 )
                 binding.actGender.setAdapter(genderAdapter)
+
                 initializeFields()
+
+                binding.etMgnregaIdNumber.addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                    }
+                    override fun afterTextChanged(s: Editable?) {
+                        if(s?.length==8){
+                            if(isInternetAvailable){
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    checkIfMgnregaIdExists(s.toString())
+                                }
+                            }
+                        }
+                    }
+                })
             }
         }
         districtList=ArrayList<AreaItem>()
@@ -152,7 +179,8 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 }
             }) { throwable: Throwable? -> }
         binding.btnNext.setOnClickListener {
-            if (validateFieldsX()) {
+            if (validateFieldsX())
+            {
                 labourInputData=LabourInputData()
                 labour.fullName= binding.etFullName.text.toString()
                 labourInputData.dateOfBirth= binding.etDob.text.toString()
@@ -177,7 +205,8 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
         }
         binding.btnUpdateLabour.setOnClickListener {
-            if (validateFieldsX()) {
+            if (validateFieldsX())
+            {
 
 
 
@@ -198,29 +227,19 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 labour.landline= binding.etLandLine.text.toString()
                 labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    var row=labourDao.updateLabour(labour)
-                    Log.d("mytag",""+row)
-                    if(row>0){
-                        runOnUiThread {
-                            val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour updated successfully",
-                                Toast.LENGTH_SHORT)
-                            toast.show()
+                if(isInternetAvailable){
+                    if(isMgnregaIdVerified==false)
+                    {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
                         }
                     }else{
-                        runOnUiThread {
-                            val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour not updated please try again ",
-                                Toast.LENGTH_SHORT)
-                            toast.show()
-                        }
+                        updateLabourDetails()
                     }
+                }else{
+                    updateLabourDetails()
                 }
-                Log.d("mytag","After")
 
-//                    val intent = Intent(this, LabourRegistrationEdit2::class.java)
-//                    intent.putExtra("id",labour.id.toString())
-//                    intent.putExtra("LabourInputData", labourInputData)
-//                    startActivity(intent)
             } else {
 
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
@@ -242,6 +261,72 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun updateLabourDetails(){
+        CoroutineScope(Dispatchers.IO).launch {
+            var row=labourDao.updateLabour(labour)
+            Log.d("mytag",""+row)
+            if(row>0){
+                runOnUiThread {
+                    val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour updated successfully",
+                        Toast.LENGTH_SHORT)
+                    toast.show()
+                }
+            }else{
+                runOnUiThread {
+                    val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour not updated please try again ",
+                        Toast.LENGTH_SHORT)
+                    toast.show()
+                }
+            }
+        }
+        Log.d("mytag","After")
+    }
+    private suspend fun checkIfMgnregaIdExists(mgnregaId: String) {
+        runOnUiThread {
+            progressDialog.show()
+        }
+        val apiService = ApiClient.create(this@LabourRegistrationEdit1)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+
+                val response= apiService.checkMgnregaCardIdExists(mgnregaId)
+                if(response.isSuccessful){
+                    runOnUiThread { progressDialog.dismiss() }
+                    if(!response.body()?.status.equals("true"))
+                    {
+                        isMgnregaIdVerified=false
+                        runOnUiThread {
+                            binding.etMgnregaIdNumber.error="Mgnrega Card Id already exists with another user"
+                        }
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(this@LabourRegistrationEdit1,response.body()?.message,
+                                Toast.LENGTH_SHORT).show()
+                        }
+                    }else{
+                        isMgnregaIdVerified=true
+                        runOnUiThread { binding.etMgnregaIdNumber.error=null }
+
+                    }
+                }else{
+                    withContext(Dispatchers.Main){
+                        progressDialog.dismiss()
+                        Toast.makeText(this@LabourRegistrationEdit1,resources.getString(R.string.failed_updating_labour_response),
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
+                //runOnUiThread {dialog.dismiss()  }
+            } catch (e: Exception) {
+                runOnUiThread { progressDialog.dismiss() }
+                withContext(Dispatchers.Main){
+                    Toast.makeText(this@LabourRegistrationEdit1,resources.getString(R.string.response_failed),
+                        Toast.LENGTH_SHORT).show()
+                }
+                Log.d("mytag","checkIfAadharCardExists "+e.message)
+            }
+        }
+
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -454,7 +539,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length > 0 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length ==8 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {
