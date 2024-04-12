@@ -23,6 +23,8 @@ import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourDetailsBinding
 import com.sumagoinfotech.digicopy.model.FamilyDetails
 import com.sumagoinfotech.digicopy.ui.registration.LabourRegistrationEdit1
 import com.sumagoinfotech.digicopy.adapters.FamilyDetailsListAdapter
+import com.sumagoinfotech.digicopy.database.dao.GenderDao
+import com.sumagoinfotech.digicopy.database.dao.SkillsDao
 import io.getstream.photoview.PhotoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -33,9 +35,13 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewLabourDetailsBinding
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
+    private lateinit var genderDao: GenderDao
+    private lateinit var skillsDao: SkillsDao
     lateinit var labour: LabourWithAreaNames
     private var familyDetailsList=ArrayList<FamilyDetails>()
     lateinit var adapter: FamilyDetailsListAdapter
+    private var myGender=""
+    private var mySkill=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -49,9 +55,13 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
             binding.recyclerViewFamilyDetails.adapter=adapter
             binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this@ViewLabourDetailsActivity,RecyclerView.VERTICAL,false)
             labourDao=database.labourDao()
+            genderDao=database.genderDao()
+            skillsDao=database.skillsDao()
             CoroutineScope(Dispatchers.IO).launch {
                 labour= labourDao.getLabourWithAreaNamesById(Integer.parseInt(labourId))!!
+                genderDao.getGenderById(labour.gender)
                 runOnUiThread {
+
                     initializeFields()
                 }
             }
@@ -82,11 +92,12 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
 
         try {
             binding.tvFullName.text=labour.fullName
-            binding.tvGender.text=labour.gender
+            binding.tvGender.text=labour.genderName
             binding.tvDistritct.text=labour.districtName
             binding.tvTaluka.text=labour.talukaName
             binding.tvVillage.text=labour.villageName
             binding.tvMobile.text=labour.mobile
+            binding.tvSkills.text=labour.skillName
             if(labour.landline.length<1){
                 binding.tvLandline.text="-"
             }

@@ -33,7 +33,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -227,18 +229,15 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 labour.landline= binding.etLandLine.text.toString()
                 labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
 
-                if(isInternetAvailable){
-                    if(isMgnregaIdVerified==false)
-                    {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
-                        }
-                    }else{
-                        updateLabourDetails()
+                if (isInternetAvailable) {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString(),true)
                     }
-                }else{
+
+                } else {
                     updateLabourDetails()
                 }
+
 
             } else {
 
@@ -283,7 +282,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         }
         Log.d("mytag","After")
     }
-    private suspend fun checkIfMgnregaIdExists(mgnregaId: String) {
+    private suspend fun checkIfMgnregaIdExists(mgnregaId: String,isFromMain:Boolean=false) {
         runOnUiThread {
             progressDialog.show()
         }
@@ -296,8 +295,11 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     runOnUiThread { progressDialog.dismiss() }
                     if(!response.body()?.status.equals("true"))
                     {
-                        isMgnregaIdVerified=false
+
+
+                        Log.d("mytag"," exists")
                         runOnUiThread {
+                            isMgnregaIdVerified=false
                             binding.etMgnregaIdNumber.error="Mgnrega Card Id already exists with another user"
                         }
                         withContext(Dispatchers.Main){
@@ -305,8 +307,16 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                                 Toast.LENGTH_SHORT).show()
                         }
                     }else{
-                        isMgnregaIdVerified=true
-                        runOnUiThread { binding.etMgnregaIdNumber.error=null }
+
+                        withContext(Dispatchers.Main){
+                            isMgnregaIdVerified=true
+                            if(isFromMain){
+                                updateLabourDetails()
+                            }
+                        }
+                        Log.d("mytag","Not exists for any labour")
+                        runOnUiThread {
+                            binding.etMgnregaIdNumber.error=null }
 
                     }
                 }else{

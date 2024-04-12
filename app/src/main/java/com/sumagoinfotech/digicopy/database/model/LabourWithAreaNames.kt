@@ -22,5 +22,7 @@ data class LabourWithAreaNames(
     val skill: String,
     val villageName: String?,
     val districtName: String?,
-    val talukaName: String?
+    val talukaName: String?,
+    val genderName: String?,
+    val skillName: String?,
 )

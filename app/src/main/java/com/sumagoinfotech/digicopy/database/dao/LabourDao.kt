@@ -42,11 +42,13 @@ interface LabourDao {
     suspend fun getLabourWithAreaNames(): List<LabourWithAreaNames>
 
 
-    @Query("SELECT l.*, village.name AS villageName, district.name AS districtName, taluka.name AS talukaName " +
+    @Query("SELECT l.*, village.name AS villageName, district.name AS districtName, taluka.name AS talukaName, gender.gender_name AS genderName, skills.skills AS skillName " +
             "FROM labours l " +
             "LEFT JOIN area AS village ON l.village = village.location_id " +
             "LEFT JOIN area AS district ON l.district = district.location_id " +
             "LEFT JOIN area AS taluka ON l.taluka = taluka.location_id " +
+            "LEFT JOIN gender ON l.gender = gender.id " + // Join with the gender table
+            "LEFT JOIN skills ON l.skill = skills.id " + // Join with the skills table
             "WHERE l.id = :labourId AND isSynced=false")
     suspend fun getLabourWithAreaNamesById(labourId: Int): LabourWithAreaNames?
 }
