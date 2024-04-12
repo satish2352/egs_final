@@ -28,6 +28,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"></ImageView>
         <LinearLayout
+            android:id="@+id/layoutMain"
             android:gravity="center"
             android:layout_gravity="center"
             android:orientation="horizontal"
@@ -138,6 +139,22 @@
 
             </LinearLayout>
 
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layoutSyncFailed"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_below="@id/layoutMain"
+            android:background="@color/myred"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_margin="3dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="Labour upload failed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></TextView>
         </LinearLayout>
     </RelativeLayout>
 

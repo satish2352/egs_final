@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -61,7 +62,6 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
                 labour= labourDao.getLabourWithAreaNamesById(Integer.parseInt(labourId))!!
                 genderDao.getGenderById(labour.gender)
                 runOnUiThread {
-
                     initializeFields()
                 }
             }
@@ -115,6 +115,12 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
             adapter= FamilyDetailsListAdapter(familyDetailsList)
             binding.recyclerViewFamilyDetails.adapter=adapter
             adapter.notifyDataSetChanged()
+            if(labour.isSyncFailed){
+                binding.layoutSyncFailed.visibility= View.VISIBLE
+                binding.tvFailedReason.text=labour.syncFailedReason
+            }else{
+                binding.layoutSyncFailed.visibility= View.GONE
+            }
         } catch (e: Exception) {
         }
     }

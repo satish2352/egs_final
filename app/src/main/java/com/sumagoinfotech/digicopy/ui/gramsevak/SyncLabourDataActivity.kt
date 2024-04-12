@@ -268,7 +268,8 @@ class SyncLabourDataActivity : AppCompatActivity() {
                             laborRegistration.isSynced=true
                             labourDao.updateLabour(laborRegistration)
                         }else{
-
+                            laborRegistration.isSyncFailed=true
+                            labourDao.updateLabour(laborRegistration)
                         }
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)

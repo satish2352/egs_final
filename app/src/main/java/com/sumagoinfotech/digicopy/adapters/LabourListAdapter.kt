@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
@@ -23,6 +24,7 @@ class LabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerView.Adap
         val ivEdit=itemView.findViewById<ImageView>(R.id.ivEdit)
         val tvMgnregaId=itemView.findViewById<TextView>(R.id.tvMgnregaId)
         val ivView=itemView.findViewById<ImageView>(R.id.ivView)
+        val layoutSyncFailed=itemView.findViewById<LinearLayout>(R.id.layoutSyncFailed)
     }
 
     override fun onCreateViewHolder(
@@ -34,6 +36,14 @@ class LabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerView.Adap
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        if(list[position].isSyncFailed)
+        {
+            holder.layoutSyncFailed.visibility=View.VISIBLE
+        }else{
+            holder.layoutSyncFailed.visibility=View.GONE
+        }
+
         holder.ivPhoto.setImageURI(Uri.parse(list[position].photo))
         holder.tvFullName.text = list[position]?.fullName ?: "Default"
         holder.tvMobile.text = list[position]?.mobile ?: "Default"

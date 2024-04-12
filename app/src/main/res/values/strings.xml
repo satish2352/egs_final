@@ -159,4 +159,5 @@
     <string name="no_data_found">No data found</string>
     <string name="response_failed">Response Failed</string>
     <string name="labour_details_sent_for_approval">Labour Details Sent For Approval</string>
+    <string name="sync_failed_reason">Reason</string>
 </resources>

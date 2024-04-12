@@ -190,7 +190,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         }
         requestThePermissions()
         labourInputData = intent.getSerializableExtra("LabourInputData") as LabourInputData
-        Log.d("mytag",registrationViewModel.fullName)
+       // Log.d("mytag",registrationViewModel.fullName)
         val layoutManager= LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         binding.recyclerViewFamilyDetails.layoutManager=layoutManager;
         binding.btnUpdate.setOnClickListener {

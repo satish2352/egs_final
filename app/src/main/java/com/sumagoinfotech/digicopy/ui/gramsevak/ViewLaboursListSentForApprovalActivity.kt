@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -12,19 +13,25 @@ import com.sumagoinfotech.digicopy.adapters.LaboursSentForApprovalAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourSentForApprovalBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ViewLaboursListSentForApprovalActivity : AppCompatActivity() {
+class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
+    MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding:ActivityViewLabourSentForApprovalBinding
     private  lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter:LaboursSentForApprovalAdapter
     private lateinit var labourList:ArrayList<LaboursList>
+    private lateinit var paginationAdapter: MyPaginationAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -36,6 +43,7 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity() {
             dialog= CustomProgressDialog(this)
             labourList= ArrayList()
             adapter= LaboursSentForApprovalAdapter(labourList)
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
             binding.recyclerView.adapter=adapter
             binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
             //getDataFromServer()
@@ -69,12 +77,18 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity() {
                                 adapter= LaboursSentForApprovalAdapter(labourList)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
-                                //Toast.makeText(this@ViewLaboursListSentForApprovalActivity,resources.getString(R.string.no_records_founds),Toast.LENGTH_SHORT).show()
+                                val pageAdapter=MyPaginationAdapter(0,"0",this@ViewLaboursListSentForApprovalActivity)
+                                binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                pageAdapter.notifyDataSetChanged()
+
                             }else{
                                 labourList= (response?.body()?.data as ArrayList<LaboursList>?)!!
                                 adapter= LaboursSentForApprovalAdapter(labourList)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
+                                val pageAdapter=MyPaginationAdapter(0,"0",this@ViewLaboursListSentForApprovalActivity)
+                                binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                pageAdapter.notifyDataSetChanged()
                             }
 
                         }else{
@@ -106,5 +120,13 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        Log.d("mytag","ListActivity :: getDataFromServer "+pageNumber)
+        CoroutineScope(Dispatchers.IO).launch {
+           // getDataFromServer("$pageNumber",pageSize.toString())
+            paginationAdapter.setSelectedPage(pageNumber)
+        }
     }
 }

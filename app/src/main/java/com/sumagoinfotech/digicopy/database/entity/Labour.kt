@@ -25,5 +25,7 @@ data class Labour(
     var longitude: String,
     var isSynced: Boolean,
     var skilled:Boolean,
-    var skill:String
+    var skill:String,
+    var syncFailedReason:String?="",
+    var isSyncFailed:Boolean?=false
 )
