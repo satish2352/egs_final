@@ -504,7 +504,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length > 0 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length == 8 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {
