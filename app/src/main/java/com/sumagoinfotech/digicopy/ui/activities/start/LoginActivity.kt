@@ -1,10 +1,18 @@
 package com.sumagoinfotech.digicopy.ui.activities.start
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.permissionx.guolindev.PermissionX
 import com.sumagoinfotech.digicopy.MainActivity
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.database.AppDatabase
@@ -24,12 +32,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var database: AppDatabase
     private lateinit var userDao: UserDao
     private lateinit var customProgressDialog: CustomProgressDialog
     private lateinit var mySharedPref:MySharedPref
+    private val WRITE_PERMISSION_REQUEST_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +51,7 @@ class LoginActivity : AppCompatActivity() {
         val deviceId= DeviceUtils.getDeviceId(this@LoginActivity)
         mySharedPref.setDeviceId(deviceId)
         customProgressDialog= CustomProgressDialog(this)
+
         binding.btnLogin.setOnClickListener {
             if(validateFields()) {
                 customProgressDialog.show()
@@ -158,6 +169,56 @@ class LoginActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+
+    }
+    fun requestWritePermission(context: Context?): Boolean {
+        // Check if the permission is already granted
+        return if (ContextCompat.checkSelfPermission(
+                context!!,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission already granted
+            true
+        } else {
+            // Check Android version for handling permission request
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                // Request permission at runtime for devices running Android 6.0 to Android 9 (excluding Android 10+)
+                ActivityCompat.requestPermissions(
+                    (context as Activity?)!!,
+                    arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    WRITE_PERMISSION_REQUEST_CODE
+                )
+                // Permission will be handled in onRequestPermissionsResult() callback
+                false
+            } else {
+                // No need to request permission for devices running Android 10+
+                false
+            }
+        }
+    }
+    private fun requestThePermissions() {
+
+        PermissionX.init(this@LoginActivity)
+            .permissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            .onExplainRequestReason { scope, deniedList ->
+                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
+            }
+            .onForwardToSettings { scope, deniedList ->
+                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+            }
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+
+                } else {
+                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 
     private fun validateFields(): Boolean {

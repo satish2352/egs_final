@@ -199,18 +199,20 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                         if(response.body()?.status.equals("true"))
                         {
                             Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
-                                getString(R.string.labour_registration_approved), Toast.LENGTH_SHORT).show()
+                                getString(R.string.labour_registration_approved), Toast.LENGTH_LONG).show()
                            /* val intent= Intent(this@OfficerViewEditReceivedLabourDetails,OfficerMainActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                             startActivity(intent)*/
                             finish()
                         }else {
                             Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
-                                getString(R.string.something_went_wrong_please_try_again), Toast.LENGTH_SHORT)
+                                response.body()?.message, Toast.LENGTH_LONG)
                                 .show()
                         }
                     } else{
-                        Toast.makeText(this@OfficerViewEditReceivedLabourDetails, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
+                            response.body()?.message, Toast.LENGTH_LONG)
+                            .show()
                     }
                 }
                 override fun onFailure(call: Call<LabourListModel>, t: Throwable) {
@@ -245,12 +247,14 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                             finish()
                         }else {
                             Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
-                                getString(R.string.something_went_wrong_please_try_again), Toast.LENGTH_SHORT)
+                                response.body()?.message, Toast.LENGTH_LONG)
                                 .show()
                         }
                     } else{
 
-                        Toast.makeText(this@OfficerViewEditReceivedLabourDetails, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
+                            response.body()?.message, Toast.LENGTH_LONG)
+                            .show()
                     }
                 }
                 override fun onFailure(call: Call<LabourListModel>, t: Throwable) {

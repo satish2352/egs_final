@@ -71,8 +71,9 @@ interface ApiService {
     @POST("auth/list-labour")
     fun getLabourDataByIdForAttendance(
         @Query("mgnrega_card_id") mgnrega_card_id: String,
-        @Query("is_approved") param1: String = "approved"
-    ): Call<LabourByMgnregaId>
+        @Query("is_approved") param1: String = "approved",
+        @Query("start") startPageNumber: String="1",
+        ): Call<LabourByMgnregaId>
 
     // changed to particular-labour-details = > list-labour
     @POST("auth/list-labour")
@@ -82,7 +83,15 @@ interface ApiService {
     @POST("auth/list-labour")
     fun getLaboursByProjectId(
         @Query("project_id") project_id: String,
-        @Query("is_approved") param1: String = "approved"
+        @Query("is_approved") param1: String = "approved",
+        @Query("start") startPageNumber: String="1",
+    ): Call<LabourByMgnregaId>
+
+    @POST("auth/list-labour-received-to-officer-for-approval")
+    fun getLaboursByProjectIdForOfficer(
+        @Query("project_id") project_id: String,
+        @Query("is_approved") param1: String = "approved",
+        @Query("start") startPageNumber: String="1",
     ): Call<LabourByMgnregaId>
 
     // GET project list for attendance page
@@ -126,6 +135,7 @@ interface ApiService {
     @POST("auth/list-attendance-marked")
     fun getListOfMarkedAttendance(
         @Query("project_id") projectId: String,
+        @Query("start") startPageNumber: String="1",
     ): Call<AttendanceModel>
 
 
@@ -136,6 +146,7 @@ interface ApiService {
         @Query("user_village") villageId: String,
         @Query("from_date") from_date: String,
         @Query("to_date") to_date: String,
+        @Query("start") startPageNumber: String="1",
     ): Call<AttendanceModel>
 
 
@@ -144,7 +155,8 @@ interface ApiService {
         @Query("user_taluka") talukaId: String,
         @Query("user_village") villageId: String,
         @Query("from_date") from_date: String,
-        @Query("to_date") to_date: String
+        @Query("to_date") to_date: String,
+        @Query("start") startPageNumber: String="1",
     ): Call<UploadedDocsModel>
 
 
@@ -241,6 +253,7 @@ interface ApiService {
     @POST("auth/list-document")
     fun getUploadedDocumentsList(
         @Query("is_approved") param1: String = "approved",
+        @Query("start") startPageNumber: String="1",
     ): Call<UploadedDocsModel>
 
     // changed to list-send-approved-labour => list-labour

@@ -157,8 +157,9 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
     }
 
     override fun onPageNumberClicked(pageNumber: Int) {
+        currentPage="$pageNumber"
         getDataFromServer("$pageNumber")
         paginationAdapter.setSelectedPage(pageNumber)
-        currentPage="$pageNumber"
+
     }
 }

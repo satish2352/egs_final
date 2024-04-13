@@ -264,11 +264,12 @@ class SyncLabourDataActivity : AppCompatActivity() {
                         file4 = mgnregaIdImage!!)
 
                     if(response.isSuccessful){
-                        if(response.body()?.status.equals("True")){
+                        if(response.body()?.status.equals("true")){
                             laborRegistration.isSynced=true
                             labourDao.updateLabour(laborRegistration)
                         }else{
                             laborRegistration.isSyncFailed=true
+                            laborRegistration.syncFailedReason=response.body()?.message
                             labourDao.updateLabour(laborRegistration)
                         }
                         Log.d("mytag",""+response.body()?.message)

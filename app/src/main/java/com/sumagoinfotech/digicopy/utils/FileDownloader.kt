@@ -11,6 +11,7 @@ import android.os.Environment
 
 object FileDownloader {
     fun downloadFile(context: Context, fileUrl: String?, fileName: String?) {
+
         val dialog=CustomProgressDialog(context)
         val downloadReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {

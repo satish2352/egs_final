@@ -35,6 +35,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.adapters.AttendanceAdapter
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -46,7 +47,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
+class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
+    MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding: ActivityAllocateWorkBinding
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
@@ -58,6 +60,11 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
     private lateinit var apiService: ApiService
     lateinit var pref:MySharedPref
     private lateinit var progressDialog: CustomProgressDialog
+
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAllocateWorkBinding.inflate(layoutInflater)
@@ -69,6 +76,12 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
         apiService = ApiClient.create(this)
         pref=MySharedPref(this)
         progressDialog= CustomProgressDialog(this)
+
+        paginationAdapter= MyPaginationAdapter(0,"0",this)
+        paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+        binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+        currentPage="1"
+
         getProjectFromServer()
         labourList = ArrayList<Labour>()
         labourDataList = ArrayList<LabourInfo>()
@@ -82,94 +95,8 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
             binding.projectArea.showDropDown()
         }
         binding.ivSearchByLabourId.setOnClickListener {
-            if (validateFields()) {
-                progressDialog.show()
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
 
-                        val call = apiService.getLabourDataByIdForAttendance(mgnrega_card_id = binding.etLabourId.text.toString())
-                        call.enqueue(object : Callback<LabourByMgnregaId> {
-                            override fun onResponse(
-                                call: Call<LabourByMgnregaId>,
-                                response: Response<LabourByMgnregaId>
-                            ) {
-                                if (response.isSuccessful) {
-                                    (labourDataList as ArrayList<LabourInfo>).clear()
-                                    if (response.body()?.status.equals("true")) {
-                                        labourDataList = (response.body()?.data as ArrayList<LabourInfo>?)!!
-                                        Log.d("mytag", "userListSize=>" + labourDataList.size)
-                                        runOnUiThread {
-                                            if (labourDataList.size > 0) {
-                                                adapter = AttendanceAdapter(
-                                                    labourDataList,
-                                                    this@AllocateWorkActivity
-                                                )
-                                                binding.recyclerViewAttendance.adapter = adapter;
-                                                adapter.notifyDataSetChanged()
-                                            } else {
-                                                adapter = AttendanceAdapter(
-                                                    labourDataList,
-                                                    this@AllocateWorkActivity
-                                                )
-                                                binding.recyclerViewAttendance.adapter = adapter;
-                                                adapter.notifyDataSetChanged()
-                                                val toast = Toast.makeText(
-                                                    this@AllocateWorkActivity,
-                                                    getString(R.string.labour_not_found),
-                                                    Toast.LENGTH_LONG
-                                                )
-                                                toast.show()
-                                            }
-                                        }
-                                    } else {
-                                        runOnUiThread {
-                                            val toast = Toast.makeText(
-                                                this@AllocateWorkActivity, resources.getString(R.string.please_try_again),
-                                                Toast.LENGTH_LONG
-                                            )
-                                            toast.show()
-                                        }
-                                    }
-                                }else{
-                                    runOnUiThread {
-                                        val toast = Toast.makeText(
-                                            this@AllocateWorkActivity, resources.getString(R.string.response_unsuccessfull),
-                                            Toast.LENGTH_LONG
-                                        )
-                                        toast.show()
-                                    }
-                                }
-                                runOnUiThread { progressDialog.dismiss() }
-                            }
-
-                            override fun onFailure(call: Call<LabourByMgnregaId>, t: Throwable) {
-                                Log.d("mytag", "onFailure getLabourDataById : ${t.message}")
-                                t.printStackTrace()
-                                runOnUiThread { progressDialog.dismiss() }
-                                runOnUiThread {
-                                    val toast = Toast.makeText(
-                                        this@AllocateWorkActivity, resources.getString(R.string.error_occured_during_api_call),
-                                        Toast.LENGTH_LONG
-                                    )
-                                    toast.show()
-                                }
-                            }
-                        })
-
-
-                    } catch (e: Exception) {
-                        Log.d("mytag", "Exception Inserted : ${e.message}")
-                        e.printStackTrace()
-                        runOnUiThread { progressDialog.dismiss() }
-                    }
-                }
-            } else {
-                val toast = Toast.makeText(
-                    this@AllocateWorkActivity, "Please enter details",
-                    Toast.LENGTH_LONG
-                )
-                toast.show()
-            }
+            searchLabourByMgnregaId(currentPage)
         }
 
 
@@ -204,6 +131,106 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                 }
             }
         })
+    }
+
+    private fun searchLabourByMgnregaId(currentPage:String) {
+
+        if (validateFields()) {
+            progressDialog.show()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+
+                    val call = apiService.getLabourDataByIdForAttendance(mgnrega_card_id = binding.etLabourId.text.toString(), startPageNumber = currentPage)
+                    call.enqueue(object : Callback<LabourByMgnregaId> {
+                        override fun onResponse(
+                            call: Call<LabourByMgnregaId>,
+                            response: Response<LabourByMgnregaId>
+                        ) {
+                            if (response.isSuccessful) {
+                                (labourDataList as ArrayList<LabourInfo>).clear()
+                                if (response.body()?.status.equals("true")) {
+                                    labourDataList = (response.body()?.data as ArrayList<LabourInfo>?)!!
+                                    Log.d("mytag", "userListSize=>" + labourDataList.size)
+                                    runOnUiThread {
+                                        if (labourDataList.size > 0) {
+                                            adapter = AttendanceAdapter(
+                                                labourDataList,
+                                                this@AllocateWorkActivity
+                                            )
+                                            binding.recyclerViewAttendance.adapter = adapter;
+                                            adapter.notifyDataSetChanged()
+                                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@AllocateWorkActivity)
+                                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                            pageAdapter.notifyDataSetChanged()
+                                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
+                                        } else {
+                                            adapter = AttendanceAdapter(
+                                                labourDataList,
+                                                this@AllocateWorkActivity
+                                            )
+                                            binding.recyclerViewAttendance.adapter = adapter;
+                                            adapter.notifyDataSetChanged()
+                                            val toast = Toast.makeText(
+                                                this@AllocateWorkActivity,
+                                                getString(R.string.labour_not_found),
+                                                Toast.LENGTH_LONG
+                                            )
+                                            toast.show()
+                                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@AllocateWorkActivity)
+                                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                            pageAdapter.notifyDataSetChanged()
+                                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
+                                        }
+                                    }
+                                } else {
+                                    runOnUiThread {
+                                        val toast = Toast.makeText(
+                                            this@AllocateWorkActivity, resources.getString(R.string.please_try_again),
+                                            Toast.LENGTH_LONG
+                                        )
+                                        toast.show()
+                                    }
+                                }
+                            }else{
+                                runOnUiThread {
+                                    val toast = Toast.makeText(
+                                        this@AllocateWorkActivity, resources.getString(R.string.response_unsuccessfull),
+                                        Toast.LENGTH_LONG
+                                    )
+                                    toast.show()
+                                }
+                            }
+                            runOnUiThread { progressDialog.dismiss() }
+                        }
+
+                        override fun onFailure(call: Call<LabourByMgnregaId>, t: Throwable) {
+                            Log.d("mytag", "onFailure getLabourDataById : ${t.message}")
+                            t.printStackTrace()
+                            runOnUiThread { progressDialog.dismiss() }
+                            runOnUiThread {
+                                val toast = Toast.makeText(
+                                    this@AllocateWorkActivity, resources.getString(R.string.error_occured_during_api_call),
+                                    Toast.LENGTH_LONG
+                                )
+                                toast.show()
+                            }
+                        }
+                    })
+
+
+                } catch (e: Exception) {
+                    Log.d("mytag", "Exception Inserted : ${e.message}")
+                    e.printStackTrace()
+                    runOnUiThread { progressDialog.dismiss() }
+                }
+            }
+        } else {
+            val toast = Toast.makeText(
+                this@AllocateWorkActivity, "Please enter details",
+                Toast.LENGTH_LONG
+            )
+            toast.show()
+        }
     }
 
     private fun validateFields(): Boolean {
@@ -274,7 +301,8 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                     }
                     val call =
                         apiService.markAttendance(selectedProjectId, mgnregaId = mgnregaId, dayType)
-                    call.enqueue(object : Callback<MastersModel> {
+                    call.enqueue(object : Callback<MastersModel>,
+                        MyPaginationAdapter.OnPageNumberClickListener {
                         override fun onResponse(
                             call: Call<MastersModel>,
                             response: Response<MastersModel>
@@ -299,6 +327,12 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                     binding.projectArea.clearListSelection()
                                     binding.projectArea.setText("")
                                     binding.tvProjectDuration.setText("")
+                                    paginationAdapter= MyPaginationAdapter(0,"0",this)
+                                    binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                                    paginationAdapter.notifyDataSetChanged()
+
+                                    Log.d("mytag","---here")
+
                                 }else{
                                     val toast = Toast.makeText(
                                         this@AllocateWorkActivity, response.body()?.message,
@@ -313,6 +347,10 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                     binding.projectArea.clearListSelection()
                                     binding.projectArea.setText("")
                                     binding.tvProjectDuration.setText("")
+                                    paginationAdapter= MyPaginationAdapter(0,"0",this)
+                                    binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                                    paginationAdapter.notifyDataSetChanged()
+                                    Log.d("mytag","---here also")
                                 }
                             }else{
                                 val toast = Toast.makeText(
@@ -333,6 +371,10 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                                 Toast.LENGTH_LONG
                             )
                             toast.show()
+                        }
+
+                        override fun onPageNumberClicked(pageNumber: Int) {
+
                         }
                     })
 
@@ -361,6 +403,10 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
         binding.projectArea.clearListSelection()
         binding.projectArea.setText("")
         binding.tvProjectDuration.setText("")
+        paginationAdapter= MyPaginationAdapter(0,"0",this)
+        paginationLayoutManager=LinearLayoutManager(this@AllocateWorkActivity, RecyclerView.HORIZONTAL,false)
+        binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+        paginationAdapter.notifyDataSetChanged()
     }
 
     private fun getProjectFromServer()
@@ -462,5 +508,12 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener {
                 ).show()
             }
         })
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        currentPage="$pageNumber"
+        searchLabourByMgnregaId("$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+
     }
 }

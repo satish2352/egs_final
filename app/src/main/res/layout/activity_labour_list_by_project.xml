@@ -5,9 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.activities.gramsevak.LabourListByProjectActivity">
+    tools:context=".ui.gramsevak.LabourListByProjectActivity">
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_weight="1"
         android:id="@+id/recyclerViewLabourList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="16dp"
+        android:layout_margin="3dp"
+        android:id="@+id/recyclerViewPageNumbers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
 

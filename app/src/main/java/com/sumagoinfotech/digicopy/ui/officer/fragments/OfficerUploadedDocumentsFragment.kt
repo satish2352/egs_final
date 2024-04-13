@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.OfficerUploadedDocsAdapter
@@ -26,6 +27,7 @@ import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceData
 import com.sumagoinfotech.digicopy.model.apis.attendance.AttendanceModel
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocument
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -51,7 +53,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [OfficerUploadedDocumentsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class OfficerUploadedDocumentsFragment : Fragment() {
+class OfficerUploadedDocumentsFragment : Fragment(), MyPaginationAdapter.OnPageNumberClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -72,6 +74,11 @@ class OfficerUploadedDocumentsFragment : Fragment() {
     private lateinit var mySharedPref: MySharedPref
     private lateinit var appDatabase: AppDatabase
     private lateinit var areaDao: AreaDao
+
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -92,7 +99,6 @@ class OfficerUploadedDocumentsFragment : Fragment() {
             mySharedPref= MySharedPref(requireContext())
             CoroutineScope(Dispatchers.IO).launch {
                 talukaList=areaDao.getAllTalukas(mySharedPref.getOfficerDistrictId()!!)
-
                 withContext(Dispatchers.Main){
                     for (taluka in talukaList)
                     {
@@ -114,6 +120,13 @@ class OfficerUploadedDocumentsFragment : Fragment() {
             binding.recyclerView.layoutManager=GridLayoutManager(requireContext(),3,RecyclerView.VERTICAL,false)
             apiService=ApiClient.create(requireContext())
             dialog= CustomProgressDialog(requireContext())
+
+            paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerUploadedDocumentsFragment)
+            paginationLayoutManager=LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            binding.recyclerViewPageNumbers.adapter=paginationAdapter
+            currentPage="1"
+
 
             binding.actSelectTaluka.setOnItemClickListener { parent, view, position, id ->
                 CoroutineScope(Dispatchers.IO).launch {
@@ -181,6 +194,7 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                 villageId=""
                 startDate=""
                 endDate=""
+                currentPage="1"
                 getDocumentsList()
             }
             binding.actSelectVillage.setOnItemClickListener { parent, view, position, id ->
@@ -270,7 +284,7 @@ class OfficerUploadedDocumentsFragment : Fragment() {
             dialog.show()
             startDate=binding.etStartDate.getText().toString()
             endDate=binding.etEndDate.getText().toString()
-            val call=apiService.getDocumentsListForOfficer(talukaId=talukaId,villageId=villageId, from_date = startDate, to_date = endDate);
+            val call=apiService.getDocumentsListForOfficer(talukaId=talukaId,villageId=villageId, from_date = startDate, to_date = endDate, startPageNumber = currentPage);
             call.enqueue(object : Callback<UploadedDocsModel> {
                 override fun onResponse(
                     call: Call<UploadedDocsModel>,
@@ -291,6 +305,11 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                                 adapter= OfficerUploadedDocsAdapter(listDocuments)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
+
+                                val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerUploadedDocumentsFragment)
+                                binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                pageAdapter.notifyDataSetChanged()
+                                paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                             }else{
 
                             }
@@ -298,13 +317,22 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                             if(!response.body()?.message.isNullOrEmpty()){
                                 Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
                             }
+                            paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerUploadedDocumentsFragment)
+                            binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                            paginationAdapter.notifyDataSetChanged()
                         }
                     }else{
-                        Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                        paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerUploadedDocumentsFragment)
+                        binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                        paginationAdapter.notifyDataSetChanged()
+                        Toast.makeText(requireActivity(), requireContext().resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
                     }
                 }
                 override fun onFailure(call: Call<UploadedDocsModel>, t: Throwable) {
-                    Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerUploadedDocumentsFragment)
+                    binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                    paginationAdapter.notifyDataSetChanged()
+                    Toast.makeText(requireActivity(), requireContext().resources.getString(R.string.error_occured_during_api_call), Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
                 }
             })
@@ -323,5 +351,12 @@ class OfficerUploadedDocumentsFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        currentPage="$pageNumber"
+        paginationAdapter.setSelectedPage(pageNumber)
+        getDocumentsList()
+
     }
 }

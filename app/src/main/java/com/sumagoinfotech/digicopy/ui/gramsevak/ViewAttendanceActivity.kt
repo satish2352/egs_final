@@ -32,6 +32,7 @@ import com.sumagoinfotech.digicopy.model.apis.masters.MastersModel
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.adapters.ViewAttendanceAdapter
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -43,7 +44,8 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
+class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener,
+    MyPaginationAdapter.OnPageNumberClickListener {
 
     private lateinit var binding:ActivityViewAttendanceBinding
     private lateinit var attendanceList:ArrayList<AttendanceData>
@@ -54,6 +56,11 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
     private var selectedProjectId=""
     private var selectedProjectIdForAttendance=""
     private lateinit var pref:MySharedPref
+
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityViewAttendanceBinding.inflate(layoutInflater)
@@ -63,6 +70,12 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
         supportActionBar?.title = resources.getString(R.string.view_attendance)
         progressDialog= CustomProgressDialog(this)
         apiService = ApiClient.create(this)
+
+        paginationAdapter= MyPaginationAdapter(0,"0",this)
+        paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+        binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+        currentPage="1"
+
         binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         attendanceList=ArrayList()
         listProject=ArrayList()
@@ -74,14 +87,14 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
         binding.actSelectProject.setOnItemClickListener { parent, view, position, id ->
 
             selectedProjectId=listProject.get(position).id.toString()
-            getAttendanceList(selectedProjectId)
+            getAttendanceList(selectedProjectId,currentPage)
         }
         binding.actSelectProject.setOnFocusChangeListener { v, hasFocus ->
             binding.actSelectProject.showDropDown()
         }
         binding.btnClose.setOnClickListener {
             binding.actSelectProject.setText("")
-            getAttendanceList("")
+            getAttendanceList(selectedProjectId = "",currentPage)
         }
         binding.layoutStartDate.setOnClickListener {
             showDatePicker(this,binding.etStartDate)
@@ -96,7 +109,11 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
             selectedProjectId=""
         }
         getProjectList();
-        getAttendanceList(selectedProjectId);
+        getAttendanceList(selectedProjectId,currentPage);
+
+
+
+
     }
     private fun showDatePicker(context: Context, editText: TextView) {
         val calendar = Calendar.getInstance()
@@ -180,13 +197,13 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
 
     }
 
-    private fun getAttendanceList(selectedProjectId: String) {
+    private fun getAttendanceList(selectedProjectId: String,pageNumber: String) {
 
         try {
             if(!progressDialog.isDialogVisible()){
                 progressDialog.show()
             }
-            val call=apiService.getListOfMarkedAttendance(selectedProjectId);
+            val call=apiService.getListOfMarkedAttendance(projectId = selectedProjectId, startPageNumber = pageNumber);
             call.enqueue(object :Callback<AttendanceModel>{
                 override fun onResponse(
                     call: Call<AttendanceModel>,
@@ -201,8 +218,26 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
                             adapter= ViewAttendanceAdapter(attendanceList,this@ViewAttendanceActivity)
                             binding.recyclerView.adapter=adapter
                             adapter.notifyDataSetChanged()
+
+                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@ViewAttendanceActivity)
+                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            pageAdapter.notifyDataSetChanged()
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
+                        }else{
+                            paginationAdapter= MyPaginationAdapter(0,"0",this@ViewAttendanceActivity)
+                            paginationLayoutManager=LinearLayoutManager(this@ViewAttendanceActivity, RecyclerView.HORIZONTAL,false)
+                            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+                            binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                            adapter.notifyDataSetChanged()
+                            currentPage="1"
                         }
                     }else{
+                        paginationAdapter= MyPaginationAdapter(0,"0",this@ViewAttendanceActivity)
+                        paginationLayoutManager=LinearLayoutManager(this@ViewAttendanceActivity, RecyclerView.HORIZONTAL,false)
+                        binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+                        binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                        adapter.notifyDataSetChanged()
+                        currentPage="1"
                         Toast.makeText(this@ViewAttendanceActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -315,7 +350,7 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
                                 if (response.isSuccessful) {
 
                                     if (response.body()?.status.equals("true")) {
-                                        getAttendanceList("")
+                                        getAttendanceList("", pageNumber = currentPage)
                                         data.attendance_day=dayType
                                         val toast = Toast.makeText(
                                             this@ViewAttendanceActivity,
@@ -373,5 +408,12 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener {
             Log.d("mytag","showAttendanceDialog : Exception "+e.message)
             e.printStackTrace()
         }
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        currentPage="$pageNumber"
+        getAttendanceList(selectedProjectId,"$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+
     }
 }

@@ -32,6 +32,7 @@ import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectData
 import com.sumagoinfotech.digicopy.model.apis.projectlistmarker.ProjectLabourListForMarker
 import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectDataForOfficer
 import com.sumagoinfotech.digicopy.model.apis.projectlistofficer.ProjectListForOfficerModel
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
@@ -57,7 +58,8 @@ private const val ARG_PARAM2 = "param2"
  * Use the [OfficerAttendanceFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
+class OfficerAttendanceFragment : Fragment(),AttendanceEditListener,
+    MyPaginationAdapter.OnPageNumberClickListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -80,6 +82,10 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
     private var fromDate=""
     private var toDate=""
     private lateinit var mySharedPref:MySharedPref
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -129,6 +135,14 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
             binding.recyclerView.adapter=adapter
             dialog= CustomProgressDialog(requireActivity())
             apiService = ApiClient.create(requireActivity())
+
+            paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerAttendanceFragment)
+            paginationLayoutManager=LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            binding.recyclerViewPageNumbers.adapter=paginationAdapter
+            currentPage="1"
+
+
             binding.recyclerView.layoutManager=LinearLayoutManager(requireActivity(),RecyclerView.VERTICAL,false)
             attendanceList=ArrayList()
             listProject=ArrayList()
@@ -220,6 +234,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                 villageId=""
                 fromDate=""
                 toDate=""
+                currentPage="1"
                 //getProjectList();
                 getAttendanceList();
             }
@@ -297,6 +312,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                     }
                 }
             })
+
         } catch (e: Exception)
         {
 
@@ -343,7 +359,7 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
         fromDate=binding.etStartDate.text.toString()
         toDate=binding.etEndDate.text.toString()
         dialog.show()
-        val call=apiService.getAttendanceListForOfficer(selectedProjectId,talukaId,villageId,fromDate,toDate);
+        val call=apiService.getAttendanceListForOfficer(selectedProjectId,talukaId,villageId,fromDate,toDate, startPageNumber = currentPage);
         call.enqueue(object : Callback<AttendanceModel> {
             override fun onResponse(
                 call: Call<AttendanceModel>,
@@ -364,10 +380,19 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
                             adapter= ViewAttendanceAdapter(attendanceList,this@OfficerAttendanceFragment)
                             binding.recyclerView.adapter=adapter
                             adapter.notifyDataSetChanged()
+
+                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerAttendanceFragment)
+                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            pageAdapter.notifyDataSetChanged()
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
+
                         }else{
                             if(!response.body()?.message.isNullOrEmpty()){
                                 Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
                             }
+                            paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerAttendanceFragment)
+                            binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                            paginationAdapter.notifyDataSetChanged()
                         }
 
                     }
@@ -434,6 +459,12 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener {
             })
         } catch (e: Exception) {
         }
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        currentPage="$pageNumber"
+        getAttendanceList()
+        paginationAdapter.setSelectedPage(pageNumber)
     }
 
 }

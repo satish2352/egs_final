@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:scrollbarSize="0dp"
     tools:context=".ui.gramsevak.AllocateWorkActivity">
 
     <LinearLayout
+        android:layout_margin="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -178,7 +178,21 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_marginTop="16dp"
+            android:layout_weight="1"
             android:id="@+id/recyclerViewAttendance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+        <View
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"></View>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="16dp"
+            android:layout_margin="3dp"
+            android:id="@+id/recyclerViewPageNumbers"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
 

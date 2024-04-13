@@ -11,6 +11,7 @@ import com.sumagoinfotech.digicopy.databinding.ActivityViewUploadedDocumetsBindi
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocsModel
 import com.sumagoinfotech.digicopy.model.apis.uploadeddocs.UploadedDocument
 import com.sumagoinfotech.digicopy.adapters.UploadedPdfListAdapter
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -18,11 +19,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ViewUploadedDocumentsActivity : AppCompatActivity() {
+class ViewUploadedDocumentsActivity : AppCompatActivity(),
+    MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding:ActivityViewUploadedDocumetsBinding
     private lateinit var adapter: UploadedPdfListAdapter
     private lateinit var documentList:ArrayList<UploadedDocument>
     private lateinit var apiService: ApiService
+
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -35,17 +42,24 @@ class ViewUploadedDocumentsActivity : AppCompatActivity() {
             adapter= UploadedPdfListAdapter(documentList)
             binding.recyclverView.adapter=adapter
             apiService=ApiClient.create(this)
-            getPdfListFromServer()
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            binding.recyclerViewPageNumbers.adapter=paginationAdapter
+            currentPage="1"
+
+            getPdfListFromServer(currentPage)
+
         } catch (e: Exception) {
 
         }
     }
 
-    private fun getPdfListFromServer() {
+    private fun getPdfListFromServer(currentPage:String) {
         val dialog=CustomProgressDialog(this@ViewUploadedDocumentsActivity)
         dialog.show()
         try {
-            val call=apiService.getUploadedDocumentsList()
+            val call=apiService.getUploadedDocumentsList(startPageNumber = currentPage)
             call.enqueue(object :Callback<UploadedDocsModel>{
                 override fun onResponse(
                     call: Call<UploadedDocsModel>,
@@ -59,9 +73,16 @@ class ViewUploadedDocumentsActivity : AppCompatActivity() {
                         adapter= UploadedPdfListAdapter(documentList)
                         binding.recyclverView.adapter=adapter
                         adapter.notifyDataSetChanged()
+
+                        val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@ViewUploadedDocumentsActivity)
+                        binding.recyclerViewPageNumbers.adapter=pageAdapter
+                        pageAdapter.notifyDataSetChanged()
+                        paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                     }else{
 
-
+                        paginationAdapter= MyPaginationAdapter(0,"0",this@ViewUploadedDocumentsActivity)
+                        binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                        paginationAdapter.notifyDataSetChanged()
                     }
 
                 }
@@ -76,6 +97,13 @@ class ViewUploadedDocumentsActivity : AppCompatActivity() {
             Log.d("mytag","Exception getPdfListFromServer" +e.message)
             e.printStackTrace()
         }
+
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        currentPage="$pageNumber"
+        getPdfListFromServer(currentPage = "$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
 
     }
 }

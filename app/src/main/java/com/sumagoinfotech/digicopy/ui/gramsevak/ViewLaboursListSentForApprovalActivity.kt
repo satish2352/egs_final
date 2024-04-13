@@ -126,10 +126,10 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
 
     override fun onPageNumberClicked(pageNumber: Int) {
         Log.d("mytag","ListActivity :: getDataFromServer "+pageNumber)
-
+        currentPage="$pageNumber"
             getDataFromServer("$pageNumber")
             paginationAdapter.setSelectedPage(pageNumber)
-            currentPage="$pageNumber"
+
 
     }
 }

@@ -86,9 +86,10 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity(),
         getDataFromServer(currentPage)
     }
     override fun onPageNumberClicked(pageNumber: Int) {
+        currentPage="$pageNumber"
         getDataFromServer("$pageNumber")
         paginationAdapter.setSelectedPage(pageNumber)
-        currentPage="$pageNumber"
+
     }
 
     private fun getDataFromServer(currentPage:String) {
