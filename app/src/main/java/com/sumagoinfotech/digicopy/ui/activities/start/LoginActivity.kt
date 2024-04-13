@@ -174,32 +174,54 @@ class LoginActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        requestWritePermission(this@LoginActivity)
 
     }
     fun requestWritePermission(context: Context?): Boolean {
         // Check if the permission is already granted
-        return if (ContextCompat.checkSelfPermission(
-                context!!,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permission already granted
-            true
-        } else {
-            // Check Android version for handling permission request
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                // Request permission at runtime for devices running Android 6.0 to Android 9 (excluding Android 10+)
-                ActivityCompat.requestPermissions(
-                    (context as Activity?)!!,
-                    arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    WRITE_PERMISSION_REQUEST_CODE
-                )
-                // Permission will be handled in onRequestPermissionsResult() callback
-                false
+
+        try {
+            return if (ContextCompat.checkSelfPermission(
+                    context!!,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                // Permission already granted
+                true
             } else {
-                // No need to request permission for devices running Android 10+
-                false
+                // Check Android version for handling permission request
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                    // Request permission at runtime for devices running Android 6.0 to Android 9 (excluding Android 10+)
+                    /*ActivityCompat.requestPermissions(
+                        (context as Activity?)!!,
+                        arrayOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                        WRITE_PERMISSION_REQUEST_CODE
+                    )*/
+                    PermissionX.init(this@LoginActivity)
+                        .permissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .onExplainRequestReason { scope, deniedList ->
+                            scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
+                        }
+                        .onForwardToSettings { scope, deniedList ->
+                            scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+                        }
+                        .request { allGranted, grantedList, deniedList ->
+                            if (allGranted) {
+
+                            } else {
+                                Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    // Permission will be handled in onRequestPermissionsResult() callback
+                    false
+                } else {
+                    // No need to request permission for devices running Android 10+
+                    false
+                }
             }
+        }catch (e:Exception){
+
+            return false
         }
     }
     private fun requestThePermissions() {
