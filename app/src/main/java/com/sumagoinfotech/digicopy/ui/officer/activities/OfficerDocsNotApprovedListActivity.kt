@@ -17,6 +17,7 @@ import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsNotApprovedLis
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -26,13 +27,19 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
+class OfficerDocsNotApprovedListActivity : AppCompatActivity(),
+    MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding:ActivityOfficerDocsNotApprovedListBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: OfficerDocsNotApprovedAdapter
     private lateinit var documentList: MutableList<DocumentItem>
     private var isInternetAvailable:Boolean=false
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityOfficerDocsNotApprovedListBinding.inflate(layoutInflater)
@@ -50,6 +57,14 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
                 RecyclerView.VERTICAL,
                 false
             )
+
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            binding.recyclerViewPageNumbers.adapter=adapter
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            currentPage="1"
+
+
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -68,13 +83,18 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        getDataFromServer()
+        getDataFromServer(currentPage)
+    }
+    override fun onPageNumberClicked(pageNumber: Int) {
+        getDataFromServer("$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+        currentPage="$pageNumber"
     }
 
-    private fun getDataFromServer() {
+    private fun getDataFromServer(currentPage:String) {
         try {
             dialog.show()
-            val call = apiService.getDocsNotApprovedOfficer()
+            val call = apiService.getDocsNotApprovedOfficer(pageNumber = currentPage)
             call.enqueue(object : Callback<MainDocsModel> {
                 override fun onResponse(
                     call: Call<MainDocsModel>,
@@ -88,6 +108,11 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity() {
                             adapter = OfficerDocsNotApprovedAdapter(documentList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
+
+                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerDocsNotApprovedListActivity)
+                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            pageAdapter.notifyDataSetChanged()
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                         } else {
                             Toast.makeText(
                                 this@OfficerDocsNotApprovedListActivity,

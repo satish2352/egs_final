@@ -309,17 +309,20 @@ interface ApiService {
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursApprovedByOfficer(
         @Query("is_approved") isApproved: String="approved",
+        @Query("start") pageNumber: String="1",
         ): Call<LabourListModel>
 
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursReSubmittedToOfficer(
         @Query("is_approved") isApproved: String="resend",
         @Query("is_resubmitted") is_resubmitted: String="resubmitted",
+        @Query("start") pageNumber: String="1",
     ): Call<LabourListModel>
 
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursNotApprovedByOfficer(
         @Query("is_approved") isApproved: String="not_approved",
+        @Query("start") pageNumber: String="1",
     ): Call<LabourListModel>
 
     @POST("auth/list-labour-rejected-by-officer")
@@ -374,28 +377,33 @@ interface ApiService {
     fun getSentForApprovalDocsList(
         @Query("is_approved") param1: String = "added",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("start") pageNumber: String="1",
         ): Call<MainDocsModel>
 
     @POST("auth/list-document")
     fun getApprovalDocsListForGramsevak(
         @Query("is_approved") param1: String = "approved",
+        @Query("start") pageNumber: String="1",
     ): Call<MainDocsModel>
 
     @POST("auth/list-document")
     fun getNotApprovedDocsListForGramsevak(
         @Query("is_approved") param1: String = "not_approved",
+        @Query("start") pageNumber: String="1",
     ): Call<MainDocsModel>
 
     @POST("auth/list-document")
     fun getReSubmittedDocsListForGramsevak(
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
         @Query("is_approved") is_approved: String = "resend",
+        @Query("start") pageNumber: String="1",
     ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getReSubmittedDocsListForOfficer(
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
         @Query("is_approved") is_approved: String = "resend",
+        @Query("start") pageNumber: String="1",
     ): Call<MainDocsModel>
 
 
@@ -403,17 +411,20 @@ interface ApiService {
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsReceivedForApprovalOfficer(
         @Query("is_approved") param1: String = "received",
-        @Query("is_resubmitted") is_resubmitted: String = "resubmitted"
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("start") pageNumber: String="1",
         ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsNotApprovedOfficer(
         @Query("is_approved") param1: String = "not_approved",
+        @Query("start") pageNumber: String="1",
     ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsApprovedInOfficer(
         @Query("is_approved") param1: String = "approved",
+        @Query("start") pageNumber: String="1",
     ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")

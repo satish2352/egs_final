@@ -13,6 +13,7 @@ import com.sumagoinfotech.digicopy.databinding.ActivityDocumentListApprovedBindi
 import com.sumagoinfotech.digicopy.databinding.ActivityViewDocumentListSentForApprovalBinding
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -20,12 +21,18 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DocumentListApprovedActivity : AppCompatActivity() {
+class DocumentListApprovedActivity : AppCompatActivity(),
+    MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding: ActivityDocumentListApprovedBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: DocsSentForApprovalAdapter
     private lateinit var documentList: MutableList<DocumentItem>
+
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDocumentListApprovedBinding.inflate(layoutInflater)
@@ -40,6 +47,14 @@ class DocumentListApprovedActivity : AppCompatActivity() {
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+
+
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            binding.recyclerViewPageNumbers.adapter=adapter
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            currentPage="1"
+
             //getDataFromServer()
         } catch (e: Exception) {
             Log.d("mytag", "@DocumentListApprovedActivity : onCreate : Exception => " + e.message)
@@ -49,13 +64,13 @@ class DocumentListApprovedActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        getDataFromServer()
+        getDataFromServer(currentPage)
     }
 
-    private fun getDataFromServer() {
+    private fun getDataFromServer(currentPage:String) {
         try {
             dialog.show()
-            val call = apiService.getApprovalDocsListForGramsevak()
+            val call = apiService.getApprovalDocsListForGramsevak(pageNumber = currentPage)
             call.enqueue(object : Callback<MainDocsModel> {
                 override fun onResponse(
                     call: Call<MainDocsModel>,
@@ -70,6 +85,11 @@ class DocumentListApprovedActivity : AppCompatActivity() {
                                 adapter = DocsSentForApprovalAdapter(documentList)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
+
+                                val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@DocumentListApprovedActivity)
+                                binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                pageAdapter.notifyDataSetChanged()
+                                paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                                 //Toast.makeText(this@DocumentListApprovedActivity,resources.getString(R.string.no_records_founds),Toast.LENGTH_SHORT).show()
                             } else {
                                 documentList =
@@ -77,6 +97,11 @@ class DocumentListApprovedActivity : AppCompatActivity() {
                                 adapter = DocsSentForApprovalAdapter(documentList)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
+
+                                val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@DocumentListApprovedActivity)
+                                binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                pageAdapter.notifyDataSetChanged()
+                                paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                             }
 
                         } else {
@@ -126,5 +151,11 @@ class DocumentListApprovedActivity : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        getDataFromServer("$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+        currentPage="$pageNumber"
     }
 }

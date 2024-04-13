@@ -34,7 +34,7 @@ class DocsSentForApprovalAdapter (var list:MutableList<DocumentItem>):
         parent: ViewGroup,
         viewType: Int
     ): DocsSentForApprovalAdapter.ViewHolder {
-        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_document_received_for_approval,parent,false)
+        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_document_sent_for_approval,parent,false)
         return ViewHolder(view)
     }
     override fun onBindViewHolder(

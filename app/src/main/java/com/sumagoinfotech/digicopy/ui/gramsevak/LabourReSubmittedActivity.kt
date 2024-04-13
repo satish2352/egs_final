@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sumagoinfotech.digicopy.R
 import com.sumagoinfotech.digicopy.adapters.LabourApprovedListAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityLabourReSubmittedBinding
-import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourApprovedBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
 import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter

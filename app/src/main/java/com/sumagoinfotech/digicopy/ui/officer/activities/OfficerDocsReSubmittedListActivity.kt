@@ -10,12 +10,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sumagoinfotech.digicopy.R
-import com.sumagoinfotech.digicopy.adapters.OfficerDocsNotApprovedAdapter
 import com.sumagoinfotech.digicopy.adapters.OfficerDocsReceivedForApprovalAdapter
-import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsNotApprovedListBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerDocsReSubmittedListBinding
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.DocumentItem
 import com.sumagoinfotech.digicopy.model.apis.maindocsmodel.MainDocsModel
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -25,7 +24,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
+class OfficerDocsReSubmittedListActivity : AppCompatActivity(),
+    MyPaginationAdapter.OnPageNumberClickListener {
 
     private lateinit var binding: ActivityOfficerDocsReSubmittedListBinding
     private lateinit var apiService: ApiService
@@ -33,6 +33,9 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
     private lateinit var adapter: OfficerDocsReceivedForApprovalAdapter
     private lateinit var documentList: MutableList<DocumentItem>
     private var isInternetAvailable:Boolean=false
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityOfficerDocsReSubmittedListBinding.inflate(layoutInflater)
@@ -50,6 +53,13 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
                 RecyclerView.VERTICAL,
                 false
             )
+
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            binding.recyclerViewPageNumbers.adapter=adapter
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            currentPage="1"
+
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -68,12 +78,12 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        getDataFromServer()
+        getDataFromServer(currentPage)
     }
-    private fun getDataFromServer() {
+        private fun getDataFromServer(currentPage:String) {
         try {
             dialog.show()
-            val call = apiService.getReSubmittedDocsListForOfficer()
+            val call = apiService.getReSubmittedDocsListForOfficer(pageNumber = currentPage)
             call.enqueue(object : Callback<MainDocsModel> {
                 override fun onResponse(
                     call: Call<MainDocsModel>,
@@ -87,6 +97,11 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
                             adapter = OfficerDocsReceivedForApprovalAdapter(documentList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
+
+                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerDocsReSubmittedListActivity)
+                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            pageAdapter.notifyDataSetChanged()
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                         } else {
                             Toast.makeText(
                                 this@OfficerDocsReSubmittedListActivity,
@@ -135,5 +150,11 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        getDataFromServer("$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+        currentPage="$pageNumber"
     }
 }

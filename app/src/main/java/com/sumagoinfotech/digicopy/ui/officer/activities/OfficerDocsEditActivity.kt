@@ -338,10 +338,10 @@ class OfficerDocsEditActivity : AppCompatActivity() {
                         {
                             Toast.makeText(this@OfficerDocsEditActivity, response.body()?.message, Toast.LENGTH_SHORT).show()
 
-                            val intent= Intent(this@OfficerDocsEditActivity,
+                           /* val intent= Intent(this@OfficerDocsEditActivity,
                                 OfficerMainActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            startActivity(intent)
+                            startActivity(intent)*/
                             finish()                        }else {
                             Toast.makeText(this@OfficerDocsEditActivity, response.body()?.message, Toast.LENGTH_SHORT).show()
                         }
