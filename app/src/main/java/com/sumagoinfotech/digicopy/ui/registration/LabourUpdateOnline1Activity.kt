@@ -38,6 +38,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -103,7 +104,8 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
 
         districtList=ArrayList<AreaItem>()
         CoroutineScope(Dispatchers.IO).launch {
-            districtList=areaDao.getAllDistrict()
+           val waitingJob=async {  districtList=areaDao.getAllDistrict() }
+            waitingJob.await()
             for (district in districtList){
                 districtNames.add(district.name)
             }

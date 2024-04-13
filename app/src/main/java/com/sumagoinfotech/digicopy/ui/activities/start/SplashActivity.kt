@@ -95,17 +95,19 @@ class SplashActivity : AppCompatActivity() {
                userDao.insertInitialRecords()
                documentTypeDao.insertInitialRecords()
                if(!mySharedPref.getAllAreaEntries())
-                   if(areaDao.getAllArea().isEmpty())
+                   if(areaDao.getAllArea().size<44342)
                    {
-                       val items = readJsonFromAssets(this@SplashActivity, "address.json")
-                       areaDao.insertInitialRecords(items)
-                       val size=areaDao.getAllArea().size;
-                       Log.d("mytag","Area Entries $size")
-                       if(size==44342){
-                           mySharedPref.setAllAreaEntries(true)
-                       }else{
-                           mySharedPref.setAllAreaEntries(false)
-                       }
+                      val areaEnteriesJob=async {  val items = readJsonFromAssets(this@SplashActivity, "address.json")
+                          areaDao.insertInitialRecords(items)
+                          val size=areaDao.getAllArea().size;
+                          Log.d("mytag","Area Entries $size")
+                          if(size==44342){
+                              mySharedPref.setAllAreaEntries(true)
+                          }else{
+                              mySharedPref.setAllAreaEntries(false)
+                          }
+                      }
+                       areaEnteriesJob.await()
                    }else{
                        Log.d("mytag","Not empty")
                    }

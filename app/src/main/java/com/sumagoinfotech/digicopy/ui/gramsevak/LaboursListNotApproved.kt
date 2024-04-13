@@ -12,6 +12,7 @@ import com.sumagoinfotech.digicopy.adapters.LaboursNotApprovedAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityViewNotApprovedLabourBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -19,12 +20,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class LaboursListNotApproved : AppCompatActivity() {
+class LaboursListNotApproved : AppCompatActivity(), MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding: ActivityViewNotApprovedLabourBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: LaboursNotApprovedAdapter
     private lateinit var labourList: ArrayList<LaboursList>
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -39,6 +43,13 @@ class LaboursListNotApproved : AppCompatActivity() {
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            binding.recyclerViewPageNumbers.adapter=adapter
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            currentPage="1"
+
             //getDataFromServer()
         } catch (e: Exception) {
             Log.d("mytag", " : onCreate : Exception => " + e.message)
@@ -48,12 +59,12 @@ class LaboursListNotApproved : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        getDataFromServer()
+        getDataFromServer(currentPage)
     }
-    private fun getDataFromServer() {
+    private fun getDataFromServer(currentPage:String) {
         try {
             dialog.show()
-            val call = apiService.getLaboursListNotApproved()
+            val call = apiService.getLaboursListNotApproved(startPageNumber = currentPage)
             call.enqueue(object : Callback<LabourListModel> {
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -66,6 +77,11 @@ class LaboursListNotApproved : AppCompatActivity() {
                             adapter = LaboursNotApprovedAdapter(labourList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
+
+                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@LaboursListNotApproved)
+                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            pageAdapter.notifyDataSetChanged()
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                         } else {
                             Toast.makeText(
                                 this@LaboursListNotApproved,
@@ -110,5 +126,10 @@ class LaboursListNotApproved : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+    override fun onPageNumberClicked(pageNumber: Int) {
+        getDataFromServer("$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+        currentPage="$pageNumber"
     }
 }

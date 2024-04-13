@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +31,8 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
     private lateinit var adapter:LaboursSentForApprovalAdapter
     private lateinit var labourList:ArrayList<LaboursList>
     private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage=""
+    private lateinit var paginationLayoutManager : LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -44,8 +45,12 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
             labourList= ArrayList()
             adapter= LaboursSentForApprovalAdapter(labourList)
             paginationAdapter= MyPaginationAdapter(0,"0",this)
+            binding.recyclerViewPageNumbers.adapter=adapter
             binding.recyclerView.adapter=adapter
-            binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            paginationLayoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+            binding.recyclerView.layoutManager=paginationLayoutManager
+            currentPage="1"
             //getDataFromServer()
         } catch (e: Exception) {
             Log.d("mytag","ViewLabourSentForApprovalActivity : onCreate : Exception => "+e.message)
@@ -55,12 +60,12 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
-        getDataFromServer()
+        getDataFromServer(currentPage)
     }
-    private fun getDataFromServer() {
+    private fun getDataFromServer(currentPage: String) {
         try {
             dialog.show()
-            val call=apiService.getLaboursListSentForApproval()
+            val call=apiService.getLaboursListSentForApproval(startPageNumber = currentPage)
             call.enqueue(object : Callback<LabourListModel>{
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -77,7 +82,7 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
                                 adapter= LaboursSentForApprovalAdapter(labourList)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
-                                val pageAdapter=MyPaginationAdapter(0,"0",this@ViewLaboursListSentForApprovalActivity)
+                                val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@ViewLaboursListSentForApprovalActivity)
                                 binding.recyclerViewPageNumbers.adapter=pageAdapter
                                 pageAdapter.notifyDataSetChanged()
 
@@ -86,7 +91,7 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
                                 adapter= LaboursSentForApprovalAdapter(labourList)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
-                                val pageAdapter=MyPaginationAdapter(0,"0",this@ViewLaboursListSentForApprovalActivity)
+                                val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@ViewLaboursListSentForApprovalActivity)
                                 binding.recyclerViewPageNumbers.adapter=pageAdapter
                                 pageAdapter.notifyDataSetChanged()
                             }
@@ -106,8 +111,8 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
                 }
             })
         } catch (e: Exception) {
-            dialog.dismiss()
-            Toast.makeText(this@ViewLaboursListSentForApprovalActivity,resources.getString(R.string.please_try_again),Toast.LENGTH_SHORT).show()
+          runOnUiThread {   dialog.dismiss()
+              Toast.makeText(this@ViewLaboursListSentForApprovalActivity,resources.getString(R.string.please_try_again),Toast.LENGTH_SHORT).show() }
             Log.d("mytag","ViewLabourSentForApprovalActivity : getDataFromServer : Exception => "+e.message)
             e.printStackTrace()
         }
@@ -124,9 +129,10 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
 
     override fun onPageNumberClicked(pageNumber: Int) {
         Log.d("mytag","ListActivity :: getDataFromServer "+pageNumber)
-        CoroutineScope(Dispatchers.IO).launch {
-           // getDataFromServer("$pageNumber",pageSize.toString())
+
+            getDataFromServer("$pageNumber")
             paginationAdapter.setSelectedPage(pageNumber)
-        }
+            currentPage="$pageNumber"
+
     }
 }

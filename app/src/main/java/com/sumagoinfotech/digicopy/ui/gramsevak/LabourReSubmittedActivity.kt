@@ -13,6 +13,7 @@ import com.sumagoinfotech.digicopy.databinding.ActivityLabourReSubmittedBinding
 import com.sumagoinfotech.digicopy.databinding.ActivityViewLabourApprovedBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -20,12 +21,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class LabourReSubmittedActivity : AppCompatActivity() {
+class LabourReSubmittedActivity : AppCompatActivity(),
+    MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding: ActivityLabourReSubmittedBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: LabourApprovedListAdapter
     private lateinit var labourList: ArrayList<LaboursList>
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -41,6 +46,12 @@ class LabourReSubmittedActivity : AppCompatActivity() {
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            binding.recyclerViewPageNumbers.adapter=adapter
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            currentPage="1"
+
         } catch (e: Exception) {
             Log.d("mytag", " : onCreate : Exception => " + e.message)
             e.printStackTrace()
@@ -49,12 +60,12 @@ class LabourReSubmittedActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        getDataFromServer()
+        getDataFromServer(currentPage)
     }
-    private fun getDataFromServer() {
+    private fun getDataFromServer(currentPage:String) {
         try {
             dialog.show()
-            val call = apiService.getLabourListReSubmittedForGramSevak()
+            val call = apiService.getLabourListReSubmittedForGramSevak(pageNumber = currentPage)
             call.enqueue(object : Callback<LabourListModel> {
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -67,6 +78,11 @@ class LabourReSubmittedActivity : AppCompatActivity() {
                             adapter = LabourApprovedListAdapter(labourList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
+
+                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@LabourReSubmittedActivity)
+                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            pageAdapter.notifyDataSetChanged()
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
                         } else {
                             Toast.makeText(
                                 this@LabourReSubmittedActivity,
@@ -109,5 +125,10 @@ class LabourReSubmittedActivity : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+    override fun onPageNumberClicked(pageNumber: Int) {
+        getDataFromServer("$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+        currentPage="$pageNumber"
     }
 }

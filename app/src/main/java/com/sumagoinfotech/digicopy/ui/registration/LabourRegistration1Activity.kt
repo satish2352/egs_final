@@ -32,6 +32,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
@@ -240,9 +241,11 @@ class LabourRegistration1Activity : AppCompatActivity() {
     private fun initializeFields() {
         districtList=ArrayList<AreaItem>()
         CoroutineScope(Dispatchers.IO).launch {
-            districtList=areaDao.getAllDistrict()
-            genderList=genderDao.getAllGenders();
-            skillsList=skillsDao.getAllSkills()
+
+            val waitingJob=async {  districtList=areaDao.getAllDistrict()
+                genderList=genderDao.getAllGenders();
+                skillsList=skillsDao.getAllSkills() }
+            waitingJob.await()
             for (district in districtList){
                 districtNames.add(district.name)
             }

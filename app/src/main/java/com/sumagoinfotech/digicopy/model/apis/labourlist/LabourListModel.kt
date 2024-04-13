@@ -6,5 +6,6 @@ data class LabourListModel(
     val status: String,
     val totalRecords: Int,
     val totalPages: Int,
+    val page_no_to_hilight: String,
 
 )

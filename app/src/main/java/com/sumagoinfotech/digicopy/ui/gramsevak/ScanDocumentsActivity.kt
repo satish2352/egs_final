@@ -86,12 +86,15 @@ import com.itextpdf.kernel.pdf.WriterProperties
 import com.itextpdf.layout.element.Image
 import com.sumagoinfotech.digicopy.database.dao.AreaDao
 import com.sumagoinfotech.digicopy.database.dao.DocumentTypeDropDownDao
+import com.sumagoinfotech.digicopy.database.entity.AreaItem
 import com.sumagoinfotech.digicopy.database.entity.DocumentTypeDropDown
 import com.sumagoinfotech.digicopy.model.apis.reportscount.ReportsCount
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
+import com.sumagoinfotech.digicopy.utils.LabourInputDataObject.taluka
 import com.sumagoinfotech.digicopy.utils.MySharedPref
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
+import kotlinx.coroutines.async
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -128,86 +131,104 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         setContentView(R.layout.activity_document_pages)
         binding = ActivityDocumentPagesBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = resources.getString(R.string.upload_document)
-        val layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
-        binding.recyclerViewDocumentPages.layoutManager = layoutManager
-        documentList = ArrayList()
-        mySharedPref= MySharedPref(this)
-        dialog=CustomProgressDialog(this)
-        apiService=ApiClient.create(this)
-        adapter = DocumentPagesAdapter(documentList, this)
-        binding.recyclerViewDocumentPages.adapter = adapter
-        documentName = ""
-        database = AppDatabase.getDatabase(this)
-        documentDao = database.documentDao()
-        areaDao = database.areaDao()
-        documentTypeDao = database.documentDropDownDao()
-        CoroutineScope(Dispatchers.IO).launch {
-            val district=areaDao.getAreaByLocationId(mySharedPref.getUserDistrictId().toString())
-            val taluka=areaDao.getAreaByLocationId(mySharedPref.getUserTalukaId().toString())
-            val village=areaDao.getAreaByLocationId(mySharedPref.getUserVillageId().toString())
-            withContext(Dispatchers.Main){
-                userDistrictName=district.name
-                userTalukaName=taluka.name
-                userVillageName=village.name
-            }
-        }
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        getTheLocation()
-        binding.fabAddDocument.setOnClickListener {
-            showDocumentTypeSelectDialog()
-        }
-        ReactiveNetwork
-            .observeNetworkConnectivity(applicationContext)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ connectivity: Connectivity ->
-                Log.d("##", "=>" + connectivity.state())
-                if (connectivity.state().toString() == "CONNECTED") {
-                    isInternetAvailable = true
-                } else {
-                    isInternetAvailable = false
+
+        try {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title = resources.getString(R.string.upload_document)
+            val layoutManager = GridLayoutManager(this, 2, RecyclerView.VERTICAL, false)
+            binding.recyclerViewDocumentPages.layoutManager = layoutManager
+            documentList = ArrayList()
+            mySharedPref= MySharedPref(this)
+            dialog=CustomProgressDialog(this)
+            apiService=ApiClient.create(this)
+            adapter = DocumentPagesAdapter(documentList, this)
+            binding.recyclerViewDocumentPages.adapter = adapter
+            documentName = ""
+            database = AppDatabase.getDatabase(this)
+            documentDao = database.documentDao()
+            areaDao = database.areaDao()
+            documentTypeDao = database.documentDropDownDao()
+
+            CoroutineScope(Dispatchers.IO).launch {
+                Log.d("mytag",mySharedPref.getUserDistrictId().toString())
+                Log.d("mytag",mySharedPref.getUserTalukaId().toString())
+                Log.d("mytag",mySharedPref.getUserVillageId().toString())
+                var district:AreaItem?=null
+                var taluka:AreaItem?=null
+                var village:AreaItem?=null
+                val districtJob=async {    district=areaDao.getAreaByLocationId(mySharedPref.getUserDistrictId().toString())}
+                districtJob.await()
+                val talukaJob=async {  taluka=areaDao.getAreaByLocationId(mySharedPref.getUserTalukaId().toString())}
+                talukaJob.await()
+                val villageJob=async {  village=areaDao.getAreaByLocationId(mySharedPref.getUserVillageId().toString()) }
+                villageJob.await()
+                Log.d("mytag","wait..........."+district?.name)
+
+                withContext(Dispatchers.Main){
+                    Log.d("mytag","later...........")
+                    userDistrictName= district?.name.toString()
+                    userTalukaName= taluka?.name.toString()
+                    userVillageName= village?.name.toString()
                 }
-            }) { throwable: Throwable? -> }
-        val options = GmsDocumentScannerOptions.Builder()
-            .setGalleryImportAllowed(false)
-            .setPageLimit(20)
-            .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
-            .setScannerMode(SCANNER_MODE_FULL)
-            .build()
-        scanner = GmsDocumentScanning.getClient(options)
-        scannerLauncher =
-            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-                if (result.resultCode == RESULT_OK) {
-                    val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-                    val job = CoroutineScope(Dispatchers.IO).launch {
-                        result?.getPages()?.let { pages ->
-                            for (page in pages) {
-                                val imageUri = pages.get(0).getImageUri()
+            }
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            getTheLocation()
+            binding.fabAddDocument.setOnClickListener {
+                showDocumentTypeSelectDialog()
+            }
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                    } else {
+                        isInternetAvailable = false
+                    }
+                }) { throwable: Throwable? -> }
+            val options = GmsDocumentScannerOptions.Builder()
+                .setGalleryImportAllowed(false)
+                .setPageLimit(20)
+                .setResultFormats(RESULT_FORMAT_JPEG, RESULT_FORMAT_PDF)
+                .setScannerMode(SCANNER_MODE_FULL)
+                .build()
+            scanner = GmsDocumentScanning.getClient(options)
+            scannerLauncher =
+                registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+                    if (result.resultCode == RESULT_OK) {
+                        val result = GmsDocumentScanningResult.fromActivityResultIntent(result.data)
+                        val job = CoroutineScope(Dispatchers.IO).launch {
+                            result?.getPages()?.let { pages ->
+                                for (page in pages) {
+                                    val imageUri = pages.get(0).getImageUri()
+                                }
                             }
                         }
-                    }
-                    result?.getPdf()?.let { pdf ->
-                        val pdfUri = pdf.uri
-                        var pageCount = pdf.pageCount
-                        pageCount += 1
-                        val calendar = Calendar.getInstance()
-                        val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
-                        savePdfFileToStorage(pdfUri, pageCount.toString(), timeInMillis)
+                        result?.getPdf()?.let { pdf ->
+                            val pdfUri = pdf.uri
+                            var pageCount = pdf.pageCount
+                            pageCount += 1
+                            val calendar = Calendar.getInstance()
+                            val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
+                            savePdfFileToStorage(pdfUri, pageCount.toString(), timeInMillis)
+                        }
                     }
                 }
+            requestThePermissions()
+            binding.cardOfflineDocs.setOnClickListener {
+
+                val intent=Intent(this@ScanDocumentsActivity, SyncLandDocumentsActivity::class.java)
+                startActivity(intent)
             }
-        requestThePermissions()
-        binding.cardOfflineDocs.setOnClickListener {
+            binding.cardUploadedDocs.setOnClickListener {
 
-            val intent=Intent(this@ScanDocumentsActivity, SyncLandDocumentsActivity::class.java)
-            startActivity(intent)
-        }
-        binding.cardUploadedDocs.setOnClickListener {
-
-            val intent=Intent(this@ScanDocumentsActivity, ViewUploadedDocumentsActivity::class.java)
-            startActivity(intent)
+                val intent=Intent(this@ScanDocumentsActivity, ViewUploadedDocumentsActivity::class.java)
+                startActivity(intent)
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","Exception =>"+e.message)
         }
 
     }

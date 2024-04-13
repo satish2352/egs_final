@@ -248,12 +248,14 @@ interface ApiService {
     fun getLaboursListSentForApproval(
         @Query("is_approved") param1: String = "added",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("start") startPageNumber: String="1",
     ): Call<LabourListModel>
 
     // change to => list-not-approved-labour => list-labour
     @POST("auth/list-labour")
     fun getLaboursListNotApproved(
-        @Query("is_approved") param1: String = "not_approved"
+        @Query("is_approved") param1: String = "not_approved",
+        @Query("start") startPageNumber: String="1",
     ): Call<LabourListModel>
 
     @POST("auth/list-labour-rejected")
@@ -263,13 +265,15 @@ interface ApiService {
     // changed to list-approved-labour => list-labour
     @POST("auth/list-labour")
     fun getLabourListApproved(
-        @Query("is_approved") param1: String = "approved"
+        @Query("is_approved") param1: String = "approved",
+        @Query("start") pageNumber: String="1"
     ): Call<LabourListModel>
 
     @POST("auth/list-labour")
     fun getLabourListReSubmittedForGramSevak(
         @Query("is_approved") is_approved: String = "resend",
-        @Query("is_resubmitted") is_resubmitted: String = "resubmitted"
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("start") pageNumber: String="1"
     ): Call<LabourListModel>
 
     @POST("auth/update-officer-labour-status-approved")
@@ -298,6 +302,7 @@ interface ApiService {
     fun getListOfLaboursReceivedForApproval(
         @Query("is_approved") isApproved: String="received",
         @Query("is_resubmitted") is_resubmitted: String="resubmitted",
+        @Query("start") pageNumber: String="1",
     ): Call<LabourListModel>
 
     // list-labour-approved-by-officer old

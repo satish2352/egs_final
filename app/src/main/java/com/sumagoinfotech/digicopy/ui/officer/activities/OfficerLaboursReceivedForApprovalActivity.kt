@@ -14,6 +14,7 @@ import com.sumagoinfotech.digicopy.adapters.LaboursSentForApprovalAdapter
 import com.sumagoinfotech.digicopy.databinding.ActivityOfficerLaboursReceivedForApprovalBinding
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LabourListModel
 import com.sumagoinfotech.digicopy.model.apis.labourlist.LaboursList
+import com.sumagoinfotech.digicopy.pagination.MyPaginationAdapter
 import com.sumagoinfotech.digicopy.utils.CustomProgressDialog
 import com.sumagoinfotech.digicopy.webservice.ApiClient
 import com.sumagoinfotech.digicopy.webservice.ApiService
@@ -23,13 +24,17 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity() {
+class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity(),
+    MyPaginationAdapter.OnPageNumberClickListener {
     private lateinit var binding: ActivityOfficerLaboursReceivedForApprovalBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: LaboursSentForApprovalAdapter
     private lateinit var labourList: ArrayList<LaboursList>
     private var isInternetAvailable:Boolean=false
+    private lateinit var paginationAdapter: MyPaginationAdapter
+    private var currentPage="1"
+    private lateinit var paginationLayoutManager : LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -44,6 +49,12 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity() {
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            binding.recyclerViewPageNumbers.adapter=adapter
+            binding.recyclerView.adapter=adapter
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            currentPage="1"
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -68,13 +79,14 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        getDataFromServer()
+        getDataFromServer(currentPage)
     }
 
-    private fun getDataFromServer() {
+    private fun getDataFromServer(currentPage:String) {
         try {
             dialog.show()
-            val call = apiService.getListOfLaboursReceivedForApproval()
+            Log.d("mytag==>",currentPage)
+            val call = apiService.getListOfLaboursReceivedForApproval(pageNumber = currentPage)
             call.enqueue(object : Callback<LabourListModel> {
                 override fun onResponse(
                     call: Call<LabourListModel>,
@@ -87,6 +99,11 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity() {
                             adapter = LaboursSentForApprovalAdapter(labourList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
+                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerLaboursReceivedForApprovalActivity)
+                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            pageAdapter.notifyDataSetChanged()
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
+
                         } else {
                             Toast.makeText(
                                 this@OfficerLaboursReceivedForApprovalActivity,
@@ -135,5 +152,11 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity() {
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onPageNumberClicked(pageNumber: Int) {
+        getDataFromServer("$pageNumber")
+        paginationAdapter.setSelectedPage(pageNumber)
+        currentPage="$pageNumber"
     }
 }

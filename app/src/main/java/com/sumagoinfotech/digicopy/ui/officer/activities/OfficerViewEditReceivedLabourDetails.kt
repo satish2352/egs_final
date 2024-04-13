@@ -200,9 +200,9 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                         {
                             Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
                                 getString(R.string.labour_registration_approved), Toast.LENGTH_SHORT).show()
-                            val intent= Intent(this@OfficerViewEditReceivedLabourDetails,OfficerMainActivity::class.java)
+                           /* val intent= Intent(this@OfficerViewEditReceivedLabourDetails,OfficerMainActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            startActivity(intent)
+                            startActivity(intent)*/
                             finish()
                         }else {
                             Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
