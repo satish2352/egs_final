@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -71,6 +72,7 @@ class ViewLaboursListSentForApprovalActivity : AppCompatActivity(),
                     } else {
                         isInternetAvailable = false
                         noInternetDialog.showDialog()
+
                     }
                 }) { throwable: Throwable? -> }
         } catch (e: Exception) {

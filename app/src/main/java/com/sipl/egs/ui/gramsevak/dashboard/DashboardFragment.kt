@@ -25,6 +25,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -60,6 +62,8 @@ import com.sipl.egs.utils.CustomMarkerObject
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.webservice.ApiClient
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -83,6 +87,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     private lateinit var adapter: ArrayAdapter<String>
     private var suggestionList= mutableListOf<String>()
 
+    private var isInternetAvailable=false
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -99,6 +105,19 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
         try {
+            ReactiveNetwork
+                .observeNetworkConnectivity(context)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+
+                    } else {
+                        isInternetAvailable = false
+                    }
+                }) { throwable: Throwable? -> }
 
             binding.layoutRegisterLabour.setOnClickListener {
                 val intent = Intent(activity, LabourRegistration1Activity::class.java)
@@ -109,7 +128,14 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         requireActivity(), android.Manifest.permission.CAMERA
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    startScanner()
+                    if(isInternetAvailable){
+                        startScanner()
+                    }else{
+                        Toast.makeText(
+                            requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
+                        ).show()
+                    }
+
                 } else {
                     requestThePermissions()
                 }
@@ -124,30 +150,46 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 childFragmentManager.findFragmentById(R.id.map_container) as SupportMapFragment
             mapFragment.getMapAsync(this)
             binding.layoutByProjectId.setOnClickListener {
-                if(!binding.etInput.text.isNullOrEmpty())
-                {
-                    fetchProjectDataForMarkerWhenSearchByName(binding.etInput.text.toString())
-                }else{
+                if(isInternetAvailable){
+                    if(!binding.etInput.text.isNullOrEmpty())
+                    {
+                        fetchProjectDataForMarkerWhenSearchByName(binding.etInput.text.toString())
+                    }else{
 
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.please_enter_project_name), Toast.LENGTH_LONG
+                        ).show()
+                    }
+
+                    Log.d("mytag", binding.etInput.text.toString())
+                }else{
                     Toast.makeText(
-                        requireContext(), "Please enter project name", Toast.LENGTH_LONG
+                        requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
                     ).show()
                 }
 
-                Log.d("mytag", binding.etInput.text.toString())
+
             }
             binding.layoutByLabourId.setOnClickListener {
+                if(isInternetAvailable){
+                    if(!binding.etInput.text.isNullOrEmpty())
+                    {
+                        fetchLabourDataForMarkerById(binding.etInput.text.toString())
+                    }else{
 
-
-                if(!binding.etInput.text.isNullOrEmpty())
-                {
-                    fetchLabourDataForMarkerById(binding.etInput.text.toString())
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.please_enter_mgnrega_id), Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }else{
-
                     Toast.makeText(
-                        requireContext(), "Please enter MGNREGA ID name", Toast.LENGTH_LONG
+                        requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
                     ).show()
                 }
+
+
             }
             binding.ivMapType.setOnClickListener {
 
@@ -181,10 +223,16 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
                 override fun afterTextChanged(s: Editable?) {
                     if(s?.length!!>=3){
-
-                        CoroutineScope(Dispatchers.IO).launch {
-                            getSuggestionsForMgnregaId(s.toString())
+                        if(isInternetAvailable){
+                            CoroutineScope(Dispatchers.IO).launch {
+                                getSuggestionsForMgnregaId(s.toString())
+                            }
+                        }else{
+                            Toast.makeText(
+                                requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
+                            ).show()
                         }
+
                     }
                 }
             })

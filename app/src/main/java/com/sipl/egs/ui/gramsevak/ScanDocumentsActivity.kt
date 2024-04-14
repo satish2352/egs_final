@@ -245,8 +245,13 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             }
             binding.cardUploadedDocs.setOnClickListener {
 
-                val intent=Intent(this@ScanDocumentsActivity, ViewUploadedDocumentsActivity::class.java)
-                startActivity(intent)
+                if(isInternetAvailable){
+                    val intent=Intent(this@ScanDocumentsActivity, ViewUploadedDocumentsActivity::class.java)
+                    startActivity(intent)
+                }else{
+                    noInternetDialog.showDialog()
+                }
+
             }
         } catch (e: Exception) {
             Log.d("mytag","Exception =>"+e.message)

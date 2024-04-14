@@ -89,9 +89,11 @@ class ViewSentForApprovalLabourDetails : AppCompatActivity() {
                 if (connectivity.state().toString() == "CONNECTED") {
                     isInternetAvailable = true
                     noInternetDialog.hideDialog()
+                    binding.scrollView2.visibility=View.VISIBLE
                 } else {
                     isInternetAvailable = false
                     noInternetDialog.showDialog()
+                    binding.scrollView2.visibility=View.GONE
                 }
             }) { throwable: Throwable? -> }
     }

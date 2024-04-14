@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.activities.gramsevak.ScanDocumentsActivity">
+    tools:context=".ui.gramsevak.ScanDocumentsActivity">
     <LinearLayout
         android:layout_margin="16dp"
         android:layout_width="match_parent"

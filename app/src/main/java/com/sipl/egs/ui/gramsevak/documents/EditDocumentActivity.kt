@@ -174,7 +174,10 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                 }
             }
         binding.fabAdd.setOnClickListener {
-            launchScanner()
+            if(isInternetAvailable){
+                launchScanner()
+            }else{noInternetDialog.showDialog()}
+
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -193,18 +196,22 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
         })
         binding.btnUploadDocument.setOnClickListener {
 
-            if(tempPdfFile!=null){
-                if(fileSize!= tempPdfFile!!.length())
-                {
-                    uploadDocuments()
-                }else{
-                    Toast.makeText(this@EditDocumentActivity,
-                        getString(R.string.please_make_changes_to_document_before_submitting),Toast.LENGTH_LONG).show()
-                }
-            }else{
-                Toast.makeText(this@EditDocumentActivity,
-                    getString(R.string.please_try_again),Toast.LENGTH_LONG).show()
-            }
+          if(isInternetAvailable){
+              if(tempPdfFile!=null){
+                  if(fileSize!= tempPdfFile!!.length())
+                  {
+                      uploadDocuments()
+                  }else{
+                      Toast.makeText(this@EditDocumentActivity,
+                          getString(R.string.please_make_changes_to_document_before_submitting),Toast.LENGTH_LONG).show()
+                  }
+              }else{
+                  Toast.makeText(this@EditDocumentActivity,
+                      getString(R.string.please_try_again),Toast.LENGTH_LONG).show()
+              }
+          }else{
+              noInternetDialog.showDialog()
+          }
 
         }
         binding.tvDocumentType.setText(documentType)

@@ -14,7 +14,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.sipl.egs.R
 import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
-import com.sipl.egs.ui.gramsevak.documents.DocumentUpdateActivity
+import com.sipl.egs.ui.gramsevak.documents.DocumentDetailsActivity
 import com.sipl.egs.utils.FileDownloader
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -67,7 +67,7 @@ class DocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
             }
 
             holder.itemView.setOnClickListener {
-                val intent=Intent(holder.itemView.context, DocumentUpdateActivity::class.java)
+                val intent=Intent(holder.itemView.context, DocumentDetailsActivity::class.java)
                 intent.putExtra("id",list?.get(position)?.id.toString())
                 intent.putExtra("url",list?.get(position)?.document_pdf.toString())
                 intent.putExtra("fileName",list?.get(position)?.document_name.toString())
@@ -76,7 +76,7 @@ class DocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
             }
 
             holder.ivEdit.setOnClickListener {
-                val intent=Intent(holder.itemView.context, DocumentUpdateActivity::class.java)
+                val intent=Intent(holder.itemView.context, DocumentDetailsActivity::class.java)
                 intent.putExtra("id",list?.get(position)?.id.toString())
                 intent.putExtra("url",list?.get(position)?.document_pdf.toString())
                 intent.putExtra("fileName",list?.get(position)?.document_name.toString())

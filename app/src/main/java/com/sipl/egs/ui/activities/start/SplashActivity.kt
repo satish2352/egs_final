@@ -112,18 +112,18 @@ class SplashActivity : AppCompatActivity() {
 
                     }
                 }) { throwable: Throwable? -> }
-            val deviceId = DeviceUtils.getDeviceId(this@SplashActivityBackup)
+            val deviceId = DeviceUtils.getDeviceId(this@SplashActivity)
             mySharedPref.setDeviceId(deviceId)
             binding.progressBar.visibility = View.VISIBLE
             CoroutineScope(Dispatchers.IO).launch {
-                val deviceId = DeviceUtils.getDeviceId(this@SplashActivityBackup)
+                val deviceId = DeviceUtils.getDeviceId(this@SplashActivity)
                 mySharedPref.setDeviceId(deviceId)
                 userDao.insertInitialRecords()
                 checkAllCounts();
                 if (!mySharedPref.getAllAreaEntries()) {
                     if (areaDao.getAllArea().size < 44342) {
                         val areaEnteriesJob = async {
-                            val items = readJsonFromAssets(this@SplashActivityBackup, "address.json")
+                            val items = readJsonFromAssets(this@SplashActivity, "address.json")
                             areaDao.insertInitialRecords(items)
                             val size = areaDao.getAllArea().size;
                             Log.d("mytag", "Area Entries $size")
@@ -173,11 +173,11 @@ class SplashActivity : AppCompatActivity() {
         }
     }
     private fun navigateToNextActivity(){
-        val mySharedPref = MySharedPref(this@SplashActivityBackup)
+        val mySharedPref = MySharedPref(this@SplashActivity)
         runOnUiThread {
             if (mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId() == 3) {
                 binding.progressBar.visibility = View.GONE
-                val intent = Intent(this@SplashActivityBackup, MainActivity::class.java)
+                val intent = Intent(this@SplashActivity, MainActivity::class.java)
                 intent.flags =
                     Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
@@ -185,14 +185,14 @@ class SplashActivity : AppCompatActivity() {
             } else if (mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId() == 2) {
                 binding.progressBar.visibility = View.GONE
                 val intent =
-                    Intent(this@SplashActivityBackup, OfficerMainActivity::class.java)
+                    Intent(this@SplashActivity, OfficerMainActivity::class.java)
                 intent.flags =
                     Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()
             } else {
                 binding.progressBar.visibility = View.GONE
-                val intent = Intent(this@SplashActivityBackup, LoginActivity::class.java)
+                val intent = Intent(this@SplashActivity, LoginActivity::class.java)
                 intent.flags =
                     Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
@@ -313,7 +313,7 @@ class SplashActivity : AppCompatActivity() {
     private suspend fun fetchMastersFromServer(): Boolean {
         return suspendCancellableCoroutine { continuation ->
             try {
-                val apiService = ApiClient.create(this@SplashActivityBackup)
+                val apiService = ApiClient.create(this@SplashActivity)
                 apiService.getAllMasters().enqueue(object :
                     Callback<MastersModel> {
                     override fun onResponse(
@@ -362,7 +362,7 @@ class SplashActivity : AppCompatActivity() {
                             } else {
                                 Log.d("mytag", "fetchMastersFromServer:Response Not success")
                                 Toast.makeText(
-                                    this@SplashActivityBackup,
+                                    this@SplashActivity,
                                     resources.getString(R.string.no_records_found),
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -371,7 +371,7 @@ class SplashActivity : AppCompatActivity() {
                         } else {
                             Log.d("mytag", "fetchMastersFromServer:Response unsuccessful")
                             Toast.makeText(
-                                this@SplashActivityBackup,
+                                this@SplashActivity,
                                 resources.getString(R.string.response_unsuccessfull),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -382,7 +382,7 @@ class SplashActivity : AppCompatActivity() {
                     override fun onFailure(call: Call<MastersModel>, t: Throwable) {
                         Log.d("mytag", "fetchMastersFromServer:onFailure ${t.message}")
                         Toast.makeText(
-                            this@SplashActivityBackup,
+                            this@SplashActivity,
                             resources.getString(R.string.error_occured_during_api_call),
                             Toast.LENGTH_SHORT
                         ).show()
@@ -401,7 +401,7 @@ class SplashActivity : AppCompatActivity() {
     private suspend fun fetchAreaMastersToUpdateFromServer(): Boolean {
         return suspendCancellableCoroutine { continuation ->
             try {
-                val apiService = ApiClient.create(this@SplashActivityBackup)
+                val apiService = ApiClient.create(this@SplashActivity)
                 apiService.getAreaMastersToUpdate().enqueue(object :
                     Callback<AreaMastersUpdateModel> {
                     override fun onResponse(
@@ -444,7 +444,7 @@ class SplashActivity : AppCompatActivity() {
                                     "fetchAreaMastersToUpdateFromServer:Response Not success"
                                 )
                                 Toast.makeText(
-                                    this@SplashActivityBackup,
+                                    this@SplashActivity,
                                     resources.getString(R.string.no_records_found),
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -457,7 +457,7 @@ class SplashActivity : AppCompatActivity() {
                                 "fetchAreaMastersToUpdateFromServer:Response unsuccessful"
                             )
                             Toast.makeText(
-                                this@SplashActivityBackup,
+                                this@SplashActivity,
                                 resources.getString(R.string.response_unsuccessfull),
                                 Toast.LENGTH_SHORT
                             ).show()
@@ -469,7 +469,7 @@ class SplashActivity : AppCompatActivity() {
                     override fun onFailure(call: Call<AreaMastersUpdateModel>, t: Throwable) {
                         Log.d("mytag", "fetchAreaMastersToUpdateFromServer:onFailure ${t.message}")
                         Toast.makeText(
-                            this@SplashActivityBackup,
+                            this@SplashActivity,
                             resources.getString(R.string.error_occured_during_api_call),
                             Toast.LENGTH_SHORT
                         ).show()

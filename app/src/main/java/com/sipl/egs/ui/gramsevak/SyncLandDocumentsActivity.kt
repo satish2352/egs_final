@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -83,7 +84,12 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
         }
         if(item.itemId==R.id.navigation_sync){
 
-            uploadDocuments()
+            if(isInternetAvailable){
+                uploadDocuments()
+            }else{
+                noInternetDialog.showDialog()
+            }
+
         }
 
         return super.onOptionsItemSelected(item)
@@ -106,6 +112,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
                         latitude = document.latitude,
                     )
                     if(response.isSuccessful){
+
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)
                         if(response.body()?.status.equals("true")){
@@ -115,11 +122,12 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
                             updateDocumentList()
                         }else{
                             updateDocumentList()
-                            Log.d("mytag","Document upload (response.unsccessful  "+document.id)
+                            Toast.makeText(this@SyncLandDocumentsActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_SHORT).show()
                         }
                     }else{
                         updateDocumentList()
                         Log.d("mytag","Document upload failed  "+document.id)
+                        Toast.makeText(this@SyncLandDocumentsActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -129,6 +137,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
                 updateDocumentList()
                 dialog.dismiss()
                 Log.d("mytag","Upload Document Online Exception "+e.message)
+                Toast.makeText(this@SyncLandDocumentsActivity,resources.getString(R.string.error_occured_during_api_call),Toast.LENGTH_SHORT).show()
             }
         }
 

@@ -163,4 +163,6 @@
     <string name="labour_added_successfully">Labour added successfully</string>
     <string name="labour_not_added_please_try_again">Labour not added please try again</string>
     <string name="sync_documents">Sync Documents</string>
+    <string name="please_enter_mgnrega_id">Please enter MGNREGA Id</string>
+    <string name="please_enter_project_name">Please enter project name</string>
 </resources>

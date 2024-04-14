@@ -32,7 +32,6 @@ class DocumentListApprovedActivity : AppCompatActivity(),
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: DocsSentForApprovalAdapter
     private lateinit var documentList: MutableList<DocumentItem>
-
     private lateinit var paginationAdapter: MyPaginationAdapter
     private var currentPage="1"
     private lateinit var paginationLayoutManager : LinearLayoutManager

@@ -94,9 +94,13 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
             //UploadManager.startUploadTask(this@SyncLabourDataActivity)
             //syncLabourData()
-            CoroutineScope(Dispatchers.IO).launch {
-                uploadLabourOnline()
-            }
+           if(isInternetAvailable){
+               CoroutineScope(Dispatchers.IO).launch {
+                   uploadLabourOnline()
+               }
+           }else{
+               noInternetDialog.showDialog()
+           }
 
         }
 

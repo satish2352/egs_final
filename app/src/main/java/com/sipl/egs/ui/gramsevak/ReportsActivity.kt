@@ -68,42 +68,54 @@ class ReportsActivity : AppCompatActivity() {
                 val intent= Intent(this, ViewLaboursListSentForApprovalActivity::class.java)
                 startActivity(intent)
             }
-            binding.cardSentNotApproved.setOnClickListener {
+            binding.cardSentForApproval.setOnClickListener {
+                launchActivity(ViewLaboursListSentForApprovalActivity::class.java)
+            }
 
-                val intent= Intent(this, LaboursListNotApproved::class.java)
-                startActivity(intent)
+            binding.cardSentNotApproved.setOnClickListener {
+                launchActivity(LaboursListNotApproved::class.java)
             }
 
             binding.cardApproved.setOnClickListener {
+                launchActivity(LaboursListApproved::class.java)
+            }
 
-                val intent= Intent(this, LaboursListApproved::class.java)
-                startActivity(intent)
-            }
             binding.cardDocsSentForApproval.setOnClickListener {
-                val intent= Intent(this, DocumentListSentForApprovalActivity::class.java)
-                startActivity(intent)
+                launchActivity(DocumentListSentForApprovalActivity::class.java)
             }
-            binding.cardApprovedDocumets.setOnClickListener {
-                val intent= Intent(this, DocumentListApprovedActivity::class.java)
-                startActivity(intent)
-            }
-            binding.cardNotApprovedDocumets.setOnClickListener {
-                val intent= Intent(this, DocumentListNotApprovedActivity::class.java)
-                startActivity(intent)
-            }
-            binding.cardReSubmittedLabour.setOnClickListener {
-                val intent= Intent(this, LabourReSubmittedActivity::class.java)
-                startActivity(intent)
-            }
+
             binding.cardReSubmittedDocs.setOnClickListener {
                 val intent= Intent(this, DocumentReSubmittedActivity::class.java)
                 startActivity(intent)
             }
 
+            binding.cardReSubmittedLabour.setOnClickListener {
+                launchActivity(LabourReSubmittedActivity::class.java)
+            }
+            binding.cardApprovedDocumets.setOnClickListener {
+                launchActivity(DocumentListApprovedActivity::class.java)
+            }
+
+            binding.cardNotApprovedDocumets.setOnClickListener {
+                launchActivity(DocumentListNotApprovedActivity::class.java)
+            }
+            binding.cardReSubmittedDocs.setOnClickListener {
+                launchActivity(DocumentReSubmittedActivity::class.java)
+            }
+
         } catch (e: Exception) {
 
+            Log.d("mytag","ReportActivity",e)
         }
 
+    }
+    private fun launchActivity(activityClass: Class<*>) {
+        if (isInternetAvailable) {
+            val intent = Intent(this, activityClass)
+            startActivity(intent)
+        } else {
+            noInternetDialog.showDialog()
+        }
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){

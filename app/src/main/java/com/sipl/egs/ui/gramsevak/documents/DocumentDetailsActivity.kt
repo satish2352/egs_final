@@ -84,7 +84,7 @@ import java.util.Date
 import java.util.Hashtable
 import java.util.Locale
 
-class DocumentUpdateActivity : AppCompatActivity() {
+class DocumentDetailsActivity : AppCompatActivity() {
     private lateinit var binding:ActivityDocumentUpdateBinding
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
     private lateinit var scanner: GmsDocumentScanner
@@ -179,19 +179,25 @@ class DocumentUpdateActivity : AppCompatActivity() {
             uploadDocuments()
         }
         binding.ivViewDocument.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse(pdfUrl), "application/pdf")
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            try {
-                startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                Toast.makeText(
-                    this, "No PDF viewer application found", Toast.LENGTH_LONG
-                ).show()
-            }
+
+            if(isInternetAvailable){
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(Uri.parse(pdfUrl), "application/pdf")
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                try {
+                    startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(
+                        this, "No PDF viewer application found", Toast.LENGTH_LONG
+                    ).show()
+                }
+            }else{noInternetDialog.showDialog()}
+
         }
         binding.ivDownloadDocument.setOnClickListener {
-            FileDownloader.downloadFile(this,pdfUrl,prevFileName)
+            if(isInternetAvailable){
+                FileDownloader.downloadFile(this,pdfUrl,prevFileName)
+            }else{noInternetDialog.showDialog()}
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (!isLocationEnabled()) {
@@ -203,18 +209,20 @@ class DocumentUpdateActivity : AppCompatActivity() {
         getTheLocation()
         requestThePermissions()
         binding.ivEdit.setOnClickListener {
+            if(isInternetAvailable){
+                val intent=Intent(this,EditDocumentActivity::class.java)
+                intent.putExtra("url",pdfUrl)
+                intent.putExtra("document_id",gram_document_id)
+                intent.putExtra("fileName",prevFileName)
+                intent.putExtra("documentType",documentType)
+                startActivity(intent)
+            }else{noInternetDialog.showDialog()}
 
-            val intent=Intent(this,EditDocumentActivity::class.java)
-            intent.putExtra("url",pdfUrl)
-            intent.putExtra("document_id",gram_document_id)
-            intent.putExtra("fileName",prevFileName)
-            intent.putExtra("documentType",documentType)
-            startActivity(intent)
 
         }
     }
     private fun showEnableLocationDialog() {
-        val builder = AlertDialog.Builder(this@DocumentUpdateActivity)
+        val builder = AlertDialog.Builder(this@DocumentDetailsActivity)
         builder.setMessage("Location services are disabled. Do you want to enable them?")
             .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
                 dialog.dismiss()
@@ -223,7 +231,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
                 dialog.dismiss()
                 // Handle the case when the user refuses to enable location services
                 Toast.makeText(
-                    this@DocumentUpdateActivity,
+                    this@DocumentDetailsActivity,
                     "Unable to retrieve location without enabling location services",
                     Toast.LENGTH_LONG
                 ).show()
@@ -239,14 +247,14 @@ class DocumentUpdateActivity : AppCompatActivity() {
     }
     private fun requestLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
-                this@DocumentUpdateActivity, Manifest.permission.ACCESS_FINE_LOCATION
+                this@DocumentDetailsActivity, Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this@DocumentUpdateActivity, Manifest.permission.ACCESS_COARSE_LOCATION
+                this@DocumentDetailsActivity, Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Request location permissions
             ActivityCompat.requestPermissions(
-                this@DocumentUpdateActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1000
+                this@DocumentDetailsActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1000
             )
             Log.d("mytag", "requestLocationUpdates()  return ")
             return
@@ -261,7 +269,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
             } ?: run {
                 // Handle case where location is null
                 Toast.makeText(
-                    this@DocumentUpdateActivity, "Unable to retrieve location", Toast.LENGTH_LONG
+                    this@DocumentDetailsActivity, "Unable to retrieve location", Toast.LENGTH_LONG
                 ).show()
             }
         }
@@ -278,7 +286,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
 
         try {
             dialog.show()
-            val apiService= ApiClient.create(this@DocumentUpdateActivity)
+            val apiService= ApiClient.create(this@DocumentDetailsActivity)
             apiService.getDocumentDetails(gram_document_id).enqueue(object :
                 Callback<MainDocsModel> {
                 override fun onResponse(
@@ -322,22 +330,22 @@ class DocumentUpdateActivity : AppCompatActivity() {
 
                                 }
                             }else{
-                                Toast.makeText(this@DocumentUpdateActivity,response.body()?.message,Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@DocumentDetailsActivity,response.body()?.message,Toast.LENGTH_LONG).show()
                             }
 
                         }else {
-                            Toast.makeText(this@DocumentUpdateActivity,response.body()?.message,Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@DocumentDetailsActivity,response.body()?.message,Toast.LENGTH_LONG).show()
 
                         }
                     } else{
                         binding.layoutMain.visibility=View.GONE
-                        Toast.makeText(this@DocumentUpdateActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@DocumentDetailsActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_LONG).show()
 
                     }
                 }
                 override fun onFailure(call: Call<MainDocsModel>, t: Throwable) {
                     dialog.dismiss()
-                    Toast.makeText(this@DocumentUpdateActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DocumentDetailsActivity, "Error Occurred during api call", Toast.LENGTH_SHORT).show()
                 }
             })
         } catch (e: Exception) {
@@ -365,7 +373,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
         }
     }
     private fun launchScanner() {
-        scanner.getStartScanIntent(this@DocumentUpdateActivity)
+        scanner.getStartScanIntent(this@DocumentDetailsActivity)
             .addOnSuccessListener { intentSender ->
                 scannerLauncher.launch(IntentSenderRequest.Builder(intentSender).build())
             }
@@ -381,7 +389,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
     }
     private fun savePdfFileToStorage(uri: Uri?, pageCount: String, timeInMillis: String) {
         Log.d("mytag","savePdfFileToStorage : Inside")
-        var myDialog=CustomProgressDialog(this@DocumentUpdateActivity)
+        var myDialog=CustomProgressDialog(this@DocumentDetailsActivity)
             myDialog.show()
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -452,12 +460,12 @@ class DocumentUpdateActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main){
                     Log.d("mytag","savePdfFileToStorage : withContext")
                     binding.btnSubmit.visibility=View.VISIBLE
-                    binding.ivDocumentThumb.setImageBitmap(generateThumbnailFromPDF(documentUri.toString(),this@DocumentUpdateActivity))
+                    binding.ivDocumentThumb.setImageBitmap(generateThumbnailFromPDF(documentUri.toString(),this@DocumentDetailsActivity))
                     binding.layoutDocThumb.visibility=View.VISIBLE
                     myDialog.dismiss()
                     binding.ivDocumentThumb.setOnClickListener {
                         val file=File(Uri.parse(documentUri.toString()).path)
-                        openPdfFromUri(this@DocumentUpdateActivity,file)
+                        openPdfFromUri(this@DocumentDetailsActivity,file)
                         Log.d("mytag","savePdfFileToStorage : openPdfFromUri")
                     }
                 }
@@ -626,7 +634,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
                     addressFromLatLong=getAddressFromLatLong()
                 } ?: run {
                     Toast.makeText(
-                        this@DocumentUpdateActivity,
+                        this@DocumentDetailsActivity,
                         "Unable to retrieve location",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -635,7 +643,7 @@ class DocumentUpdateActivity : AppCompatActivity() {
     }
     private fun requestThePermissions() {
 
-        PermissionX.init(this@DocumentUpdateActivity)
+        PermissionX.init(this@DocumentDetailsActivity)
             .permissions(
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -670,9 +678,9 @@ class DocumentUpdateActivity : AppCompatActivity() {
     }
 
     private fun uploadDocuments() {
-        val dialog=CustomProgressDialog(this@DocumentUpdateActivity)
+        val dialog=CustomProgressDialog(this@DocumentDetailsActivity)
         dialog.show()
-        val apiService = ApiClient.create(this@DocumentUpdateActivity)
+        val apiService = ApiClient.create(this@DocumentDetailsActivity)
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
@@ -689,18 +697,18 @@ class DocumentUpdateActivity : AppCompatActivity() {
                         Log.d("mytag",""+response.body()?.status)
                         if(response.body()?.status.equals("true")){
                             runOnUiThread {
-                                Toast.makeText(this@DocumentUpdateActivity,response.body()?.message,Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@DocumentDetailsActivity,response.body()?.message,Toast.LENGTH_LONG).show()
                             }
                             finish()
                         }else{
                             runOnUiThread {
-                                Toast.makeText(this@DocumentUpdateActivity,response.body()?.message,Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@DocumentDetailsActivity,response.body()?.message,Toast.LENGTH_LONG).show()
                             }
 
                         }
                     }else{
                         runOnUiThread {
-                            Toast.makeText(this@DocumentUpdateActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_LONG).show()
+                            Toast.makeText(this@DocumentDetailsActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_LONG).show()
                         }
                     }
 

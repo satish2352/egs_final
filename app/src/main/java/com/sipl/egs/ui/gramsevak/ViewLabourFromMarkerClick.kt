@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
@@ -75,9 +76,11 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                 if (connectivity.state().toString() == "CONNECTED") {
                     isInternetAvailable = true
                     noInternetDialog.hideDialog()
+                    binding.scrollView.visibility= View.VISIBLE
                 } else {
                     isInternetAvailable = false
                     noInternetDialog.showDialog()
+                    binding.scrollView.visibility= View.GONE
                 }
             }) { throwable: Throwable? -> }
     }

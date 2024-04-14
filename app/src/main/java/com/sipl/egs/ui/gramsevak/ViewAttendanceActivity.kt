@@ -352,79 +352,84 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener,
             val btnSubmit = dialog.findViewById<Button>(R.id.btnSubmit)
 
                 btnSubmit.setOnClickListener {
-                    if(actSelectProjectForAttendance.enoughToFilter())
-                    {
-                        actSelectProjectForAttendance.error=null
-                    if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
-                        var dayType = ""
-                        if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
-                            dayType = "half_day"
-                        } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
-                            dayType = "full_day"
-                        }
-                        Log.d("mytag","showAttendanceDialog : "+dayType)
-                        val call = apiService.updateAttendance(projectId = selectedProjectIdForAttendance, mgnregaId = data.mgnrega_card_id, attendanceDay = dayType)
-                        call.enqueue(object : Callback<MastersModel> {
-                            override fun onResponse(
-                                call: Call<MastersModel>,
-                                response: Response<MastersModel>
-                            ) {
-                                Log.d("mytag","showAttendanceDialog : onResponse ")
+                  if(isInternetAvailable){
+                      if(actSelectProjectForAttendance.enoughToFilter())
+                      {
+                          actSelectProjectForAttendance.error=null
+                          if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay || radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
+                              var dayType = ""
+                              if (radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonHalfDay) {
+                                  dayType = "half_day"
+                              } else if(radioGroupAttendance.checkedRadioButtonId == R.id.radioButtonFullDay) {
+                                  dayType = "full_day"
+                              }
+                              Log.d("mytag","showAttendanceDialog : "+dayType)
+                              val call = apiService.updateAttendance(projectId = selectedProjectIdForAttendance, mgnregaId = data.mgnrega_card_id, attendanceDay = dayType)
+                              call.enqueue(object : Callback<MastersModel> {
+                                  override fun onResponse(
+                                      call: Call<MastersModel>,
+                                      response: Response<MastersModel>
+                                  ) {
+                                      Log.d("mytag","showAttendanceDialog : onResponse ")
 
-                                if (response.isSuccessful) {
+                                      if (response.isSuccessful) {
 
-                                    if (response.body()?.status.equals("true")) {
-                                        getAttendanceList("", pageNumber = currentPage)
-                                        data.attendance_day=dayType
-                                        val toast = Toast.makeText(
-                                            this@ViewAttendanceActivity,
-                                            getString(R.string.attendance_updated_successfully),
-                                            Toast.LENGTH_SHORT
-                                        )
-                                        toast.show()
-                                        attendanceList.set(position,data)
-                                        adapter.notifyDataSetChanged()
+                                          if (response.body()?.status.equals("true")) {
+                                              getAttendanceList("", pageNumber = currentPage)
+                                              data.attendance_day=dayType
+                                              val toast = Toast.makeText(
+                                                  this@ViewAttendanceActivity,
+                                                  getString(R.string.attendance_updated_successfully),
+                                                  Toast.LENGTH_SHORT
+                                              )
+                                              toast.show()
+                                              attendanceList.set(position,data)
+                                              adapter.notifyDataSetChanged()
 
-                                    }else{
-                                        val toast = Toast.makeText(
-                                            this@ViewAttendanceActivity,
-                                            getString(R.string.attendance_updating_failed),
-                                            Toast.LENGTH_SHORT
-                                        )
-                                        toast.show()
-                                    }
-                                }else{
-                                    val toast = Toast.makeText(
-                                        this@ViewAttendanceActivity,
-                                        getString(R.string.attendance_updating_failed),
-                                        Toast.LENGTH_SHORT
-                                    )
-                                    toast.show()
-                                }
-                                dialog.dismiss()
-                            }
-                            override fun onFailure(call: Call<MastersModel>, t: Throwable) {
-                                Log.d("mytag","showAttendanceDialog : onFailure "+t.message)
-                                dialog.dismiss()
-                                val toast = Toast.makeText(
-                                    this@ViewAttendanceActivity,
-                                    getString(R.string.error_occured_during_api_call),
-                                    Toast.LENGTH_SHORT
-                                )
-                                toast.show()
-                            }
-                        })
+                                          }else{
+                                              val toast = Toast.makeText(
+                                                  this@ViewAttendanceActivity,
+                                                  getString(R.string.attendance_updating_failed),
+                                                  Toast.LENGTH_SHORT
+                                              )
+                                              toast.show()
+                                          }
+                                      }else{
+                                          val toast = Toast.makeText(
+                                              this@ViewAttendanceActivity,
+                                              getString(R.string.attendance_updating_failed),
+                                              Toast.LENGTH_SHORT
+                                          )
+                                          toast.show()
+                                      }
+                                      dialog.dismiss()
+                                  }
+                                  override fun onFailure(call: Call<MastersModel>, t: Throwable) {
+                                      Log.d("mytag","showAttendanceDialog : onFailure "+t.message)
+                                      dialog.dismiss()
+                                      val toast = Toast.makeText(
+                                          this@ViewAttendanceActivity,
+                                          getString(R.string.error_occured_during_api_call),
+                                          Toast.LENGTH_SHORT
+                                      )
+                                      toast.show()
+                                  }
+                              })
 
-                    } else {
-                        val toast = Toast.makeText(
-                            this@ViewAttendanceActivity, getString(R.string.select_day),
-                            Toast.LENGTH_SHORT
-                        )
-                        toast.show()
-                    }
-                    }else{
-                        actSelectProjectForAttendance.error=resources.getString(R.string.select_project)
-                    }
+                          } else {
+                              val toast = Toast.makeText(
+                                  this@ViewAttendanceActivity, getString(R.string.select_day),
+                                  Toast.LENGTH_SHORT
+                              )
+                              toast.show()
+                          }
+                      }else{
+                          actSelectProjectForAttendance.error=resources.getString(R.string.select_project)
+                      }
+                  }else{
+
+                      noInternetDialog.showDialog()
+                  }
                 }
 
 

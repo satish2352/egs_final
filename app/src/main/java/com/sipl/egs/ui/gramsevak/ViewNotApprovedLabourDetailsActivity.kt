@@ -72,13 +72,6 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
         binding.ivVoterId.setOnClickListener {
             showPhotoZoomDialog(voterIdImage)
         }
-        binding.fabEdit.setOnClickListener {
-
-            val intent= Intent(this, LabourUpdateOnline1Activity::class.java)
-            intent.putExtra("id",mgnregaCardId)
-            startActivity(intent);
-        }
-
         noInternetDialog= NoInternetDialog(this)
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
@@ -89,11 +82,27 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                 if (connectivity.state().toString() == "CONNECTED") {
                     isInternetAvailable = true
                     noInternetDialog.hideDialog()
+                    binding.scrollView2.visibility=View.VISIBLE
                 } else {
                     isInternetAvailable = false
                     noInternetDialog.showDialog()
+                    binding.scrollView2.visibility=View.GONE
                 }
             }) { throwable: Throwable? -> }
+        binding.fabEdit.setOnClickListener {
+
+            if(isInternetAvailable){
+                val intent= Intent(this, LabourUpdateOnline1Activity::class.java)
+                intent.putExtra("id",mgnregaCardId)
+                startActivity(intent);
+            }else{
+                noInternetDialog.showDialog()
+            }
+
+        }
+
+
+
     }
     private fun getLabourDetails(mgnregaCardId:String) {
 
@@ -215,22 +224,27 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
     private fun showPhotoZoomDialog(uri:String){
 
         try {
-            val dialog= Dialog(this@ViewNotApprovedLabourDetailsActivity)
-            dialog.setContentView(R.layout.layout_zoom_image)
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.WRAP_CONTENT
-            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            dialog.window?.setLayout(width, height)
-            dialog.show()
-            val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
-            val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
-            Glide.with(this@ViewNotApprovedLabourDetailsActivity)
-                .load(uri)
-                .into(photoView)
+            if(isInternetAvailable){
+                val dialog= Dialog(this@ViewNotApprovedLabourDetailsActivity)
+                dialog.setContentView(R.layout.layout_zoom_image)
+                val width = ViewGroup.LayoutParams.MATCH_PARENT
+                val height = ViewGroup.LayoutParams.WRAP_CONTENT
+                dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                dialog.window?.setLayout(width, height)
+                dialog.show()
+                val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
+                val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
+                Glide.with(this@ViewNotApprovedLabourDetailsActivity)
+                    .load(uri)
+                    .into(photoView)
 
-            ivClose.setOnClickListener {
-                dialog.dismiss()
+                ivClose.setOnClickListener {
+                    dialog.dismiss()
+                }
+            }else{
+                noInternetDialog.showDialog()
             }
+
         } catch (e: Exception) {
         }
     }

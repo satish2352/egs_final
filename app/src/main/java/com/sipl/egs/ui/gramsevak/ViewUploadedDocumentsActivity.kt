@@ -3,6 +3,7 @@ package com.sipl.egs.ui.gramsevak
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -66,9 +67,13 @@ class ViewUploadedDocumentsActivity : AppCompatActivity(),
                     if (connectivity.state().toString() == "CONNECTED") {
                         isInternetAvailable = true
                         noInternetDialog.hideDialog()
+                        binding.recyclverView.visibility= View.VISIBLE
+                        binding.recyclerViewPageNumbers.visibility= View.VISIBLE
                     } else {
                         isInternetAvailable = false
                         noInternetDialog.showDialog()
+                        binding.recyclverView.visibility= View.GONE
+                        binding.recyclerViewPageNumbers.visibility= View.GONE
                     }
                 }) { throwable: Throwable? -> }
 

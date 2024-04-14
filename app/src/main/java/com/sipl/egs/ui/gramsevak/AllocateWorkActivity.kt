@@ -119,7 +119,12 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
         }
         binding.ivSearchByLabourId.setOnClickListener {
 
-            searchLabourByMgnregaId(currentPage)
+            if(isInternetAvailable){
+                searchLabourByMgnregaId(currentPage)
+            }else{
+                noInternetDialog.showDialog()
+            }
+
         }
 
 
@@ -286,8 +291,13 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
         }
         if (item.itemId == R.id.action_view_attendance) {
             Log.d("mytag","action_view_attendance")
-            val intent= Intent(this@AllocateWorkActivity, com.sipl.egs.ui.gramsevak.ViewAttendanceActivity::class.java)
-            startActivity(intent)
+            if(isInternetAvailable){
+                val intent= Intent(this@AllocateWorkActivity, com.sipl.egs.ui.gramsevak.ViewAttendanceActivity::class.java)
+                startActivity(intent)
+            }else{
+                noInternetDialog.showDialog()
+            }
+
         }
         return super.onOptionsItemSelected(item)
     }
