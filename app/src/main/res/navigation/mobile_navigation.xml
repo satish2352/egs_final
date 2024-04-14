@@ -5,29 +5,29 @@
     app:startDestination="@+id/navigation_dashboard">
     <fragment
         android:id="@+id/navigation_sync"
-        android:name="com.sumagoinfotech.digicopy.ui.gramsevak.dashboard.sync.SyncOfflineData"
+        android:name="com.sipl.egs.ui.gramsevak.dashboard.sync.SyncOfflineData"
         android:label="@string/sync"
         tools:layout="@layout/activity_allocate_work" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.sumagoinfotech.digicopy.ui.gramsevak.dashboard.DashboardFragment"
+        android:name="com.sipl.egs.ui.gramsevak.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <activity
         android:id="@+id/navigation_attendence"
-        android:name="com.sumagoinfotech.digicopy.ui.gramsevak.AllocateWorkActivity"
+        android:name="com.sipl.egs.ui.gramsevak.AllocateWorkActivity"
         tools:layout="@layout/activity_allocate_work" />
 
     <activity
         android:id="@+id/navigation_document"
-        android:name="com.sumagoinfotech.digicopy.ui.gramsevak.ScanDocumentsActivity"
+        android:name="com.sipl.egs.ui.gramsevak.ScanDocumentsActivity"
         tools:layout="@layout/activity_document_pages" />
 
     <activity
         android:id="@+id/navigation_reports"
-        android:name="com.sumagoinfotech.digicopy.ui.gramsevak.ReportsActivity"
+        android:name="com.sipl.egs.ui.gramsevak.ReportsActivity"
         android:label="@string/title_notifications"
         tools:layout="@layout/activity_labour_registration1" />
 

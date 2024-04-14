@@ -81,7 +81,7 @@
     <string name="title_activity_officer_main">OfficerMainActivity</string>
     <string name="title_home">Home</string>
     <string name="uploaded_document">Uploaded Documents</string>
-    <string name="please_try_again">Please try again\n</string>
+    <string name="please_try_again">Please try again</string>
     <string name="sent_for_approval">Sent For Approval</string>
     <string name="not_approved_list">Not Approved Labours list</string>
     <string name="approved_list">Approved Labours List</string>
@@ -160,4 +160,6 @@
     <string name="response_failed">Response Failed</string>
     <string name="labour_details_sent_for_approval">Labour Details Sent For Approval</string>
     <string name="sync_failed_reason">Reason</string>
+    <string name="labour_added_successfully">Labour added successfully</string>
+    <string name="labour_not_added_please_try_again">Labour not added please try again</string>
 </resources>

@@ -4,20 +4,26 @@ plugins {
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("kotlin-kapt")
 
+
 }
 
 android {
-    namespace = "com.sumagoinfotech.digicopy"
+    namespace = "com.sipl.egs"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.sumagoinfotech.digicopy"
+        applicationId = "com.sipl.egs"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
     }
 
     buildTypes {
