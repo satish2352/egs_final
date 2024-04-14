@@ -76,9 +76,7 @@
         <activity
             android:name="com.sipl.egs.ui.registration.LabourUpdateOnline1Activity"
             android:exported="false" />
-        <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerLaboursRejectedListActivity"
-            android:exported="false" />
+
         <activity
             android:name="com.sipl.egs.ui.officer.activities.OfficerViewNotApprovedLabourDetails"
             android:exported="false" />
@@ -124,7 +122,7 @@
             android:name="com.sipl.egs.ui.gramsevak.LabourListByProjectActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ViewLabourDetailsActivity"
+            android:name="com.sipl.egs.ui.gramsevak.OfflineViewLabourDetailsActivity"
             android:exported="false" />
         <activity
             android:name="com.sipl.egs.ui.activities.start.SplashActivity"
@@ -142,9 +140,7 @@
         <activity
             android:name="com.sipl.egs.ui.registration.LabourRegistrationEdit2"
             android:exported="false" />
-        <activity
-            android:name="com.sipl.egs.ui.gramsevak.ImageCaptureActivity"
-            android:exported="false" />
+
         <activity
             android:name="com.sipl.egs.ui.gramsevak.ScannerActivity"
             android:exported="false" />

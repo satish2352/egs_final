@@ -1,6 +1,7 @@
 package com.sipl.egs.adapters
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,19 +32,23 @@ class LabourListByProjectAdapter(var list: List<LabourInfo>?) : RecyclerView.Ada
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        holder.tvFullName.text = list?.get(position)?.full_name ?: "Default"
-        holder.tvMobile.text = list?.get(position)?.mobile_number ?: "Default"
-        val address="${list?.get(position)?.district_name} ->${list?.get(position)?.taluka_name} ->${list?.get(position)?.village_name}"
-        holder.tvAddress.text = address
-        holder.tvMgnregaId.text= list?.get(position)?.mgnrega_card_id
-        Glide.with(holder.itemView.context).load(list?.get(position)?.profile_image).into(holder.ivPhoto)
+        try {
+            holder.tvFullName.text = list?.get(position)?.full_name ?: "Default"
+            holder.tvMobile.text = list?.get(position)?.mobile_number ?: "Default"
+            val address="${list?.get(position)?.district_name} ->${list?.get(position)?.taluka_name} ->${list?.get(position)?.village_name}"
+            holder.tvAddress.text = address
+            holder.tvMgnregaId.text= list?.get(position)?.mgnrega_card_id
+            Glide.with(holder.itemView.context).load(list?.get(position)?.profile_image).override(100,100).into(holder.ivPhoto)
 
-        holder.itemView.setOnClickListener {
-            val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
-            intent.putExtra("id",list?.get(position)?.mgnrega_card_id)
-            holder.itemView.context?.startActivity(intent)
+            holder.itemView.setOnClickListener {
+                val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
+                intent.putExtra("id",list?.get(position)?.mgnrega_card_id)
+                holder.itemView.context?.startActivity(intent)
+            }
+
+        } catch (e: Exception) {
+            Log.d("mytag","LabourListByProjectAdapter: ${e.message}",e)
         }
-        Glide.with(holder.itemView.context).load(list?.get(position)?.profile_image)
     }
 
     override fun getItemCount(): Int {

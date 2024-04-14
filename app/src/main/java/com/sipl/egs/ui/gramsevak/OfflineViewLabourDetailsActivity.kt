@@ -31,7 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ViewLabourDetailsActivity : AppCompatActivity() {
+class OfflineViewLabourDetailsActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityViewLabourDetailsBinding
     private lateinit var database: AppDatabase
@@ -54,7 +54,7 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
             database= AppDatabase.getDatabase(this)
             adapter= FamilyDetailsListAdapter(familyDetailsList)
             binding.recyclerViewFamilyDetails.adapter=adapter
-            binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this@ViewLabourDetailsActivity,RecyclerView.VERTICAL,false)
+            binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this@OfflineViewLabourDetailsActivity,RecyclerView.VERTICAL,false)
             labourDao=database.labourDao()
             genderDao=database.genderDao()
             skillsDao=database.skillsDao()
@@ -125,7 +125,7 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
         }
     }
     private fun loadWithGlideFromUri(uri: String, imageView: ImageView) {
-        Glide.with(this@ViewLabourDetailsActivity)
+        Glide.with(this@OfflineViewLabourDetailsActivity)
             .load(uri)
             .override(200,200)
             .into(imageView)
@@ -134,7 +134,7 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
     private fun showPhotoZoomDialog(uri:String){
 
         try {
-            val dialog= Dialog(this@ViewLabourDetailsActivity)
+            val dialog= Dialog(this@OfflineViewLabourDetailsActivity)
             dialog.setContentView(R.layout.layout_zoom_image)
             val width = ViewGroup.LayoutParams.MATCH_PARENT
             val height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -143,7 +143,7 @@ class ViewLabourDetailsActivity : AppCompatActivity() {
             dialog.show()
             val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
             val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
-            Glide.with(this@ViewLabourDetailsActivity)
+            Glide.with(this@OfflineViewLabourDetailsActivity)
                 .load(uri)
                 .into(photoView)
 

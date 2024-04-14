@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,7 +75,7 @@ class OfficerDocsReceivedForApprovalAdapter(var list:MutableList<DocumentItem>):
                 holder.itemView.context.startActivity(intent)
             }
         } catch (e: Exception) {
-
+            Log.d("mytag","OfficerDocsReceivedForApprovalAdapter: ${e.message}",e)
         }
     }
 
@@ -91,6 +92,7 @@ class OfficerDocsReceivedForApprovalAdapter(var list:MutableList<DocumentItem>):
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)
         } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsReceivedForApprovalAdapter: ${e.message}",e)
             "Invalid Date"
         }
     }

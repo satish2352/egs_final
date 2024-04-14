@@ -16,6 +16,7 @@ import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,8 +32,8 @@ class OfficerDocsReceivedForApprovalListActivity : AppCompatActivity(),
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: OfficerDocsReceivedForApprovalAdapter
     private lateinit var documentList: MutableList<DocumentItem>
-    private var isInternetAvailable:Boolean=false
-
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     private lateinit var paginationAdapter: MyPaginationAdapter
     private var currentPage="1"
     private lateinit var paginationLayoutManager : LinearLayoutManager
@@ -63,6 +64,7 @@ class OfficerDocsReceivedForApprovalListActivity : AppCompatActivity(),
             currentPage="1"
 
 
+            noInternetDialog= NoInternetDialog(this)
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -71,8 +73,10 @@ class OfficerDocsReceivedForApprovalListActivity : AppCompatActivity(),
                     Log.d("##", "=>" + connectivity.state())
                     if (connectivity.state().toString() == "CONNECTED") {
                         isInternetAvailable = true
+                        noInternetDialog.hideDialog()
                     } else {
                         isInternetAvailable = false
+                        noInternetDialog.showDialog()
                     }
                 }) { throwable: Throwable? -> }
         } catch (e: Exception) {

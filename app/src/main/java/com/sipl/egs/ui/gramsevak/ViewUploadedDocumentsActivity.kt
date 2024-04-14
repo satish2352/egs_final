@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityViewUploadedDocumetsBinding
 import com.sipl.egs.model.apis.uploadeddocs.UploadedDocsModel
@@ -13,8 +15,11 @@ import com.sipl.egs.model.apis.uploadeddocs.UploadedDocument
 import com.sipl.egs.adapters.UploadedPdfListAdapter
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,7 +34,8 @@ class ViewUploadedDocumentsActivity : AppCompatActivity(),
     private lateinit var paginationAdapter: MyPaginationAdapter
     private var currentPage="1"
     private lateinit var paginationLayoutManager : LinearLayoutManager
-
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -49,6 +55,22 @@ class ViewUploadedDocumentsActivity : AppCompatActivity(),
             currentPage="1"
 
             getPdfListFromServer(currentPage)
+
+            noInternetDialog= NoInternetDialog(this)
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                        noInternetDialog.hideDialog()
+                    } else {
+                        isInternetAvailable = false
+                        noInternetDialog.showDialog()
+                    }
+                }) { throwable: Throwable? -> }
 
         } catch (e: Exception) {
 

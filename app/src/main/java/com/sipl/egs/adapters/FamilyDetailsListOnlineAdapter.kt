@@ -1,5 +1,6 @@
 package com.sipl.egs.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,11 +32,15 @@ class FamilyDetailsListOnlineAdapter(var familyDetailsList: List<FamilyDetail>?)
         position: Int
     ) {
 
-        holder.tvFullName.setText(familyDetailsList?.get(position)?.full_name)
-        holder.tvDob.setText(familyDetailsList?.get(position)?.date_of_birth)
-        holder.tvRelationship.setText(familyDetailsList?.get(position)?.relation)
-        holder.tvMaritalStatus.setText(familyDetailsList?.get(position)?.maritalStatus)
-        holder.tvGender.setText(familyDetailsList?.get(position)?.gender)
+        try {
+            holder.tvFullName.setText(familyDetailsList?.get(position)?.full_name)
+            holder.tvDob.setText(familyDetailsList?.get(position)?.date_of_birth)
+            holder.tvRelationship.setText(familyDetailsList?.get(position)?.relation)
+            holder.tvMaritalStatus.setText(familyDetailsList?.get(position)?.maritalStatus)
+            holder.tvGender.setText(familyDetailsList?.get(position)?.gender)
+        } catch (e: Exception) {
+            Log.d("mytag","FamilyDetailsListOnlineAdapter: ${e.message}",e)
+        }
     }
 
     override fun getItemCount(): Int {

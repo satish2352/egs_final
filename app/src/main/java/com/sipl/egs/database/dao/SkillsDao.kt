@@ -20,6 +20,9 @@ interface SkillsDao {
         deleteAllSkills()
             insertAll(items)
     }
+
+    @Query("SELECT COUNT(*) FROM skills")
+    suspend fun getRowCount(): Int
     @Query("SELECT * FROM skills ORDER BY id ASC")
     suspend fun getAllSkills(): List<Skills>
 

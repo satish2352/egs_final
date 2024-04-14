@@ -7,6 +7,8 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityLabourListByProjectBinding
 import com.sipl.egs.model.apis.getlabour.LabourByMgnregaId
@@ -14,7 +16,10 @@ import com.sipl.egs.adapters.LabourListByProjectAdapter
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.MySharedPref
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +34,9 @@ class LabourListByProjectActivity : AppCompatActivity(),
     private lateinit var progressDialog: CustomProgressDialog
     private lateinit var mySharedPref: MySharedPref
 
+
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +54,22 @@ class LabourListByProjectActivity : AppCompatActivity(),
         binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
         binding.recyclerViewPageNumbers.adapter= paginationAdapter
         currentPage="1"
+
+        noInternetDialog= NoInternetDialog(this)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                    noInternetDialog.hideDialog()
+                } else {
+                    isInternetAvailable = false
+                    noInternetDialog.showDialog()
+                }
+            }) { throwable: Throwable? -> }
 
         if(mySharedPref.getRoleId()==2)
         {

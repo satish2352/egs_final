@@ -3,13 +3,14 @@ package com.sipl.egs.database
 import android.content.Context
 import androidx.room.AutoMigration
 import androidx.room.Database
+import androidx.room.DeleteTable
+import androidx.room.RenameTable
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.sipl.egs.database.dao.AreaDao
 import com.sipl.egs.database.dao.DocumentDao
 import com.sipl.egs.database.dao.DocumentReasonsDao
-import com.sipl.egs.database.dao.DocumentTypeDao
 import com.sipl.egs.database.dao.DocumentTypeDropDownDao
 import com.sipl.egs.database.dao.GenderDao
 import com.sipl.egs.database.dao.LabourDao
@@ -32,15 +33,23 @@ import com.sipl.egs.database.entity.RegistrationStatus
 import com.sipl.egs.database.entity.Relation
 import com.sipl.egs.database.entity.Skills
 import com.sipl.egs.database.entity.User
-import java.util.concurrent.Executors
 
-/*@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class,DocumentReasons::class], version = 9,)*/
-@Database(entities = [Labour::class,Document::class,DocumentType::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class,DocumentReasons::class], version = 10,
-    autoMigrations = [AutoMigration(from = 9 , to = 10)],exportSchema = true)
+@DeleteTable.Entries(
+    DeleteTable(
+        tableName = "document_type"
+    )
+)
+@RenameTable.Entries(
+    RenameTable(
+        fromTableName = "document_type",
+        toTableName = "document_type_new"
+    )
+)
+@Database(entities = [Labour::class,Document::class,User::class,AreaItem::class,Skills::class,MaritalStatus::class, DocumentType::class,Relation::class,Gender::class,DocumentTypeDropDown::class,RegistrationStatus::class,Reasons::class,DocumentReasons::class], version = 13,
+    autoMigrations = [AutoMigration(from = 12 , to = 13)],exportSchema = true)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun labourDao(): LabourDao
     abstract fun documentDao(): DocumentDao
-    abstract fun documentTypeDao(): DocumentTypeDao
     abstract fun userDao(): UserDao
     abstract fun areaDao(): AreaDao
     abstract fun skillsDao(): SkillsDao
@@ -64,15 +73,8 @@ abstract class AppDatabase : RoomDatabase() {
                 ).addCallback(object : RoomDatabase.Callback(){
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
-                        Executors.newSingleThreadScheduledExecutor().execute {
-                           /* CoroutineScope(Dispatchers.IO).launch {
-                                getDatabase(context).documentTypeDao().insertInitialRecords()
-                                getDatabase(context).userDao().insertInitialRecords()
-                            }*/
-                        }
                     }
                 })
-                   // .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

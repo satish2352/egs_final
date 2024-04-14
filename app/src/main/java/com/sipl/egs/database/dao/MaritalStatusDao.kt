@@ -21,6 +21,8 @@ interface MaritalStatusDao {
         insertAll(items)
     }
 
+    @Query("SELECT COUNT(*) FROM marital_status")
+    suspend fun getRowCount(): Int
     @Query("SELECT * FROM marital_status ORDER BY id ASC")
     suspend fun getAllMaritalStatus(): List<MaritalStatus>
 

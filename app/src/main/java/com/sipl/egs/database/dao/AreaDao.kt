@@ -13,6 +13,9 @@ import com.sipl.egs.database.entity.AreaItem
 interface AreaDao {
     @Query("SELECT * FROM area ORDER BY name ASC")
     suspend fun getAllArea(): List<AreaItem>
+
+    @Query("SELECT COUNT(*) FROM area")
+    suspend fun getRowCount(): Int
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(items: List<AreaItem>)
     @Query("SELECT * FROM area WHERE location_type=2 ORDER BY name ASC")

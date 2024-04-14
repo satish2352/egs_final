@@ -66,7 +66,7 @@ class LabourApprovedListAdapter(var labourList: ArrayList<LaboursList>): Recycle
 
             }
         } catch (e: Exception) {
-            Log.d("mytag","LaboursSentForApprovalAdapter:onBindViewHolder  "+e.message)
+            Log.d("mytag","LabourApprovedListAdapter: ${e.message}",e)
             e.printStackTrace()
         }
     }

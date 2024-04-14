@@ -13,6 +13,8 @@ interface DocumentReasonsDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(items: List<DocumentReasons>)
 
+    @Query("SELECT COUNT(*) FROM document_reasons")
+    suspend fun getRowCount(): Int
     @Query("DELETE FROM document_reasons")
     suspend fun deleteAllReasons()
     @Transaction

@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.gson.Gson
 import com.sipl.egs.R
 import com.sipl.egs.database.AppDatabase
@@ -19,10 +21,13 @@ import com.sipl.egs.database.dao.LabourDao
 import com.sipl.egs.database.entity.Labour
 import com.sipl.egs.database.model.LabourWithAreaNames
 import com.sipl.egs.databinding.ActivitySyncLabourDataBinding
-import com.sipl.egs.adapters.LabourListAdapter
+import com.sipl.egs.adapters.OfflineLabourListAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.FileInfo
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,8 +44,11 @@ class SyncLabourDataActivity : AppCompatActivity() {
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
     lateinit var labourList:List<LabourWithAreaNames>
-    lateinit var  adapter: LabourListAdapter
+    lateinit var  adapter: OfflineLabourListAdapter
     private lateinit var dialog:CustomProgressDialog
+
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivitySyncLabourDataBinding.inflate(layoutInflater)
@@ -54,8 +62,24 @@ class SyncLabourDataActivity : AppCompatActivity() {
         database= AppDatabase.getDatabase(this)
         labourDao=database.labourDao()
         labourList=ArrayList<LabourWithAreaNames>()
-        adapter= LabourListAdapter(labourList)
+        adapter= OfflineLabourListAdapter(labourList)
         adapter.notifyDataSetChanged()
+
+        noInternetDialog= NoInternetDialog(this)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                    noInternetDialog.hideDialog()
+                } else {
+                    isInternetAvailable = false
+                    noInternetDialog.showDialog()
+                }
+            }) { throwable: Throwable? -> }
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_sync,menu)
@@ -93,7 +117,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
             }
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                adapter= LabourListAdapter(labourList)
+                adapter= OfflineLabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
@@ -114,7 +138,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                adapter= LabourListAdapter(labourList)
+                adapter= OfflineLabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
@@ -129,7 +153,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                adapter= LabourListAdapter(labourList)
+                adapter= OfflineLabourListAdapter(labourList)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }

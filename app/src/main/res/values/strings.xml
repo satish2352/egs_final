@@ -162,4 +162,5 @@
     <string name="sync_failed_reason">Reason</string>
     <string name="labour_added_successfully">Labour added successfully</string>
     <string name="labour_not_added_please_try_again">Labour not added please try again</string>
+    <string name="sync_documents">Sync Documents</string>
 </resources>

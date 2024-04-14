@@ -29,6 +29,8 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -58,8 +60,11 @@ import com.sipl.egs.model.apis.getlabour.HistoryDetailsItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.FileDownloader
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.FileInfo
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -92,7 +97,6 @@ class DocumentUpdateActivity : AppCompatActivity() {
     private  var latitude:Double=0.0
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
-    private  var isInternetAvailable=false
     private  var fileName=""
     private var documentUri=""
     private var gram_document_id=""
@@ -101,6 +105,9 @@ class DocumentUpdateActivity : AppCompatActivity() {
     private var documentId=""
     private var documentType=""
     private var historyList=ArrayList<HistoryDetailsItem>()
+
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,6 +127,21 @@ class DocumentUpdateActivity : AppCompatActivity() {
         prevFileName=intent.getStringExtra("fileName").toString()
         documentType=intent.getStringExtra("documentType").toString()
         dialog= CustomProgressDialog(this)
+        noInternetDialog= NoInternetDialog(this)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                    noInternetDialog.hideDialog()
+                } else {
+                    isInternetAvailable = false
+                    noInternetDialog.showDialog()
+                }
+            }) { throwable: Throwable? -> }
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(false)
             .setPageLimit(20)

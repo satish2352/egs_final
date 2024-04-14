@@ -103,6 +103,7 @@ dependencies {
     //implementation ("com.squareup.okio:okio:2.10.0")
 
 
+    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.+")
 
 
 

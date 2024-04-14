@@ -18,16 +18,22 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.databinding.ActivityMainBinding
 import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.utils.MySharedPref
+import com.sipl.egs.utils.NoInternetDialog
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController:NavController
-
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,6 +49,21 @@ class MainActivity : AppCompatActivity() {
                     R.id.navigation_sync, R.id.navigation_dashboard, R.id.navigation_attendence,R.id.navigation_document,R.id.navigation_reports
                 )
             )
+            noInternetDialog= NoInternetDialog(this)
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                        noInternetDialog.hideDialog()
+                    } else {
+                        isInternetAvailable = false
+                        noInternetDialog.showDialog()
+                    }
+                }) { throwable: Throwable? -> }
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
 

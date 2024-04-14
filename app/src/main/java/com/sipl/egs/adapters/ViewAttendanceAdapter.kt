@@ -62,6 +62,7 @@ class ViewAttendanceAdapter(var list:List<AttendanceData>,var attendanceEditList
                 }
             }
         } catch (e: Exception) {
+            Log.d("mytag","UploadedPdfListAdapter: ${e.message}",e)
             Log.d("mytag","Exception : Attendance Adapter => "+e.message)
             e.printStackTrace()
         }
@@ -78,6 +79,7 @@ class ViewAttendanceAdapter(var list:List<AttendanceData>,var attendanceEditList
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)
         } catch (e: Exception) {
+            Log.d("mytag","UploadedPdfListAdapter: ${e.message}",e)
             "Invalid Date"
         }
     }

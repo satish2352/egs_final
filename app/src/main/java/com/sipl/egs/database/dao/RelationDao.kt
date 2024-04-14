@@ -21,6 +21,9 @@ interface RelationDao {
         insertAll(items)
     }
 
+    @Query("SELECT COUNT(*) FROM relation")
+    suspend fun getRowCount(): Int
+
     @Query("SELECT * FROM relation ORDER BY id ASC")
     suspend fun getAllRelation(): List<Relation>
 

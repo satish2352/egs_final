@@ -41,19 +41,23 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
     {
-        Log.d("mytag","onBindViewHolder=>"+documentList.get(position).documentName)
-        holder.tvDocumentName.text=documentList.get(position).documentName
-        holder.ivThumb.setOnClickListener {
+        try {
+            Log.d("mytag","onBindViewHolder=>"+documentList.get(position).documentName)
+            holder.tvDocumentName.text=documentList.get(position).documentName
+            holder.ivThumb.setOnClickListener {
 
-            val file=File(Uri.parse(documentList[position].documentUri).path)
-            openPdfFromUri(holder.itemView.context,file)
+                val file=File(Uri.parse(documentList[position].documentUri).path)
+                openPdfFromUri(holder.itemView.context,file)
+            }
+            holder.textViewPageCount.text= documentList[position].pageCount
+            holder.ivDeleteDocument.setOnClickListener {
+                updateDocumentTypeListener.onUpdateDocumentType(documentList.get(position))
+            }
+            val bitmap=generateThumbnailFromPDF(documentList[position].documentUri,holder.itemView.context)
+            Glide.with(holder.itemView.context).load(bitmap).into(holder.ivThumb)
+        } catch (e: Exception) {
+            Log.d("mytag","DocumentPagesAdapter: ${e.message}",e)
         }
-        holder.textViewPageCount.text= documentList[position].pageCount
-        holder.ivDeleteDocument.setOnClickListener {
-            updateDocumentTypeListener.onUpdateDocumentType(documentList.get(position))
-        }
-        val bitmap=generateThumbnailFromPDF(documentList[position].documentUri,holder.itemView.context)
-        Glide.with(holder.itemView.context).load(bitmap).into(holder.ivThumb)
     }
     override fun getItemCount(): Int {
         return documentList.size
@@ -68,6 +72,9 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
         } catch (e: ActivityNotFoundException) {
             // Handle scenario where PDF viewer application is not found
             Toast.makeText(context, "No PDF viewer application found", Toast.LENGTH_SHORT).show()
+        }catch (e: Exception) {
+            // Handle scenario where PDF viewer application is not found
+            Log.d("mytag","DocumentPagesAdapter: ${e.message}",e)
         }
     }
     fun generateThumbnailFromPDF(pdfUriStr: String?,context: Context): Bitmap? {
@@ -99,11 +106,12 @@ class DocumentPagesAdapter(var documentList: List<Document>,var updateDocumentTy
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d("mytag","DocumentPagesAdapter: ${e.message}",e)
         } finally {
             try {
                 pdfFileDescriptor?.close()
             } catch (e: Exception) {
-
+                Log.d("mytag","DocumentPagesAdapter: ${e.message}",e)
             }
         }
         return null

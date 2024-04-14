@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.ParcelFileDescriptor
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,23 +40,27 @@ class PdfPageAdapter(private val context: Context, private val pdfFile: File, pr
     }
 
     override fun onBindViewHolder(holder: PdfPageViewHolder, position: Int) {
-        val page = renderer.openPage(position)
-        val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
-        page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-        holder.imageView.setImageBitmap(bitmap)
-        page.close()
+        try {
+            val page = renderer.openPage(position)
+            val bitmap = Bitmap.createBitmap(page.width, page.height, Bitmap.Config.ARGB_8888)
+            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
+            holder.imageView.setImageBitmap(bitmap)
+            page.close()
 
-        holder.tvPageNumber.setText(""+(position+1))
-        if(position==0){
-            holder.ivDelete.visibility= View.GONE
-        }else{
-            holder.ivDelete.setOnClickListener {
-                onDeletePageListener.onDeletePage(position)
+            holder.tvPageNumber.setText(""+(position+1))
+            if(position==0){
+                holder.ivDelete.visibility= View.GONE
+            }else{
+                holder.ivDelete.setOnClickListener {
+                    onDeletePageListener.onDeletePage(position)
+                }
             }
-        }
 
-        holder.itemView.setOnClickListener {
-            onPdfPageClickListener.onPdfPageClick(bitmap)
+            holder.itemView.setOnClickListener {
+                onPdfPageClickListener.onPdfPageClick(bitmap)
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","PdfPageAdapter: ${e.message}",e)
         }
 
     }

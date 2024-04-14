@@ -1,5 +1,6 @@
 package com.sipl.egs.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,14 +37,18 @@ class FamilyDetailsOnlineEditAdapter(
         holder: FamilyDetailsOnlineEditAdapter.ViewHolder,
         position: Int
     ) {
-        holder.tvFullName.setText(familyDetailsList?.get(position)?.full_name)
-        holder.tvDob.setText(familyDetailsList?.get(position)?.date_of_birth)
-        holder.tvRelationship.setText(familyDetailsList?.get(position)?.relation)
-        holder.tvMaritalStatus.setText(familyDetailsList?.get(position)?.maritalStatus)
-        holder.tvGender.setText(familyDetailsList?.get(position)?.gender)
-        holder.imageViewDelete.setOnClickListener {
-            deleteListener.onDelete(position)
-            notifyItemRemoved(position)
+        try {
+            holder.tvFullName.setText(familyDetailsList?.get(position)?.full_name)
+            holder.tvDob.setText(familyDetailsList?.get(position)?.date_of_birth)
+            holder.tvRelationship.setText(familyDetailsList?.get(position)?.relation)
+            holder.tvMaritalStatus.setText(familyDetailsList?.get(position)?.maritalStatus)
+            holder.tvGender.setText(familyDetailsList?.get(position)?.gender)
+            holder.imageViewDelete.setOnClickListener {
+                deleteListener.onDelete(position)
+                notifyItemRemoved(position)
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","FamilyDetailsOnlineEditAdapter: ${e.message}",e)
         }
     }
 

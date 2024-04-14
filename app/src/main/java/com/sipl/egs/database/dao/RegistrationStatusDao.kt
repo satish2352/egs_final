@@ -19,6 +19,8 @@ interface RegistrationStatusDao {
             deleteAllStatus()
             insertAll(items)
         }
+        @Query("SELECT COUNT(*) FROM registration_status")
+        suspend fun getRowCount(): Int
         @Query("SELECT * FROM registration_status ORDER BY id ASC")
         suspend fun getAllRegistrationStatus(): List<RegistrationStatus>
         @Query("SELECT * FROM registration_status WHERE id = :id")

@@ -69,7 +69,7 @@ class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : Re
             }
         } catch (e: Exception) {
             Log.d("mytag","LaboursSentForApprovalAdapter:onBindViewHolder  "+e.message)
-                e.printStackTrace()
+            Log.d("mytag","LaboursSentForApprovalAdapter: ${e.message}",e)
         }
     }
     override fun getItemCount(): Int {

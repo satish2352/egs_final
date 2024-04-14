@@ -16,6 +16,7 @@ import com.sipl.egs.model.apis.labourlist.LabourListModel
 import com.sipl.egs.model.apis.labourlist.LaboursList
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,10 +32,11 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity(),
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: LaboursSentForApprovalAdapter
     private lateinit var labourList: ArrayList<LaboursList>
-    private var isInternetAvailable:Boolean=false
     private lateinit var paginationAdapter: MyPaginationAdapter
     private var currentPage="1"
     private lateinit var paginationLayoutManager : LinearLayoutManager
+    private var isInternetAvailable = false
+    private lateinit var noInternetDialog: NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -55,6 +57,7 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity(),
             paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
             binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
             currentPage="1"
+            noInternetDialog= NoInternetDialog(this)
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -63,8 +66,10 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity(),
                     Log.d("##", "=>" + connectivity.state())
                     if (connectivity.state().toString() == "CONNECTED") {
                         isInternetAvailable = true
+                        noInternetDialog.hideDialog()
                     } else {
                         isInternetAvailable = false
+                        noInternetDialog.showDialog()
                     }
                 }) { throwable: Throwable? -> }
 

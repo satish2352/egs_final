@@ -37,14 +37,28 @@ class MySharedPref(context: Context) {
         const val KEY_USER_DISTRICT = "user_district"
         const val KEY_USER_TALUKA = "user_taluka"
         const val KEY_USER_VILLAGE = "user_village"
+        const val KEY_ENTRY_SYNC = "single_entry"
     }
+
+
 
     val KEY_ALL_AREA_ENTRIES = "all_area_entries"
     val KEY_IS_LOGGED_IN = "is_logged_in"
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
-
+    fun setAtLeastSingleTimeEntriesAdded(result: Boolean) {
+        with(sharedPreferences.edit()) {
+            putBoolean(KEY_ENTRY_SYNC, result)
+            apply()
+        }
+    }
+    fun getAtLeastSingleTimeEntriesAdded(): Boolean? {
+        return sharedPreferences.getBoolean(
+            KEY_ENTRY_SYNC,
+            false
+        )
+    }
 
     fun setUserDistrictId(districtId: String) {
         with(sharedPreferences.edit()) {

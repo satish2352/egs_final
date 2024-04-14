@@ -15,6 +15,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.gson.Gson
 import com.sipl.egs.R
 import com.sipl.egs.adapters.RegistrationStatusHistoryAdapter
@@ -29,7 +31,10 @@ import com.sipl.egs.model.apis.labourlist.LabourListModel
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.FileDownloader
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,6 +61,8 @@ class OfficerDocsEditActivity : AppCompatActivity() {
     private var gram_document_id=""
     val statusNames= mutableListOf<String>()
     val reasonsNames= mutableListOf<String>()
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityOfficerDocsEditBinding.inflate(layoutInflater)
@@ -70,6 +77,21 @@ class OfficerDocsEditActivity : AppCompatActivity() {
         binding.recyclerViewHistory.layoutManager= LinearLayoutManager(this@OfficerDocsEditActivity,
             RecyclerView.VERTICAL,false)
         var adapter=RegistrationStatusHistoryAdapter(historyList)
+        noInternetDialog= NoInternetDialog(this)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                    noInternetDialog.hideDialog()
+                } else {
+                    isInternetAvailable = false
+                    noInternetDialog.showDialog()
+                }
+            }) { throwable: Throwable? -> }
         CoroutineScope(Dispatchers.IO).launch {
             reasonsList=
                 documentReasonsDao.getAllReasons() as ArrayList<DocumentReasons>;

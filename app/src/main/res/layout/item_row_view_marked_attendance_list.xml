@@ -8,14 +8,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_edit"
-            android:id="@+id/ivEdit"
-            android:layout_width="36dp"
-            android:layout_height="36dp"></ImageView>
         <LinearLayout
             android:gravity="center"
             android:layout_gravity="center"
@@ -37,11 +29,13 @@
                 android:layout_height="wrap_content">
 
                 <LinearLayout
+                    android:layout_gravity="center"
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <ImageView
+                        android:layout_gravity="center"
                         android:src="@drawable/profile2"
                         android:layout_width="12dp"
                         android:layout_height="12dp"/>
@@ -58,8 +52,20 @@
                         android:text=""
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"></TextView>
-
-
+                    <View
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="1dp"/>
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_edit"
+                        android:id="@+id/ivEdit"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"></ImageView>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_gravity="center"

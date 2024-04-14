@@ -16,6 +16,7 @@ import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,13 +33,14 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity(),
     private lateinit var dialog: CustomProgressDialog
     private lateinit var adapter: OfficerDocsReceivedForApprovalAdapter
     private lateinit var documentList: MutableList<DocumentItem>
-    private var isInternetAvailable:Boolean=false
+    private var isInternetAvailable = false
+    private lateinit var noInternetDialog: NoInternetDialog
     private lateinit var paginationAdapter: MyPaginationAdapter
-    private var currentPage="1"
-    private lateinit var paginationLayoutManager : LinearLayoutManager
+    private var currentPage = "1"
+    private lateinit var paginationLayoutManager: LinearLayoutManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding= ActivityOfficerDocsReSubmittedListBinding.inflate(layoutInflater)
+        binding = ActivityOfficerDocsReSubmittedListBinding.inflate(layoutInflater)
         setContentView(binding.root)
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -54,12 +56,13 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity(),
                 false
             )
 
-            paginationAdapter= MyPaginationAdapter(0,"0",this)
-            binding.recyclerViewPageNumbers.adapter=adapter
-            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
-            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
-            currentPage="1"
+            paginationAdapter = MyPaginationAdapter(0, "0", this)
+            binding.recyclerViewPageNumbers.adapter = adapter
+            paginationLayoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+            binding.recyclerViewPageNumbers.layoutManager = paginationLayoutManager
+            currentPage = "1"
 
+            noInternetDialog= NoInternetDialog(this)
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -68,19 +71,23 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity(),
                     Log.d("##", "=>" + connectivity.state())
                     if (connectivity.state().toString() == "CONNECTED") {
                         isInternetAvailable = true
+                        noInternetDialog.hideDialog()
                     } else {
                         isInternetAvailable = false
+                        noInternetDialog.showDialog()
                     }
                 }) { throwable: Throwable? -> }
         } catch (e: Exception) {
 
         }
     }
+
     override fun onResume() {
         super.onResume()
         getDataFromServer(currentPage)
     }
-        private fun getDataFromServer(currentPage:String) {
+
+    private fun getDataFromServer(currentPage: String) {
         try {
             dialog.show()
             val call = apiService.getReSubmittedDocsListForOfficer(pageNumber = currentPage)
@@ -91,17 +98,20 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity(),
                 ) {
                     dialog.dismiss()
                     if (response.isSuccessful) {
-                        if (response.body()?.status.equals("true"))
-                        {
+                        if (response.body()?.status.equals("true")) {
                             documentList = (response?.body()?.data as MutableList<DocumentItem>?)!!
                             adapter = OfficerDocsReceivedForApprovalAdapter(documentList)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
 
-                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerDocsReSubmittedListActivity)
-                            binding.recyclerViewPageNumbers.adapter=pageAdapter
+                            val pageAdapter = MyPaginationAdapter(
+                                response.body()?.totalPages!!,
+                                response.body()?.page_no_to_hilight.toString(),
+                                this@OfficerDocsReSubmittedListActivity
+                            )
+                            binding.recyclerViewPageNumbers.adapter = pageAdapter
                             pageAdapter.notifyDataSetChanged()
-                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
+                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString()) - 1)
                         } else {
                             Toast.makeText(
                                 this@OfficerDocsReSubmittedListActivity,
@@ -153,7 +163,7 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity(),
     }
 
     override fun onPageNumberClicked(pageNumber: Int) {
-        currentPage="$pageNumber"
+        currentPage = "$pageNumber"
         getDataFromServer("$pageNumber")
         paginationAdapter.setSelectedPage(pageNumber)
 

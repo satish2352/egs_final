@@ -1,9 +1,11 @@
 package com.sipl.egs.adapters
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.os.ParcelFileDescriptor
@@ -12,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -20,13 +23,17 @@ import com.bumptech.glide.Glide
 import com.sipl.egs.R
 import com.sipl.egs.database.entity.Document
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.Adapter<SyncLandDocumentsAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvPageCount=itemView.findViewById<TextView>(R.id.tvPageCount)
         val tvDocumentDate=itemView.findViewById<TextView>(R.id.tvDocumentDate)
         val tvDocumentName=itemView.findViewById<TextView>(R.id.tvDocumentName)
+        val tvDocumentType=itemView.findViewById<TextView>(R.id.tvDocumentType)
         val ivDocumentThumb=itemView.findViewById<ImageView>(R.id.ivDocumentThumb)
+        val layoutWrapper=itemView.findViewById<LinearLayout>(R.id.layoutWrapper)
     }
 
     override fun onCreateViewHolder(
@@ -40,9 +47,12 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
+            holder.layoutWrapper.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
+            holder.tvPageCount.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
             holder.tvDocumentName.text=documentList[position].documentName
-            holder.tvDocumentDate.text=documentList[position].date
+            holder.tvDocumentDate.text=formatDate(documentList[position].date)
             holder.tvPageCount.text=documentList[position].pageCount
+            holder.tvDocumentType.text=documentList[position].documentTypeName
             holder.itemView.setOnClickListener {
                 val file=File(Uri.parse(documentList[position].documentUri).path)
                 openPdfFromUri(holder.itemView.context,file)
@@ -51,6 +61,8 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
             Glide.with(holder.itemView.context).load(bitmap).into(holder.ivDocumentThumb)
         } catch (e: Exception) {
             Log.d("mytag","Exception : onBindViewHolder "+e.message)
+            Log.d("mytag","SyncLandDocumentsAdapter: ${e.message}",e)
+
             e.printStackTrace()
         }
 
@@ -69,6 +81,8 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
         } catch (e: ActivityNotFoundException) {
             // Handle scenario where PDF viewer application is not found
             Toast.makeText(context, "No PDF viewer application found", Toast.LENGTH_SHORT).show()
+        }catch (e: ActivityNotFoundException) {
+            Log.d("mytag","SyncLandDocumentsAdapter: ${e.message}",e)
         }
     }
     private fun generateThumbnailFromPDF(pdfUriStr: String?, context: Context): Bitmap? {
@@ -99,15 +113,31 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d("mytag","SyncLandDocumentsAdapter: ${e.message}",e)
         } finally {
             try {
                 pdfFileDescriptor?.close()
             } catch (e: Exception) {
                 Log.d("mytag","Exception : generateThumbnailFromPDF "+e.message)
+                Log.d("mytag","SyncLandDocumentsAdapter: ${e.message}",e)
                 e.printStackTrace()
             }
         }
         return null
 
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun formatDate(inputDate: String): String {
+        val inputFormat = SimpleDateFormat("dd-MM-yyyy hh:mm")
+        val outputFormat = SimpleDateFormat("dd-MM-yyyy hh:mm a")
+
+        return try {
+            val date: Date = inputFormat.parse(inputDate)
+            outputFormat.format(date)
+        } catch (e: Exception) {
+            Log.d("mytag","UploadedPdfListAdapter: ${e.message}",e)
+            "Invalid Date"
+        }
     }
 }

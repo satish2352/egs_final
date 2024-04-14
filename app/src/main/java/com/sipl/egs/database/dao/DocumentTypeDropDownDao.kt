@@ -19,6 +19,8 @@ interface DocumentTypeDropDownDao {
         deleteAllDocuementTypes()
         insertAll(items)
     }
+    @Query("SELECT COUNT(*) FROM document_type_dropdown")
+    suspend fun getRowCount(): Int
     @Query("SELECT * FROM document_type_dropdown")
     suspend fun getAllDocumentsType(): List<DocumentTypeDropDown>
 

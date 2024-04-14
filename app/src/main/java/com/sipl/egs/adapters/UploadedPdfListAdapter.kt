@@ -38,20 +38,11 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
             holder.tvDocumentDate.text= documentList[position]?.updated_at?.let { formatDate(it) }
             holder.tvDocumentType.setText(documentList.get(position).document_type_name)
             holder.tvDownload.setOnClickListener {
-                /*val intent = Intent(Intent.ACTION_VIEW)
-                intent.setDataAndType(Uri.parse(documentList.get(position).document_pdf), "application/pdf")
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                try {
-                    holder.itemView.context.startActivity(intent)
-                } catch (e: ActivityNotFoundException) {
-                    // Handle scenario where PDF viewer application is not found
-                    Toast.makeText(holder.itemView.context, "No PDF viewer application found", Toast.LENGTH_SHORT).show()
-                }*/
                 FileDownloader.downloadFile(holder.itemView.context,documentList.get(position).document_pdf,documentList.get(position).document_name)
                 Log.d("mytag","UploadedPdfListAdapter=>"+documentList.get(position).document_pdf)
             }
         } catch (e: Exception) {
-
+            Log.d("mytag","UploadedPdfListAdapter: ${e.message}",e)
             Log.d("mytag","UploadedPdfListAdapter=>Exception=>"+e.message.toString())
             e.printStackTrace()
         }
@@ -69,6 +60,7 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)
         } catch (e: Exception) {
+            Log.d("mytag","UploadedPdfListAdapter: ${e.message}",e)
             "Invalid Date"
         }
     }

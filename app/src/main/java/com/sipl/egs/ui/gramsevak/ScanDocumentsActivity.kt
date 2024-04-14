@@ -91,6 +91,7 @@ import com.sipl.egs.database.entity.DocumentTypeDropDown
 import com.sipl.egs.model.apis.reportscount.ReportsCount
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.MySharedPref
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import kotlinx.coroutines.async
@@ -117,7 +118,6 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private  var latitude:Double=0.0
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
-    private  var isInternetAvailable=false
     private lateinit var dialog:CustomProgressDialog
     private var selectedDocumentId=""
     private var userDistrictName=""
@@ -125,6 +125,12 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private var userTalukaName=""
     private lateinit var mySharedPref: MySharedPref
     private lateinit var apiService: ApiService
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
+    private lateinit var documentTypeObj:DocumentTypeDropDown
+    private var documentColor="#AEAEAE"
+    private var selectedDocumentTypeName=""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_pages)
@@ -147,6 +153,22 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             documentDao = database.documentDao()
             areaDao = database.areaDao()
             documentTypeDao = database.documentDropDownDao()
+
+            noInternetDialog= NoInternetDialog(this)
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                        noInternetDialog.hideDialog()
+                    } else {
+                        isInternetAvailable = false
+                        noInternetDialog.showDialog()
+                    }
+                }) { throwable: Throwable? -> }
 
             CoroutineScope(Dispatchers.IO).launch {
                 Log.d("mytag",mySharedPref.getUserDistrictId().toString())
@@ -338,9 +360,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             Log.d("mytag", "=>" + documentTypeList.size)
             adapter = DocumentPagesAdapter(documentList, this@ScanDocumentsActivity)
             adapter.notifyDataSetChanged()
-
             var documentNamesList = mutableListOf<String>()
-
             for (i in documentTypeList.indices) {
                 documentNamesList.add(documentTypeList[i].documenttype)
             }
@@ -365,6 +385,15 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
 
         actDocumentType.setOnItemClickListener { parent, view, position, id ->
             selectedDocumentId=documentTypeList[position].id.toString()
+            CoroutineScope(Dispatchers.IO).launch {
+                val waitJob=async { documentTypeObj=documentTypeDao.getDocumentTypeById(selectedDocumentId) }
+                waitJob.await()
+
+                if(documentTypeObj!=null){
+                    documentColor= documentTypeObj.doc_color.toString()
+                    selectedDocumentTypeName=documentTypeObj.documenttype
+                }
+            }
         }
 
         ivAddDocument.setOnClickListener {
@@ -429,7 +458,9 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             documentId = documentId,
             date=date,
             latitude = latitude.toString(),
-            longitude =longitude.toString()
+            longitude =longitude.toString(),
+            doc_color = documentColor,
+            documentTypeName = selectedDocumentTypeName
         )
 
         CoroutineScope(Dispatchers.IO).launch {

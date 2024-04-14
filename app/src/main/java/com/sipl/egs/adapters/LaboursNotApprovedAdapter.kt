@@ -73,7 +73,7 @@ class LaboursNotApprovedAdapter(var labourList: ArrayList<LaboursList>) :
             }
 
         } catch (e: Exception) {
-            Log.d("mytag", "LaboursSentForApprovalAdapter:onBindViewHolder  " + e.message)
+            Log.d("mytag","FamilyDetailsListOnlineAdapter: ${e.message}",e)
             e.printStackTrace()
         }
     }

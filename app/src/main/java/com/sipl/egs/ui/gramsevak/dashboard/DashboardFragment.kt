@@ -99,6 +99,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
         try {
+
             binding.layoutRegisterLabour.setOnClickListener {
                 val intent = Intent(activity, LabourRegistration1Activity::class.java)
                 startActivity(intent)
@@ -253,9 +254,11 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     latitude
                 } ?: run {
                     // Handle case where location is null
-                    Toast.makeText(
-                        requireContext(), "Unable to retrieve location", Toast.LENGTH_LONG
-                    ).show()
+                    if (isAdded && view != null) {
+                        Toast.makeText(
+                            requireContext(), "Unable to retrieve location", Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
     }

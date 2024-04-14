@@ -59,6 +59,7 @@ import com.sipl.egs.adapters.PdfPageAdapter
 import com.sipl.egs.databinding.ActivityEditDocumentBinding
 import com.sipl.egs.ui.gramsevak.ReportsActivity
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import io.getstream.photoview.PhotoView
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -93,7 +94,8 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
     private  var latitude:Double=0.0
     private  var longitude:Double=0.0
     private  var addressFromLatLong:String=""
-    private  var isInternetAvailable=false
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     private var fileName=""
     private var documentType=""
     private var fileSize:Long=0
@@ -111,6 +113,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
         dialog= CustomProgressDialog(this)
         dialog.show()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        noInternetDialog= NoInternetDialog(this)
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
             .subscribeOn(Schedulers.io())
@@ -119,10 +122,10 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                 Log.d("##", "=>" + connectivity.state())
                 if (connectivity.state().toString() == "CONNECTED") {
                     isInternetAvailable = true
-                    showUi()
+                    noInternetDialog.hideDialog()
                 } else {
                     isInternetAvailable = false
-                    hideUi()
+                    noInternetDialog.showDialog()
                 }
             }) { throwable: Throwable? -> }
         if (!isLocationEnabled()) {

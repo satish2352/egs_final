@@ -16,6 +16,7 @@ import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,6 +36,7 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
     private lateinit var paginationAdapter: MyPaginationAdapter
     private var currentPage="1"
     private lateinit var paginationLayoutManager : LinearLayoutManager
+    private lateinit var noInternetDialog: NoInternetDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +61,7 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
             binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
             currentPage="1"
 
-
+            noInternetDialog= NoInternetDialog(this)
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -68,8 +70,10 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
                     Log.d("##", "=>" + connectivity.state())
                     if (connectivity.state().toString() == "CONNECTED") {
                         isInternetAvailable = true
+                        noInternetDialog.hideDialog()
                     } else {
                         isInternetAvailable = false
+                        noInternetDialog.showDialog()
                     }
                 }) { throwable: Throwable? -> }
         } catch (e: Exception) {

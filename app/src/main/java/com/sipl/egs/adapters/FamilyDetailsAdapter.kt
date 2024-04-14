@@ -1,5 +1,6 @@
 package com.sipl.egs.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,15 +38,19 @@ class FamilyDetailsAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
 
-        holder.tvFullName.setText(familyDetailsList.get(position).fullName)
-        holder.tvDob.setText(familyDetailsList.get(position).dob)
-        holder.tvRelationship.setText(familyDetailsList.get(position).relationship)
-        holder.tvMaritalStatus.setText(familyDetailsList.get(position).maritalStatus)
-        holder.tvGender.setText(familyDetailsList.get(position).gender)
+        try {
+            holder.tvFullName.setText(familyDetailsList.get(position).fullName)
+            holder.tvDob.setText(familyDetailsList.get(position).dob)
+            holder.tvRelationship.setText(familyDetailsList.get(position).relationship)
+            holder.tvMaritalStatus.setText(familyDetailsList.get(position).maritalStatus)
+            holder.tvGender.setText(familyDetailsList.get(position).gender)
 
-        holder.imageViewDelete.setOnClickListener {
-            deleteListener.onDelete(position)
-            notifyItemRemoved(position)
+            holder.imageViewDelete.setOnClickListener {
+                deleteListener.onDelete(position)
+                notifyItemRemoved(position)
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","FamilyDetailsAdapter: ${e.message}",e)
         }
 
     }

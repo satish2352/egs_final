@@ -44,6 +44,7 @@ class AttendanceAdapter(var list: List<LabourInfo>, var markAttendanceListener: 
             Glide.with(holder.itemView.context).load(list[position].profile_image).into(holder.ivPhoto)
             Log.d("mytag",list.get(position).profile_image)
         } catch (e: Exception) {
+            Log.d("mytag","AttendanceAdapter:",e)
         }
     }
 

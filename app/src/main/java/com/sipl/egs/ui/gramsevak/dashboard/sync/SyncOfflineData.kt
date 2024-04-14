@@ -77,29 +77,6 @@ class SyncOfflineData : Fragment() {
                 binding.tvDocumentsCount.setText("${documentCount}")
             }
         }
-
-//        val toggleGroup: MaterialButtonToggleGroup = findViewById(R.id.toggleGroup)
-//        val button1: MaterialButton = bfindViewById(R.id.button1)
-//        val button2: MaterialButton = findViewById(R.id.button2)
-//
-//        // Select the first button by default
-//        toggleGroup.check(button1.id)
-//
-//        // Set listener for button selection change
-//        toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
-//            if (isChecked) {
-//                // Handle button selection
-//                when (checkedId) {
-//                    R.id.button1 -> {
-//                        // Button 1 selected
-//                    }
-//                    R.id.button2 -> {
-//                        // Button 2 selected
-//                    }
-//                    // Add more cases for other buttons if needed
-//                }
-//            }
-//        }
         return root
     }
 

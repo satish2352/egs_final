@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,7 +69,7 @@ class OfficerDocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
                 FileDownloader.downloadFile(holder.itemView.context,list.get(position).document_pdf,list.get(position).document_name)
             }
         } catch (e: Exception) {
-
+            Log.d("mytag","OfficerDocsNotApprovedAdapter: ${e.message}",e)
         }
     }
 

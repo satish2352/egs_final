@@ -14,6 +14,9 @@ interface GenderDao {
 
     @Query("DELETE FROM gender")
     suspend fun deleteAllGenders()
+
+    @Query("SELECT COUNT(*) FROM gender")
+    suspend fun getRowCount(): Int
     @Transaction
     suspend fun insertInitialRecords(items: List<Gender>) {
         deleteAllGenders()

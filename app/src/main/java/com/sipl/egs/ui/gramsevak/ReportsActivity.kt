@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.entity.Labour
@@ -18,7 +20,10 @@ import com.sipl.egs.ui.gramsevak.documents.DocumentListNotApprovedActivity
 import com.sipl.egs.ui.gramsevak.documents.DocumentListSentForApprovalActivity
 import com.sipl.egs.ui.gramsevak.documents.DocumentReSubmittedActivity
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +35,8 @@ class ReportsActivity : AppCompatActivity() {
     private lateinit var labourDao: LabourDao
     lateinit var labourList:List<Labour>
     lateinit var  adapter: LabourListByProjectAdapter
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -37,6 +44,22 @@ class ReportsActivity : AppCompatActivity() {
             setContentView(binding.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.title=resources.getString(R.string.labours_registered_online)
+            noInternetDialog= NoInternetDialog(this)
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                        noInternetDialog.hideDialog()
+                    } else {
+                        isInternetAvailable = false
+                        noInternetDialog.showDialog()
+                    }
+                }) { throwable: Throwable? -> }
+
             database= AppDatabase.getDatabase(this)
             labourDao=database.labourDao()
             labourList=ArrayList<Labour>()

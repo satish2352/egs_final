@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,25 +42,29 @@ class DocsSentForApprovalAdapter (var list:MutableList<DocumentItem>):
         position: Int
     )
     {
-        holder.tvDocumentName.setText(list[position].document_name)
-        holder.tvDocumentType.setText(list[position].document_type_name)
-        holder.tvDocumentStatus.setText(list[position].status_name)
-        holder.tvDocumentDate.setText(formatDate(list[position].updated_at))
-        holder.tvAddress.setText(list[position].district_name+"->"+list[position].taluka_name+"->"+list[position].village_name)
-        holder.ivViewDocument.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse(list[position].document_pdf), "application/pdf")
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            try {
-                holder.itemView.context.startActivity(intent)
-            } catch (e: ActivityNotFoundException) {
-                Toast.makeText(
-                    holder.itemView.context, "No PDF viewer application found", Toast.LENGTH_LONG
-                ).show()
+        try {
+            holder.tvDocumentName.setText(list[position].document_name)
+            holder.tvDocumentType.setText(list[position].document_type_name)
+            holder.tvDocumentStatus.setText(list[position].status_name)
+            holder.tvDocumentDate.setText(formatDate(list[position].updated_at))
+            holder.tvAddress.setText(list[position].district_name+"->"+list[position].taluka_name+"->"+list[position].village_name)
+            holder.ivViewDocument.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(Uri.parse(list[position].document_pdf), "application/pdf")
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                try {
+                    holder.itemView.context.startActivity(intent)
+                } catch (e: ActivityNotFoundException) {
+                    Toast.makeText(
+                        holder.itemView.context, "No PDF viewer application found", Toast.LENGTH_LONG
+                    ).show()
+                }
             }
-        }
-        holder.ivDownloadDocument.setOnClickListener {
-            FileDownloader.downloadFile(holder.itemView.context,list.get(position).document_pdf,list.get(position).document_name)
+            holder.ivDownloadDocument.setOnClickListener {
+                FileDownloader.downloadFile(holder.itemView.context,list.get(position).document_pdf,list.get(position).document_name)
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","DocsSentForApprovalAdapter: ${e.message}",e)
         }
     }
     override fun getItemCount(): Int
@@ -76,7 +81,8 @@ class DocsSentForApprovalAdapter (var list:MutableList<DocumentItem>):
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)
         } catch (e: Exception) {
-            "Invalid Date"
+            Log.d("mytag","DocsSentForApprovalAdapter: ${e.message}",e)
+            ""
         }
     }
 }

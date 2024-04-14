@@ -1,6 +1,7 @@
 package com.sipl.egs.adapters
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ class RegistrationStatusHistoryAdapter(var list:ArrayList<HistoryDetailsItem>):R
         val tvReason=itemView.findViewById<TextView>(R.id.tvReason)
         val tvRemark=itemView.findViewById<TextView>(R.id.tvRemark)
         val tvDate=itemView.findViewById<TextView>(R.id.tvDate)
+        val tvLabelRemarks=itemView.findViewById<TextView>(R.id.tvLabelRemarks)
     }
 
     override fun onCreateViewHolder(
@@ -35,13 +37,26 @@ class RegistrationStatusHistoryAdapter(var list:ArrayList<HistoryDetailsItem>):R
         position: Int
     ) {
 
-        if(!list[position].other_remark.equals("null"))
-        {
-            holder.tvRemark.text=list[position].other_remark
-        }
-        holder.tvReason.text=list[position].reason_name
+        try {
+            if(!list[position].other_remark.equals("null"))
+            {
+                holder.tvRemark.text=list[position].other_remark
+                holder.tvRemark.visibility=View.VISIBLE
+                holder.tvLabelRemarks.visibility=View.VISIBLE
+            }
+            if(list[position].other_remark==null){
 
-        holder.tvDate.text=formatDate(list[position].updated_at)
+                holder.tvRemark.visibility=View.GONE
+                holder.tvLabelRemarks.visibility=View.GONE
+            }else{
+                holder.tvRemark.visibility=View.VISIBLE
+                holder.tvLabelRemarks.visibility=View.VISIBLE
+            }
+            holder.tvReason.text=list[position].reason_name
+            holder.tvDate.text=formatDate(list[position].updated_at)
+        } catch (e: Exception) {
+            Log.d("mytag","RegistrationStatusHistoryAdapter: ${e.message}",e)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -56,6 +71,7 @@ class RegistrationStatusHistoryAdapter(var list:ArrayList<HistoryDetailsItem>):R
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)
         } catch (e: Exception) {
+            Log.d("mytag","RegistrationStatusHistoryAdapter: ${e.message}",e)
             "Invalid Date"
         }
     }

@@ -9,6 +9,8 @@ import android.view.MenuItem
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.dao.DocumentDao
@@ -16,8 +18,11 @@ import com.sipl.egs.database.entity.Document
 import com.sipl.egs.databinding.ActivitySyncLandDocumentsBinding
 import com.sipl.egs.adapters.SyncLandDocumentsAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.FileInfo
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +38,8 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
     private lateinit var documentDao: DocumentDao
     private lateinit var documentList: List<Document>
     private lateinit var adapter: SyncLandDocumentsAdapter
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySyncLandDocumentsBinding.inflate(layoutInflater)
@@ -43,9 +50,25 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
         adapter= SyncLandDocumentsAdapter(documentList as ArrayList<Document>)
         binding.recyclerViewSyncLandDocuments.adapter=adapter
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title=resources.getString(R.string.sync_land_documents)
+        supportActionBar?.title=resources.getString(R.string.sync_documents)
         appDatabase=AppDatabase.getDatabase(this)
         documentDao=appDatabase.documentDao()
+
+        noInternetDialog= NoInternetDialog(this)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                    noInternetDialog.hideDialog()
+                } else {
+                    isInternetAvailable = false
+                    noInternetDialog.showDialog()
+                }
+            }) { throwable: Throwable? -> }
 
     }
 

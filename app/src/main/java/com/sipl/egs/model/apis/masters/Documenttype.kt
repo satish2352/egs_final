@@ -6,5 +6,6 @@ data class Documenttype(
     val id: Int,
     val is_active: Int,
     val is_deleted: Int,
-    val updated_at: String
+    val updated_at: String,
+    val doc_color: String,
 )

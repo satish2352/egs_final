@@ -5,6 +5,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -17,17 +18,25 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityOfficerMainBinding
 import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.utils.MySharedPref
+import com.sipl.egs.utils.NoInternetDialog
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 class OfficerMainActivity : AppCompatActivity(),
     BottomNavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityOfficerMainBinding
     private lateinit var navController: NavController
+    private var isInternetAvailable=false
+    private lateinit var noInternetDialog: NoInternetDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOfficerMainBinding.inflate(layoutInflater)
@@ -63,6 +72,21 @@ class OfficerMainActivity : AppCompatActivity(),
 
             }
         })
+        noInternetDialog= NoInternetDialog(this)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                    noInternetDialog.hideDialog()
+                } else {
+                    isInternetAvailable = false
+                    noInternetDialog.showDialog()
+                }
+            }) { throwable: Throwable? -> }
     }
     private fun refreshCurrentFragment(){
         val id = navController.currentDestination?.id

@@ -89,7 +89,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
         savedInstanceState: Bundle?
     ): View? {
         try {
-            dialog = CustomProgressDialog(requireContext())
+            dialog = CustomProgressDialog(requireActivity())
             binding = FragmentDashboardOfficerBinding.inflate(inflater, container, false)
 
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -139,7 +139,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
             }
     }
     private fun startScanner() {
-        ScannerActivity.startScanner(requireContext()) { barcodes ->
+        ScannerActivity.startScanner(requireActivity()) { barcodes ->
             barcodes.forEach { barcode ->
                 when (barcode.valueType) {
                     Barcode.TYPE_URL -> {
@@ -183,7 +183,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                                 activity.startActivity(intent)
                             } catch (e: ActivityNotFoundException) {
                                 Toast.makeText(
-                                    requireContext(),
+                                    requireActivity(),
                                     "No PDF viewer application found",
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -215,7 +215,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
         map.setOnInfoWindowClickListener(this)
         // Check location permission
         if (ContextCompat.checkSelfPermission(
-                requireContext(),
+                requireActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
@@ -252,7 +252,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                         }
                     } ?: run {
                         Toast.makeText(
-                            requireContext(),
+                            requireActivity(),
                             "Unable to retrieve location",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -270,7 +270,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
     }
     private fun fetchProjectDataFromLatLongNew() {
         dialog.show()
-        val apiService = ApiClient.create(requireContext())
+        val apiService = ApiClient.create(requireActivity())
         apiService.getDashboardProjectListForOfficer()
             .enqueue(object : Callback<DashboardMapOfficerModel> {
                 override fun onResponse(
@@ -286,17 +286,17 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                                    showProjectMarkersNew(mapMarkerData)
                                 }
                             } else {
-                                Toast.makeText(requireContext(), "No records found", Toast.LENGTH_LONG)
+                                Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
                                     .show()
                             }
                         } else {
                             Toast.makeText(
-                                requireContext(), "Response unsuccessful", Toast.LENGTH_LONG
+                                requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
                             ).show()
                         }
                     }else{
 
-                        val intent= Intent(requireContext(), LoginActivity::class.java)
+                        val intent= Intent(requireActivity(), LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         requireActivity().finish()
@@ -306,7 +306,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
 
                 override fun onFailure(call: Call<DashboardMapOfficerModel>, t: Throwable) {
                     Toast.makeText(
-                        requireContext(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
+                        requireActivity(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
                     ).show()
 
                     Log.d("mytag",t.message.toString())

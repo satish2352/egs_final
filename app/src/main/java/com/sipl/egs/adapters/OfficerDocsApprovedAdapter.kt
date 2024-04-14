@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,7 +74,7 @@ class OfficerDocsApprovedAdapter (var list:MutableList<DocumentItem>):
                 )
             }
         } catch (e: Exception) {
-
+            Log.d("mytag","OfficerDocsApprovedAdapter: ${e.message}",e)
         }
     }
 
@@ -91,6 +92,7 @@ class OfficerDocsApprovedAdapter (var list:MutableList<DocumentItem>):
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)
         } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsApprovedAdapter: ${e.message}",e)
             "Invalid Date"
         }
     }
