@@ -101,7 +101,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         val dashboardViewModel = ViewModelProvider(this).get(DashboardViewModel::class.java)
-        dialog = CustomProgressDialog(requireContext())
+        dialog = CustomProgressDialog(requireActivity())
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
         try {
@@ -132,7 +132,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         startScanner()
                     }else{
                         Toast.makeText(
-                            requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
+                            requireActivity(), requireActivity().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
                         ).show()
                     }
 
@@ -157,7 +157,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     }else{
 
                         Toast.makeText(
-                            requireContext(),
+                            requireActivity(),
                             getString(R.string.please_enter_project_name), Toast.LENGTH_LONG
                         ).show()
                     }
@@ -165,7 +165,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     Log.d("mytag", binding.etInput.text.toString())
                 }else{
                     Toast.makeText(
-                        requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
+                        requireActivity(), requireActivity().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
                     ).show()
                 }
 
@@ -179,13 +179,13 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     }else{
 
                         Toast.makeText(
-                            requireContext(),
+                            requireActivity(),
                             getString(R.string.please_enter_mgnrega_id), Toast.LENGTH_LONG
                         ).show()
                     }
                 }else{
                     Toast.makeText(
-                        requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
+                        requireActivity(), requireActivity().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
                     ).show()
                 }
 
@@ -197,7 +197,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 bottomSheetDialogFragment.show(childFragmentManager, bottomSheetDialogFragment.tag)
             }
 
-            adapter= ArrayAdapter(requireContext(),android.R.layout.simple_dropdown_item_1line,suggestionList)
+            adapter= ArrayAdapter(requireActivity(),android.R.layout.simple_dropdown_item_1line,suggestionList)
             binding.etInput.setAdapter(adapter)
             binding.etInput.threshold=3
 
@@ -229,7 +229,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                             }
                         }else{
                             Toast.makeText(
-                                requireContext(), requireContext().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
+                                requireActivity(), requireActivity().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
                             ).show()
                         }
 
@@ -246,7 +246,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
         try {
             CoroutineScope(Dispatchers.IO).launch {
-                val apiService=ApiClient.create(requireContext())
+                val apiService=ApiClient.create(requireActivity())
 
                 val response=apiService.getSuggestionForMgnregaId(text)
                 if(response.isSuccessful){
@@ -259,7 +259,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                                 adapter.clear()
                                 suggestionList.clear()
                                 suggestionList= response.body()?.data?.toMutableList()!!
-                                adapter= ArrayAdapter(requireContext(),android.R.layout.simple_dropdown_item_1line,suggestionList)
+                                adapter= ArrayAdapter(requireActivity(),android.R.layout.simple_dropdown_item_1line,suggestionList)
                                 binding.etInput.setAdapter(adapter)
                                 adapter.notifyDataSetChanged()
                             }
@@ -304,7 +304,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     // Handle case where location is null
                     if (isAdded && view != null) {
                         Toast.makeText(
-                            requireContext(), "Unable to retrieve location", Toast.LENGTH_LONG
+                            requireActivity(), "Unable to retrieve location", Toast.LENGTH_LONG
                         ).show()
                     }
                 }
@@ -313,14 +313,14 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     private fun isLocationEnabled(): Boolean {
         val locationManager =
-            requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER
         )
     }
 
     private fun startScanner() {
-        ScannerActivity.startScanner(requireContext()) { barcodes ->
+        ScannerActivity.startScanner(requireActivity()) { barcodes ->
             barcodes.forEach { barcode ->
                 when (barcode.valueType) {
                     Barcode.TYPE_URL -> {}
@@ -358,7 +358,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     private fun fetchLabourDataForMarkerById(mgnregaId: String) {
         dialog.show()
-        val apiService = ApiClient.create(requireContext())
+        val apiService = ApiClient.create(requireActivity())
         apiService.getLabourDataForMarkerById(mgnregaId)
             .enqueue(object : Callback<ProjectLabourListForMarker> {
                 override fun onResponse(
@@ -379,16 +379,16 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                                 }
                             } else {
                                 Toast.makeText(
-                                    requireContext(), "No records found", Toast.LENGTH_LONG
+                                    requireActivity(), "No records found", Toast.LENGTH_LONG
                                 ).show()
                             }
                         } else {
-                            Toast.makeText(requireContext(), "Please try again", Toast.LENGTH_LONG)
+                            Toast.makeText(requireActivity(), "Please try again", Toast.LENGTH_LONG)
                                 .show()
                         }
                     } else {
                         Toast.makeText(
-                            requireContext(), "Response unsuccessful", Toast.LENGTH_LONG
+                            requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
                         ).show()
                     }
 
@@ -396,7 +396,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
                 override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
                     Toast.makeText(
-                        requireContext(), "Error Ocuured during api call", Toast.LENGTH_LONG
+                        requireActivity(), "Error Ocuured during api call", Toast.LENGTH_LONG
                     ).show()
                     dialog.dismiss()
                 }
@@ -448,7 +448,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     private fun fetchProjectDataForMarkerWhenSearchByName(projectName: String) {
         dialog.show()
-        val apiService = ApiClient.create(requireContext())
+        val apiService = ApiClient.create(requireActivity())
         apiService.getProjectListForMarkerByNameSearch(projectName, latitude, longitude)
             .enqueue(object : Callback<ProjectsFromLatLongModel> {
                 override fun onResponse(
@@ -465,19 +465,19 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                                 showProjectMarkersWhenSearchByName(projectData)
                             }
                         } else {
-                            Toast.makeText(requireContext(), "No records found", Toast.LENGTH_LONG)
+                            Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
                                 .show()
                         }
                     } else {
                         Toast.makeText(
-                            requireContext(), "Response unsuccessful", Toast.LENGTH_LONG
+                            requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
                         ).show()
                     }
                 }
 
                 override fun onFailure(call: Call<ProjectsFromLatLongModel>, t: Throwable) {
                     Toast.makeText(
-                        requireContext(), "Error Ocuured during api call", Toast.LENGTH_LONG
+                        requireActivity(), "Error Ocuured during api call", Toast.LENGTH_LONG
                     ).show()
                     dialog.dismiss()
                 }
@@ -629,7 +629,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     fun getMarkerIcon(color: Int): BitmapDescriptor {
         val drawable: Drawable? =
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_location)
+            ContextCompat.getDrawable(requireActivity(), R.drawable.ic_location)
         drawable?.setTint(color)
         val canvas = Canvas()
         val bitmap: Bitmap = Bitmap.createBitmap(
@@ -647,7 +647,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     }
 
     private fun showEnableLocationDialog() {
-        val builder = AlertDialog.Builder(requireContext())
+        val builder = AlertDialog.Builder(requireActivity())
         builder.setMessage("Location services are disabled. Do you want to enable them?")
             .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
                 dialog.dismiss()
@@ -656,7 +656,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 dialog.dismiss()
                 // Handle the case when the user refuses to enable location services
                 Toast.makeText(
-                    requireContext(),
+                    requireActivity(),
                     "Unable to retrieve location without enabling location services",
                     Toast.LENGTH_LONG
                 ).show()
@@ -672,7 +672,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
         // Check location permission
         if (ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             map.isMyLocationEnabled = true
@@ -681,7 +681,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     location?.let {
                         Log.d("mytag", "addOnSuccessListener => ${it.latitude} ${it.longitude}")
                         val currentLatLng = LatLng(it.latitude, it.longitude)
-                        var pref = MySharedPref(requireContext())
+                        var pref = MySharedPref(requireActivity())
                         pref.setLatitude(it.latitude.toString())
                         pref.setLongitude(it.longitude.toString())
                         latitude = it.latitude.toString()
@@ -711,7 +711,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         )
                     } ?: run {
                         Toast.makeText(
-                            requireContext(), "Unable to retrieve location", Toast.LENGTH_LONG
+                            requireActivity(), "Unable to retrieve location", Toast.LENGTH_LONG
                         ).show()
                     }
                 }
@@ -737,8 +737,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     private fun bitmapDescriptorFromVector(
         drawableId: Int, colorId: Int
     ): BitmapDescriptor {
-        val drawable = ContextCompat.getDrawable(requireContext(), drawableId)
-        drawable?.setTint(ContextCompat.getColor(requireContext(), colorId))
+        val drawable = ContextCompat.getDrawable(requireActivity(), drawableId)
+        drawable?.setTint(ContextCompat.getColor(requireActivity(), colorId))
         val bitmap = Bitmap.createBitmap(
             drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
         )
@@ -764,7 +764,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     startActivity(intent)
                 } catch (e: ActivityNotFoundException) {
                     Toast.makeText(
-                        requireContext(), "No PDF viewer application found", Toast.LENGTH_LONG
+                        requireActivity(), "No PDF viewer application found", Toast.LENGTH_LONG
                     ).show()
                 }
             } else if (customMarkerObject.type.equals("labour")) {
@@ -782,7 +782,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     private fun fetchProjectDataFromLatLongNew(latitude: String, longitude: String) {
         dialog.show()
-        val apiService = ApiClient.create(requireContext())
+        val apiService = ApiClient.create(requireActivity())
         apiService.getMapsMarkersFromLatLong(latitude, longitude)
             .enqueue(object : Callback<MapMarkerModel> {
                 override fun onResponse(
@@ -798,17 +798,17 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                                     showProjectMarkersNew(mapMarkerData)
                                 }
                             } else {
-                                Toast.makeText(requireContext(), "No records found", Toast.LENGTH_LONG)
+                                Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
                                     .show()
                             }
                         } else {
                             Toast.makeText(
-                                requireContext(), "Response unsuccessful", Toast.LENGTH_LONG
+                                requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
                             ).show()
                         }
                     }else{
 
-                        val intent= Intent(requireContext(), LoginActivity::class.java)
+                        val intent= Intent(requireActivity(), LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         requireActivity().finish()
@@ -818,7 +818,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
                 override fun onFailure(call: Call<MapMarkerModel>, t: Throwable) {
                     Toast.makeText(
-                        requireContext(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
+                        requireActivity(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
                     ).show()
 
                     Log.d("mytag",t.message.toString())
@@ -831,9 +831,9 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     private fun getFileDownloadUrl(fileName: String) {
 
 
-        val dialog = CustomProgressDialog(requireContext())
+        val dialog = CustomProgressDialog(requireActivity())
         dialog.show()
-        val apiService = ApiClient.create(requireContext())
+        val apiService = ApiClient.create(requireActivity())
         val call = apiService.downloadPDF(fileName)
         call.enqueue(object : Callback<QRDocumentDownloadModel> {
             override fun onResponse(
@@ -853,27 +853,27 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                             startActivity(intent)
                         } catch (e: ActivityNotFoundException) {
                             Toast.makeText(
-                                requireContext(),
+                                requireActivity(),
                                 "No PDF viewer application found",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
-                        //FileDownloader.downloadFile(requireContext(), url, fileName)
+                        //FileDownloader.downloadFile(requireActivity(), url, fileName)
                     } else {
                         Toast.makeText(
-                            requireContext(), response.body()?.message, Toast.LENGTH_LONG
+                            requireActivity(), response.body()?.message, Toast.LENGTH_LONG
                         ).show()
                     }
 
                 } else {
-                    Toast.makeText(requireContext(), "response unsuccessful", Toast.LENGTH_LONG)
+                    Toast.makeText(requireActivity(), "response unsuccessful", Toast.LENGTH_LONG)
                         .show()
                 }
             }
 
             override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
                 dialog.dismiss()
-                Toast.makeText(requireContext(), "response failed", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireActivity(), "response failed", Toast.LENGTH_LONG).show()
             }
         })
 

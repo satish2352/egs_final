@@ -144,10 +144,11 @@ class LoginActivity : AppCompatActivity() {
                                             }
 
                                         }else{
+                                            Log.d("mytag",""+response.body()?.message)
                                             runOnUiThread {
                                                 customProgressDialog.dismiss()
                                                 val toast= Toast.makeText(this@LoginActivity,
-                                                    getString(R.string.error_while_login),
+                                                   response.body()?.message.toString(),
                                                     Toast.LENGTH_SHORT)
                                                 toast.show()
                                             }
