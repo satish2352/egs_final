@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name="com.sipl.egs.config.MyApp"
+        android:name=".config.MyApp"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -28,104 +28,106 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ViewSentForApprovalLabourDetails"
+            android:name=".camera.CameraActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.documents.EditDocumentActivity"
+            android:name=".ui.gramsevak.ViewSentForApprovalLabourDetails"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.LabourReSubmittedActivity"
+            android:name=".ui.gramsevak.documents.EditDocumentActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerLabourReSubmittedListActivity"
+            android:name=".ui.gramsevak.LabourReSubmittedActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.documents.DocumentReSubmittedActivity"
+            android:name=".ui.officer.activities.OfficerLabourReSubmittedListActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerDocsReSubmittedListActivity"
+            android:name=".ui.gramsevak.documents.DocumentReSubmittedActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.documents.DocumentDetailsActivity"
+            android:name=".ui.officer.activities.OfficerDocsReSubmittedListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.gramsevak.documents.DocumentDetailsActivity"
             android:exported="false"
-            android:parentActivityName="com.sipl.egs.ui.gramsevak.documents.DocumentListNotApprovedActivity" />
+            android:parentActivityName=".ui.gramsevak.documents.DocumentListNotApprovedActivity" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.documents.DocumentListNotApprovedActivity"
+            android:name=".ui.gramsevak.documents.DocumentListNotApprovedActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.documents.DocumentListApprovedActivity"
+            android:name=".ui.gramsevak.documents.DocumentListApprovedActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.documents.DocumentListSentForApprovalActivity"
+            android:name=".ui.gramsevak.documents.DocumentListSentForApprovalActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerDocsEditActivity"
+            android:name=".ui.officer.activities.OfficerDocsEditActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerDocsNotApprovedListActivity"
+            android:name=".ui.officer.activities.OfficerDocsNotApprovedListActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerDocsApprovedListActivity"
+            android:name=".ui.officer.activities.OfficerDocsApprovedListActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerDocsReceivedForApprovalListActivity"
+            android:name=".ui.officer.activities.OfficerDocsReceivedForApprovalListActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.registration.LabourUpdateOnline2Activity"
+            android:name=".ui.registration.LabourUpdateOnline2Activity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.registration.LabourUpdateOnline1Activity"
-            android:exported="false" />
-
-        <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerViewNotApprovedLabourDetails"
+            android:name=".ui.registration.LabourUpdateOnline1Activity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerViewEditReceivedLabourDetails"
+            android:name=".ui.officer.activities.OfficerViewNotApprovedLabourDetails"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficersLaboursApprovedListActivity"
+            android:name=".ui.officer.activities.OfficerViewEditReceivedLabourDetails"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerLabourNotApprovedListActivity"
+            android:name=".ui.officer.activities.OfficersLaboursApprovedListActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.activities.OfficerLaboursReceivedForApprovalActivity"
+            android:name=".ui.officer.activities.OfficerLabourNotApprovedListActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ViewNotApprovedLabourDetailsActivity"
+            android:name=".ui.officer.activities.OfficerLaboursReceivedForApprovalActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.officer.OfficerMainActivity"
+            android:name=".ui.gramsevak.ViewNotApprovedLabourDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.officer.OfficerMainActivity"
             android:exported="false"
             android:label="@string/title_activity_officer_main" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.LaboursListApproved"
+            android:name=".ui.gramsevak.LaboursListApproved"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.LaboursListNotApproved"
+            android:name=".ui.gramsevak.LaboursListNotApproved"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ViewLaboursListSentForApprovalActivity"
+            android:name=".ui.gramsevak.ViewLaboursListSentForApprovalActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ViewUploadedDocumentsActivity"
+            android:name=".ui.gramsevak.ViewUploadedDocumentsActivity"
             android:exported="false"
-            android:parentActivityName="com.sipl.egs.ui.gramsevak.ScanDocumentsActivity" />
+            android:parentActivityName=".ui.gramsevak.ScanDocumentsActivity" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ViewAttendanceActivity"
+            android:name=".ui.gramsevak.ViewAttendanceActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ViewLabourFromMarkerClick"
+            android:name=".ui.gramsevak.ViewLabourFromMarkerClick"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.LabourListByProjectActivity"
+            android:name=".ui.gramsevak.LabourListByProjectActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.OfflineViewLabourDetailsActivity"
+            android:name=".ui.gramsevak.OfflineViewLabourDetailsActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.activities.start.SplashActivity"
+            android:name=".ui.activities.start.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
             <intent-filter>
@@ -135,44 +137,43 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.sipl.egs.ui.registration.LabourRegistrationEdit1"
+            android:name=".ui.registration.LabourRegistrationEdit1"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.registration.LabourRegistrationEdit2"
-            android:exported="false" />
-
-        <activity
-            android:name="com.sipl.egs.ui.gramsevak.ScannerActivity"
+            android:name=".ui.registration.LabourRegistrationEdit2"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ScanDocumentsActivity"
+            android:name=".ui.gramsevak.ScannerActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ScanBarcodeActivity"
+            android:name=".ui.gramsevak.ScanDocumentsActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.ReportsActivity"
+            android:name=".ui.gramsevak.ScanBarcodeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.gramsevak.ReportsActivity"
             android:exported="false"
-            android:parentActivityName="com.sipl.egs.MainActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.SyncLabourDataActivity"
+            android:name=".ui.gramsevak.SyncLabourDataActivity"
             android:exported="false"
-            android:parentActivityName="com.sipl.egs.MainActivity" />
+            android:parentActivityName=".MainActivity" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.SyncLandDocumentsActivity"
+            android:name=".ui.gramsevak.SyncLandDocumentsActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.registration.LabourRegistration2Activity"
+            android:name=".ui.registration.LabourRegistration2Activity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.activities.start.LoginActivity"
+            android:name=".ui.activities.start.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
-            android:name="com.sipl.egs.ui.gramsevak.AllocateWorkActivity"
+            android:name=".ui.gramsevak.AllocateWorkActivity"
             android:exported="false" />
         <activity
-            android:name="com.sipl.egs.ui.registration.LabourRegistration1Activity"
+            android:name=".ui.registration.LabourRegistration1Activity"
             android:exported="false" />
         <!--
              TODO: Before you run your application, you need a Google Maps API key.
@@ -190,11 +191,11 @@
             android:value="AIzaSyBcLn2oqJ3SC558m2ZZVGBGpD7NxjbPz80" />
 
         <activity
-            android:name="com.sipl.egs.MapsActivity"
+            android:name=".MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name="com.sipl.egs.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name" />
 

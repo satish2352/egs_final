@@ -90,7 +90,6 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation("io.getstream:photoview:1.0.1")
     kapt ("com.github.bumptech.glide:compiler:4.12.0")
-    //implementation ("com.itextpdf:itextg:5.5.10")
     implementation ("com.itextpdf:itext7-core:7.1.11")
     implementation ("com.github.pwittchen:reactivenetwork-rx2:3.0.8")
 
@@ -100,10 +99,15 @@ dependencies {
 
     implementation ("com.dmitryborodin:pdfview-android:1.1.0")
     implementation ("com.google.zxing:core:3.4.1")
-    //implementation ("com.squareup.okio:okio:2.10.0")
 
 
-    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.+")
+
+    // Add the CameraX dependencies
+    implementation("androidx.camera:camera-core:1.3.2")
+    implementation("androidx.camera:camera-lifecycle:1.3.2")
+    implementation("androidx.camera:camera-view:1.3.2")
+    implementation ("androidx.camera:camera-camera2:1.3.2")
+
 
 
 
