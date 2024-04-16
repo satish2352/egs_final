@@ -379,7 +379,7 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener,
                                               data.attendance_day=dayType
                                               val toast = Toast.makeText(
                                                   this@ViewAttendanceActivity,
-                                                  getString(R.string.attendance_updated_successfully),
+                                                  response.body()?.message,
                                                   Toast.LENGTH_SHORT
                                               )
                                               toast.show()
@@ -389,7 +389,7 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener,
                                           }else{
                                               val toast = Toast.makeText(
                                                   this@ViewAttendanceActivity,
-                                                  getString(R.string.attendance_updating_failed),
+                                                  response.body()?.message,
                                                   Toast.LENGTH_SHORT
                                               )
                                               toast.show()

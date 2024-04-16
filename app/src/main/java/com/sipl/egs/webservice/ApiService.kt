@@ -75,7 +75,11 @@ interface ApiService {
 
     // changed to particular-labour-details = > list-labour
     @POST("auth/list-labour")
-    fun getLabourDetailsById(@Query("mgnrega_card_id") mgnrega_card_id: String): Call<LabourByMgnregaId>
+    fun getLabourDetailsById(
+        @Query("mgnrega_card_id") mgnrega_card_id: String,
+    ): Call<LabourByMgnregaId>
+
+
 
     // changed to list-user-labours=> list-labour
     @POST("auth/list-labour")
@@ -96,7 +100,7 @@ interface ApiService {
     @POST("auth/filter-project-labour-list")
     fun getProjectList(): Call<ProjectLabourListForMarker>
 
-    @POST("auth/project-list-for-officer")
+    @POST("auth/list-project-for-officer")
     fun getProjectListForOfficer(): Call<ProjectListForOfficerModel>
 
     @POST("auth/filter-project-labour-list")

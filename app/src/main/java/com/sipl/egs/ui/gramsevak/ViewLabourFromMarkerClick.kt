@@ -23,6 +23,7 @@ import com.sipl.egs.model.apis.getlabour.LabourByMgnregaId
 import com.sipl.egs.adapters.FamilyDetailsListOnlineAdapter
 import com.sipl.egs.model.apis.getlabour.FamilyDetail
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
 import io.getstream.photoview.PhotoView
@@ -53,7 +54,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
             binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         val mgnregaCardId=intent.getStringExtra("id")
         dialog= CustomProgressDialog(this)
-        getLabourDetails(mgnregaCardId!!)
+
         binding.ivAadhar.setOnClickListener {
             showPhotoZoomDialog(aadharImage)
         }
@@ -83,6 +84,13 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                     binding.scrollView.visibility= View.GONE
                 }
             }) { throwable: Throwable? -> }
+
+        val mySharedPref=MySharedPref(this)
+        if(mySharedPref.getRoleId()==2){
+            getLabourDetailsForOfficer(mgnregaCardId!!)
+        }else{
+            getLabourDetails(mgnregaCardId!!)
+        }
     }
 
     private fun getLabourDetails(mgnregaCardId:String) {
@@ -91,6 +99,66 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
             dialog.show()
             val apiService= ApiClient.create(this@ViewLabourFromMarkerClick)
             apiService.getLabourDetailsById(mgnregaCardId).enqueue(object :
+                Callback<LabourByMgnregaId> {
+                override fun onResponse(
+                    call: Call<LabourByMgnregaId>,
+                    response: Response<LabourByMgnregaId>
+                ) {
+                    dialog.dismiss()
+                    if(response.isSuccessful){
+                        if(!response.body()?.data.isNullOrEmpty()) {
+                            val list=response.body()?.data
+                            Log.d("mytag",""+ Gson().toJson(response.body()));
+                            binding.tvFullName.text=list?.get(0)?.full_name
+                            binding.tvGender.text=list?.get(0)?.gender_name
+                            binding.tvDistritct.text=list?.get(0)?.district_name
+                            binding.tvTaluka.text=list?.get(0)?.taluka_name
+                            binding.tvVillage.text=list?.get(0)?.village_name
+                            binding.tvMobile.text=list?.get(0)?.mobile_number
+                            binding.tvLandline.text=list?.get(0)?.landline_number
+                            binding.tvMnregaId.text=list?.get(0)?.mgnrega_card_id
+                            binding.tvDob.text=list?.get(0)?.date_of_birth
+                            binding.tvSkill.text=list?.get(0)?.skills
+                            photo= list?.get(0)?.profile_image.toString()
+                            mgnregaIdImage= list?.get(0)?.mgnrega_image.toString()
+                            aadharImage= list?.get(0)?.aadhar_image.toString()
+                            voterIdImage= list?.get(0)?.voter_image.toString()
+                            Glide.with(this@ViewLabourFromMarkerClick).load(mgnregaIdImage).override(200,200).into(binding.ivMnregaCard)
+                            Glide.with(this@ViewLabourFromMarkerClick).load(photo).override(200,200).into(binding.ivPhoto)
+                            Glide.with(this@ViewLabourFromMarkerClick).load(aadharImage).override(200,200).into(binding.ivAadhar)
+                            Glide.with(this@ViewLabourFromMarkerClick).load(voterIdImage).override(200,200).into(binding.ivVoterId)
+                            val familyList=response.body()?.data?.get(0)?.family_details
+                            Log.d("mytag",""+familyList?.size);
+
+                            var adapterFamily= FamilyDetailsListOnlineAdapter(familyList as ArrayList<FamilyDetail>?)
+                            binding.recyclerViewFamilyDetails.adapter=adapterFamily
+                            adapterFamily.notifyDataSetChanged()
+                        }else {
+                            Toast.makeText(this@ViewLabourFromMarkerClick, "No records found", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    } else{
+                        Toast.makeText(this@ViewLabourFromMarkerClick, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                override fun onFailure(call: Call<LabourByMgnregaId>, t: Throwable) {
+                    dialog.dismiss()
+                    Toast.makeText(this@ViewLabourFromMarkerClick, "Error Ocuured during api call", Toast.LENGTH_SHORT).show()
+                }
+            })
+        } catch (e: Exception) {
+            dialog.dismiss()
+            e.printStackTrace()
+        }
+    }
+
+
+    private fun getLabourDetailsForOfficer(mgnregaCardId:String) {
+
+        try {
+            dialog.show()
+            val apiService= ApiClient.create(this@ViewLabourFromMarkerClick)
+            apiService.getLabourDetailsByIdForOfficer(mgnregaCardId).enqueue(object :
                 Callback<LabourByMgnregaId> {
                 override fun onResponse(
                     call: Call<LabourByMgnregaId>,

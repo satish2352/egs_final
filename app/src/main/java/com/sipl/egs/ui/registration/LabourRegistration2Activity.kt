@@ -1,6 +1,7 @@
 package com.sipl.egs.ui.registration
 
 import android.Manifest
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
@@ -49,6 +50,7 @@ import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.MainActivity
 import com.sipl.egs.R
 import com.sipl.egs.adapters.FamilyDetailsAdapter
+import com.sipl.egs.camera.CameraActivity
 import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.dao.GenderDao
 import com.sipl.egs.database.dao.LabourDao
@@ -67,6 +69,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -329,16 +332,20 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             e.printStackTrace()
         }
         binding.layoutAadharCard.setOnClickListener {
-            captureImage(REQUEST_CODE_AADHAR_CARD)
+            //captureImage(REQUEST_CODE_AADHAR_CARD)
+            startCameraActivity(REQUEST_CODE_AADHAR_CARD)
         }
         binding.layoutPhoto.setOnClickListener {
-            captureImage(REQUEST_CODE_PHOTO)
+            //captureImage(REQUEST_CODE_PHOTO)
+            startCameraActivity(REQUEST_CODE_PHOTO)
         }
         binding.layoutVoterId.setOnClickListener {
-            captureImage(REQUEST_CODE_VOTER_ID)
+           // captureImage(REQUEST_CODE_VOTER_ID)
+            startCameraActivity(REQUEST_CODE_VOTER_ID)
         }
         binding.layoutMgnregaCard.setOnClickListener {
-            captureImage(REQUEST_CODE_MGNREGA_CARD)
+            //captureImage(REQUEST_CODE_MGNREGA_CARD)
+            startCameraActivity(REQUEST_CODE_MGNREGA_CARD)
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -867,6 +874,84 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             return ""
         }
 
+    }
+
+    fun startCameraActivity(requestCode: Int) {
+        val intent = Intent(this, CameraActivity::class.java)
+        intent.putExtra("requestCode", requestCode)
+        startForResult.launch(intent)
+    }
+
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val requestCode = result.data?.getIntExtra("requestCode", -1)
+        if (result.resultCode == Activity.RESULT_OK) {
+            val capturedImageUri = result.data?.getParcelableExtra<Uri>("capturedImageUri")
+            val requestCode = result.data?.getIntExtra("requestCode", -1)
+            if (capturedImageUri != null && requestCode != -1) {
+
+                when (requestCode) {
+                    REQUEST_CODE_PHOTO -> {
+                        Glide.with(this@LabourRegistration2Activity).load(capturedImageUri).override(200,200).into(binding.ivPhoto)
+                        photoImagePath= capturedImageUri.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+
+                        }
+
+                    }
+                    REQUEST_CODE_VOTER_ID -> {
+
+                        Glide.with(this@LabourRegistration2Activity).load(capturedImageUri).override(200,200).into(binding.ivVoterId)
+                        voterIdImagePath= capturedImageUri.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            withContext(Dispatchers.Main){
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+                        }
+                    }
+                    REQUEST_CODE_AADHAR_CARD -> {
+                            Glide.with(this@LabourRegistration2Activity).load(capturedImageUri).override(200,200).into(binding.ivAadhar)
+                            aadharIdImagePath= capturedImageUri.toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val uri=uriStringToBitmap(this@LabourRegistration2Activity,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                                withContext(Dispatchers.Main){
+                                }
+                            }
+                    }
+                    REQUEST_CODE_MGNREGA_CARD -> {
+                        Glide.with(this@LabourRegistration2Activity).load(capturedImageUri).override(200,200).into(binding.ivMgnregaCard)
+                        mgnregaIdImagePath= capturedImageUri.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri = uriStringToBitmap(
+                                this@LabourRegistration2Activity,
+                                capturedImageUri.toString(),
+                                binding.etLocation.text.toString(),
+                                addressFromLatLong
+                            )
+                            withContext(Dispatchers.Main) {
+                                // binding.ivPhoto.setImageBitmap(bitmap)
+                            }
+                        }
+                    }
+                    else -> {
+                        Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.unknown_request_code),Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+            } else {
+
+                Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
+            }
+        } else if (requestCode == Activity.RESULT_CANCELED) {
+            val requestCode = result.data?.getIntExtra("requestCode", -1)
+            if (requestCode != -1) {
+                Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
 }
