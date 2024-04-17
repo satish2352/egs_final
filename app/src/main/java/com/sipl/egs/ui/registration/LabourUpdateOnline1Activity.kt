@@ -521,7 +521,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
         }
         if(binding.etLandLine.text.toString().length>0){
 
-            if(binding.etLandLine.text.toString().length==1){
+            if(binding.etLandLine.text.toString().length==11){
                 binding.etLandLine.error = null
                 validationResults.add(true)
             }else{
