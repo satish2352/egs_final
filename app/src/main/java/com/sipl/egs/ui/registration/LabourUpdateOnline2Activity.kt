@@ -1,6 +1,7 @@
 package com.sipl.egs.ui.registration
 
 import android.Manifest
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
@@ -11,6 +12,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
@@ -36,8 +38,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -48,6 +54,7 @@ import com.google.gson.reflect.TypeToken
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.adapters.FamilyDetailsOnlineEditAdapter
+import com.sipl.egs.camera.CameraActivity
 import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.dao.GenderDao
 import com.sipl.egs.database.dao.LabourDao
@@ -183,9 +190,6 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             for(relation in relationList){
                 relationNames.add(relation.relation_title)
             }
-            runOnUiThread {
-                initializeFields();
-            }
 
         }
         requestThePermissions()
@@ -218,115 +222,17 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             }
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        getTheLocation()
-        try {
-            cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-                if (success) {
-                    Log.d("myatg", "Success => ${uriMap.values}")
-                    // Retrieve URI for Aadhar Card
-                    val uriAadhar = uriMap[REQUEST_CODE_AADHAR_CARD]
-                    if (uriAadhar != null) {
-                        Log.d("myatg", "URI for Aadhar Card: $uriAadhar")
-                        binding.ivAadhar.setImageURI(uriAadhar)
-                        Glide.with(this@LabourUpdateOnline2Activity).load(uriAadhar).override(200,200).into(binding.ivAadhar)
-                        aadharIdImagePathNew=uriAadhar.toString();
-                        aadharIdImagePath= uriAadhar.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriAadhar.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                                aadharIdImagePath=uri.toString()
-                            }
-
-                        }
-                    } else {
-                        Log.d("myatg", "URI for Aadhar Card is null")
-                    }
-                    // Retrieve URI for MGNREGA Card
-                    val uriMgnregaCard = uriMap[REQUEST_CODE_MGNREGA_CARD]
-                    if (uriMgnregaCard != null) {
-                        Log.d("myatg", "URI for MGNREGA Card: $uriMgnregaCard")
-                        //binding.ivMgnregaCard.setImageURI(uriMgnregaCard)
-                        Glide.with(this@LabourUpdateOnline2Activity).load(uriMgnregaCard).override(200,200).into(binding.ivMgnregaCard)
-                        mgnregaIdImagePath= uriMgnregaCard.toString()
-                        mgnregaIdImagePathNew=uriMgnregaCard.toString();
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriMgnregaCard.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            mgnregaIdImagePathNew=uri.toString();
-                            try {
-                                getAddressFromLatLong()
-                            } finally {
-
-                            }
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-
-                            }
-
-                        }
-                    } else {
-                        Log.d("myatg", "URI for MGNREGA Card is null")
-                    }
-                    // Retrieve URI for Photo
-                    val uriPhoto = uriMap[REQUEST_CODE_PHOTO]
-                    if (uriPhoto != null) {
-                        Log.d("myatg", "URI for Photo: $uriPhoto")
-                        //binding.ivPhoto.setImageURI(uriPhoto)
-                        Glide.with(this@LabourUpdateOnline2Activity).load(uriPhoto).override(200,200).into(binding.ivPhoto)
-                        photoImagePath= uriPhoto.toString()
-                        photoImagePathNew=uriPhoto.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriPhoto.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            photoImagePathNew=uri.toString()
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                            }
-
-                        }
-                    } else {
-                        Log.d("myatg", "URI for Photo is null")
-                    }
-                    // Retrieve URI for Voter ID
-                    val uriVoterId = uriMap[REQUEST_CODE_VOTER_ID]
-                    if (uriVoterId != null) {
-                        Log.d("myatg", "URI for Voter ID: $uriVoterId")
-                        //binding.ivVoterId.setImageURI(uriVoterId)
-                        Glide.with(this@LabourUpdateOnline2Activity).load(uriVoterId).override(200,200).into(binding.ivVoterId)
-                        voterIdImagePath= uriVoterId.toString()
-                        voterIdImagePathNew=uriVoterId.toString()
-
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,uriVoterId.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            voterIdImagePathNew=uri.toString()
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                            }
-
-                        }
-
-                    } else {
-                        Log.d("myatg", "URI for Voter ID is null")
-                    }
-                } else {
-                    // Image capture failed or was canceled
-                    Log.d("myatg", "Failed")
-                }
-            }
-        } catch (e: Exception) {
-            Log.d("mytag","cameraLauncher=>registerForActivityException=>"+e.message)
-            e.printStackTrace()
-        }
         binding.ivChangeAadhar.setOnClickListener {
-            captureImage(REQUEST_CODE_AADHAR_CARD)
+            startCameraActivity(REQUEST_CODE_AADHAR_CARD)
         }
         binding.ivChangePhoto.setOnClickListener {
-            captureImage(REQUEST_CODE_PHOTO)
+            startCameraActivity(REQUEST_CODE_PHOTO)
         }
         binding.ivChangeVoterId.setOnClickListener {
-            captureImage(REQUEST_CODE_VOTER_ID)
+            startCameraActivity(REQUEST_CODE_VOTER_ID)
         }
         binding.ivChangeMgnregaCard.setOnClickListener {
-            captureImage(REQUEST_CODE_MGNREGA_CARD)
+            startCameraActivity(REQUEST_CODE_MGNREGA_CARD)
         }
         binding.ivAadhar.setOnClickListener {
             showPhotoZoomDialog(aadharIdImagePath)
@@ -357,26 +263,54 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         })
     }
 
-    private fun initializeFields() {
+    override fun onResume() {
+        super.onResume()
+        getTheLocation()
 
-        /*binding.etLocation.setText(labour.location)
-        loadWithGlideFromUri(labour.aadharImage,binding.ivAadhar)
-        loadWithGlideFromUri(labour.mgnregaIdImage,binding.ivMgnregaCard)
-        loadWithGlideFromUri(labour.voterIdImage,binding.ivVoterId)
-        loadWithGlideFromUri(labour.photo,binding.ivPhoto)
-        voterIdImagePath=labour.voterIdImage
-        photoImagePath=labour.photo
-        aadharIdImagePath=labour.aadharImage
-        mgnregaIdImagePath=labour.mgnregaIdImage
-        val gson= Gson()
-        val familyList: ArrayList<FamilyDetails> = gson.fromJson(labour.familyDetails, object : TypeToken<ArrayList<FamilyDetails>>() {}.type)
-        familyDetailsList=familyList
-        adapter= FamilyDetailsAdapter(familyDetailsList,this)
-        binding.recyclerViewFamilyDetails.adapter=adapter
-        adapter.notifyDataSetChanged()
-        Log.d("mytag",labour.familyDetails)
-        Log.d("mytag",""+familyList.size)*/
     }
+
+    fun loadImageWithRetry(url: String,imageView: ImageView,retryCount: Int = 3,) {
+        try {
+            Glide.with(imageView.context)
+                .load(url)
+                .apply(
+                    RequestOptions()
+                        .placeholder(R.drawable.progress_bg) // Placeholder image while loading
+                        .error(R.drawable.ic_error) // Image to display if loading fails
+                        .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache strategy
+                        .skipMemoryCache(false) // Whether to skip the memory cache
+                        .override(200,200) // Specify the size of the image
+
+                )
+                .listener(object : RequestListener<Drawable> {
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        // Retry once
+
+                        loadImageWithRetry(url,imageView,retryCount-1,)
+                        return false // Return false to let Glide handle the error
+                    }
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: com.bumptech.glide.request.target.Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        return false
+                    }
+                })
+                .into(imageView)
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message)
+            e.printStackTrace()
+        }
+    }
+
     private fun loadWithGlideFromUri(uri: String, imageView: ImageView) {
         Glide.with(this@LabourUpdateOnline2Activity)
             .load(uri)
@@ -411,37 +345,11 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             validationResults.add(false)
         }
 
+        if(binding.etLocation.text.length<0){
+            getTheLocation()
+        }
         return !validationResults.contains(false);
 
-    }
-
-    private val uriMap = mutableMapOf<Int, Uri>()
-    private fun captureImage(requestCode: Int) {
-        try {
-            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "image_$timestamp"
-            val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
-            val uriFolder = Uri.parse(mediaStorageDir.absolutePath)
-            val myAppFolder = File(uriFolder.toString())
-
-            // Create the folder if it doesn't exist
-            if (!myAppFolder.exists()) {
-                myAppFolder.mkdirs()
-            }
-
-            // Create the file for the image
-            val outputFile = File.createTempFile(fileName, ".jpg", myAppFolder)
-            val uri = FileProvider.getUriForFile(this, "com.sipl.egs.provider", outputFile)
-
-            // Store the URI in the map with the corresponding request code
-            uriMap[requestCode] = uri
-
-            // Launch the camera to capture the image
-            cameraLauncher.launch(uri)
-        } catch (e: Exception) {
-            Log.d("mytag","captureImage=>Exception=>"+e.message)
-            e.printStackTrace()
-        }
     }
 
     private fun getTheLocation() {
@@ -454,13 +362,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+           requestThePermissions()
             return
         }
         fusedLocationClient.lastLocation
@@ -794,14 +696,12 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         if(response.body()?.status.equals("true"))
                         {
                             Log.d("mytag","getDetailsFromServer isSuccessful true")
-
-
                             withContext(Dispatchers.Main) {
                                 binding.etLocation.setText(list?.get(0)?.latitude+","+list?.get(0)?.longitude)
-                                loadWithGlideFromUri(list?.get(0)?.aadhar_image!!,binding.ivAadhar)
-                                loadWithGlideFromUri(list?.get(0)?.mgnrega_image!!,binding.ivMgnregaCard)
-                                loadWithGlideFromUri(list?.get(0)?.voter_image!!,binding.ivVoterId)
-                                loadWithGlideFromUri(list?.get(0)?.profile_image!!,binding.ivPhoto)
+                                loadImageWithRetry(list?.get(0)?.aadhar_image!!,binding.ivAadhar)
+                                loadImageWithRetry(list?.get(0)?.mgnrega_image!!,binding.ivMgnregaCard)
+                                loadImageWithRetry(list?.get(0)?.voter_image!!,binding.ivVoterId)
+                                loadImageWithRetry(list?.get(0)?.profile_image!!,binding.ivPhoto)
                                 voterIdImagePath=list?.get(0)?.voter_image!!
                                 photoImagePath=list?.get(0)?.profile_image!!
                                 aadharIdImagePath=list?.get(0)?.aadhar_image!!
@@ -875,75 +775,6 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             MultipartBody.Part.createFormData(fileInfo.fileName, it.name, requestFile)
         }
     }
-
-    private suspend fun uploadLabourOnline(){
-        runOnUiThread {
-            dialog.show()
-        }
-
-        val apiService = ApiClient.create(this@LabourUpdateOnline2Activity)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val familyDetails= Gson().toJson(familyDetailsList).toString()
-
-                    Log.d("mytag","=>"+familyDetails)
-
-                    val aadharCardImage =
-                        createFilePart(FileInfo("aadhar_image", aadharIdImagePath))
-                    val voterIdImage =
-                        createFilePart(FileInfo("voter_image", voterIdImagePath))
-                    val profileImage =
-                        createFilePart(FileInfo("profile_image", photoImagePath))
-                    val mgnregaIdImage =
-                        createFilePart(FileInfo("mgnrega_image",mgnregaIdImagePath))
-
-                val response= apiService.updateLabourFormTwo(
-                        latitude=latitude.toString(),
-                        longitude = longitude.toString(),
-                        family = familyDetails,
-                        id = labourId,
-                        file1 = aadharCardImage!!,
-                        file2 = voterIdImage!!,
-                        file3 = profileImage!!,
-                        file4 = mgnregaIdImage!!)
-                    if(response.isSuccessful){
-                        if(response.body()?.status.equals("true")){
-
-                            withContext(Dispatchers.Main){
-                                Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.labour_details_upaded),
-                                    Toast.LENGTH_SHORT).show()
-                                val intent= Intent(this@LabourUpdateOnline2Activity, ReportsActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                startActivity(intent)
-                            }
-                        }else{
-                            withContext(Dispatchers.Main){
-                                Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour),
-                                    Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                        Log.d("mytag",""+response.body()?.message)
-                        Log.d("mytag",""+response.body()?.status)
-                    }else{
-                        withContext(Dispatchers.Main){
-                            Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour_response),
-                                Toast.LENGTH_SHORT).show()
-                        }
-
-
-                    }
-                runOnUiThread {dialog.dismiss()  }
-            } catch (e: Exception) {
-                runOnUiThread { dialog.dismiss() }
-                withContext(Dispatchers.Main){
-                    Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour_response),
-                        Toast.LENGTH_SHORT).show()
-                }
-                Log.d("mytag","uploadLabourOnline "+e.message)
-            }
-        }
-    }
-
     private suspend fun uploadLabourOnlineImageOptional(){
         runOnUiThread {
             dialog.show()
@@ -1027,19 +858,91 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             }
         }
     }
+    fun startCameraActivity(requestCode: Int) {
+        val intent = Intent(this, CameraActivity::class.java)
+        intent.putExtra("requestCode", requestCode)
+        startForResult.launch(intent)
+    }
 
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val requestCode = result.data?.getIntExtra("requestCode", -1)
+        if (result.resultCode == Activity.RESULT_OK) {
+            val capturedImageUri = result.data?.getParcelableExtra<Uri>("capturedImageUri")
+            val requestCode = result.data?.getIntExtra("requestCode", -1)
+            if (capturedImageUri != null && requestCode != -1) {
 
+                when (requestCode) {
+                    REQUEST_CODE_PHOTO -> {
+                        Glide.with(this@LabourUpdateOnline2Activity).load(capturedImageUri).override(200,200).into(binding.ivPhoto)
+                        photoImagePath= capturedImageUri.toString()
+                        photoImagePathNew=capturedImageUri.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            photoImagePathNew=uri.toString()
+                            withContext(Dispatchers.Main){
+                            }
+                        }
+                    }
+                    REQUEST_CODE_VOTER_ID -> {
 
-    private suspend fun createRequestBodyFromUri(fileUri: String): RequestBody? {
-        try {
-            Log.d("mytag", "$fileUri")
-            val file: File? = uriToFile(applicationContext, fileUri.toString())
-            return file?.let {
-                RequestBody.create("image/*".toMediaTypeOrNull(), it)
+                        Glide.with(this@LabourUpdateOnline2Activity).load(capturedImageUri).override(200,200).into(binding.ivVoterId)
+                        voterIdImagePath= capturedImageUri.toString()
+                        voterIdImagePathNew=capturedImageUri.toString()
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            voterIdImagePathNew=uri.toString()
+                            withContext(Dispatchers.Main){
+                            }
+                        }
+                    }
+                    REQUEST_CODE_AADHAR_CARD -> {
+
+                        Glide.with(this@LabourUpdateOnline2Activity).load(capturedImageUri)
+                            .override(200, 200).into(binding.ivAadhar)
+                        aadharIdImagePathNew = capturedImageUri.toString();
+                        aadharIdImagePath = capturedImageUri.toString()
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri = uriStringToBitmap(
+                                this@LabourUpdateOnline2Activity,
+                                capturedImageUri.toString(),
+                                binding.etLocation.text.toString(),
+                                addressFromLatLong
+                            )
+                            withContext(Dispatchers.Main) {
+                                aadharIdImagePathNew = uri.toString()
+                            }
+
+                        }
+                    }
+                    REQUEST_CODE_MGNREGA_CARD -> {
+                        Glide.with(this@LabourUpdateOnline2Activity).load(capturedImageUri).override(200,200).into(binding.ivMgnregaCard)
+                        mgnregaIdImagePath= capturedImageUri.toString()
+                        mgnregaIdImagePathNew=capturedImageUri.toString();
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val uri=uriStringToBitmap(this@LabourUpdateOnline2Activity,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                            mgnregaIdImagePathNew=uri.toString();
+                            try {
+                                getAddressFromLatLong()
+                            } finally {
+
+                            }
+                            withContext(Dispatchers.Main){
+                            }
+                        }
+                    }
+                    else -> {
+                        Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.unknown_request_code),Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } else {
+                Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
             }
-        } catch (e: Exception) {
-            Log.e("mytag", "Error creating RequestBody from Uri: ${e.message}")
-            return null
+        } else if (requestCode == Activity.RESULT_CANCELED) {
+            val requestCode = result.data?.getIntExtra("requestCode", -1)
+            if (requestCode != -1) {
+                Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

@@ -321,9 +321,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:digits="@string/no_space_letter_number"
                 android:id="@+id/etMgnregaIdNumber"
                 android:layout_weight="1"
                 android:paddingLeft="16dp"
+                android:maxLength="50"
                 android:hint="@string/mgnrega_id_card_number"
                 android:inputType="text"
                 android:background="@drawable/rounded_background_light_gray"

@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -94,7 +95,9 @@ class LabourRegistration1Activity : AppCompatActivity() {
             }) { throwable: Throwable? -> }
 
 
-        binding.etMgnregaIdNumber.addTextChangedListener(object : TextWatcher {
+
+
+        /*binding.etMgnregaIdNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -111,7 +114,21 @@ class LabourRegistration1Activity : AppCompatActivity() {
                     }
                 }
             }
-        })
+        })*/
+
+
+        binding.etMgnregaIdNumber.setOnFocusChangeListener { view:View, hasFocus:Boolean ->
+            if(!hasFocus){
+                if(isInternetAvailable){
+                    CoroutineScope(Dispatchers.IO).launch {
+                        if(binding.etMgnregaIdNumber.text.toString().length>0)
+                        {
+                            checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
+                        }
+                    }
+                }
+            }
+        }
 
 
         binding.btnNext.setOnClickListener {
@@ -431,6 +448,20 @@ class LabourRegistration1Activity : AppCompatActivity() {
             validationResults.add(false)
         }
 
+
+        if(binding.etLandLine.text.toString().length>0){
+
+            if(binding.etLandLine.text.toString().length==1){
+                binding.etLandLine.error = null
+                validationResults.add(true)
+            }else{
+                binding.etLandLine.error = resources.getString(R.string.enter_valid_landline_number)
+                validationResults.add(false)
+            }
+        }
+
+
+
         // Mobile
         if (MyValidator.isValidMobileNumber(binding.etMobileNumber.text.toString())) {
             binding.etMobileNumber.error = null
@@ -439,7 +470,7 @@ class LabourRegistration1Activity : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length ==8 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length >0 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {

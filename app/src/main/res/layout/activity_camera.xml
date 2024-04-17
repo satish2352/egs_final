@@ -27,6 +27,18 @@
         android:visibility="gone" />
 
     <ImageView
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_circle_white"
+        android:src="@drawable/ic_toggle_camera"
+        android:id="@+id/btnToggleCamera"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="Capture"
+        app:tint="@color/appBlue" />
+
+    <ImageView
         android:background="@drawable/round_circle_white"
         android:src="@drawable/ic_camera"
         android:id="@+id/btnCapture"
@@ -95,5 +107,12 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:visibility="invisible"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></ProgressBar>
 
 </RelativeLayout>

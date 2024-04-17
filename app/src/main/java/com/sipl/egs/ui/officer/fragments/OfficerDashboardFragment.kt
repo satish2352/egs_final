@@ -270,7 +270,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
     }
     private fun fetchProjectDataFromLatLongNew() {
         dialog.show()
-        val apiService = ApiClient.create(requireActivity())
+        val apiService = ApiClient.create(requireContext())
         apiService.getDashboardProjectListForOfficer()
             .enqueue(object : Callback<DashboardMapOfficerModel> {
                 override fun onResponse(

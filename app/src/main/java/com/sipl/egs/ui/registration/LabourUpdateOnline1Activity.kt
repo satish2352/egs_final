@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -226,7 +227,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
 
             }
         })
-        binding.etMgnregaIdNumber.addTextChangedListener(object : TextWatcher {
+       /* binding.etMgnregaIdNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -243,7 +244,20 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                     }
                 }
             }
-        })
+        })*/
+
+        binding.etMgnregaIdNumber.setOnFocusChangeListener { view: View, hasFocus:Boolean ->
+            if(!hasFocus){
+                if(isInternetAvailable){
+                    CoroutineScope(Dispatchers.IO).launch {
+                        if(binding.etMgnregaIdNumber.text.toString().length>0)
+                        {
+                            checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
+                        }
+                    }
+                }
+            }
+        }
     }
     private suspend fun checkIfMgnregaIdExists(mgnregaId: String) {
         runOnUiThread {
@@ -497,13 +511,23 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length == 8 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length >0 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {
             binding.etMgnregaIdNumber.error =
                 resources.getString(R.string.enter_valid_id_card_number)
             validationResults.add(false)
+        }
+        if(binding.etLandLine.text.toString().length>0){
+
+            if(binding.etLandLine.text.toString().length==1){
+                binding.etLandLine.error = null
+                validationResults.add(true)
+            }else{
+                binding.etLandLine.error = resources.getString(R.string.enter_valid_landline_number)
+                validationResults.add(false)
+            }
         }
         return !validationResults.contains(false)
     }

@@ -87,13 +87,11 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     lateinit var  actRelationship:AutoCompleteTextView
     lateinit var  actGenderFamily:AutoCompleteTextView
     lateinit var  btnSubmit:Button
-    var validationResults = mutableListOf<Boolean>()
     var familyDetailsList=ArrayList<FamilyDetails>()
     lateinit var adapter: FamilyDetailsAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var database: AppDatabase
     private lateinit var LabourDao: LabourDao
-    private lateinit var cameraLauncher: ActivityResultLauncher<Uri>
     private val REQUEST_CODE_AADHAR_CARD = 100
     private  val REQUEST_CODE_PHOTO = 200
     private  val REQUEST_CODE_VOTER_ID = 300
@@ -236,7 +234,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
 
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        getTheLocation()
+
         if (!isLocationEnabled()) {
             // If not enabled, show dialog to enable it
             showEnableLocationDialog()
@@ -246,105 +244,16 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             requestLocationUpdates()
         }
 
-        try {
-            cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-                if (success) {
-                    Log.d("mytag", "Success => ${uriMap.values}")
-
-                    // Retrieve URI for Aadhar Card
-                    val uriAadhar = uriMap[REQUEST_CODE_AADHAR_CARD]
-                    if (uriAadhar != null) {
-                        Log.d("mytag", "URI for Aadhar Card: $uriAadhar")
-                        //binding.ivAadhar.setImageURI(uriAadhar)
-                        Glide.with(this@LabourRegistration2Activity).load(uriAadhar).override(200,200).into(binding.ivAadhar)
-                        aadharIdImagePath= uriAadhar.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriAadhar.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                          withContext(Dispatchers.Main){
-                             // binding.ivPhoto.setImageBitmap(bitmap)
-                          }
-
-                        }
-
-                    } else {
-                        Log.d("mytag", "URI for Aadhar Card is null")
-                    }
-                    // Retrieve URI for MGNREGA Card
-                    val uriMgnregaCard = uriMap[REQUEST_CODE_MGNREGA_CARD]
-                    if (uriMgnregaCard != null) {
-                        Log.d("mytag", "URI for MGNREGA Card: $uriMgnregaCard")
-                        //binding.ivMgnregaCard.setImageURI(uriMgnregaCard)
-                        Glide.with(this@LabourRegistration2Activity).load(uriMgnregaCard).override(200,200).into(binding.ivMgnregaCard)
-                        mgnregaIdImagePath= uriMgnregaCard.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriMgnregaCard.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                            }
-
-                        }
-                    } else {
-                        Log.d("mytag", "URI for MGNREGA Card is null")
-                    }
-
-                    // Retrieve URI for Photo
-                    val uriPhoto = uriMap[REQUEST_CODE_PHOTO]
-                    if (uriPhoto != null) {
-                        Log.d("mytag", "URI for Photo: $uriPhoto")
-                        //binding.ivPhoto.setImageURI(uriPhoto)
-                        Glide.with(this@LabourRegistration2Activity).load(uriPhoto).override(200,200).into(binding.ivPhoto)
-                        photoImagePath= uriPhoto.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriPhoto.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                            }
-
-                        }
-                    } else {
-                        Log.d("mytag", "URI for Photo is null")
-                    }
-
-                    // Retrieve URI for Voter ID
-                    val uriVoterId = uriMap[REQUEST_CODE_VOTER_ID]
-                    if (uriVoterId != null) {
-                        Log.d("mytag", "URI for Voter ID: $uriVoterId")
-                        //binding.ivVoterId.setImageURI(uriVoterId)
-                        Glide.with(this@LabourRegistration2Activity).load(uriVoterId).override(200,200).into(binding.ivVoterId)
-                        voterIdImagePath= uriVoterId.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourRegistration2Activity,uriVoterId.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                            }
-                        }
-
-                    } else {
-                        Log.d("mytag", "URI for Voter ID is null")
-                    }
-                } else {
-                    // Image capture failed or was canceled
-                    Log.d("mytag", "Failed")
-                }
-            }
-        } catch (e: Exception) {
-            Log.d("mytag","cameraLauncher=>registerForActivityException=>"+e.message)
-            e.printStackTrace()
-        }
         binding.layoutAadharCard.setOnClickListener {
-            //captureImage(REQUEST_CODE_AADHAR_CARD)
             startCameraActivity(REQUEST_CODE_AADHAR_CARD)
         }
         binding.layoutPhoto.setOnClickListener {
-            //captureImage(REQUEST_CODE_PHOTO)
             startCameraActivity(REQUEST_CODE_PHOTO)
         }
         binding.layoutVoterId.setOnClickListener {
-           // captureImage(REQUEST_CODE_VOTER_ID)
             startCameraActivity(REQUEST_CODE_VOTER_ID)
         }
         binding.layoutMgnregaCard.setOnClickListener {
-            //captureImage(REQUEST_CODE_MGNREGA_CARD)
             startCameraActivity(REQUEST_CODE_MGNREGA_CARD)
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -477,78 +386,18 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         }else{
             validationResults.add(false)
         }
+        if(binding.etLocation.text.length<0){
+            getTheLocation()
+        }
 
         return !validationResults.contains(false);
 
     }
 
-    private val uriMap = mutableMapOf<Int, Uri>()
-    private fun captureImage(requestCode: Int) {
-        try {
-            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "image_$timestamp"
-            val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
-            val uriFolder = Uri.parse(mediaStorageDir.absolutePath)
-            val myAppFolder = File(uriFolder.toString())
-
-            // Create the folder if it doesn't exist
-            if (!myAppFolder.exists()) {
-                myAppFolder.mkdirs()
-            }
-
-            // Create the file for the image
-            val outputFile = File.createTempFile(fileName, ".jpg", myAppFolder)
-            val uri = FileProvider.getUriForFile(this, "com.sipl.egs.provider", outputFile)
-
-            val file=File(myAppFolder,fileName+".jpg")
-            if(file!=null){
-
-                Log.d("mytag","filecreated")
-
-            }else{
-                Log.d("mytag","Failed to create file")
-            }
-
-            // Store the URI in the map with the corresponding request code
-            uriMap[requestCode] = uri
-
-            // Launch the camera to capture the image
-            cameraLauncher.launch(uri)
-        } catch (e: Exception) {
-            Log.d("mytag","captureImage=>Exception=>"+e.message)
-            e.printStackTrace()
-        }
+    override fun onResume() {
+        super.onResume()
+        getTheLocation()
     }
-    private fun addTextOverlay(file: File, text: String) {
-        try {
-            val bitmap = BitmapFactory.decodeFile(file.absolutePath)
-            if (bitmap == null) {
-                Log.d("mytag", "addTextOverlay=>Exception=>Bitmap is null")
-                return
-            }
-
-            val canvas = Canvas(bitmap)
-            val paint = Paint()
-            paint.color = Color.WHITE
-            paint.textSize = 24f
-            paint.isAntiAlias = true
-            val bounds = Rect()
-            paint.getTextBounds(text, 0, text.length, bounds)
-            val x = (bitmap.width - bounds.width()) / 2f
-            val y = (bitmap.height - bounds.height()) / 2f
-            canvas.drawText(text, x, y, paint)
-            val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
-            Log.d("mytag", "Text overlay added successfully")
-        } catch (e: Exception) {
-            Log.d("mytag", "addTextOverlay=>Exception=>" + e.message)
-            e.printStackTrace()
-        }
-    }
-
-
     private fun getTheLocation() {
 
         if (ActivityCompat.checkSelfPermission(
@@ -559,13 +408,8 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
+            requestThePermissions()
             return
         }
         fusedLocationClient.lastLocation
@@ -786,6 +630,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             validationResults.add(false)
             Log.d("mytag","Validation actGenderFamily "+false)
         }
+
         return !validationResults.contains(false);
     }
 

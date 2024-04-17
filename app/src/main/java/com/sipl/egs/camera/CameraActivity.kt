@@ -27,6 +27,7 @@ import java.util.Locale
 class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private lateinit var binding: ActivityCameraBinding
+    private var isFrontCamera = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,14 +46,18 @@ class CameraActivity : AppCompatActivity() {
         }
 
         // Set up the capture button click listener
-        binding.btnCapture.setOnClickListener { takePhoto(requestCode) }
+        binding.btnCapture.setOnClickListener {
+            binding.progressBar.visibility=View.VISIBLE
+            takePhoto(requestCode)
+        }
 
         binding.btnRetake.setOnClickListener {
             binding.btnCapture.isEnabled = true
-            binding.btnRetake.visibility = View.GONE
-            binding.btnOkay.visibility= View.GONE
+            binding.btnRetake.visibility = View.INVISIBLE
+            binding.btnOkay.visibility= View.INVISIBLE
             binding.viewFinder.visibility= View.VISIBLE
-            binding.ivPreview.visibility= View.GONE
+            binding.ivPreview.visibility= View.INVISIBLE
+            binding.btnCapture.visibility= View.VISIBLE
             binding.ivPreview.setImageDrawable(null)
             startCamera()
         }
@@ -65,7 +70,7 @@ class CameraActivity : AppCompatActivity() {
         binding.btnOkay.setOnClickListener {
             finish()
         }
-        binding.btnOkay.visibility= View.GONE
+        binding.btnOkay.visibility= View.INVISIBLE
 
         binding.btnFlash.setOnClickListener {
             toggleFlash()
@@ -74,6 +79,10 @@ class CameraActivity : AppCompatActivity() {
 
         binding.btnFlash.setImageResource(R.drawable.ic_flash_off)
 
+
+        binding.btnToggleCamera.setOnClickListener {
+            toggleCamera()
+        }
 
     }
 
@@ -121,7 +130,17 @@ class CameraActivity : AppCompatActivity() {
                 .build()
 
             // Select back camera as the default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            val cameraSelector = if (isFrontCamera) {
+                CameraSelector.DEFAULT_FRONT_CAMERA
+            } else {
+                CameraSelector.DEFAULT_BACK_CAMERA
+            }
+
+            if (!cameraExists(cameraProvider, cameraSelector)) {
+                Toast.makeText(this@CameraActivity, "Selected camera not available.", Toast.LENGTH_SHORT).show()
+                return@addListener
+            }
+
 
             try {
                 // Unbind any previous use cases before rebinding
@@ -137,6 +156,18 @@ class CameraActivity : AppCompatActivity() {
             }
 
         }, ContextCompat.getMainExecutor(this))
+    }
+    private fun cameraExists(cameraProvider: ProcessCameraProvider, cameraSelector: CameraSelector): Boolean {
+        val cameraList = cameraProvider?.let {
+            it.hasCamera(cameraSelector)
+        }
+        return cameraList ?: false
+    }
+
+    private fun toggleCamera() {
+        // Toggle the camera selector between front and back cameras
+        isFrontCamera = !isFrontCamera
+        startCamera()
     }
 
     private fun takePhoto(requestCode:Int) {
@@ -163,6 +194,7 @@ class CameraActivity : AppCompatActivity() {
                 outputOptions, ContextCompat.getMainExecutor(this), object : ImageCapture.OnImageSavedCallback {
                     override fun onError(exc: ImageCaptureException) {
                         Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                        binding.progressBar.visibility=View.INVISIBLE
                         // Pass back the request code indicating failure
                         setResult(Activity.RESULT_CANCELED, Intent().apply {
                             putExtra("requestCode", requestCode)
@@ -175,6 +207,8 @@ class CameraActivity : AppCompatActivity() {
                         val savedUri = Uri.fromFile(photoFile)
                         binding.btnRetake.visibility= View.VISIBLE
                         binding.btnOkay.visibility= View.VISIBLE
+                        binding.btnCapture.visibility= View.INVISIBLE
+                        binding.progressBar.visibility=View.INVISIBLE
 
 
                         Log.d(TAG, "Photo capture succeeded: $savedUri")
@@ -185,7 +219,7 @@ class CameraActivity : AppCompatActivity() {
                             putExtra("capturedImageUri", savedUri)
                         })
                         binding.ivPreview.visibility = View.VISIBLE
-                        binding.viewFinder.visibility= View.GONE
+                        binding.viewFinder.visibility= View.INVISIBLE
 
                     }
                 })
