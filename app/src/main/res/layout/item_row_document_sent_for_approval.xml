@@ -6,8 +6,10 @@
     app:cardCornerRadius="1dp"
     android:layout_height="wrap_content">
     <LinearLayout
+        android:background="@color/appBlue"
+        android:id="@+id/layoutWrapper"
+        android:paddingLeft="10dp"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -20,17 +22,19 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_document"
                 android:layout_width="12dp"
-                android:layout_height="12dp"/>
+                android:layout_height="12dp"
+                app:tint="@color/white" />
             <TextView
                 android:gravity="center"
                 android:lines="1"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:ellipsize="end"
+                android:fontFamily="@font/poppins"
                 android:layout_gravity="center"
                 android:id="@+id/tvDocumentName"
                 android:layout_marginLeft="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
@@ -40,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <ImageView
+                app:tint="@color/white"
                 android:layout_width="8dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_document" />
@@ -53,7 +58,7 @@
                 android:id="@+id/tvDocumentStatus"
                 android:textSize="13dp"
                 android:layout_marginLeft="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:fontFamily="@font/poppins_regular"
                 android:text=""
                 android:layout_width="wrap_content"
@@ -86,6 +91,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
+                app:tint="@color/white"
                 android:src="@drawable/calendar"
                 android:layout_width="12dp"
                 android:layout_height="12dp"/>
@@ -99,6 +105,7 @@
                 android:textSize="9dp"
                 android:layout_marginLeft="8dp"
                 android:fontFamily="@font/poppins"
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
         </LinearLayout>
@@ -110,7 +117,7 @@
                 android:src="@drawable/ic_location"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                app:tint="@color/appBlue" />
+                app:tint="@color/white" />
             <TextView
                 android:layout_gravity="center"
                 android:maxLines="1"
@@ -119,6 +126,7 @@
                 android:ellipsize="end"
                 android:id="@+id/tvAddress"
                 android:textSize="9dp"
+                android:textColor="@color/white"
                 android:layout_marginLeft="8dp"
                 android:fontFamily="@font/poppins"
                 android:layout_width="wrap_content"
@@ -163,12 +171,13 @@
                 android:src="@drawable/ic_download"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                app:tint="@color/appBlue"></ImageView>
+                app:tint="@color/white"></ImageView>
             <View
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"></View>
             <ImageView
+                app:tint="@color/white"
                 android:id="@+id/ivViewDocument"
                 android:layout_width="36dp"
                 android:layout_height="36dp"

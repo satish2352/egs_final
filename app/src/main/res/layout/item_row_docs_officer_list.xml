@@ -6,8 +6,8 @@
     app:cardCornerRadius="1dp"
     android:layout_height="wrap_content">
     <LinearLayout
+        android:id="@+id/layoutWrapper"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -17,11 +17,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
+                app:tint="@color/white"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_document"
                 android:layout_width="12dp"
                 android:layout_height="12dp"/>
             <TextView
+                android:fontFamily="@font/poppins"
                 android:gravity="center"
                 android:lines="1"
                 android:maxLines="1"
@@ -30,7 +32,7 @@
                 android:layout_gravity="center"
                 android:id="@+id/tvDocumentName"
                 android:layout_marginLeft="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
@@ -42,7 +44,8 @@
             <ImageView
                 android:layout_width="8dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_document" />
+                android:src="@drawable/ic_document"
+                app:tint="@color/white" />
             <TextView
                 android:lines="1"
                 android:maxLines="1"
@@ -53,12 +56,13 @@
                 android:id="@+id/tvDocumentStatus"
                 android:textSize="13dp"
                 android:layout_marginLeft="8dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:fontFamily="@font/poppins_regular"
                 android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
             <ImageView
+                app:tint="@color/white"
                 android:visibility="gone"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_document"
@@ -74,7 +78,7 @@
                 android:layout_gravity="center"
                 android:id="@+id/tvDocumentType"
                 android:textSize="13dp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:text=""
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
@@ -86,6 +90,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
+                app:tint="@color/white"
                 android:src="@drawable/calendar"
                 android:layout_width="12dp"
                 android:layout_height="12dp"/>
@@ -94,6 +99,7 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:lines="1"
+                android:textColor="@color/white"
                 android:ellipsize="end"
                 android:id="@+id/tvDocumentDate"
                 android:textSize="9dp"
@@ -107,10 +113,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
+
                 android:src="@drawable/ic_location"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                app:tint="@color/appBlue" />
+                app:tint="@color/white" />
             <TextView
                 android:layout_gravity="center"
                 android:maxLines="1"
@@ -119,6 +126,7 @@
                 android:ellipsize="end"
                 android:id="@+id/tvAddress"
                 android:textSize="9dp"
+                android:textColor="@color/white"
                 android:layout_marginLeft="8dp"
                 android:fontFamily="@font/poppins"
                 android:layout_width="wrap_content"
@@ -132,7 +140,7 @@
                 android:src="@drawable/ic_user_check"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                app:tint="@color/appBlue" />
+                app:tint="@color/white" />
             <TextView
                 android:layout_gravity="center"
                 android:maxLines="1"
@@ -141,6 +149,7 @@
                 android:ellipsize="end"
                 android:id="@+id/tvGramsevakName"
                 android:textSize="9dp"
+                android:textColor="@color/white"
                 android:layout_marginLeft="8dp"
                 android:fontFamily="@font/poppins"
                 android:layout_width="wrap_content"
@@ -162,12 +171,13 @@
                 android:src="@drawable/ic_download"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                app:tint="@color/appBlue"></ImageView>
+                app:tint="@color/white"></ImageView>
             <View
                 android:layout_weight="1"
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"></View>
             <ImageView
+                app:tint="@color/white"
                 android:id="@+id/ivViewDocument"
                 android:layout_width="36dp"
                 android:layout_height="36dp"

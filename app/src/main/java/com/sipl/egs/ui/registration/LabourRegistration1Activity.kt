@@ -460,8 +460,6 @@ class LabourRegistration1Activity : AppCompatActivity() {
             }
         }
 
-
-
         // Mobile
         if (MyValidator.isValidMobileNumber(binding.etMobileNumber.text.toString())) {
             binding.etMobileNumber.error = null

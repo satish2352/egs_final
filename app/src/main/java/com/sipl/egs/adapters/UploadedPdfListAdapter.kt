@@ -1,11 +1,13 @@
 package com.sipl.egs.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sipl.egs.R
@@ -21,6 +23,7 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
         val tvDocumentName=itemView.findViewById<TextView>(R.id.tvDocumentName)
         val tvDocumentType=itemView.findViewById<TextView>(R.id.tvDocumentType)
         val ivDocumentThumb=itemView.findViewById<ImageView>(R.id.ivDocumentThumb)
+        val layoutWrapper=itemView.findViewById<LinearLayout>(R.id.layoutWrapper)
     }
 
     override fun onCreateViewHolder(
@@ -34,6 +37,7 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
+            holder.layoutWrapper.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
             holder.tvDocumentName.text=documentList[position].document_name
             holder.tvDocumentDate.text= documentList[position]?.updated_at?.let { formatDate(it) }
             holder.tvDocumentType.setText(documentList.get(position).document_type_name)

@@ -118,7 +118,7 @@ class SplashActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 val deviceId = DeviceUtils.getDeviceId(this@SplashActivity)
                 mySharedPref.setDeviceId(deviceId)
-                userDao.insertInitialRecords()
+               // userDao.insertInitialRecords()
                 checkAllCounts();
                 if (!mySharedPref.getAllAreaEntries()) {
                     if (areaDao.getAllArea().size < 44342) {

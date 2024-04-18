@@ -90,7 +90,7 @@ class SplashActivityBackup : AppCompatActivity() {
            CoroutineScope(Dispatchers.IO).launch {
                val deviceId=DeviceUtils.getDeviceId(this@SplashActivityBackup)
                mySharedPref.setDeviceId(deviceId)
-               userDao.insertInitialRecords()
+              // userDao.insertInitialRecords()
                if(!mySharedPref.getAllAreaEntries())
                    if(areaDao.getAllArea().size<44342)
                    {

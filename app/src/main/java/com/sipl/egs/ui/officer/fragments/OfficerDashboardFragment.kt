@@ -39,6 +39,7 @@ import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.ui.gramsevak.LabourListByProjectActivity
 import com.sipl.egs.ui.gramsevak.ScannerActivity
 import com.sipl.egs.ui.gramsevak.dashboard.MapTypeBottomSheetDialogFragment
+import com.sipl.egs.ui.officer.activities.OfficerLabourListByProjectIdAttendance
 import com.sipl.egs.utils.CustomInfoWindowAdapter
 import com.sipl.egs.utils.CustomMarkerObject
 import com.sipl.egs.utils.CustomProgressDialog
@@ -398,7 +399,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
         try {
             val customMarkerObject = marker.tag as CustomMarkerObject
             if (customMarkerObject.type.equals("project")) {
-                val intent = Intent(context, LabourListByProjectActivity::class.java)
+                val intent = Intent(context, OfficerLabourListByProjectIdAttendance::class.java)
                 intent.putExtra("id", "" + customMarkerObject.id)
                 context?.startActivity(intent)
             }

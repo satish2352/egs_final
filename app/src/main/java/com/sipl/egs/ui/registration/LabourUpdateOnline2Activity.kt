@@ -113,9 +113,6 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private lateinit var aadharIdImagePath:String
     private lateinit var photoImagePath:String
     private lateinit var mgnregaIdImagePath:String
-
-
-
     private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var labourInputData: LabourInputData
     private lateinit var labourDao: LabourDao

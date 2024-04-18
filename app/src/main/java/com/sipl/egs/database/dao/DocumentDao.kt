@@ -19,13 +19,13 @@ interface DocumentDao {
     @Delete
     suspend fun deleteDocument(document: Document)
 
-    @Query("SELECT * FROM documents WHERE isSynced=false ORDER BY id DESC ")
+    @Query("SELECT * FROM documents WHERE isSynced='0' ORDER BY id DESC ")
     fun getAllDocuments(): List<Document>
 
     @Query("SELECT * FROM documents WHERE id = :id")
     suspend fun getUserById(id: Int): Document
 
-    @Query("SELECT COUNT(*) FROM documents WHERE isSynced=false")
+    @Query("SELECT COUNT(*) FROM documents WHERE isSynced='0'")
     suspend fun getDocumentsCount(): Int
 
 /*    @Query("SELECT documentName, COUNT(*) as count FROM documents WHERE isSynced = 0 GROUP BY documentName ")

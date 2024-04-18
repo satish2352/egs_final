@@ -1,11 +1,13 @@
 package com.sipl.egs.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sipl.egs.R
@@ -21,6 +23,8 @@ class OfficerUploadedDocsAdapter(var documentList:List<UploadedDocument>):Recycl
         val tvDocumentType=itemView.findViewById<TextView>(R.id.tvDocumentType)
         val tvDocumentName=itemView.findViewById<TextView>(R.id.tvDocumentName)
         val ivDocumentThumb=itemView.findViewById<ImageView>(R.id.ivDocumentThumb)
+        val layoutWrapper=itemView.findViewById<LinearLayout>(R.id.layoutWrapper)
+
     }
 
     override fun onCreateViewHolder(
@@ -34,6 +38,7 @@ class OfficerUploadedDocsAdapter(var documentList:List<UploadedDocument>):Recycl
 
     override fun onBindViewHolder(holder: OfficerUploadedDocsAdapter.ViewHolder, position: Int) {
         try {
+            holder.layoutWrapper.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
             holder.tvDocumentName.text=documentList[position].document_name
             holder.itemView.setOnClickListener {
 

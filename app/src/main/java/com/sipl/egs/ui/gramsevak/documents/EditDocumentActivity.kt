@@ -196,9 +196,10 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
         })
         binding.btnUploadDocument.setOnClickListener {
 
-          if(isInternetAvailable){
-              if(tempPdfFile!=null){
-                  if(fileSize!= tempPdfFile!!.length())
+            val itemCount = pdfPageAdapter?.itemCount ?: 0
+            if(isInternetAvailable){
+              if(tempPdfFile!=null ){
+                  if(fileSize!= tempPdfFile!!.length() && itemCount>1)
                   {
                       uploadDocuments()
                   }else{

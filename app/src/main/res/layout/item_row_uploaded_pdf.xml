@@ -9,6 +9,7 @@
     app:cardUseCompatPadding="true">
 
     <LinearLayout
+        android:id="@+id/layoutWrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -43,7 +44,7 @@
             android:maxLines="1"
             android:singleLine="true"
             android:text=""
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:textSize="12dp"></TextView>
 
         <LinearLayout
@@ -58,7 +59,8 @@
                 android:layout_height="16dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="5dp"
-                android:src="@drawable/ic_document"></ImageView>
+                android:src="@drawable/ic_document"
+                app:tint="@color/white"></ImageView>
 
             <TextView
                 android:id="@+id/tvDocumentType"
@@ -68,10 +70,9 @@
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
                 android:fontFamily="@font/poppins"
-
                 android:gravity="center"
                 android:text="07/03/2024 11:05:05"
-                android:textColor="#1B1536"
+                android:textColor="@color/white"
                 android:textSize="8dp"></TextView>
         </LinearLayout>
 
@@ -82,6 +83,7 @@
             android:gravity="center"
             android:orientation="horizontal">
             <ImageView
+                app:tint="@color/white"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_gravity="center"
@@ -97,7 +99,7 @@
                 android:fontFamily="@font/poppins"
                 android:gravity="center"
                 android:text=""
-                android:textColor="#1B1536"
+                android:textColor="@color/white"
                 android:textSize="8dp"></TextView>
         </LinearLayout>
 

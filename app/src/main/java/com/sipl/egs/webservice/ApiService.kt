@@ -151,6 +151,16 @@ interface ApiService {
         @Query("start") startPageNumber: String="1",
     ): Call<AttendanceModel>
 
+    @POST("auth/list-attendance-marked-visible-for-officer")
+    fun getAttendanceListForOfficerById(
+        @Query("project_id") projectId: String,
+        @Query("user_taluka") talukaId: String="",
+        @Query("user_village") villageId: String="",
+        @Query("from_date") from_date: String="",
+        @Query("to_date") to_date: String="",
+        @Query("start") startPageNumber: String="1",
+    ): Call<AttendanceModel>
+
 
     @POST("auth/list-document-officer")
     fun getDocumentsListForOfficer(

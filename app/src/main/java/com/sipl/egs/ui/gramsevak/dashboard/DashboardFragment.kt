@@ -114,6 +114,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     if (connectivity.state().toString() == "CONNECTED") {
                         isInternetAvailable = true
 
+
                     } else {
                         isInternetAvailable = false
                     }
@@ -124,6 +125,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 startActivity(intent)
             }
             binding.layoutScanQR.setOnClickListener {
+
                 if (ActivityCompat.checkSelfPermission(
                         requireActivity(), android.Manifest.permission.CAMERA
                     ) == PackageManager.PERMISSION_GRANTED

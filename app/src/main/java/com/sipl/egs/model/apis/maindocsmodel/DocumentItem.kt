@@ -16,5 +16,6 @@ data class DocumentItem(
     val user_taluka: String,
     val user_village: String,
     val village_name: String,
+    val doc_color: String,
     val history_details:List<HistoryDetailsItem>
 )

@@ -3,12 +3,14 @@ package com.sipl.egs.adapters
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +31,7 @@ class OfficerDocsApprovedAdapter (var list:MutableList<DocumentItem>):
         val ivViewDocument: ImageView = itemView.findViewById(R.id.ivViewDocument)
         val ivDownloadDocument: ImageView = itemView.findViewById(R.id.ivDownloadDocument)
         val tvGramsevakName: TextView = itemView.findViewById(R.id.tvGramsevakName)
+        val layoutWrapper: LinearLayout = itemView.findViewById(R.id.layoutWrapper)
     }
 
     override fun onCreateViewHolder(
@@ -46,6 +49,7 @@ class OfficerDocsApprovedAdapter (var list:MutableList<DocumentItem>):
     ) {
 
         try {
+            holder.layoutWrapper.setBackgroundColor(Color.parseColor(list[position].doc_color))
             holder.tvGramsevakName.text=list[position].gramsevak_full_name
             holder.tvDocumentName.setText(list[position].document_name)
             holder.tvDocumentType.setText(list[position].document_type_name)

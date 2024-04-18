@@ -337,7 +337,10 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 10, it) }
+            outputStream?.let {
+                val resizedBitmap = Bitmap.createScaledBitmap(bitmap, 780, 1386, false)
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 50, it)
+            }
             outputStream?.flush()
             outputStream?.close()
         } catch (e: Exception) {
