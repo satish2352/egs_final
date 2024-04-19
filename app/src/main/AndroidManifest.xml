@@ -28,30 +28,39 @@
         android:theme="@style/Theme.DigiCopy"
         tools:targetApi="31">
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerLabourListByProjectIdAttendance"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".camera.CameraActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ViewSentForApprovalLabourDetails"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.documents.EditDocumentActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.LabourReSubmittedActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerLabourReSubmittedListActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.documents.DocumentReSubmittedActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerDocsReSubmittedListActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.documents.DocumentDetailsActivity"
             android:exported="false"
             android:parentActivityName=".ui.gramsevak.documents.DocumentListNotApprovedActivity" />
@@ -59,77 +68,101 @@
             android:name=".ui.gramsevak.documents.DocumentListNotApprovedActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.documents.DocumentListApprovedActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.documents.DocumentListSentForApprovalActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerDocsEditActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerDocsNotApprovedListActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerDocsApprovedListActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerDocsReceivedForApprovalListActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.registration.LabourUpdateOnline2Activity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.registration.LabourUpdateOnline1Activity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerViewNotApprovedLabourDetails"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerViewEditReceivedLabourDetails"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficersLaboursApprovedListActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerLabourNotApprovedListActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.activities.OfficerLaboursReceivedForApprovalActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ViewNotApprovedLabourDetailsActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.officer.OfficerMainActivity"
             android:exported="false"
             android:label="@string/title_activity_officer_main" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.LaboursListApproved"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.LaboursListNotApproved"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ViewLaboursListSentForApprovalActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ViewUploadedDocumentsActivity"
             android:exported="false"
             android:parentActivityName=".ui.gramsevak.ScanDocumentsActivity" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ViewAttendanceActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ViewLabourFromMarkerClick"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.LabourListByProjectActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.OfflineViewLabourDetailsActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.activities.start.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Design.Light.NoActionBar">
@@ -140,42 +173,54 @@
             </intent-filter>
         </activity>
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.registration.LabourRegistrationEdit1"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.registration.LabourRegistrationEdit2"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ScannerActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ScanDocumentsActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ScanBarcodeActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.ReportsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.SyncLabourDataActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.SyncLandDocumentsActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.registration.LabourRegistration2Activity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.activities.start.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.gramsevak.AllocateWorkActivity"
             android:exported="false" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.registration.LabourRegistration1Activity"
             android:exported="false" />
         <!--
@@ -194,10 +239,12 @@
             android:value="AIzaSyBcLn2oqJ3SC558m2ZZVGBGpD7NxjbPz80" />
 
         <activity
+            android:screenOrientation="portrait"
             android:name=".MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps" />
         <activity
+            android:screenOrientation="portrait"
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name" />

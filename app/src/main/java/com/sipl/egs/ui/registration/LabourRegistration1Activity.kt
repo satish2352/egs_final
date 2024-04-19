@@ -68,6 +68,7 @@ class LabourRegistration1Activity : AppCompatActivity() {
     private var skillId=""
     private lateinit var progressDialog:CustomProgressDialog
     private var isMgnregaIdVerified=false
+    private var isAllFieldsValidated=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLabourRegistration1Binding.inflate(layoutInflater)
@@ -134,6 +135,7 @@ class LabourRegistration1Activity : AppCompatActivity() {
         binding.btnNext.setOnClickListener {
 
             if (validateFieldsX()) {
+                isAllFieldsValidated=true
                 if(isInternetAvailable && isMgnregaIdVerified==false){
 
                     CoroutineScope(Dispatchers.IO).launch {
@@ -213,9 +215,13 @@ class LabourRegistration1Activity : AppCompatActivity() {
                                 Toast.LENGTH_SHORT).show()
                         }
                     }else{
+
                        isMgnregaIdVerified=true
                         runOnUiThread { binding.etMgnregaIdNumber.error=null }
                         withContext(Dispatchers.Main){
+                            if(isAllFieldsValidated){
+                                saveAndGoToNextPage()
+                            }
                         }
                     }
                 }else{

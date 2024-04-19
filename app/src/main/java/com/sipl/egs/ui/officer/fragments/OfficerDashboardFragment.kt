@@ -90,7 +90,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
         savedInstanceState: Bundle?
     ): View? {
         try {
-            dialog = CustomProgressDialog(requireActivity())
+
             binding = FragmentDashboardOfficerBinding.inflate(inflater, container, false)
 
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -230,10 +230,12 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                         val currentLatLng = LatLng(it.latitude, it.longitude)
                         latitude = it.latitude.toString()
                         longitude = it.longitude.toString()
-                        fetchProjectDataFromLatLongNew()
+
+                        if (activity != null && isAdded && !isDetached) {
+                            fetchProjectDataFromLatLongNew()
+                        }
                         // Move camera to current location
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
-
                         // Add marker for current location
                         if (currentLocationMarker == null) {
                             // If marker doesn't exist, create a new one
@@ -252,12 +254,18 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                             currentLocationMarker?.position = currentLatLng
                         }
                     } ?: run {
-                        Toast.makeText(
-                            requireActivity(),
-                            "Unable to retrieve location",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        //
+
+                        if(isAdded){
+                            Toast.makeText(
+                                requireActivity(),
+                                "Unable to retrieve location",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
                     }
+
                 }
         } else {
             // Request location permission
@@ -270,7 +278,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(layoutInflater))
     }
     private fun fetchProjectDataFromLatLongNew() {
-        dialog.show()
+        val dialog=CustomProgressDialog(requireContext())
         val apiService = ApiClient.create(requireContext())
         apiService.getDashboardProjectListForOfficer()
             .enqueue(object : Callback<DashboardMapOfficerModel> {

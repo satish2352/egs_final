@@ -198,6 +198,21 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         binding.btnNext.setOnClickListener {
             if (validateFieldsX())
             {
+                Log.d("mytag","gender Id "+genderId)
+                Log.d("mytag","skill Id "+skillId)
+                Log.d("mytag","dist Id "+districtId)
+                Log.d("mytag","taluka Id "+talukaId)
+                Log.d("mytag","Village Id "+villageId)
+                labour.fullName= binding.etFullName.text.toString()
+                labour.dob= binding.etDob.text.toString()
+                labour.district= districtId
+                labour.village= villageId
+                labour.taluka= talukaId
+                labour.gender=genderId
+                labour.skill=skillId
+                labour.mobile= binding.etMobileNumber.text.toString()
+                labour.landline= binding.etLandLine.text.toString()
+                labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
                 labourInputData=LabourInputData()
                 labour.fullName= binding.etFullName.text.toString()
                 labourInputData.dateOfBirth= binding.etDob.text.toString()
@@ -208,10 +223,24 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 labourInputData.mobile= binding.etMobileNumber.text.toString()
                 labourInputData.landline= binding.etLandLine.text.toString()
                 labourInputData.idCard= binding.etMgnregaIdNumber.text.toString()
-                val intent = Intent(this, LabourRegistrationEdit2::class.java)
-                intent.putExtra("id",labour.id.toString())
-                intent.putExtra("LabourInputData", labourInputData)
-                startActivity(intent)
+
+                if (isInternetAvailable) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                       val waitJob=async {  checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString(),true) }
+                        waitJob.await()
+                        withContext(Dispatchers.Main){
+                            if(isMgnregaIdVerified){
+                                updateLabourDetails()
+                            }
+                        }
+                    }
+
+                } else {
+                    updateLabourDetails()
+                }
+
+
+
             } else {
 
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
@@ -224,36 +253,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         binding.btnUpdateLabour.setOnClickListener {
             if (validateFieldsX())
             {
-
-
-
-                Log.d("mytag","gender Id "+genderId)
-                Log.d("mytag","skill Id "+skillId)
-                Log.d("mytag","dist Id "+districtId)
-                Log.d("mytag","taluka Id "+talukaId)
-                Log.d("mytag","Village Id "+villageId)
-
-                labour.fullName= binding.etFullName.text.toString()
-                labour.dob= binding.etDob.text.toString()
-                labour.district= districtId
-                labour.village= villageId
-                labour.taluka= talukaId
-                labour.gender=genderId
-                labour.skill=skillId
-                labour.mobile= binding.etMobileNumber.text.toString()
-                labour.landline= binding.etLandLine.text.toString()
-                labour.mgnregaId= binding.etMgnregaIdNumber.text.toString()
-
-                if (isInternetAvailable) {
-                    CoroutineScope(Dispatchers.Default).launch {
-                        checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString(),true)
-                    }
-
-                } else {
-                    updateLabourDetails()
-                }
-
-
             } else {
 
                 val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
@@ -283,9 +282,14 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
             Log.d("mytag",""+row)
             if(row>0){
                 runOnUiThread {
+                    val intent = Intent(this@LabourRegistrationEdit1, LabourRegistrationEdit2::class.java)
+                    intent.putExtra("id",labour.id.toString())
+                    intent.putExtra("LabourInputData", labourInputData)
+                    startActivity(intent)
                     val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour updated successfully",
                         Toast.LENGTH_SHORT)
                     toast.show()
+
                 }
             }else{
                 runOnUiThread {
@@ -297,6 +301,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         }
         Log.d("mytag","After")
     }
+
     private suspend fun checkIfMgnregaIdExists(mgnregaId: String,isFromMain:Boolean=false) {
         runOnUiThread {
             progressDialog.show()
@@ -325,9 +330,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
                         withContext(Dispatchers.Main){
                             isMgnregaIdVerified=true
-                            if(isFromMain){
-                                updateLabourDetails()
-                            }
                         }
                         Log.d("mytag","Not exists for any labour")
                         runOnUiThread {

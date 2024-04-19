@@ -344,6 +344,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <Button
+                android:visibility="gone"
                 android:clickable="true"
                 android:layout_weight="1"
                 android:layout_marginBottom="24dp"

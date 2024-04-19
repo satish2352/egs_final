@@ -1,5 +1,6 @@
 package com.sipl.egs.webservice
 
+import com.sipl.egs.model.FamilyDetails
 import com.sipl.egs.model.apis.LaboureEditDetailsOnline.LabourEditDetailsOnline
 import com.sipl.egs.model.apis.MgnregaIdAutoSuggestionModel
 import com.sipl.egs.model.apis.attendance.AttendanceModel
@@ -186,6 +187,28 @@ interface ApiService {
         @Query("mgnrega_card_id") mgnregaId: String,
         @Query("landline_number") landLineNumber: String,
         @Query("family") family: String,
+        @Query("longitude") longitude: String,
+        @Query("latitude") latitude: String,
+        @Part file1: MultipartBody.Part,
+        @Part file2: MultipartBody.Part,
+        @Part file3: MultipartBody.Part,
+        @Part file4: MultipartBody.Part
+    ): Response<MastersModel>
+
+    @Multipart
+    @POST("auth/add-labour")
+    suspend fun uploadLaborInfoWithFamilyArray(
+        @Query("full_name") fullName: String,
+        @Query("gender_id") genderId: String,
+        @Query("date_of_birth") dateOfBirth: String,
+        @Query("skill_id") skillId: String,
+        @Query("village_id") villageId: String,
+        @Query("taluka_id") talukaId: String,
+        @Query("district_id") districtId: String,
+        @Query("mobile_number") mobileNumber: String,
+        @Query("mgnrega_card_id") mgnregaId: String,
+        @Query("landline_number") landLineNumber: String,
+        @Query("family") family: List<FamilyDetails>,
         @Query("longitude") longitude: String,
         @Query("latitude") latitude: String,
         @Part file1: MultipartBody.Part,

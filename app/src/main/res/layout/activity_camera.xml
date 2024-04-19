@@ -18,7 +18,7 @@
 
     <ImageView
         android:focusableInTouchMode="false"
-        android:scaleType="fitXY"
+        android:scaleType="fitCenter"
         android:clickable="false"
         android:id="@+id/ivPreview"
         android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
         android:layout_height="55dp"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="89dp"
-        android:layout_marginBottom="17dp"
+        android:layout_marginBottom="16dp"
         android:layout_toStartOf="@id/btnCapture"
         android:src="@drawable/ic_retake"
         android:text="Retake"
@@ -88,7 +88,7 @@
         android:layout_height="55dp"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="89dp"
-        android:layout_marginBottom="19dp"
+        android:layout_marginBottom="16dp"
         android:layout_toEndOf="@id/btnCapture"
         android:src="@drawable/ic_select"
         android:text="Okay" />

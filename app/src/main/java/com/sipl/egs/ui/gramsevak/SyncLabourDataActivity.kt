@@ -15,6 +15,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.sipl.egs.R
 import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.dao.LabourDao
@@ -22,6 +23,7 @@ import com.sipl.egs.database.entity.Labour
 import com.sipl.egs.database.model.LabourWithAreaNames
 import com.sipl.egs.databinding.ActivitySyncLabourDataBinding
 import com.sipl.egs.adapters.OfflineLabourListAdapter
+import com.sipl.egs.model.FamilyDetails
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
@@ -291,6 +293,28 @@ class SyncLabourDataActivity : AppCompatActivity() {
                         file3 = profileImage!!,
                         file4 = mgnregaIdImage!!)
 
+                   /* val gson= Gson()
+                    val familyList: List<FamilyDetails> = gson.fromJson(laborRegistration.familyDetails, object : TypeToken<List<FamilyDetails>>() {}.type)
+
+                    val response= apiService.uploadLaborInfoWithFamilyArray(
+                        fullName = laborRegistration.fullName,
+                        genderId = laborRegistration.gender,
+                        dateOfBirth = laborRegistration.dob,
+                        skillId = laborRegistration.skill,
+                        districtId = laborRegistration.district,
+                        talukaId = laborRegistration.taluka,
+                        villageId = laborRegistration.village,
+                        mobileNumber = laborRegistration.mobile,
+                        mgnregaId = laborRegistration.mgnregaId,
+                        landLineNumber = laborRegistration.landline,
+                        family = familyList,
+                        longitude = laborRegistration.latitude,
+                        latitude = laborRegistration.longitude,
+                        file1 = aadharCardImage!!,
+                        file2 = voterIdImage!!,
+                        file3 = profileImage!!,
+                        file4 = mgnregaIdImage!!)*/
+
                     if(response.isSuccessful){
                         if(response.body()?.status.equals("true")){
                             laborRegistration.isSynced=true
@@ -303,6 +327,14 @@ class SyncLabourDataActivity : AppCompatActivity() {
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)
                     }else{
+                        laborRegistration.isSyncFailed=true
+                        if(response.body()?.message.isNullOrEmpty()){
+
+                        }else{
+                            laborRegistration.syncFailedReason=response.body()?.message
+                        }
+
+                        labourDao.updateLabour(laborRegistration)
                         Log.d("mytag","Labour upload failed  "+laborRegistration.fullName)
                     }
                 }

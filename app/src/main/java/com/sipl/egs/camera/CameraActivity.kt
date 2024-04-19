@@ -264,10 +264,11 @@ class CameraActivity : AppCompatActivity() {
     override fun onBackPressed() {
 
         if(binding.ivPreview.visibility== View.VISIBLE){
-            binding.btnRetake.visibility = View.GONE
-            binding.btnOkay.visibility= View.GONE
+            binding.btnRetake.visibility = View.INVISIBLE
+            binding.btnOkay.visibility= View.INVISIBLE
             binding.viewFinder.visibility= View.VISIBLE
-            binding.ivPreview.visibility= View.GONE
+            binding.ivPreview.visibility= View.INVISIBLE
+            binding.btnCapture.visibility=View.VISIBLE
         }else{
             super.onBackPressed()
             setResult(Activity.RESULT_CANCELED)

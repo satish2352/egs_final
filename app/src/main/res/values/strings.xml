@@ -172,4 +172,5 @@
     <string name="unknown_request_code">Unknown Request Code</string>
     <string name="numdigits">0123456789</string>
     <string name="enter_valid_landline_number">Enter Valid Landline Number</string>
+    <string name="labour_upload_failed">Labour upload failed</string>
 </resources>

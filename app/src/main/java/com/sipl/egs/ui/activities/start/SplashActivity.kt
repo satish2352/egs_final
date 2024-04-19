@@ -78,8 +78,8 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var noInternetDialog:NoInternetDialog
     private  var isInternetAvailable:Boolean=false
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
         try {
