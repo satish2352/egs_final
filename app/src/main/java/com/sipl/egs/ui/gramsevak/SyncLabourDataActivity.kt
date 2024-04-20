@@ -1,7 +1,9 @@
 package com.sipl.egs.ui.gramsevak
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -39,6 +41,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.util.Calendar
 
 class SyncLabourDataActivity : AppCompatActivity() {
@@ -174,25 +177,6 @@ class SyncLabourDataActivity : AppCompatActivity() {
         val list = AppDatabase.getDatabase(applicationContext).labourDao().getAllLabour()
         return list
     }
-    private suspend fun createFileParts(fileInfo: List<FileInfo>): List<MultipartBody.Part> {
-        val fileParts = mutableListOf<MultipartBody.Part>()
-        val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-        fileInfo.forEach { fileItem ->
-            val file: File? = uriToFile(applicationContext, fileItem.fileUri)
-            val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), file!!)
-            requestBody.addFormDataPart(fileItem.fileName, file?.name, requestFile)
-        }
-        return fileParts
-    }
-    private suspend fun addNamesToUri(labour: Labour): List<FileInfo> {
-        val fileInfo = mutableListOf<FileInfo>()
-        fileInfo.add(FileInfo("aadhar_image", labour.aadharImage))
-        fileInfo.add(FileInfo("mgnrega_image", labour.mgnregaIdImage))
-        fileInfo.add(FileInfo("profile_image", labour.photo))
-        fileInfo.add(FileInfo("voter_image", labour.voterIdImage))
-        return fileInfo
-    }
-
     suspend fun uriToFile(context: Context, uri: String): File? {
         return withContext(Dispatchers.IO) {
             try {
@@ -236,106 +220,64 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
         val apiService = ApiClient.create(this@SyncLabourDataActivity)
         CoroutineScope(Dispatchers.IO).launch {
-            val laborRegistrations = getLaborRegistrationsFromDatabase()
+            val labours = getLaborRegistrationsFromDatabase()
             try {
-                laborRegistrations.forEach { laborRegistration ->
+                labours.forEach { labour ->
                     val aadharCardImage =
-                        createFilePart(FileInfo("aadhar_image", laborRegistration.aadharImage))
+                        createFilePart(FileInfo("aadhar_image", labour.aadharImage))
                     val voterIdImage =
-                        createFilePart(FileInfo("voter_image", laborRegistration.voterIdImage))
+                        createFilePart(FileInfo("voter_image", labour.voterIdImage))
                     val profileImage =
-                        createFilePart(FileInfo("profile_image", laborRegistration.photo))
+                        createFilePart(FileInfo("profile_image", labour.photo))
                     val mgnregaIdImage =
-                        createFilePart(FileInfo("mgnrega_image", laborRegistration.mgnregaIdImage))
-//                     lateinit var aadharCardImage :MultipartBody.Part
-//                    lateinit var voterIdImage :MultipartBody.Part
-//                    lateinit var profileImage :MultipartBody.Part
-//                    lateinit var mgnregaIdImage :MultipartBody.Part
-//                    val file: File? = uriToFile(applicationContext, laborRegistration.aadharImage)
-//                    file?.let {
-//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
-//                        aadharCardImage = MultipartBody.Part.createFormData("aadhar_image", it.name, requestFile)
-//                        // Use 'part' as needed (e.g., pass it to a Retrofit API call)
-//                    }
-//                    val file2: File? = uriToFile(applicationContext, laborRegistration.voterIdImage)
-//                    file2?.let {
-//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
-//                        voterIdImage = MultipartBody.Part.createFormData("voter_image", it.name, requestFile)
-//                        // Use 'part' as needed (e.g., pass it to a Retrofit API call)
-//                    }
-//                    val file3: File? = uriToFile(applicationContext, laborRegistration.photo)
-//                    file3?.let {
-//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
-//                        profileImage = MultipartBody.Part.createFormData("profile_image", it.name, requestFile)
-//                        // Use 'part' as needed (e.g., pass it to a Retrofit API call)
-//                    }
-//                    val file4: File? = uriToFile(applicationContext, laborRegistration.mgnregaIdImage)
-//                    file4?.let {
-//                        val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
-//                        mgnregaIdImage = MultipartBody.Part.createFormData("mgnrega_image", it.name, requestFile)
-//                    }
+                        createFilePart(FileInfo("mgnrega_image", labour.mgnregaIdImage))
+
                     val response= apiService.uploadLaborInfo(
-                        fullName = laborRegistration.fullName,
-                        genderId = laborRegistration.gender,
-                        dateOfBirth = laborRegistration.dob,
-                        skillId = laborRegistration.skill,
-                        districtId = laborRegistration.district,
-                        talukaId = laborRegistration.taluka,
-                        villageId = laborRegistration.village,
-                        mobileNumber = laborRegistration.mobile,
-                        mgnregaId = laborRegistration.mgnregaId,
-                        landLineNumber = laborRegistration.landline,
-                        family = laborRegistration.familyDetails,
-                        longitude = laborRegistration.latitude,
-                        latitude = laborRegistration.longitude,
+                        fullName = labour.fullName,
+                        genderId = labour.gender,
+                        dateOfBirth = labour.dob,
+                        skillId = labour.skill,
+                        districtId = labour.district,
+                        talukaId = labour.taluka,
+                        villageId = labour.village,
+                        mobileNumber = labour.mobile,
+                        mgnregaId = labour.mgnregaId,
+                        landLineNumber = labour.landline,
+                        family = labour.familyDetails,
+                        longitude = labour.latitude,
+                        latitude = labour.longitude,
                         file1 = aadharCardImage!!,
                         file2 = voterIdImage!!,
                         file3 = profileImage!!,
                         file4 = mgnregaIdImage!!)
 
-                   /* val gson= Gson()
-                    val familyList: List<FamilyDetails> = gson.fromJson(laborRegistration.familyDetails, object : TypeToken<List<FamilyDetails>>() {}.type)
-
-                    val response= apiService.uploadLaborInfoWithFamilyArray(
-                        fullName = laborRegistration.fullName,
-                        genderId = laborRegistration.gender,
-                        dateOfBirth = laborRegistration.dob,
-                        skillId = laborRegistration.skill,
-                        districtId = laborRegistration.district,
-                        talukaId = laborRegistration.taluka,
-                        villageId = laborRegistration.village,
-                        mobileNumber = laborRegistration.mobile,
-                        mgnregaId = laborRegistration.mgnregaId,
-                        landLineNumber = laborRegistration.landline,
-                        family = familyList,
-                        longitude = laborRegistration.latitude,
-                        latitude = laborRegistration.longitude,
-                        file1 = aadharCardImage!!,
-                        file2 = voterIdImage!!,
-                        file3 = profileImage!!,
-                        file4 = mgnregaIdImage!!)*/
-
                     if(response.isSuccessful){
                         if(response.body()?.status.equals("true")){
-                            laborRegistration.isSynced=true
-                            labourDao.updateLabour(laborRegistration)
+                            labour.isSynced=true
+                            labourDao.updateLabour(labour)
+                            val filesList= mutableListOf<Uri>()
+                            filesList.add(Uri.parse(labour.aadharImage))
+                            filesList.add(Uri.parse(labour.photo))
+                            filesList.add(Uri.parse(labour.voterIdImage))
+                            filesList.add(Uri.parse(labour.mgnregaIdImage))
+                            deleteFilesFromFolder(filesList)
                         }else{
-                            laborRegistration.isSyncFailed=true
-                            laborRegistration.syncFailedReason=response.body()?.message
-                            labourDao.updateLabour(laborRegistration)
+                            labour.isSyncFailed=true
+                            labour.syncFailedReason=response.body()?.message
+                            labourDao.updateLabour(labour)
                         }
                         Log.d("mytag",""+response.body()?.message)
                         Log.d("mytag",""+response.body()?.status)
                     }else{
-                        laborRegistration.isSyncFailed=true
+                        labour.isSyncFailed=true
                         if(response.body()?.message.isNullOrEmpty()){
 
                         }else{
-                            laborRegistration.syncFailedReason=response.body()?.message
+                            labour.syncFailedReason=response.body()?.message
                         }
 
-                        labourDao.updateLabour(laborRegistration)
-                        Log.d("mytag","Labour upload failed  "+laborRegistration.fullName)
+                        labourDao.updateLabour(labour)
+                        Log.d("mytag","Labour upload failed  "+labour.fullName)
                     }
                 }
                     runOnUiThread {dialog.dismiss()  }
@@ -346,14 +288,29 @@ class SyncLabourDataActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private suspend fun deleteFilesFromFolder(urisToDelete: List<Uri>) {
+        try {
+            val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
+            val files = mediaStorageDir.listFiles()
+            files?.forEach { file ->
+                if (file.isFile) {
+                    val fileUri = Uri.fromFile(file)
+                    if (urisToDelete.contains(fileUri)) {
+                        if (file.delete()) {
+                            Log.d("mytag", "Deleted file: ${file.absolutePath}")
+                        } else {
+                            Log.d("mytag", "Failed to delete file: ${file.absolutePath}")
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "Failed to delete file: ${e.message}")
+        }
+    }
 
 
-    }
-    fun getSize(filePart: MultipartBody.Part): Long {
-        // Access the request body associated with the file part
-        val requestBody = filePart.body
-        // Get the size of the request body
-        return requestBody?.contentLength() ?: 0
-    }
 
 }

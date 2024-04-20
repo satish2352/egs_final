@@ -143,9 +143,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 }
             }
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-            if (!isLocationEnabled()) {
-                showEnableLocationDialog()
-            } else {
+            if (isLocationEnabled())
+            {
                 requestLocationUpdates()
             }
             val mapFragment =
@@ -648,24 +647,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         _binding = null
     }
 
-    private fun showEnableLocationDialog() {
-        val builder = AlertDialog.Builder(requireActivity())
-        builder.setMessage("Location services are disabled. Do you want to enable them?")
-            .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
-                dialog.dismiss()
-                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }.setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss()
-                // Handle the case when the user refuses to enable location services
-                Toast.makeText(
-                    requireActivity(),
-                    "Unable to retrieve location without enabling location services",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        val alert = builder.create()
-        alert.show()
-    }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap

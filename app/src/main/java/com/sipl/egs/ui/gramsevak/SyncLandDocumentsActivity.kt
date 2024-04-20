@@ -118,6 +118,9 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
                         if(response.body()?.status.equals("true")){
                             document.isSynced=true
                             documentDao.updateDocument(document)
+                            val filesList= mutableListOf<Uri>()
+                            filesList.add(Uri.parse(document.documentUri))
+                            deleteFilesFromFolder(filesList)
                             Log.d("mytag","Document upload successful  "+document.id)
                             updateDocumentList()
                         }else{
@@ -178,5 +181,26 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
     private fun String.toFile(): File? {
         val uri = Uri.parse(this)
         return uri.toFile()
+    }
+
+    private suspend fun deleteFilesFromFolder(urisToDelete: List<Uri>) {
+        try {
+            val mediaStorageDir = File(externalMediaDirs[0], "myfiles")
+            val files = mediaStorageDir.listFiles()
+            files?.forEach { file ->
+                if (file.isFile) {
+                    val fileUri = Uri.fromFile(file)
+                    if (urisToDelete.contains(fileUri)) {
+                        if (file.delete()) {
+                            Log.d("mytag", "Deleted file: ${file.absolutePath}")
+                        } else {
+                            Log.d("mytag", "Failed to delete file: ${file.absolutePath}")
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "Failed to delete file: ${e.message}")
+        }
     }
 }

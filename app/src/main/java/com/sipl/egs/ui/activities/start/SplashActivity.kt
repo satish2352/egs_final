@@ -59,7 +59,6 @@ import java.io.InputStreamReader
 import kotlin.coroutines.resume
 
 class SplashActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivitySplashBinding
     private lateinit var appDatabase: AppDatabase;
     private lateinit var userDao: UserDao
@@ -146,11 +145,11 @@ class SplashActivity : AppCompatActivity() {
 
                     if (mySharedPref.getAtLeastSingleTimeEntriesAdded() == true) {
 
+
                     }else{
                         if(!isInternetAvailable){
                             noInternetDialog.showDialog()
                         }
-                        binding.buttonRetry.visibility=View.VISIBLE
                         binding.buttonRetry.setOnClickListener {
                             if(isInternetAvailable){
                                 CoroutineScope(Dispatchers.IO).launch {
@@ -230,6 +229,13 @@ class SplashActivity : AppCompatActivity() {
                     val fetchAreaMastersJob = async { fetchAreaMastersToUpdateFromServer() }
                     val updateMastersResult = fetchAreaMastersJob.await()
                     updateMasterCompleted = updateMastersResult
+
+                }
+
+                if(!allMastersCompleted && !updateMasterCompleted)
+                {
+                    runOnUiThread { binding.buttonRetry.visibility=View.VISIBLE }
+
                 }
 
                 if(mySharedPref.getAtLeastSingleTimeEntriesAdded()==true){
