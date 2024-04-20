@@ -73,6 +73,11 @@ import com.sipl.egs.utils.LabourInputData
 import com.sipl.egs.utils.MyValidator
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.FileInfo
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.format
+import id.zelory.compressor.constraint.quality
+import id.zelory.compressor.constraint.resolution
+import id.zelory.compressor.constraint.size
 import io.getstream.photoview.PhotoView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -90,6 +95,8 @@ import java.util.Date
 import java.util.Locale
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import retrofit2.Response
+import java.io.FileInputStream
+import java.io.IOException
 
 class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private lateinit var binding:ActivityLabourUpdateOnline2Binding
@@ -590,13 +597,13 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         }
     }
 
-    suspend fun uriStringToBitmap(context: Context, uriString: String, text: String, addressText: String): Uri? {
+    suspend fun uriStringToBitmap(context: Context, uriString: String, latlongtext: String,addressText: String): Uri? {
         return withContext(Dispatchers.IO) {
             try {
                 val uri = Uri.parse(uriString)
                 val futureTarget = Glide.with(context)
                     .asBitmap()
-                    .load(uri)
+                    .load(uriString)
                     .submit()
                 val bitmap = futureTarget.get()
 
@@ -615,9 +622,18 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 val y = bitmap.height.toFloat() - 50f // Adjust the y-coordinate as needed
                 val xAddress = 50f // Adjust the x-coordinate as needed
                 val yAddress = bitmap.height.toFloat() - 100f
-                canvas.drawText(text, x, y, paint)
-                canvas.drawText(addressText, xAddress, yAddress, paint)
-                canvas.drawText(formattedDateTime, xAddress, yAddress-50, paint)
+                canvas.drawText(latlongtext, x, y, paint)
+                val addressTextWidth = paint.measureText(addressText)
+                val availableWidth = bitmap.width.toFloat() - xAddress // A
+                if(addressTextWidth > availableWidth){
+                    val (firstHalf, secondHalf) = splitStringByHalf(addressText)
+                    canvas.drawText(firstHalf, xAddress, yAddress-50, paint)
+                    canvas.drawText(secondHalf, xAddress, yAddress, paint)
+                    canvas.drawText(formattedDateTime, xAddress, yAddress-100, paint)
+                }else{
+                    canvas.drawText(addressText, xAddress, yAddress, paint)
+                    canvas.drawText(formattedDateTime, xAddress, yAddress-50, paint)
+                }
 
                 // Save the modified bitmap back to the same location
                 saveBitmapToFile(context, bitmap, uri)
@@ -625,22 +641,75 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 uri // Return the URI of the modified bitmap
             } catch (e: Exception) {
                 Log.d("mytag","Exception => "+e.message)
+                Log.d("mytag","Exception => ${e.message}",e)
                 e.printStackTrace()
                 null
             }
         }
     }
+    fun splitStringByHalf(input: String): Pair<String, String> {
+        val length = input.length
+        val halfLength = length / 2
+        val firstHalf = input.substring(0, halfLength)
+        val secondHalf = input.substring(halfLength)
+        return Pair(firstHalf, secondHalf)
+    }
 
-    private fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
+    private suspend fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 10, it) }
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it) }
             outputStream?.flush()
             outputStream?.close()
+            val imageFile=bitmapToFile(context,bitmap)
+            val compressedImageFile = imageFile?.let {
+                Compressor.compress(context, it) {
+                    format(Bitmap.CompressFormat.JPEG)
+                    resolution(780,1360)
+                    quality(30)
+                    size(100000) // 500 KB
+                }
+            }
+            compressedImageFile?.let { compressedFile:File ->
+                try {
+                    val inputStream = FileInputStream(compressedFile)
+                    val outputStream = context.contentResolver.openOutputStream(uri)
+                    inputStream.use { input ->
+                        outputStream?.use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+
+                } catch (e: IOException) {
+                    // Handle exception
+                    e.printStackTrace()
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.d("mytag","Exception => ${e.message}",e)
         }
     }
+
+
+    fun bitmapToFile(context: Context, bitmap: Bitmap): File? {
+        // Create a file in the cache directory
+        val time=Calendar.getInstance().timeInMillis.toString()
+        val file = File(context.cacheDir, time)
+
+        try {
+            val fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
+            return file
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Log.d("mytag","Exception => ${e.message}",e)
+        }
+        return null
+    }
+
 
     private fun getAddressFromLatLong():String{
         try {

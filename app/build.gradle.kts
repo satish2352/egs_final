@@ -108,6 +108,11 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.2")
     implementation ("androidx.camera:camera-camera2:1.3.2")
 
+    //compression
+
+    implementation ("id.zelory:compressor:3.0.1")
+
+
 
 
 

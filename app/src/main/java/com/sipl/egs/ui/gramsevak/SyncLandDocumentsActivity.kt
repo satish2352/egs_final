@@ -133,9 +133,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
                         Toast.makeText(this@SyncLandDocumentsActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 dialog.dismiss()
-
             } catch (e: Exception) {
                 updateDocumentList()
                 dialog.dismiss()

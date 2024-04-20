@@ -1,7 +1,9 @@
 package com.sipl.egs.ui.officer
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
@@ -13,6 +15,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -20,6 +23,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityOfficerMainBinding
@@ -36,6 +42,8 @@ class OfficerMainActivity : AppCompatActivity(),
     private lateinit var navController: NavController
     private var isInternetAvailable=false
     private lateinit var noInternetDialog: NoInternetDialog
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +80,8 @@ class OfficerMainActivity : AppCompatActivity(),
 
             }
         })
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         noInternetDialog= NoInternetDialog(this)
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
@@ -87,6 +97,66 @@ class OfficerMainActivity : AppCompatActivity(),
                     noInternetDialog.showDialog()
                 }
             }) { throwable: Throwable? -> }
+
+        if (!isLocationEnabled()) {
+            showEnableLocationDialog()
+        } else {
+            requestLocationUpdates()
+        }
+    }
+    private fun requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this@OfficerMainActivity, Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this@OfficerMainActivity, Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Request location permissions
+            ActivityCompat.requestPermissions(
+                this@OfficerMainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1000
+            )
+            Log.d("mytag", "requestLocationUpdates()  return ")
+            return
+        }
+        Log.d("mytag", "requestLocationUpdates() ")
+
+        // Request last known location
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let {
+                val currentLatLng = LatLng(it.latitude, it.longitude)
+
+            } ?: run {
+                // Handle case where location is null
+
+                Toast.makeText(
+                    this@OfficerMainActivity, "Unable to retrieve location", Toast.LENGTH_LONG
+                ).show()
+
+            }
+        }
+    }
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+    private fun showEnableLocationDialog() {
+        val builder = AlertDialog.Builder(this@OfficerMainActivity)
+        builder.setMessage("Location services are disabled. Do you want to enable them?")
+            .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
+                dialog.dismiss()
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }.setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+                // Handle the case when the user refuses to enable location services
+                Toast.makeText(
+                    this@OfficerMainActivity,
+                    "Unable to retrieve location without enabling location services",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        val alert = builder.create()
+        alert.show()
     }
     private fun refreshCurrentFragment(){
         val id = navController.currentDestination?.id

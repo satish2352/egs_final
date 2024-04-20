@@ -24,6 +24,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.databinding.ActivityMainBinding
@@ -71,6 +72,7 @@ class MainActivity : AppCompatActivity() {
                         noInternetDialog.showDialog()
                     }
                 }) { throwable: Throwable? -> }
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             setupActionBarWithNavController(navController, appBarConfiguration)
             navView.setupWithNavController(navController)
             requestThePermissions()

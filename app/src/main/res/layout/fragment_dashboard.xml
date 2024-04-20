@@ -27,8 +27,8 @@
             android:imeOptions="actionDone"
             android:background="@drawable/rounded_background"
             android:id="@+id/etInput"
-            android:textSize="13dp"
-            android:hint="Enter Project Id / MGNREGA Id"
+            android:textSize="11dp"
+            android:hint="@string/search_by_project_id_mgnrega_id"
             android:paddingLeft="16dp"
             android:layout_weight="1"
             android:layout_width="wrap_content"
@@ -52,13 +52,14 @@
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="@string/project_name"
                         android:textColor="@color/white"
-                        android:textSize="12dp"></TextView>
+                        android:textSize="10dp"></TextView>
                 </LinearLayout>
                 <TextView
                     android:visibility="gone"

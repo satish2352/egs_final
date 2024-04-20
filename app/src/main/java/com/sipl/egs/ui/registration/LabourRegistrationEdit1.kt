@@ -36,10 +36,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.coroutines.resume
 
 class LabourRegistrationEdit1 : AppCompatActivity() {
     lateinit var binding: ActivityLabourRegistrationEdit1Binding
@@ -226,12 +228,10 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
                 if (isInternetAvailable) {
                     CoroutineScope(Dispatchers.IO).launch {
-                       val waitJob=async {  checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString(),true) }
-                        waitJob.await()
-                        withContext(Dispatchers.Main){
-                            if(isMgnregaIdVerified){
-                                updateLabourDetails()
-                            }
+                       val waitJob=async {  checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString()) }
+                        val result=waitJob.await()
+                        if(result){
+                           runOnUiThread {  updateLabourDetails() }
                         }
                     }
 
@@ -302,55 +302,61 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         Log.d("mytag","After")
     }
 
-    private suspend fun checkIfMgnregaIdExists(mgnregaId: String,isFromMain:Boolean=false) {
-        runOnUiThread {
-            progressDialog.show()
-        }
-        val apiService = ApiClient.create(this@LabourRegistrationEdit1)
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
+    private suspend fun checkIfMgnregaIdExists(mgnregaId: String):Boolean {
 
-                val response= apiService.checkMgnregaCardIdExists(mgnregaId)
-                if(response.isSuccessful){
-                    runOnUiThread { progressDialog.dismiss() }
-                    if(!response.body()?.status.equals("true"))
-                    {
+        return suspendCancellableCoroutine {continuation->
+            runOnUiThread {
+                progressDialog.show()
+            }
+            val apiService = ApiClient.create(this@LabourRegistrationEdit1)
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
 
+                    val response= apiService.checkMgnregaCardIdExists(mgnregaId)
+                    if(response.isSuccessful){
+                        runOnUiThread { progressDialog.dismiss() }
+                        if(!response.body()?.status.equals("true"))
+                        {
 
-                        Log.d("mytag"," exists")
-                        runOnUiThread {
-                            isMgnregaIdVerified=false
-                            binding.etMgnregaIdNumber.error="Mgnrega Card Id already exists with another user"
-                        }
-                        withContext(Dispatchers.Main){
-                            Toast.makeText(this@LabourRegistrationEdit1,response.body()?.message,
-                                Toast.LENGTH_SHORT).show()
+                            continuation.resume(false)
+
+                            Log.d("mytag"," exists")
+                            runOnUiThread {
+                                isMgnregaIdVerified=false
+                                binding.etMgnregaIdNumber.error="Mgnrega Card Id already exists with another user"
+                            }
+                            withContext(Dispatchers.Main){
+                                Toast.makeText(this@LabourRegistrationEdit1,response.body()?.message,
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }else{
+                            continuation.resume(true)
+                            withContext(Dispatchers.Main){
+                                isMgnregaIdVerified=true
+                            }
+                            Log.d("mytag","Not exists for any labour")
+                            runOnUiThread {
+                                binding.etMgnregaIdNumber.error=null }
+
                         }
                     }else{
-
+                        continuation.resume(false)
                         withContext(Dispatchers.Main){
-                            isMgnregaIdVerified=true
+                            progressDialog.dismiss()
+                            Toast.makeText(this@LabourRegistrationEdit1,resources.getString(R.string.failed_updating_labour_response),
+                                Toast.LENGTH_SHORT).show()
                         }
-                        Log.d("mytag","Not exists for any labour")
-                        runOnUiThread {
-                            binding.etMgnregaIdNumber.error=null }
-
                     }
-                }else{
+                    //runOnUiThread {dialog.dismiss()  }
+                } catch (e: Exception) {
+                    continuation.resume(false)
+                    runOnUiThread { progressDialog.dismiss() }
                     withContext(Dispatchers.Main){
-                        progressDialog.dismiss()
-                        Toast.makeText(this@LabourRegistrationEdit1,resources.getString(R.string.failed_updating_labour_response),
+                        Toast.makeText(this@LabourRegistrationEdit1,resources.getString(R.string.response_failed),
                             Toast.LENGTH_SHORT).show()
                     }
+                    Log.d("mytag","checkIfAadharCardExists "+e.message)
                 }
-                //runOnUiThread {dialog.dismiss()  }
-            } catch (e: Exception) {
-                runOnUiThread { progressDialog.dismiss() }
-                withContext(Dispatchers.Main){
-                    Toast.makeText(this@LabourRegistrationEdit1,resources.getString(R.string.response_failed),
-                        Toast.LENGTH_SHORT).show()
-                }
-                Log.d("mytag","checkIfAadharCardExists "+e.message)
             }
         }
 

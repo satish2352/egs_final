@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -207,9 +208,26 @@ class SyncLabourDataActivity : AppCompatActivity() {
     private suspend fun createFilePart(fileInfo: FileInfo): MultipartBody.Part? {
         Log.d("mytag",""+fileInfo.fileUri)
         val file: File? = uriToFile(applicationContext, fileInfo.fileUri)
+
         return file?.let {
+            Log.d("mytag",""+formatFileSize(it))
             val requestFile = RequestBody.create("image/*".toMediaTypeOrNull(), it)
             MultipartBody.Part.createFormData(fileInfo.fileName, it.name, requestFile)
+        }
+    }
+    private fun String.toFile(): File? {
+        val uri = Uri.parse(this)
+        return uri.toFile()
+    }
+    fun formatFileSize(file: File): String {
+        val fileSizeInBytes = file.length()
+        val fileSizeInKB = fileSizeInBytes / 1024
+        val fileSizeInMB = fileSizeInKB / 1024
+
+        return when {
+            fileSizeInMB > 0 -> String.format("%.2f MB", fileSizeInMB.toFloat())
+            fileSizeInKB > 0 -> String.format("%d KB", fileSizeInKB)
+            else -> String.format("%d bytes", fileSizeInBytes)
         }
     }
 
@@ -222,69 +240,77 @@ class SyncLabourDataActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             val labours = getLaborRegistrationsFromDatabase()
             try {
-                labours.forEach { labour ->
-                    val aadharCardImage =
-                        createFilePart(FileInfo("aadhar_image", labour.aadharImage))
-                    val voterIdImage =
-                        createFilePart(FileInfo("voter_image", labour.voterIdImage))
-                    val profileImage =
-                        createFilePart(FileInfo("profile_image", labour.photo))
-                    val mgnregaIdImage =
-                        createFilePart(FileInfo("mgnrega_image", labour.mgnregaIdImage))
+                try {
+                    labours.forEach { labour ->
 
-                    val response= apiService.uploadLaborInfo(
-                        fullName = labour.fullName,
-                        genderId = labour.gender,
-                        dateOfBirth = labour.dob,
-                        skillId = labour.skill,
-                        districtId = labour.district,
-                        talukaId = labour.taluka,
-                        villageId = labour.village,
-                        mobileNumber = labour.mobile,
-                        mgnregaId = labour.mgnregaId,
-                        landLineNumber = labour.landline,
-                        family = labour.familyDetails,
-                        longitude = labour.latitude,
-                        latitude = labour.longitude,
-                        file1 = aadharCardImage!!,
-                        file2 = voterIdImage!!,
-                        file3 = profileImage!!,
-                        file4 = mgnregaIdImage!!)
+                        val aadharCardImage =
+                            createFilePart(FileInfo("aadhar_image", labour.aadharImage))
+                        val voterIdImage =
+                            createFilePart(FileInfo("voter_image", labour.voterIdImage))
+                        val profileImage =
+                            createFilePart(FileInfo("profile_image", labour.photo))
+                        val mgnregaIdImage =
+                            createFilePart(FileInfo("mgnrega_image", labour.mgnregaIdImage))
 
-                    if(response.isSuccessful){
-                        if(response.body()?.status.equals("true")){
-                            labour.isSynced=true
-                            labourDao.updateLabour(labour)
-                            val filesList= mutableListOf<Uri>()
-                            filesList.add(Uri.parse(labour.aadharImage))
-                            filesList.add(Uri.parse(labour.photo))
-                            filesList.add(Uri.parse(labour.voterIdImage))
-                            filesList.add(Uri.parse(labour.mgnregaIdImage))
-                            deleteFilesFromFolder(filesList)
+                        val response= apiService.uploadLaborInfo(
+                            fullName = labour.fullName,
+                            genderId = labour.gender,
+                            dateOfBirth = labour.dob,
+                            skillId = labour.skill,
+                            districtId = labour.district,
+                            talukaId = labour.taluka,
+                            villageId = labour.village,
+                            mobileNumber = labour.mobile,
+                            mgnregaId = labour.mgnregaId,
+                            landLineNumber = labour.landline,
+                            family = labour.familyDetails,
+                            longitude = labour.latitude,
+                            latitude = labour.longitude,
+                            file1 = aadharCardImage!!,
+                            file2 = voterIdImage!!,
+                            file3 = profileImage!!,
+                            file4 = mgnregaIdImage!!)
+
+                        if(response.isSuccessful){
+                            if(response.body()?.status.equals("true")){
+                                labour.isSynced=true
+                                labourDao.updateLabour(labour)
+                                val filesList= mutableListOf<Uri>()
+                                filesList.add(Uri.parse(labour.aadharImage))
+                                filesList.add(Uri.parse(labour.photo))
+                                filesList.add(Uri.parse(labour.voterIdImage))
+                                filesList.add(Uri.parse(labour.mgnregaIdImage))
+                                deleteFilesFromFolder(filesList)
+                            }else{
+                                labour.isSyncFailed=true
+                                labour.syncFailedReason=response.body()?.message
+                                labourDao.updateLabour(labour)
+                            }
+                            Log.d("mytag",""+response.body()?.message)
+                            Log.d("mytag",""+response.body()?.status)
                         }else{
                             labour.isSyncFailed=true
-                            labour.syncFailedReason=response.body()?.message
+                            if(response.body()?.message.isNullOrEmpty()){
+                                labour.syncFailedReason="Unsuccessful Response from api with code "+response.code()
+                            }else{
+                                labour.syncFailedReason=response.body()?.message
+                            }
                             labourDao.updateLabour(labour)
+                            Log.d("mytag","Labour upload failed  "+labour.fullName)
                         }
-                        Log.d("mytag",""+response.body()?.message)
-                        Log.d("mytag",""+response.body()?.status)
-                    }else{
-                        labour.isSyncFailed=true
-                        if(response.body()?.message.isNullOrEmpty()){
-
-                        }else{
-                            labour.syncFailedReason=response.body()?.message
-                        }
-
-                        labourDao.updateLabour(labour)
-                        Log.d("mytag","Labour upload failed  "+labour.fullName)
                     }
-                }
                     runOnUiThread {dialog.dismiss()  }
-                fetchUserList()
+                    fetchUserList()
+                }catch (e:Exception){
+
+                    runOnUiThread { dialog.dismiss() }
+                    Log.d("mytag","uploadLabourOnline "+e.message)
+                    Log.d("mytag","uploadLabourOnline ${e.message}",e)
+                }
             } catch (e: Exception) {
               runOnUiThread { dialog.dismiss() }
                 Log.d("mytag","uploadLabourOnline "+e.message)
+                Log.d("mytag","uploadLabourOnline ${e.message}",e)
             }
         }
 
