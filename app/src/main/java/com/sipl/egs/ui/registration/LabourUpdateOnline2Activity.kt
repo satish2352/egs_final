@@ -15,10 +15,12 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
 import android.view.ViewGroup
@@ -227,16 +229,44 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         binding.ivChangeAadhar.setOnClickListener {
-            startCameraActivity(REQUEST_CODE_AADHAR_CARD)
+
+            requestThePermissions()
+            if(isLocationEnabled()){
+                startCameraActivity(REQUEST_CODE_AADHAR_CARD)
+                requestLocationUpdates()
+            }else{
+                showEnableLocationDialog()
+            }
+
         }
         binding.ivChangePhoto.setOnClickListener {
-            startCameraActivity(REQUEST_CODE_PHOTO)
+            requestThePermissions()
+            if(isLocationEnabled()){
+                startCameraActivity(REQUEST_CODE_PHOTO)
+                requestLocationUpdates()
+            }else{
+                showEnableLocationDialog()
+            }
+
         }
         binding.ivChangeVoterId.setOnClickListener {
-            startCameraActivity(REQUEST_CODE_VOTER_ID)
+            requestThePermissions()
+            if(isLocationEnabled()){
+                startCameraActivity(REQUEST_CODE_VOTER_ID)
+                requestLocationUpdates()
+            }else{
+                showEnableLocationDialog()
+            }
+
         }
         binding.ivChangeMgnregaCard.setOnClickListener {
-            startCameraActivity(REQUEST_CODE_MGNREGA_CARD)
+            requestThePermissions()
+            if(isLocationEnabled()){
+                startCameraActivity(REQUEST_CODE_MGNREGA_CARD)
+                requestLocationUpdates()
+            }else{
+                showEnableLocationDialog()
+            }
         }
         binding.ivAadhar.setOnClickListener {
             showPhotoZoomDialog(aadharIdImagePath)
@@ -265,6 +295,71 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                     .show()
             }
         })
+    }
+    private fun requestLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Request location permissions
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1000
+            )
+            return
+        }
+
+        // Request last known location
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+                location?.let {
+                    val currentLatLng = LatLng(it.latitude, it.longitude)
+                    latitude = it.latitude
+                    longitude = it.longitude
+                    // Update UI with latitude and longitude
+                    // Note: getAddressFromLatLong() needs to be implemented to fetch address
+                    // from latitude and longitude
+                    binding.etLocation.setText("${it.latitude},${it.longitude}")
+                    addressFromLatLong = getAddressFromLatLong()
+                } ?: run {
+                    // Handle case where location is null
+                    Toast.makeText(
+                        this@LabourUpdateOnline2Activity,
+                        "Unable to retrieve location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+    private fun showEnableLocationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { dialog, _ ->
+                dialog.dismiss()
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+                // Handle the case when the user refuses to enable location services
+                Toast.makeText(
+                    this@LabourUpdateOnline2Activity,
+                    "Unable to retrieve location without enabling location services",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        val alert = builder.create()
+        alert.show()
     }
 
     override fun onResume() {

@@ -223,7 +223,7 @@ class DocumentDetailsActivity : AppCompatActivity() {
     }
     private fun showEnableLocationDialog() {
         val builder = AlertDialog.Builder(this@DocumentDetailsActivity)
-        builder.setMessage("Location services are disabled. Do you want to enable them?")
+        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
             .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
                 dialog.dismiss()
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

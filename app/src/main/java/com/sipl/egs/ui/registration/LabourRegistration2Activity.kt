@@ -16,6 +16,7 @@ import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
@@ -186,6 +187,9 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
 
         binding.btnSubmit.setOnClickListener {
             if(validateFormFields()){
+               /* if(!isInternetAvailable){
+                    getLastKnownLocation(this@LabourRegistration2Activity)
+                }*/
                 val familyDetails=Gson().toJson(familyDetailsList).toString()
                 val labour = Labour(
                     fullName = labourInputData.fullName,
@@ -253,16 +257,43 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         }
 
         binding.layoutAadharCard.setOnClickListener {
-            startCameraActivity(REQUEST_CODE_AADHAR_CARD)
+            requestThePermissions()
+            if(isLocationEnabled()){
+                startCameraActivity(REQUEST_CODE_AADHAR_CARD)
+                requestLocationUpdates()
+            }else{
+                showEnableLocationDialog()
+            }
+
         }
         binding.layoutPhoto.setOnClickListener {
+            requestThePermissions()
+            if(isLocationEnabled()){
             startCameraActivity(REQUEST_CODE_PHOTO)
+                requestLocationUpdates()
+            }else{
+                showEnableLocationDialog()
+            }
+
         }
         binding.layoutVoterId.setOnClickListener {
+            requestThePermissions()
+            if(isLocationEnabled()){
             startCameraActivity(REQUEST_CODE_VOTER_ID)
+            requestLocationUpdates()
+        }else{
+            showEnableLocationDialog()
         }
+
+    }
         binding.layoutMgnregaCard.setOnClickListener {
+            requestThePermissions()
+            if(isLocationEnabled()){
             startCameraActivity(REQUEST_CODE_MGNREGA_CARD)
+                requestLocationUpdates()
+            }else{
+                showEnableLocationDialog()
+            }
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -542,7 +573,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     }
     private fun showEnableLocationDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("Location services are disabled. Do you want to enable them?")
+        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
             .setCancelable(false)
             .setPositiveButton("Yes") { dialog, _ ->
                 dialog.dismiss()
@@ -868,6 +899,25 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 Toast.makeText(this@LabourRegistration2Activity,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    fun getLastKnownLocation(context: Context): Location? {
+        Log.d("mytag","getLastKnownLocation")
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val providers: List<String> = locationManager.getProviders(true)
+        var bestLocation: Location? = null
+        for (provider in providers) {
+            val location = locationManager.getLastKnownLocation(provider)
+            if (location != null && (bestLocation == null || location.accuracy < bestLocation.accuracy)) {
+                // Found a better location
+                bestLocation = location
+                latitude=location.latitude
+                longitude=location.longitude
+                binding.etLocation.setText("$latitude,$longitude")
+                Log.d("mytag","getLastKnownLocation :  $latitude,$longitude")
+
+            }
+        }
+        return bestLocation
     }
 
 }

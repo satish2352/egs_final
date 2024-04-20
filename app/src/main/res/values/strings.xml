@@ -174,4 +174,10 @@
     <string name="enter_valid_landline_number">Enter Valid Landline Number</string>
     <string name="labour_upload_failed">Labour upload failed</string>
     <string name="search_by_project_id_mgnrega_id">Search By Project Id / MGNREGA Id</string>
+    <string name="resubmitted_docs">Re-submitted Documents</string>
+    <string name="approved_documents">Approved Docuements</string>
+    <string name="resubmitted_labours">Re-submitted Labours</string>
+    <string name="approved_labours">Approved Labours</string>
+    <string name="sent_for_approval_labours">Labour Sent For Approval</string>
+    <string name="not_approved_labours">Not Approved Labours</string>
 </resources>

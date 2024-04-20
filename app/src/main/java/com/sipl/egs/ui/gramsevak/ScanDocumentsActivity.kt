@@ -195,6 +195,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             getTheLocation()
             binding.fabAddDocument.setOnClickListener {
+                requestThePermissions()
                 showDocumentTypeSelectDialog()
             }
             ReactiveNetwork
