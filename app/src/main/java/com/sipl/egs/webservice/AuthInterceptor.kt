@@ -3,6 +3,7 @@ package com.sipl.egs.webservice
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.utils.MySharedPref
 import okhttp3.Interceptor
@@ -42,6 +43,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
     private fun handleUnauthorizedAccess(context: Context) {
 
         try {
+            //Toast.makeText(context,"Login Again",Toast.LENGTH_LONG).show()
             Log.d("mytag","handleUnauthorizedAccess")
             val mySharedPref=MySharedPref(context)
             mySharedPref.clearAll()

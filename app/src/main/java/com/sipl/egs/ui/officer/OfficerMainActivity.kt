@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityOfficerMainBinding
+import com.sipl.egs.interfaces.OnLocationStateListener
 import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.NoInternetDialog
@@ -36,7 +37,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
 class OfficerMainActivity : AppCompatActivity(),
-    BottomNavigationView.OnNavigationItemSelectedListener {
+    BottomNavigationView.OnNavigationItemSelectedListener,OnLocationStateListener {
 
     private lateinit var binding: ActivityOfficerMainBinding
     private lateinit var navController: NavController
@@ -99,7 +100,7 @@ class OfficerMainActivity : AppCompatActivity(),
             }) { throwable: Throwable? -> }
 
         if (!isLocationEnabled()) {
-            showEnableLocationDialog()
+            //showEnableLocationDialog()
         } else {
             requestLocationUpdates()
         }
@@ -203,7 +204,9 @@ class OfficerMainActivity : AppCompatActivity(),
     override fun onResume() {
         super.onResume()
         requestThePermissions()
-        checkAndPromptGps()
+        if (!isLocationEnabled()) {
+            showEnableLocationDialog()
+        }
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_menu_home,menu)
@@ -254,5 +257,11 @@ class OfficerMainActivity : AppCompatActivity(),
             }
         }
         return false
+    }
+
+    override fun onLocationStateChange(status: Boolean) {
+        if(!status){
+            showEnableLocationDialog()
+        }
     }
 }

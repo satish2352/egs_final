@@ -68,11 +68,6 @@ class OfficerLabourListByProjectIdAttendance : AppCompatActivity(),
                     noInternetDialog.showDialog()
                 }
             }) { throwable: Throwable? -> }
-
-
-
-
-
     }
 
     override fun onResume() {
@@ -130,8 +125,6 @@ class OfficerLabourListByProjectIdAttendance : AppCompatActivity(),
             progressDialog.dismiss()
         }
     }
-
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId== android.R.id.home){

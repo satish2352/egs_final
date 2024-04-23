@@ -44,6 +44,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.databinding.FragmentDashboardBinding
+import com.sipl.egs.interfaces.OnLocationStateListener
 import com.sipl.egs.model.apis.documetqrdownload.QRDocumentDownloadModel
 import com.sipl.egs.model.apis.mapmarker.MapData
 import com.sipl.egs.model.apis.mapmarker.MapMarkerModel
@@ -97,6 +98,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     private var currentLocationMarker: Marker? = null // Reference to the current location marker
     private var isCurrentMarkerVisible = true
     val bottomSheetDialogFragment = MapTypeBottomSheetDialogFragment()
+    private lateinit var locationEnabledListener:OnLocationStateListener
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -875,7 +877,26 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnLocationStateListener) {
+            locationEnabledListener = context as OnLocationStateListener
+        } else {
+            throw RuntimeException(
+                context.toString()
+                        + " must implement OnLocationStateListener"
+            )
+        }
+    }
+
     override fun onMapLoaded() {
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(!isLocationEnabled()){
+            locationEnabledListener.onLocationStateChange(false)
+        }
     }
 }

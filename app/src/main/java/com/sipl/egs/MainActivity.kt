@@ -28,13 +28,14 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.databinding.ActivityMainBinding
+import com.sipl.egs.interfaces.OnLocationStateListener
 import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.NoInternetDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),OnLocationStateListener{
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController:NavController
@@ -94,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 }
             })
             if (!isLocationEnabled()) {
-                showEnableLocationDialog()
+
             } else {
                 requestLocationUpdates()
             }
@@ -185,7 +186,9 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onResume() {
         super.onResume()
-        checkAndPromptGps()
+        if(!isLocationEnabled()){
+            showEnableLocationDialog()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -234,6 +237,12 @@ class MainActivity : AppCompatActivity() {
             }
         val alert = builder.create()
         alert.show()
+    }
+
+    override fun onLocationStateChange(status: Boolean) {
+        if(!status){
+            showEnableLocationDialog()
+        }
     }
 
 }

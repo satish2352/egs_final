@@ -104,29 +104,45 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             dialog= CustomProgressDialog(this)
             getLabourDetails(mgnregaCardId!!)
             binding.ivAadhar.setOnClickListener {
-                showPhotoZoomDialog(aadharImage)
+                if(isInternetAvailable){
+                    showPhotoZoomDialog(aadharImage)
+                }else{
+                    Toast.makeText(this@OfficerViewEditReceivedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+                }
+
             }
             binding.ivPhoto.setOnClickListener {
-                showPhotoZoomDialog(photo)
+                if(isInternetAvailable){
+                    showPhotoZoomDialog(photo)
+                }else{
+                    Toast.makeText(this@OfficerViewEditReceivedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+                }
+
             }
             binding.ivMnregaCard.setOnClickListener {
-                showPhotoZoomDialog(mgnregaIdImage)
+                if(isInternetAvailable){
+                    showPhotoZoomDialog(mgnregaIdImage)
+                }else{
+                    Toast.makeText(this@OfficerViewEditReceivedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+                }
+
             }
             binding.ivVoterId.setOnClickListener {
-                showPhotoZoomDialog(voterIdImage)
+                if(isInternetAvailable){
+                    showPhotoZoomDialog(voterIdImage)
+                }else{
+                    Toast.makeText(this@OfficerViewEditReceivedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+                }
+
             }
             val registrationStatusNames= mutableListOf<String>()
             val reasonsNames= mutableListOf<String>()
             for(reason in reasonsList){
-
                 reasonsNames.add(reason.reason_name)
             }
            for(status in registrationStatusList){
-
                 registrationStatusNames.add(status.status_name)
             }
-            //registrationStatusNames.add("Approved")
-            //registrationStatusNames.add("Not Approved")
             val reasonsAdapter = ArrayAdapter(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -189,10 +205,18 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             }
 
             binding.btnSubmit.setOnClickListener {
-                if(validateFields()){
-                    showConfirmationDialog(binding.actSelectRegistrationStatus.text.toString())
+                if(isInternetAvailable) {
+                    if (validateFields()) {
+                        showConfirmationDialog(binding.actSelectRegistrationStatus.text.toString())
+                    } else {
+                        Toast.makeText(
+                            this,
+                            resources.getString(R.string.select_all_details),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }else{
-                    Toast.makeText(this,resources.getString(R.string.select_all_details),Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@OfficerViewEditReceivedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
                 }
             }
 
@@ -200,7 +224,6 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
 
         }
     }
-
     private fun sendApprovedToServer() {
         try {
             dialog.show()
@@ -444,8 +467,6 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             if(selectedStatusId.equals("2")){
 
                 sendApprovedToServer()
-            }else if(selectedStatusId.equals("4")){
-                sendRejectedStatusToServer()
             }else{
                 sendNotApprovedToServer()
             }
@@ -460,46 +481,4 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
     }
-
-    private fun sendRejectedStatusToServer() {
-        try {
-            dialog.show()
-            val apiService= ApiClient.create(this@OfficerViewEditReceivedLabourDetails)
-            val call=apiService.sendRejectedLabourStatusServer(mgnrega_card_id = mgnregaCardIdOfLabour, isApproved = selectedStatusId)
-            call.enqueue(object :Callback<LabourListModel>{
-                override fun onResponse(
-                    call: Call<LabourListModel>,
-                    response: Response<LabourListModel>
-                ) {
-                    dialog.dismiss()
-                    if(response.isSuccessful){
-                        if(response.body()?.status.equals("true"))
-                        {
-                            Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
-                                getString(R.string.labour_status_upaded), Toast.LENGTH_SHORT).show()
-                            finish()
-                        }else {
-                            Toast.makeText(this@OfficerViewEditReceivedLabourDetails,
-                                getString(R.string.something_went_wrong_please_try_again), Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    } else{
-
-                        Toast.makeText(this@OfficerViewEditReceivedLabourDetails, "Response unsuccessful", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                override fun onFailure(call: Call<LabourListModel>, t: Throwable) {
-
-                    dialog.dismiss()
-                }
-            })
-        } catch (e: Exception) {
-            dialog.dismiss()
-            Log.d("mytag","Exception : sendApprovedToServer "+e.message)
-            e.printStackTrace()
-        }
-
-    }
-
-
 }

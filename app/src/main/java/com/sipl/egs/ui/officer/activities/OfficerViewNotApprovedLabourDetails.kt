@@ -54,16 +54,38 @@ class OfficerViewNotApprovedLabourDetails : AppCompatActivity() {
         dialog= CustomProgressDialog(this)
         getLabourDetails(mgnregaCardId!!)
         binding.ivAadhar.setOnClickListener {
-            showPhotoZoomDialog(aadharImage)
+
+            if(isInternetAvailable){
+                showPhotoZoomDialog(aadharImage)
+            }else{
+                Toast.makeText(this@OfficerViewNotApprovedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+            }
+
         }
         binding.ivPhoto.setOnClickListener {
-            showPhotoZoomDialog(photo)
+            if(isInternetAvailable){
+                showPhotoZoomDialog(photo)
+            }else{
+                Toast.makeText(this@OfficerViewNotApprovedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+            }
+
         }
         binding.ivMnregaCard.setOnClickListener {
-            showPhotoZoomDialog(mgnregaIdImage)
+            if(isInternetAvailable){
+                showPhotoZoomDialog(mgnregaIdImage)
+            }else{
+                Toast.makeText(this@OfficerViewNotApprovedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+            }
+
         }
         binding.ivVoterId.setOnClickListener {
-            showPhotoZoomDialog(voterIdImage)
+
+            if(isInternetAvailable){
+                showPhotoZoomDialog(voterIdImage)
+            }else{
+                Toast.makeText(this@OfficerViewNotApprovedLabourDetails,resources.getString(R.string.please_check_internet_connection),Toast.LENGTH_LONG).show()
+            }
+
         }
             noInternetDialog= NoInternetDialog(this)
             ReactiveNetwork

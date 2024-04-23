@@ -2,18 +2,20 @@ package com.sipl.egs.ui.officer.fragments
 
 import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,6 +31,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.databinding.FragmentDashboardOfficerBinding
+import com.sipl.egs.interfaces.OnLocationStateListener
 import com.sipl.egs.model.apis.documetqrdownload.QRDocumentDownloadModel
 import com.sipl.egs.model.apis.officermapdash.DashboardMapOfficerModel
 import com.sipl.egs.model.apis.officermapdash.OfficerDashMapMarkers
@@ -36,7 +39,6 @@ import com.sipl.egs.model.apis.projectlistforofficermap.ProjectMarkerData
 import com.sipl.egs.model.apis.projectlistmarker.LabourData
 import com.sipl.egs.model.apis.projectlistmarker.ProjectData
 import com.sipl.egs.ui.activities.start.LoginActivity
-import com.sipl.egs.ui.gramsevak.LabourListByProjectActivity
 import com.sipl.egs.ui.gramsevak.ScannerActivity
 import com.sipl.egs.ui.gramsevak.dashboard.MapTypeBottomSheetDialogFragment
 import com.sipl.egs.ui.officer.activities.OfficerLabourListByProjectIdAttendance
@@ -76,7 +78,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
     private var isCurrentMarkerVisible = true
     val bottomSheetDialogFragment = MapTypeBottomSheetDialogFragment()
     private var mapMarkerData = mutableListOf<OfficerDashMapMarkers>()
-
+    private  lateinit var locationEnabledListener:OnLocationStateListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -120,6 +122,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
         } catch (e: Exception) {
             Log.d("mytag", "Exception " + e.message)
         }
+
         return binding.root;
     }
     private fun requestThePermissions() {
@@ -159,6 +162,23 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
             }
         }
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnLocationStateListener) {
+            locationEnabledListener = context as OnLocationStateListener
+        } else {
+            throw RuntimeException(
+                context.toString()
+                        + " must implement OnLocationStateListener"
+            )
+        }
+    }
+    override fun onDetach() {
+        super.onDetach()
+        //locationEnabledListener = null
+    }
+
     private fun getFileDownloadUrl(fileName: String) {
         Log.d("mytag","filename ==>"+fileName)
         val activity = requireActivity()
@@ -430,5 +450,17 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
 
     override fun onResume() {
         super.onResume()
+        if(isAdded){
+            if(!isLocationEnabled()){
+                locationEnabledListener.onLocationStateChange(false)
+            }
+        }
+
+    }
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 }

@@ -190,30 +190,31 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                /* if(!isInternetAvailable){
                     getLastKnownLocation(this@LabourRegistration2Activity)
                 }*/
-                val familyDetails=Gson().toJson(familyDetailsList).toString()
-                val labour = Labour(
-                    fullName = labourInputData.fullName,
-                    gender = labourInputData.gender,
-                    dob = labourInputData.dateOfBirth,
-                    district = labourInputData.district,
-                    taluka = labourInputData.taluka,
-                    village = labourInputData.village,
-                    mobile = labourInputData.mobile,
-                    landline = labourInputData.landline,
-                    mgnregaId = labourInputData.idCard,
-                    familyDetails = familyDetails,
-                    location = binding.etLocation.getText().toString(),
-                    aadharImage = aadharIdImagePath,
-                    mgnregaIdImage = mgnregaIdImagePath,
-                    voterIdImage = voterIdImagePath,
-                    photo = photoImagePath,
-                    isSynced = false,
-                    skilled = false,
-                    latitude = latitude.toString(),
-                    longitude = longitude.toString(),
-                    skill = labourInputData.skill)
+
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
+                            val familyDetails=Gson().toJson(familyDetailsList).toString()
+                            val labour = Labour(
+                                fullName = labourInputData.fullName,
+                                gender = labourInputData.gender,
+                                dob = labourInputData.dateOfBirth,
+                                district = labourInputData.district,
+                                taluka = labourInputData.taluka,
+                                village = labourInputData.village,
+                                mobile = labourInputData.mobile,
+                                landline = labourInputData.landline,
+                                mgnregaId = labourInputData.idCard,
+                                familyDetails = familyDetails,
+                                location = binding.etLocation.getText().toString(),
+                                aadharImage = aadharIdImagePath,
+                                mgnregaIdImage = mgnregaIdImagePath,
+                                voterIdImage = voterIdImagePath,
+                                photo = photoImagePath,
+                                isSynced = false,
+                                skilled = false,
+                                latitude = latitude.toString(),
+                                longitude = longitude.toString(),
+                                skill = labourInputData.skill)
                             val rows=LabourDao.insertLabour(labour)
                             if(rows>0){
                                 runOnUiThread {
@@ -850,7 +851,6 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
 
                     }
                     REQUEST_CODE_VOTER_ID -> {
-
                         Glide.with(this@LabourRegistration2Activity).load(capturedImageUri).override(200,200).into(binding.ivVoterId)
                         voterIdImagePath= capturedImageUri.toString()
                         CoroutineScope(Dispatchers.IO).launch {
