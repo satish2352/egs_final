@@ -14,6 +14,8 @@ import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
@@ -40,6 +42,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
+import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -64,12 +68,15 @@ import com.sipl.egs.adapters.FamilyDetailsAdapter
 import com.sipl.egs.camera.CameraActivity
 import com.sipl.egs.utils.LabourInputData
 import com.sipl.egs.utils.MyValidator
+import com.sipl.egs.utils.NoInternetDialog
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
 import id.zelory.compressor.constraint.resolution
 import id.zelory.compressor.constraint.size
 import io.getstream.photoview.PhotoView
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -123,7 +130,9 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     private var genderId=""
     private var relationId=""
     private var maritalStatusId=""
-
+    private lateinit var locationManager: LocationManager
+    private var isInternetAvailable:Boolean=false
+    private lateinit var noInternetDialog:NoInternetDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityLabourRegistrationEdit2Binding.inflate(layoutInflater)
@@ -164,6 +173,21 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
             }
 
         }
+        noInternetDialog= NoInternetDialog(this)
+        ReactiveNetwork
+            .observeNetworkConnectivity(applicationContext)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ connectivity: Connectivity ->
+                Log.d("##", "=>" + connectivity.state())
+                if (connectivity.state().toString() == "CONNECTED") {
+                    isInternetAvailable = true
+                    noInternetDialog.hideDialog()
+                } else {
+                    isInternetAvailable = false
+                    noInternetDialog.showDialog()
+                }
+            }) { throwable: Throwable? -> }
 
         labourInputData = intent.getSerializableExtra("LabourInputData") as LabourInputData
         val layoutManager= LinearLayoutManager(this, RecyclerView.VERTICAL,false)
@@ -281,6 +305,54 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
 
             }
         })
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER,
+            LabourRegistrationEdit2.MIN_TIME_BW_UPDATES,
+            LabourRegistrationEdit2.MIN_DISTANCE_CHANGE_FOR_UPDATES,
+            locationListener
+        )
+    }
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            if(!isInternetAvailable)
+            {
+                latitude=location.latitude
+                longitude=location.longitude
+
+                Log.d("mytag","$latitude,$longitude")
+                binding.etLocation.setText("$latitude,$longitude")
+            }
+            // Do something with latitude and longitude
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+        override fun onProviderEnabled(provider: String) {}
+
+        override fun onProviderDisabled(provider: String) {}
+    }
+    companion object {
+         const val LOCATION_PERMISSION_REQUEST_CODE = 100
+         const val MIN_TIME_BW_UPDATES: Long = 1000 * 60 * 1 // 1 minute
+         const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Float = 10f // 10 meters
     }
     private fun requestLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(
@@ -717,7 +789,7 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     private suspend fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it) }
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
             outputStream?.flush()
             outputStream?.close()
             val imageFile=bitmapToFile(context,bitmap)
@@ -725,8 +797,8 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
                 Compressor.compress(context, it) {
                     format(Bitmap.CompressFormat.JPEG)
                     resolution(780,1360)
-                    quality(30)
-                    size(100000) // 500 KB
+                    quality(100)
+                    size(500000) // 500 KB
                 }
             }
             compressedImageFile?.let { compressedFile:File ->

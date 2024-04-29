@@ -44,7 +44,8 @@ class OfficerMainActivity : AppCompatActivity(),
     private var isInternetAvailable=false
     private lateinit var noInternetDialog: NoInternetDialog
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    private lateinit var builder:AlertDialog.Builder
+    private lateinit var dialogEnableLocation:AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,11 +99,27 @@ class OfficerMainActivity : AppCompatActivity(),
                     noInternetDialog.showDialog()
                 }
             }) { throwable: Throwable? -> }
+        builder= AlertDialog.Builder(this@OfficerMainActivity)
+        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
+            .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
+                dialog.dismiss()
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }.setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+                // Handle the case when the user refuses to enable location services
+                Toast.makeText(
+                    this@OfficerMainActivity,
+                    "Unable to retrieve location without enabling location services",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        dialogEnableLocation = builder.create()
 
         if (!isLocationEnabled()) {
             //showEnableLocationDialog()
         } else {
             requestLocationUpdates()
+            dialogEnableLocation.dismiss()
         }
     }
     private fun requestLocationUpdates() {
@@ -142,22 +159,8 @@ class OfficerMainActivity : AppCompatActivity(),
         )
     }
     private fun showEnableLocationDialog() {
-        val builder = AlertDialog.Builder(this@OfficerMainActivity)
-        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
-            .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
-                dialog.dismiss()
-                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }.setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss()
-                // Handle the case when the user refuses to enable location services
-                Toast.makeText(
-                    this@OfficerMainActivity,
-                    "Unable to retrieve location without enabling location services",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        val alert = builder.create()
-        alert.show()
+
+        dialogEnableLocation.show()
     }
     private fun refreshCurrentFragment(){
         val id = navController.currentDestination?.id
@@ -206,6 +209,8 @@ class OfficerMainActivity : AppCompatActivity(),
         requestThePermissions()
         if (!isLocationEnabled()) {
             showEnableLocationDialog()
+        }else{
+            dialogEnableLocation.dismiss()
         }
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -262,6 +267,8 @@ class OfficerMainActivity : AppCompatActivity(),
     override fun onLocationStateChange(status: Boolean) {
         if(!status){
             showEnableLocationDialog()
+        }else{
+            dialogEnableLocation.dismiss()
         }
     }
 }

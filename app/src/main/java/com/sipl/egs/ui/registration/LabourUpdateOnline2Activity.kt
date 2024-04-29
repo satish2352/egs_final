@@ -753,7 +753,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
     private suspend fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it) }
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
             outputStream?.flush()
             outputStream?.close()
             val imageFile=bitmapToFile(context,bitmap)
@@ -761,8 +761,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                 Compressor.compress(context, it) {
                     format(Bitmap.CompressFormat.JPEG)
                     resolution(780,1360)
-                    quality(30)
-                    size(100000) // 500 KB
+                    quality(100)
+                    size(500000) // 500 KB
                 }
             }
             compressedImageFile?.let { compressedFile:File ->
@@ -988,7 +988,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                     if(response.body()?.status.equals("true")){
 
                         withContext(Dispatchers.Main){
-                            Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.labour_details_upaded),
+                            Toast.makeText(this@LabourUpdateOnline2Activity,response.body()?.message,
                                 Toast.LENGTH_SHORT).show()
                             val intent= Intent(this@LabourUpdateOnline2Activity, ReportsActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -996,7 +996,7 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
                         }
                     }else{
                         withContext(Dispatchers.Main){
-                            Toast.makeText(this@LabourUpdateOnline2Activity,resources.getString(R.string.failed_updating_labour),
+                            Toast.makeText(this@LabourUpdateOnline2Activity,response.body()?.message,
                                 Toast.LENGTH_SHORT).show()
                         }
                     }

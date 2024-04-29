@@ -12,6 +12,8 @@ import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
@@ -89,6 +91,7 @@ import com.sipl.egs.database.dao.DocumentTypeDropDownDao
 import com.sipl.egs.database.entity.AreaItem
 import com.sipl.egs.database.entity.DocumentTypeDropDown
 import com.sipl.egs.model.apis.reportscount.ReportsCount
+import com.sipl.egs.ui.registration.LabourRegistration2Activity
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.NoInternetDialog
@@ -130,7 +133,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private lateinit var documentTypeObj:DocumentTypeDropDown
     private var documentColor="#AEAEAE"
     private var selectedDocumentTypeName=""
-
+    private lateinit var locationManager: LocationManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_document_pages)
@@ -254,10 +257,49 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                 }
 
             }
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestThePermissions()
+                return
+            }
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                ScanDocumentsActivity.MIN_TIME_BW_UPDATES,
+                ScanDocumentsActivity.MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                locationListener
+            )
         } catch (e: Exception) {
             Log.d("mytag","Exception =>"+e.message)
         }
 
+    }
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            if(!isInternetAvailable)
+            {
+                latitude=location.latitude
+                longitude=location.longitude
+            }
+
+            // Do something with latitude and longitude
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+        override fun onProviderEnabled(provider: String) {}
+
+        override fun onProviderDisabled(provider: String) {}
+    }
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 100
+        private const val MIN_TIME_BW_UPDATES: Long = 1000 * 60 * 1 // 1 minute
+        private const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Float = 10f // 10 meters
     }
     fun removeSpaces(inputString: String): String {
         return inputString.replace(" ", "")

@@ -205,23 +205,23 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                             } catch (e: ActivityNotFoundException) {
                                 Toast.makeText(
                                     requireActivity(),
-                                    "No PDF viewer application found",
-                                    Toast.LENGTH_SHORT
+                                    getString(R.string.no_pdf_viewer_application_found),
+                                    Toast.LENGTH_LONG
                                 ).show()
                             }
                             //FileDownloader.downloadFile(activity, url, fileName)
-                            Toast.makeText(activity, "file download started", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(activity, resources.getString(R.string.file_download_started), Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(activity, response.body()?.message, Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(activity, "response unsuccessful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
                     dialog.dismiss()
-                    Toast.makeText(activity, "response failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, resources.getString(R.string.error_occured_during_api_call), Toast.LENGTH_SHORT).show()
                 }
             })
         } else {

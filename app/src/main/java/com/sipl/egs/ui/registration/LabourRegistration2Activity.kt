@@ -17,6 +17,7 @@ import android.graphics.drawable.ColorDrawable
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
@@ -127,6 +128,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private var genderId=""
     private var relationId=""
     private var maritalStatusId=""
+    private lateinit var locationManager: LocationManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityLabourRegistration2Binding.inflate(layoutInflater)
@@ -173,7 +175,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
         binding.layoutAdd.setOnClickListener {
             showAddFamilyDetailsDialog()
         }
-
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         labourInputData = intent.getSerializableExtra("LabourInputData") as LabourInputData
         Log.d("mytag",registrationViewModel.fullName)
         val layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
@@ -245,7 +247,9 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     }
                 }
 
+
         }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         if (!isLocationEnabled()) {
@@ -286,6 +290,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
             showEnableLocationDialog()
         }
 
+
     }
         binding.layoutMgnregaCard.setOnClickListener {
             requestThePermissions()
@@ -311,6 +316,47 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
 
             }
         })
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestThePermissions()
+            return
+        }
+        locationManager.requestLocationUpdates(
+            LocationManager.GPS_PROVIDER,
+            MIN_TIME_BW_UPDATES,
+            MIN_DISTANCE_CHANGE_FOR_UPDATES,
+            locationListener
+        )
+    }
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            if(!isInternetAvailable)
+            {
+                latitude=location.latitude
+                longitude=location.longitude
+
+                Log.d("mytag","$latitude,$longitude")
+                binding.etLocation.setText("$latitude,$longitude")
+            }
+            // Do something with latitude and longitude
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+        override fun onProviderEnabled(provider: String) {}
+
+        override fun onProviderDisabled(provider: String) {}
+    }
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 100
+        private const val MIN_TIME_BW_UPDATES: Long = 1000 * 60 * 1 // 1 minute
+        private const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Float = 10f // 10 meters
     }
     private fun isLocationEnabled(): Boolean {
         val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -394,7 +440,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private suspend fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it) }
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
             outputStream?.flush()
             outputStream?.close()
            val imageFile=bitmapToFile(context,bitmap)
@@ -402,8 +448,8 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                 Compressor.compress(context, it) {
                     format(Bitmap.CompressFormat.JPEG)
                     resolution(780,1360)
-                    quality(30)
-                    size(100000) // 500 KB
+                    quality(100)
+                    size(500000) // 500 KB
                 }
             }
             compressedImageFile?.let { compressedFile:File ->

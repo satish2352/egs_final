@@ -248,7 +248,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                         intent.putExtra("id",mgnregaCardId)
                         intent.putExtra("LabourInputData", labourInputData)
                         startActivity(intent)
-                        Toast.makeText(this@LabourUpdateOnline1Activity,"Information updated successsfully",Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@LabourUpdateOnline1Activity,response.body()?.message,Toast.LENGTH_LONG).show()
                     }
                 }else{
                     withContext(Dispatchers.Main){

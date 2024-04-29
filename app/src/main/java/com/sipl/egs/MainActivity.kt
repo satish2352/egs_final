@@ -42,7 +42,8 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
     private var isInternetAvailable=false
     private lateinit var noInternetDialog: NoInternetDialog
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-
+    private lateinit var builder:AlertDialog.Builder
+    private lateinit var dialogEnableLocation:AlertDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -99,6 +100,21 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
             } else {
                 requestLocationUpdates()
             }
+            builder= AlertDialog.Builder(this@MainActivity)
+            builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
+                .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
+                    dialog.dismiss()
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }.setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                    // Handle the case when the user refuses to enable location services
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Unable to retrieve location without enabling location services",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+             dialogEnableLocation = builder.create()
 
         } catch (e: Exception) {
             Log.d("mytag","Exception "+e.message)
@@ -188,6 +204,8 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
         super.onResume()
         if(!isLocationEnabled()){
             showEnableLocationDialog()
+        }else{
+            dialogEnableLocation.dismiss()
         }
     }
 
@@ -221,27 +239,15 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
         return super.onOptionsItemSelected(item)
     }
     private fun showEnableLocationDialog() {
-        val builder = AlertDialog.Builder(this@MainActivity)
-        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
-            .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
-                dialog.dismiss()
-                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }.setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss()
-                // Handle the case when the user refuses to enable location services
-                Toast.makeText(
-                    this@MainActivity,
-                    "Unable to retrieve location without enabling location services",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        val alert = builder.create()
-        alert.show()
+
+       dialogEnableLocation.show()
     }
 
     override fun onLocationStateChange(status: Boolean) {
         if(!status){
             showEnableLocationDialog()
+        }else{
+            dialogEnableLocation.dismiss()
         }
     }
 
