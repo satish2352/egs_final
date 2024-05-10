@@ -182,4 +182,16 @@
     <string name="not_approved_labours">Not Approved Labours</string>
     <string name="file_download_started">file download started</string>
     <string name="no_pdf_viewer_application_found">No PDF viewer application found</string>
+    <string name="invalid_content">Content Not Found Please Scan Valid QR Code</string>
+    <string name="please_enter_all_details">Please Enter All Details</string>
+    <string name="exit">Exit</string>
+    <string name="are_you_sure_you_want_to_exit_this_screen">Are you sure you want to exit this screen?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="add_all_required_details_and_documents"><![CDATA[Please add required details & documents]]></string>
+    <string name="unable_to_retrive_location">Unable to retrive location please enable it</string>
+    <string name="enable_location_services_message"><![CDATA[Location services are disabled. App requires location for core features please enable gps & location.?]]></string>
+    <string name="labour_information_updated_successfully">Labour information updated successfully</string>
+    <string name="labour_details_not_updated_please_try_again">"Labour details not updated please try again "</string>
+    <string name="mgnrega_card_id_already_exists_with_another_user">Mgnrega Card Id already exists with another user</string>
 </resources>

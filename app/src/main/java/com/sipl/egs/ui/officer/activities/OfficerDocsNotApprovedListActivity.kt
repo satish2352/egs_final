@@ -119,7 +119,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity(),
                         } else {
                             Toast.makeText(
                                 this@OfficerDocsNotApprovedListActivity,
-                                resources.getString(R.string.please_try_again),
+                                response.body()?.message,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

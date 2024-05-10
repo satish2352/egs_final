@@ -221,7 +221,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             }
 
         } catch (e: Exception) {
-
+            Log.d("mytag","Exception "+e.message,e);
         }
     }
     private fun sendApprovedToServer() {
@@ -419,6 +419,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         } catch (e: Exception) {
             dialog.dismiss()
             e.printStackTrace()
+            Log.d("mytag","Exception "+e.message,e);
         }catch (t:Throwable){
 
         }
@@ -452,7 +453,7 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
                 dialog.dismiss()
             }
         } catch (e: Exception) {
-
+            Log.d("mytag","Exception "+e.message,e);
         }
     }
 

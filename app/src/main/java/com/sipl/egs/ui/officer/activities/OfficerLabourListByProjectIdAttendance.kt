@@ -98,20 +98,18 @@ class OfficerLabourListByProjectIdAttendance : AppCompatActivity(),
                             binding.recyclerViewPageNumbers.adapter=pageAdapter
                             pageAdapter.notifyDataSetChanged()
                             paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
-
                         }else {
-
                             paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerLabourListByProjectIdAttendance)
                             paginationLayoutManager=LinearLayoutManager(this@OfficerLabourListByProjectIdAttendance, RecyclerView.HORIZONTAL,false)
                             binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
                             binding.recyclerViewPageNumbers.adapter=paginationAdapter
                             paginationAdapter.notifyDataSetChanged()
 
-                            Toast.makeText(this@OfficerLabourListByProjectIdAttendance, "No records found", Toast.LENGTH_SHORT)
+                            Toast.makeText(this@OfficerLabourListByProjectIdAttendance, resources.getString(R.string.no_records_found), Toast.LENGTH_SHORT)
                                 .show()
                         }
                     } else{
-                        Toast.makeText(this@OfficerLabourListByProjectIdAttendance, "Response unsuccessful", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@OfficerLabourListByProjectIdAttendance, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
                     }
 
                 }

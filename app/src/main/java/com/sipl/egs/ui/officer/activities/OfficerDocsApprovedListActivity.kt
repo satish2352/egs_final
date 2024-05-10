@@ -110,12 +110,11 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
                         } else {
                             Toast.makeText(
                                 this@OfficerDocsApprovedListActivity,
-                                resources.getString(R.string.please_try_again),
+                                response.body()?.message,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     } else {
-
                         Toast.makeText(
                             this@OfficerDocsApprovedListActivity,
                             resources.getString(R.string.please_try_again),

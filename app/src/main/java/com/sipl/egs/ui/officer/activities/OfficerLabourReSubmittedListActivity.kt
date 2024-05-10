@@ -110,7 +110,7 @@ class OfficerLabourReSubmittedListActivity : AppCompatActivity(),
                         } else {
                             Toast.makeText(
                                 this@OfficerLabourReSubmittedListActivity,
-                                resources.getString(R.string.please_try_again),
+                                response.body()?.message,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

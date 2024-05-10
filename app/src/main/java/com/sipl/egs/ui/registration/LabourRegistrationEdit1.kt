@@ -145,29 +145,11 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
                 initializeFields()
 
-               /* binding.etMgnregaIdNumber.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-                    }
-
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-                    }
-                    override fun afterTextChanged(s: Editable?) {
-                        if(s?.length==8){
-                            if(isInternetAvailable){
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    checkIfMgnregaIdExists(s.toString())
-                                }
-                            }
-                        }
-                    }
-                })*/
                 binding.etMgnregaIdNumber.setOnFocusChangeListener { view: View, hasFocus:Boolean ->
                     if(!hasFocus){
                         if(isInternetAvailable){
                             CoroutineScope(Dispatchers.IO).launch {
-                                if(binding.etMgnregaIdNumber.text.toString().length>0)
+                                if(binding.etMgnregaIdNumber.text.toString().length==10)
                                 {
                                     checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
                                 }
@@ -184,7 +166,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                 districtNames.add(district.name)
             }
         }
-
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
             .subscribeOn(Schedulers.io())
@@ -200,11 +181,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
         binding.btnNext.setOnClickListener {
             if (validateFieldsX())
             {
-                Log.d("mytag","gender Id "+genderId)
-                Log.d("mytag","skill Id "+skillId)
-                Log.d("mytag","dist Id "+districtId)
-                Log.d("mytag","taluka Id "+talukaId)
-                Log.d("mytag","Village Id "+villageId)
                 labour.fullName= binding.etFullName.text.toString()
                 labour.dob= binding.etDob.text.toString()
                 labour.district= districtId
@@ -234,28 +210,20 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                            runOnUiThread {  updateLabourDetails() }
                         }
                     }
-
                 } else {
                     updateLabourDetails()
                 }
-
-
-
             } else {
-
-                val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
+                val toast = Toast.makeText(this@LabourRegistrationEdit1, resources.getString(R.string.please_enter_all_details), Toast.LENGTH_SHORT)
                 toast.show()
             }
-
-
-
         }
         binding.btnUpdateLabour.setOnClickListener {
             if (validateFieldsX())
             {
             } else {
 
-                val toast = Toast.makeText(applicationContext, "Please enter all details", Toast.LENGTH_SHORT)
+                val toast = Toast.makeText(this@LabourRegistrationEdit1, resources.getString(R.string.please_enter_all_details), Toast.LENGTH_SHORT)
                 toast.show()
             }
         }
@@ -263,13 +231,13 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
             override fun handleOnBackPressed() {
 
                 val builder = AlertDialog.Builder(this@LabourRegistrationEdit1)
-                builder.setTitle("Exit")
-                    .setMessage("Are you sure you want to exit this screen?")
-                    .setPositiveButton("Yes") { _, _ ->
+                builder.setTitle(resources.getString(R.string.exit))
+                    .setMessage(resources.getString(R.string.are_you_sure_you_want_to_exit_this_screen))
+                    .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
                         // If "Yes" is clicked, exit the app
                         finish()
                     }
-                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .setNegativeButton(resources.getString(R.string.no), null) // If "No" is clicked, do nothing
                     .show()
 
             }
@@ -277,29 +245,35 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     }
 
     private fun updateLabourDetails(){
-        CoroutineScope(Dispatchers.IO).launch {
-            var row=labourDao.updateLabour(labour)
-            Log.d("mytag",""+row)
-            if(row>0){
-                runOnUiThread {
-                    val intent = Intent(this@LabourRegistrationEdit1, LabourRegistrationEdit2::class.java)
-                    intent.putExtra("id",labour.id.toString())
-                    intent.putExtra("LabourInputData", labourInputData)
-                    startActivity(intent)
-                    val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour updated successfully",
-                        Toast.LENGTH_SHORT)
-                    toast.show()
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                var row=labourDao.updateLabour(labour)
+                if(row>0){
+                    runOnUiThread {
+                        val intent = Intent(this@LabourRegistrationEdit1, LabourRegistrationEdit2::class.java)
+                        intent.putExtra("id",labour.id.toString())
+                        intent.putExtra("LabourInputData", labourInputData)
+                        startActivity(intent)
+                        val toast= Toast.makeText(this@LabourRegistrationEdit1,
+                            getString(R.string.labour_information_updated_successfully),
+                            Toast.LENGTH_SHORT)
+                        toast.show()
 
-                }
-            }else{
-                runOnUiThread {
-                    val toast= Toast.makeText(this@LabourRegistrationEdit1,"Labour not updated please try again ",
-                        Toast.LENGTH_SHORT)
-                    toast.show()
+                    }
+                }else{
+                    runOnUiThread {
+                        val toast= Toast.makeText(this@LabourRegistrationEdit1,
+                            getString(R.string.labour_details_not_updated_please_try_again),
+                            Toast.LENGTH_SHORT)
+                        toast.show()
+                    }
                 }
             }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourRegistrationEdit1: ${e.message}", e)
+            e.printStackTrace()
         }
-        Log.d("mytag","After")
+
     }
 
     private suspend fun checkIfMgnregaIdExists(mgnregaId: String):Boolean {
@@ -323,7 +297,8 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                             Log.d("mytag"," exists")
                             runOnUiThread {
                                 isMgnregaIdVerified=false
-                                binding.etMgnregaIdNumber.error="Mgnrega Card Id already exists with another user"
+                                binding.etMgnregaIdNumber.error=
+                                    getString(R.string.mgnrega_card_id_already_exists_with_another_user)
                             }
                             withContext(Dispatchers.Main){
                                 Toast.makeText(this@LabourRegistrationEdit1,response.body()?.message,
@@ -334,7 +309,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                             withContext(Dispatchers.Main){
                                 isMgnregaIdVerified=true
                             }
-                            Log.d("mytag","Not exists for any labour")
                             runOnUiThread {
                                 binding.etMgnregaIdNumber.error=null }
 
@@ -355,7 +329,6 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                         Toast.makeText(this@LabourRegistrationEdit1,resources.getString(R.string.response_failed),
                             Toast.LENGTH_SHORT).show()
                     }
-                    Log.d("mytag","checkIfAadharCardExists "+e.message)
                 }
             }
         }
@@ -370,13 +343,13 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
             val builder = AlertDialog.Builder(this@LabourRegistrationEdit1)
-            builder.setTitle("Exit Confirmation")
-                .setMessage("Are you sure you want to exit?")
-                .setPositiveButton("Yes") { _, _ ->
+            builder.setTitle(resources.getString(R.string.exit))
+                .setMessage(resources.getString(R.string.are_you_sure_you_want_to_exit_this_screen))
+                .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
                     // If "Yes" is clicked, exit the app
                     finish()
                 }
-                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .setNegativeButton(resources.getString(R.string.yes), null) // If "No" is clicked, do nothing
                 .show()
         }
         return super.onOptionsItemSelected(item)
@@ -384,108 +357,113 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
 
 
     private fun initializeFields() {
-        binding.etFullName.setText(labour.fullName)
-        binding.etDob.setText(labour.dob)
-        binding.etMobileNumber.setText(labour.mobile)
-        binding.etLandLine.setText(labour.landline)
-        binding.etMgnregaIdNumber.setText(labour.mgnregaId)
-        genderId=prevSelectedGender.id.toString()
-        villageId=prevSelectedVillage.id.toString()
-        skillId=prevSelectedSkill.id.toString()
-        districtId=prevselectedDistrict.id.toString()
-        talukaId=prevSelectedTaluka.id.toString()
-        binding.actGender.setOnFocusChangeListener { abaad, asd ->
-            binding.actGender.showDropDown()
-        }
-        binding.actGender.setOnClickListener {
-            binding.actGender.showDropDown()
-        }
-        binding.actGender.setOnItemClickListener { parent, view, position, id ->
-            genderId=genderList[position].id.toString()
-        }
-        binding.actSkill.setOnItemClickListener { parent, view, position, id ->
-            skillId=skillsList[position].id.toString()
-        }
-        binding.actSkill.setOnClickListener {
-            binding.actSkill.showDropDown()
-        }
-        binding.actSkill.setOnFocusChangeListener { v, hasFocus ->
-            binding.actSkill.showDropDown()
-        }
-        binding.etDob.setOnClickListener {
-
-            showDatePickerDialog()
-            //showDatePicker()
-        }
-        binding.actVillage.setOnFocusChangeListener { abaad, asd ->
-            binding.actVillage.showDropDown()
-        }
-        binding.actVillage.setOnClickListener {
-            binding.actVillage.showDropDown()
-        }
-        val districtAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, districtNames
-        )
-        binding.actDistrict.setAdapter(districtAdapter)
-        binding.actDistrict.setOnItemClickListener { parent, view, position, id ->
-            districtId=districtList[position].location_id
-            binding.actTaluka.setText("")
-            binding.actVillage.setText("")
-            CoroutineScope(Dispatchers.IO).launch {
-                talukaNames.clear();
-                talukaList=areaDao.getAllTalukas(districtList[position].location_id)
-                for (taluka in talukaList){
-                    talukaNames.add(taluka.name)
-                }
-                val talukaAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, talukaNames
-                )
-                withContext(Dispatchers.Main){
-                    binding.actTaluka.setAdapter(talukaAdapter)
-                }
+        try {
+            binding.etFullName.setText(labour.fullName)
+            binding.etDob.setText(labour.dob)
+            binding.etMobileNumber.setText(labour.mobile)
+            binding.etLandLine.setText(labour.landline)
+            binding.etMgnregaIdNumber.setText(labour.mgnregaId)
+            genderId=prevSelectedGender.id.toString()
+            villageId=prevSelectedVillage.id.toString()
+            skillId=prevSelectedSkill.id.toString()
+            districtId=prevselectedDistrict.id.toString()
+            talukaId=prevSelectedTaluka.id.toString()
+            binding.actGender.setOnFocusChangeListener { abaad, asd ->
+                binding.actGender.showDropDown()
             }
-        }
-        binding.actTaluka.setOnItemClickListener { parent, view, position, id ->
-            CoroutineScope(Dispatchers.IO).launch {
-                talukaId=talukaList[position].location_id
-                villageNames.clear();
+            binding.actGender.setOnClickListener {
+                binding.actGender.showDropDown()
+            }
+            binding.actGender.setOnItemClickListener { parent, view, position, id ->
+                genderId=genderList[position].id.toString()
+            }
+            binding.actSkill.setOnItemClickListener { parent, view, position, id ->
+                skillId=skillsList[position].id.toString()
+            }
+            binding.actSkill.setOnClickListener {
+                binding.actSkill.showDropDown()
+            }
+            binding.actSkill.setOnFocusChangeListener { v, hasFocus ->
+                binding.actSkill.showDropDown()
+            }
+            binding.etDob.setOnClickListener {
+
+                showDatePickerDialog()
+                //showDatePicker()
+            }
+            binding.actVillage.setOnFocusChangeListener { abaad, asd ->
+                binding.actVillage.showDropDown()
+            }
+            binding.actVillage.setOnClickListener {
+                binding.actVillage.showDropDown()
+            }
+            val districtAdapter = ArrayAdapter(
+                this, android.R.layout.simple_list_item_1, districtNames
+            )
+            binding.actDistrict.setAdapter(districtAdapter)
+            binding.actDistrict.setOnItemClickListener { parent, view, position, id ->
+                districtId=districtList[position].location_id
+                binding.actTaluka.setText("")
                 binding.actVillage.setText("")
-                villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
-                for (village in villageList){
-                    villageNames.add(village.name)
-                }
-                val villageAdapter = ArrayAdapter(
-                    this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, villageNames
-                )
-                Log.d("mytag",""+villageNames.size)
-                withContext(Dispatchers.Main){
-                    binding.actVillage.setAdapter(villageAdapter)
-
+                CoroutineScope(Dispatchers.IO).launch {
+                    talukaNames.clear();
+                    talukaList=areaDao.getAllTalukas(districtList[position].location_id)
+                    for (taluka in talukaList){
+                        talukaNames.add(taluka.name)
+                    }
+                    val talukaAdapter = ArrayAdapter(
+                        this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, talukaNames
+                    )
+                    withContext(Dispatchers.Main){
+                        binding.actTaluka.setAdapter(talukaAdapter)
+                    }
                 }
             }
-        }
+            binding.actTaluka.setOnItemClickListener { parent, view, position, id ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    talukaId=talukaList[position].location_id
+                    villageNames.clear();
+                    binding.actVillage.setText("")
+                    villageList=areaDao.getVillageByTaluka(talukaList[position].location_id)
+                    for (village in villageList){
+                        villageNames.add(village.name)
+                    }
+                    val villageAdapter = ArrayAdapter(
+                        this@LabourRegistrationEdit1, android.R.layout.simple_list_item_1, villageNames
+                    )
+                    Log.d("mytag",""+villageNames.size)
+                    withContext(Dispatchers.Main){
+                        binding.actVillage.setAdapter(villageAdapter)
 
-        binding.actVillage.setOnItemClickListener { parent, view, position, id ->
-            villageId=villageList[position].location_id
-        }
+                    }
+                }
+            }
 
-        binding.actDistrict.setOnFocusChangeListener { abaad, asd ->
-            binding.actDistrict.showDropDown()
-        }
-        binding.actDistrict.setOnClickListener {
-            binding.actDistrict.showDropDown()
-        }
-        binding.actTaluka.setOnFocusChangeListener { abaad, asd ->
-            binding.actTaluka.showDropDown()
-        }
-        binding.actTaluka.setOnClickListener {
-            binding.actTaluka.showDropDown()
-        }
-        binding.actVillage.setOnFocusChangeListener { abaad, asd ->
-            binding.actVillage.showDropDown()
-        }
-        binding.actVillage.setOnClickListener {
-            binding.actVillage.showDropDown()
+            binding.actVillage.setOnItemClickListener { parent, view, position, id ->
+                villageId=villageList[position].location_id
+            }
+
+            binding.actDistrict.setOnFocusChangeListener { abaad, asd ->
+                binding.actDistrict.showDropDown()
+            }
+            binding.actDistrict.setOnClickListener {
+                binding.actDistrict.showDropDown()
+            }
+            binding.actTaluka.setOnFocusChangeListener { abaad, asd ->
+                binding.actTaluka.showDropDown()
+            }
+            binding.actTaluka.setOnClickListener {
+                binding.actTaluka.showDropDown()
+            }
+            binding.actVillage.setOnFocusChangeListener { abaad, asd ->
+                binding.actVillage.showDropDown()
+            }
+            binding.actVillage.setOnClickListener {
+                binding.actVillage.showDropDown()
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourRegistrationEdit1: ${e.message}", e)
+            e.printStackTrace()
         }
 
 
@@ -573,7 +551,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length >0 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length ==10 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {

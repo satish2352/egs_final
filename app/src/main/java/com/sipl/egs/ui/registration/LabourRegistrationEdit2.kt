@@ -294,13 +294,13 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
             override fun handleOnBackPressed() {
 
                 val builder = AlertDialog.Builder(this@LabourRegistrationEdit2)
-                builder.setTitle("Exit")
-                    .setMessage("Are you sure you want to exit this screen?")
-                    .setPositiveButton("Yes") { _, _ ->
+                builder.setTitle(resources.getString(R.string.exit))
+                    .setMessage(resources.getString(R.string.are_you_sure_you_want_to_exit_this_screen))
+                    .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
                         // If "Yes" is clicked, exit the app
                         finish()
                     }
-                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .setNegativeButton(resources.getString(R.string.no), null) // If "No" is clicked, do nothing
                     .show()
 
             }
@@ -332,13 +332,18 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     }
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            if(!isInternetAvailable)
-            {
-                latitude=location.latitude
-                longitude=location.longitude
+            try {
+                if(!isInternetAvailable)
+                {
+                    latitude=location.latitude
+                    longitude=location.longitude
 
-                Log.d("mytag","$latitude,$longitude")
-                binding.etLocation.setText("$latitude,$longitude")
+                    Log.d("mytag","$latitude,$longitude")
+                    binding.etLocation.setText("$latitude,$longitude")
+                }
+            } catch (e: Exception) {
+                Log.d("mytag", "LabourRegistrationEdit2: ${e.message}", e)
+                e.printStackTrace()
             }
             // Do something with latitude and longitude
         }
@@ -355,44 +360,49 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
          const val MIN_DISTANCE_CHANGE_FOR_UPDATES: Float = 10f // 10 meters
     }
     private fun requestLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Request location permissions
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                1000
-            )
-            return
-        }
-
-        // Request last known location
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
-                location?.let {
-                    val currentLatLng = LatLng(it.latitude, it.longitude)
-                    latitude = it.latitude
-                    longitude = it.longitude
-                    // Update UI with latitude and longitude
-                    // Note: getAddressFromLatLong() needs to be implemented to fetch address
-                    // from latitude and longitude
-                    binding.etLocation.setText("${it.latitude},${it.longitude}")
-                    addressFromLatLong = getAddressFromLatLong()
-                } ?: run {
-                    // Handle case where location is null
-                    Toast.makeText(
-                        this@LabourRegistrationEdit2,
-                        "Unable to retrieve location",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        try {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Request location permissions
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    1000
+                )
+                return
             }
+
+            // Request last known location
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    location?.let {
+                        val currentLatLng = LatLng(it.latitude, it.longitude)
+                        latitude = it.latitude
+                        longitude = it.longitude
+                        // Update UI with latitude and longitude
+                        // Note: getAddressFromLatLong() needs to be implemented to fetch address
+                        // from latitude and longitude
+                        binding.etLocation.setText("${it.latitude},${it.longitude}")
+                        addressFromLatLong = getAddressFromLatLong()
+                    } ?: run {
+                        // Handle case where location is null
+                        Toast.makeText(
+                            this@LabourRegistrationEdit2,
+                            "Unable to retrieve location",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourRegistrationEdit2 ${e.message}", e)
+            e.printStackTrace()
+        }
     }
     override fun onResume() {
         super.onResume()
@@ -406,18 +416,18 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     }
     private fun showEnableLocationDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
+        builder.setMessage(resources.getString(R.string.enable_location_services_message))
             .setCancelable(false)
-            .setPositiveButton("Yes") { dialog, _ ->
+            .setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
                 dialog.dismiss()
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
-            .setNegativeButton("No") { dialog, _ ->
+            .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                 dialog.dismiss()
                 // Handle the case when the user refuses to enable location services
                 Toast.makeText(
                     this@LabourRegistrationEdit2,
-                    "Unable to retrieve location without enabling location services",
+                    resources.getString(R.string.unable_to_retrive_location),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -427,23 +437,28 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     private fun initializeFields() {
         Log.d("mytag","initializeFields "+labour.familyDetails)
 
-        binding.etLocation.setText(labour.location)
-        loadWithGlideFromUri(labour.aadharImage,binding.ivAadhar)
-        loadWithGlideFromUri(labour.mgnregaIdImage,binding.ivMgnregaCard)
-        loadWithGlideFromUri(labour.voterIdImage,binding.ivVoterId)
-        loadWithGlideFromUri(labour.photo,binding.ivPhoto)
-        voterIdImagePath=labour.voterIdImage
-        photoImagePath=labour.photo
-        aadharIdImagePath=labour.aadharImage
-        mgnregaIdImagePath=labour.mgnregaIdImage
-        val gson=Gson()
-        val familyList: ArrayList<FamilyDetails> = gson.fromJson(labour.familyDetails, object : TypeToken<ArrayList<FamilyDetails>>() {}.type)
-        familyDetailsList=familyList
-        adapter= FamilyDetailsAdapter(familyDetailsList,this)
-        binding.recyclerViewFamilyDetails.adapter=adapter
-        adapter.notifyDataSetChanged()
-        Log.d("mytag",labour.familyDetails)
-        Log.d("mytag",""+familyList.size)
+        try {
+            binding.etLocation.setText(labour.location)
+            loadWithGlideFromUri(labour.aadharImage,binding.ivAadhar)
+            loadWithGlideFromUri(labour.mgnregaIdImage,binding.ivMgnregaCard)
+            loadWithGlideFromUri(labour.voterIdImage,binding.ivVoterId)
+            loadWithGlideFromUri(labour.photo,binding.ivPhoto)
+            voterIdImagePath=labour.voterIdImage
+            photoImagePath=labour.photo
+            aadharIdImagePath=labour.aadharImage
+            mgnregaIdImagePath=labour.mgnregaIdImage
+            val gson=Gson()
+            val familyList: ArrayList<FamilyDetails> = gson.fromJson(labour.familyDetails, object : TypeToken<ArrayList<FamilyDetails>>() {}.type)
+            familyDetailsList=familyList
+            adapter= FamilyDetailsAdapter(familyDetailsList,this)
+            binding.recyclerViewFamilyDetails.adapter=adapter
+            adapter.notifyDataSetChanged()
+            Log.d("mytag",labour.familyDetails)
+            Log.d("mytag",""+familyList.size)
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourUpdateOnilne1 ${e.message}", e)
+            e.printStackTrace()
+        }
     }
     private fun loadWithGlideFromUri(uri: String, imageView: ImageView) {
         Glide.with(this@LabourRegistrationEdit2)
@@ -489,116 +504,126 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
 
     private fun getTheLocation() {
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestThePermissions()
-            return
-        }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
-                location?.let {
-                    val currentLatLng = LatLng(it.latitude, it.longitude)
-                    latitude=it.latitude
-                    longitude=it.longitude
-                    binding.etLocation.setText("${it.latitude},${it.longitude}")
-                    addressFromLatLong=getAddressFromLatLong()
-                } ?: run {
-                    Toast.makeText(
-                        this@LabourRegistrationEdit2,
-                        "Unable to retrieve location",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        try {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                requestThePermissions()
+                return
             }
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location ->
+                    location?.let {
+                        val currentLatLng = LatLng(it.latitude, it.longitude)
+                        latitude=it.latitude
+                        longitude=it.longitude
+                        binding.etLocation.setText("${it.latitude},${it.longitude}")
+                        addressFromLatLong=getAddressFromLatLong()
+                    } ?: run {
+                        Toast.makeText(
+                            this@LabourRegistrationEdit2,
+                            resources.getString(R.string.unable_to_retrive_location),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourUpdateOnilne1 ${e.message}", e)
+            e.printStackTrace()
+        }
     }
 
     private fun showAddFamilyDetailsDialog() {
-        val dialog= Dialog(this@LabourRegistrationEdit2)
-        dialog.setContentView(R.layout.layout_dialog_add_family_details)
-        val width = ViewGroup.LayoutParams.MATCH_PARENT
-        val height = ViewGroup.LayoutParams.WRAP_CONTENT
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(width, height)
-        dialog.show()
+        try {
+            val dialog= Dialog(this@LabourRegistrationEdit2)
+            dialog.setContentView(R.layout.layout_dialog_add_family_details)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window?.setLayout(width, height)
+            dialog.show()
 
 
-        etFullName=dialog.findViewById<EditText>(R.id.etFullName)
-        etDob=dialog.findViewById<AutoCompleteTextView>(R.id.etDob)
-        actRelationship=dialog.findViewById<AutoCompleteTextView>(R.id.actRelationShip)
-        actMaritalStatus=dialog.findViewById<AutoCompleteTextView>(R.id.actMaritalStatus)
-        actGenderFamily=dialog.findViewById<AutoCompleteTextView>(R.id.actGenderFamily)
-        btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
+            etFullName=dialog.findViewById<EditText>(R.id.etFullName)
+            etDob=dialog.findViewById<AutoCompleteTextView>(R.id.etDob)
+            actRelationship=dialog.findViewById<AutoCompleteTextView>(R.id.actRelationShip)
+            actMaritalStatus=dialog.findViewById<AutoCompleteTextView>(R.id.actMaritalStatus)
+            actGenderFamily=dialog.findViewById<AutoCompleteTextView>(R.id.actGenderFamily)
+            btnSubmit=dialog.findViewById<Button>(R.id.btnSubmit)
 
 
-        val relationshipAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, relationNames
-        )
-        actRelationship.setAdapter(relationshipAdapter)
-        val maritalStatusAdapter = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, maritalStatusNames
-        )
-        actMaritalStatus.setAdapter(maritalStatusAdapter)
+            val relationshipAdapter = ArrayAdapter(
+                this, android.R.layout.simple_list_item_1, relationNames
+            )
+            actRelationship.setAdapter(relationshipAdapter)
+            val maritalStatusAdapter = ArrayAdapter(
+                this, android.R.layout.simple_list_item_1, maritalStatusNames
+            )
+            actMaritalStatus.setAdapter(maritalStatusAdapter)
 
-        actRelationship.setOnFocusChangeListener { abaad, asd ->
-            actRelationship.showDropDown()
-        }
-
-        actRelationship.setOnClickListener {
-            actRelationship.showDropDown()
-        }
-        actMaritalStatus.setOnClickListener {
-            actMaritalStatus.showDropDown()
-        }
-        actMaritalStatus.setOnFocusChangeListener {abaad, asd ->
-            actMaritalStatus.showDropDown()
-        }
-        val genderAdapter1 = ArrayAdapter(
-            this, android.R.layout.simple_list_item_1, genderNames
-        )
-        actGenderFamily.setAdapter(genderAdapter1)
-        actGenderFamily.setOnFocusChangeListener { abaad, asd ->
-            actGenderFamily.showDropDown()
-        }
-        actGenderFamily.setOnClickListener {
-            actGenderFamily.showDropDown()
-        }
-        btnSubmit.setOnClickListener {
-            if(validateFields())
-            {
-                val familyMember=FamilyDetails(
-                    fullName = etFullName.text.toString(),
-                    dob = etDob.text.toString(),
-                    relationship = actRelationship.text.toString(),
-                    maritalStatus = actMaritalStatus.text.toString(),
-                    gender = actGenderFamily.text.toString(),
-                    genderId=genderId,
-                    maritalStatusId=maritalStatusId,
-                    relationId = relationId
-                )
-                familyDetailsList.add(familyMember)
-                adapter.notifyDataSetChanged()
-                dialog.dismiss()
-            }else{
-
+            actRelationship.setOnFocusChangeListener { abaad, asd ->
+                actRelationship.showDropDown()
             }
-        }
-        etDob.setOnClickListener {
-            showDatePicker()
-        }
-        actGenderFamily.setOnItemClickListener { parent, view, position, id ->
-            genderId=genderList[position].id.toString()
-        }
-        actRelationship.setOnItemClickListener { parent, view, position, id ->
-            relationId=relationList[position].id.toString()
-        }
-        actMaritalStatus.setOnItemClickListener { parent, view, position, id ->
-            maritalStatusId=maritalStatusList[position].id.toString()
+
+            actRelationship.setOnClickListener {
+                actRelationship.showDropDown()
+            }
+            actMaritalStatus.setOnClickListener {
+                actMaritalStatus.showDropDown()
+            }
+            actMaritalStatus.setOnFocusChangeListener {abaad, asd ->
+                actMaritalStatus.showDropDown()
+            }
+            val genderAdapter1 = ArrayAdapter(
+                this, android.R.layout.simple_list_item_1, genderNames
+            )
+            actGenderFamily.setAdapter(genderAdapter1)
+            actGenderFamily.setOnFocusChangeListener { abaad, asd ->
+                actGenderFamily.showDropDown()
+            }
+            actGenderFamily.setOnClickListener {
+                actGenderFamily.showDropDown()
+            }
+            btnSubmit.setOnClickListener {
+                if(validateFields())
+                {
+                    val familyMember=FamilyDetails(
+                        fullName = etFullName.text.toString(),
+                        dob = etDob.text.toString(),
+                        relationship = actRelationship.text.toString(),
+                        maritalStatus = actMaritalStatus.text.toString(),
+                        gender = actGenderFamily.text.toString(),
+                        genderId=genderId,
+                        maritalStatusId=maritalStatusId,
+                        relationId = relationId
+                    )
+                    familyDetailsList.add(familyMember)
+                    adapter.notifyDataSetChanged()
+                    dialog.dismiss()
+                }else{
+
+                }
+            }
+            etDob.setOnClickListener {
+                showDatePicker()
+            }
+            actGenderFamily.setOnItemClickListener { parent, view, position, id ->
+                genderId=genderList[position].id.toString()
+            }
+            actRelationship.setOnItemClickListener { parent, view, position, id ->
+                relationId=relationList[position].id.toString()
+            }
+            actMaritalStatus.setOnItemClickListener { parent, view, position, id ->
+                maritalStatusId=maritalStatusList[position].id.toString()
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourUpdateOnilne1 ${e.message}", e)
+            e.printStackTrace()
         }
 
     }
@@ -641,18 +666,23 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
         return !validationResults.contains(false);
     }
     private fun showDatePicker() {
-        val calendar = Calendar.getInstance()
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        val datePickerDialog = DatePickerDialog(
-            this, { view, year, monthOfYear, dayOfMonth ->
-                val selectedDate = formatDate(dayOfMonth, monthOfYear, year)
-                etDob.setText(selectedDate)
-            }, year, month, day
-        )
-        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
-        datePickerDialog.show()
+        try {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+            val datePickerDialog = DatePickerDialog(
+                this, { view, year, monthOfYear, dayOfMonth ->
+                    val selectedDate = formatDate(dayOfMonth, monthOfYear, year)
+                    etDob.setText(selectedDate)
+                }, year, month, day
+            )
+            datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+            datePickerDialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourUpdateOnilne1 ${e.message}", e)
+            e.printStackTrace()
+        }
     }
 
     private fun formatDate(day: Int, month: Int, year: Int): String {
@@ -673,34 +703,39 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     }
     private fun requestThePermissions() {
 
-        PermissionX.init(this@LabourRegistrationEdit2)
-            .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
-            .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
-            }
-            .onForwardToSettings { scope, deniedList ->
-                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
-            }
-            .request { allGranted, grantedList, deniedList ->
-                if (allGranted) {
-                    //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
-                    //val dashboardFragment=DashboardFragment();
-                    //dashboardFragment.updateMarker()
-                } else {
-                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+        try {
+            PermissionX.init(this@LabourRegistrationEdit2)
+                .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
+                .onExplainRequestReason { scope, deniedList ->
+                    scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
                 }
-            }
+                .onForwardToSettings { scope, deniedList ->
+                    scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+                }
+                .request { allGranted, grantedList, deniedList ->
+                    if (allGranted) {
+                        //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                        //val dashboardFragment=DashboardFragment();
+                        //dashboardFragment.updateMarker()
+                    } else {
+                        Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                    }
+                }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourUpdateOnilne1 ${e.message}", e)
+            e.printStackTrace()
+        }
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
             val builder = AlertDialog.Builder(this@LabourRegistrationEdit2)
-            builder.setTitle("Exit Confirmation")
-                .setMessage("Are you sure you want to exit?")
-                .setPositiveButton("Yes") { _, _ ->
+            builder.setTitle(resources.getString(R.string.exit))
+                .setMessage(resources.getString(R.string.are_you_sure_you_want_to_exit_this_screen))
+                .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
                     // If "Yes" is clicked, exit the app
                     finish()
                 }
-                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .setNegativeButton(resources.getString(R.string.no), null) // If "No" is clicked, do nothing
                 .show()
         }
         return super.onOptionsItemSelected(item)
@@ -709,22 +744,27 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
 
     private fun showPhotoZoomDialog(uri:String){
 
-        val dialog= Dialog(this@LabourRegistrationEdit2)
-        dialog.setContentView(R.layout.layout_zoom_image)
-        val width = ViewGroup.LayoutParams.MATCH_PARENT
-        val height = ViewGroup.LayoutParams.WRAP_CONTENT
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(width, height)
-        dialog.show()
+        try {
+            val dialog= Dialog(this@LabourRegistrationEdit2)
+            dialog.setContentView(R.layout.layout_zoom_image)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window?.setLayout(width, height)
+            dialog.show()
 
-        val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
-        val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
-        Glide.with(this@LabourRegistrationEdit2)
-            .load(uri)
-            .into(photoView)
+            val photoView=dialog.findViewById<PhotoView>(R.id.photoView)
+            val ivClose=dialog.findViewById<ImageView>(R.id.ivClose)
+            Glide.with(this@LabourRegistrationEdit2)
+                .load(uri)
+                .into(photoView)
 
-        ivClose.setOnClickListener {
-            dialog.dismiss()
+            ivClose.setOnClickListener {
+                dialog.dismiss()
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourUpdateOnilne1 ${e.message}", e)
+            e.printStackTrace()
         }
     }
 
@@ -884,74 +924,79 @@ class LabourRegistrationEdit2 : AppCompatActivity(),OnDeleteListener {
     }
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val requestCode = result.data?.getIntExtra("requestCode", -1)
-        if (result.resultCode == Activity.RESULT_OK) {
-            val capturedImageUri = result.data?.getParcelableExtra<Uri>("capturedImageUri")
+        try {
             val requestCode = result.data?.getIntExtra("requestCode", -1)
-            if (capturedImageUri != null && requestCode != -1) {
+            if (result.resultCode == Activity.RESULT_OK) {
+                val capturedImageUri = result.data?.getParcelableExtra<Uri>("capturedImageUri")
+                val requestCode = result.data?.getIntExtra("requestCode", -1)
+                if (capturedImageUri != null && requestCode != -1) {
 
-                when (requestCode) {
-                    REQUEST_CODE_PHOTO -> {
-                        Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivPhoto)
-                        photoImagePath= capturedImageUri.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourRegistrationEdit2,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
+                    when (requestCode) {
+                        REQUEST_CODE_PHOTO -> {
+                            Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivPhoto)
+                            photoImagePath= capturedImageUri.toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val uri=uriStringToBitmap(this@LabourRegistrationEdit2,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                                withContext(Dispatchers.Main){
+                                    // binding.ivPhoto.setImageBitmap(bitmap)
+                                }
+
                             }
 
                         }
+                        REQUEST_CODE_VOTER_ID -> {
 
+                            Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivVoterId)
+                            voterIdImagePath= capturedImageUri.toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val uri=uriStringToBitmap(this@LabourRegistrationEdit2,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                                withContext(Dispatchers.Main){
+                                    // binding.ivPhoto.setImageBitmap(bitmap)
+                                }
+                            }
+                        }
+                        REQUEST_CODE_AADHAR_CARD -> {
+                            Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivAadhar)
+                            aadharIdImagePath= capturedImageUri.toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val uri=uriStringToBitmap(this@LabourRegistrationEdit2,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
+                                withContext(Dispatchers.Main){
+                                }
+                            }
+                        }
+                        REQUEST_CODE_MGNREGA_CARD -> {
+                            Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivMgnregaCard)
+                            mgnregaIdImagePath= capturedImageUri.toString()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val uri = uriStringToBitmap(
+                                    this@LabourRegistrationEdit2,
+                                    capturedImageUri.toString(),
+                                    binding.etLocation.text.toString(),
+                                    addressFromLatLong
+                                )
+                                withContext(Dispatchers.Main) {
+                                    // binding.ivPhoto.setImageBitmap(bitmap)
+                                }
+                            }
+                        }
+                        else -> {
+                            Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.unknown_request_code),Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    REQUEST_CODE_VOTER_ID -> {
 
-                        Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivVoterId)
-                        voterIdImagePath= capturedImageUri.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourRegistrationEdit2,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            withContext(Dispatchers.Main){
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                            }
-                        }
-                    }
-                    REQUEST_CODE_AADHAR_CARD -> {
-                        Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivAadhar)
-                        aadharIdImagePath= capturedImageUri.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri=uriStringToBitmap(this@LabourRegistrationEdit2,capturedImageUri.toString(),binding.etLocation.text.toString(),addressFromLatLong)
-                            withContext(Dispatchers.Main){
-                            }
-                        }
-                    }
-                    REQUEST_CODE_MGNREGA_CARD -> {
-                        Glide.with(this@LabourRegistrationEdit2).load(capturedImageUri).override(200,200).into(binding.ivMgnregaCard)
-                        mgnregaIdImagePath= capturedImageUri.toString()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            val uri = uriStringToBitmap(
-                                this@LabourRegistrationEdit2,
-                                capturedImageUri.toString(),
-                                binding.etLocation.text.toString(),
-                                addressFromLatLong
-                            )
-                            withContext(Dispatchers.Main) {
-                                // binding.ivPhoto.setImageBitmap(bitmap)
-                            }
-                        }
-                    }
-                    else -> {
-                        Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.unknown_request_code),Toast.LENGTH_SHORT).show()
-                    }
+                } else {
+
+                    Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
                 }
-
-            } else {
-
-                Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
+            } else if (requestCode == Activity.RESULT_CANCELED) {
+                val requestCode = result.data?.getIntExtra("requestCode", -1)
+                if (requestCode != -1) {
+                    Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
+                }
             }
-        } else if (requestCode == Activity.RESULT_CANCELED) {
-            val requestCode = result.data?.getIntExtra("requestCode", -1)
-            if (requestCode != -1) {
-                Toast.makeText(this@LabourRegistrationEdit2,resources.getString(R.string.image_capture_failed),Toast.LENGTH_SHORT).show()
-            }
+        } catch (e: Exception) {
+            Log.d("mytag", "LabourUpdateOnilne1 ${e.message}", e)
+            e.printStackTrace()
         }
     }
 

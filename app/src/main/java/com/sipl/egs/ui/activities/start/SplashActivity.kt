@@ -74,15 +74,15 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var mySharedPref: MySharedPref
     private var allMastersCompleted = false
     private var updateMasterCompleted = false
-    private lateinit var noInternetDialog:NoInternetDialog
-    private  var isInternetAvailable:Boolean=false
+    private lateinit var noInternetDialog: NoInternetDialog
+    private var isInternetAvailable: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         super.onCreate(savedInstanceState)
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
         try {
-            noInternetDialog=NoInternetDialog(this)
+            noInternetDialog = NoInternetDialog(this)
             mySharedPref = MySharedPref(this)
             appDatabase = AppDatabase.getDatabase(this)
             userDao = appDatabase.userDao()
@@ -117,7 +117,7 @@ class SplashActivity : AppCompatActivity() {
             CoroutineScope(Dispatchers.IO).launch {
                 val deviceId = DeviceUtils.getDeviceId(this@SplashActivity)
                 mySharedPref.setDeviceId(deviceId)
-               // userDao.insertInitialRecords()
+                // userDao.insertInitialRecords()
                 checkAllCounts();
                 if (!mySharedPref.getAllAreaEntries()) {
                     if (areaDao.getAllArea().size < 44342) {
@@ -146,16 +146,16 @@ class SplashActivity : AppCompatActivity() {
                     if (mySharedPref.getAtLeastSingleTimeEntriesAdded() == true) {
 
 
-                    }else{
-                        if(!isInternetAvailable){
+                    } else {
+                        if (!isInternetAvailable) {
                             noInternetDialog.showDialog()
                         }
                         binding.buttonRetry.setOnClickListener {
-                            if(isInternetAvailable){
+                            if (isInternetAvailable) {
                                 CoroutineScope(Dispatchers.IO).launch {
                                     fetchAndInsertDataFromApi()
                                 }
-                            }else{
+                            } else {
                                 noInternetDialog.showDialog()
                             }
 
@@ -168,10 +168,11 @@ class SplashActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Log.d("mytag", "SplashActivity: ${e.message}", e)
-
+            e.printStackTrace()
         }
     }
-    private fun navigateToNextActivity(){
+
+    private fun navigateToNextActivity() {
         val mySharedPref = MySharedPref(this@SplashActivity)
         runOnUiThread {
             if (mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId() == 3) {
@@ -202,47 +203,47 @@ class SplashActivity : AppCompatActivity() {
 
     private suspend fun fetchAndInsertDataFromApi() {
 
-        CoroutineScope(Dispatchers.IO).launch {
-            Log.d("mytag", "Before Await")
-            val fetchAllMastersJob = async { fetchMastersFromServer() }
-            val fetchAreaMastersJob = async { fetchAreaMastersToUpdateFromServer() }
-            allMastersCompleted = fetchAllMastersJob.await()
-            updateMasterCompleted = fetchAreaMastersJob.await()
-            // Use the results here
-            if (allMastersCompleted == true && updateMasterCompleted) {
-                Log.d("mytag", "Both Complete ")
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                Log.d("mytag", "Before Await")
+                val fetchAllMastersJob = async { fetchMastersFromServer() }
+                val fetchAreaMastersJob = async { fetchAreaMastersToUpdateFromServer() }
+                allMastersCompleted = fetchAllMastersJob.await()
+                updateMasterCompleted = fetchAreaMastersJob.await()
+                // Use the results here
+                if (allMastersCompleted == true && updateMasterCompleted) {
+                    Log.d("mytag", "Both Complete ")
+                    runOnUiThread {
+                        mySharedPref.setAtLeastSingleTimeEntriesAdded(true)
+                        binding.progressBar.visibility = View.GONE
+                        navigateToNextActivity()
+                    }
+                } else {
+                    Log.d("mytag", "AnyOne Left")
+                    if (!allMastersCompleted!!) {
+                        val fetchAllMastersJob = async { fetchMastersFromServer() }
+                        val allMastersResult = fetchAllMastersJob.await()
+                        allMastersCompleted = allMastersResult!!
+                    }
+                    if (!updateMasterCompleted) {
+                        val fetchAreaMastersJob = async { fetchAreaMastersToUpdateFromServer() }
+                        val updateMastersResult = fetchAreaMastersJob.await()
+                        updateMasterCompleted = updateMastersResult
+                    }
+                    if (!allMastersCompleted && !updateMasterCompleted) {
+                        runOnUiThread { binding.buttonRetry.visibility = View.VISIBLE }
 
-                runOnUiThread {
-                    mySharedPref.setAtLeastSingleTimeEntriesAdded(true)
-                    binding.progressBar.visibility = View.GONE
-                    navigateToNextActivity()
+                    }
+
+                    if (mySharedPref.getAtLeastSingleTimeEntriesAdded() == true) {
+                        navigateToNextActivity()
+                    }
                 }
-            } else {
-                Log.d("mytag", "AnyOne Left")
-                if (!allMastersCompleted!!) {
-                    val fetchAllMastersJob = async { fetchMastersFromServer() }
-                    val allMastersResult = fetchAllMastersJob.await()
-                    allMastersCompleted = allMastersResult!!
-
-                }
-                if (!updateMasterCompleted) {
-                    val fetchAreaMastersJob = async { fetchAreaMastersToUpdateFromServer() }
-                    val updateMastersResult = fetchAreaMastersJob.await()
-                    updateMasterCompleted = updateMastersResult
-
-                }
-
-                if(!allMastersCompleted && !updateMasterCompleted)
-                {
-                    runOnUiThread { binding.buttonRetry.visibility=View.VISIBLE }
-
-                }
-
-                if(mySharedPref.getAtLeastSingleTimeEntriesAdded()==true){
-                    navigateToNextActivity()
-                }
+                Log.d("mytag", "After  Await")
             }
-            Log.d("mytag", "After  Await")
+        } catch (e: Exception) {
+            Log.d("mytag", "SplashActivity: ${e.message}", e)
+            e.printStackTrace()
         }
     }
 
@@ -317,179 +318,189 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private suspend fun fetchMastersFromServer(): Boolean {
-        return suspendCancellableCoroutine { continuation ->
-            try {
-                val apiService = ApiClient.create(this@SplashActivity)
-                apiService.getAllMasters().enqueue(object :
-                    Callback<MastersModel> {
-                    override fun onResponse(
-                        call: Call<MastersModel>,
-                        response: Response<MastersModel>
-                    ) {
-                        if (response.isSuccessful) {
-                            if (response.body()?.status.equals("success")) {
-                                Log.d("mytag", "fetchMastersFromServer:success")
-                                val skillsConverted =
-                                    mapToSkills(response?.body()?.data?.skills!!)
-                                val maritalStatusConverted =
-                                    mapToMaritalStatus(response?.body()?.data?.maritalstatus!!)
-                                val genderConverted =
-                                    mapToMaritalGender(response?.body()?.data?.gender!!)
-                                val relationConverted =
-                                    mapToRelation(response?.body()?.data?.relation!!)
-                                val documentTypeConverted =
-                                    mapToDocumentType(response?.body()?.data?.documenttype!!)
-                                val registrationStatusConverted =
-                                    mapToRegistrationStatus(response?.body()?.data?.registrationstatus!!)
-                                val reasonsConverted =
-                                    mapToReasons(response?.body()?.data?.reasons!!)
-                                val documentReasonsConverted =
-                                    mapToDocumentReasons(response?.body()?.data?.documentreasons!!)
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    skillsDao.insertInitialRecords(skillsConverted)
-                                    maritalStatusDao.insertInitialRecords(maritalStatusConverted)
-                                    genderDao.insertInitialRecords(genderConverted)
-                                    relationDao.insertInitialRecords(relationConverted)
-                                    documentTypeDropDownDao.insertInitialRecords(
-                                        documentTypeConverted
-                                    )
-                                    registrationStatusDao.insertInitialRecords(
-                                        registrationStatusConverted
-                                    )
-                                    registrationStatusDao.insertInitialRecords(
-                                        registrationStatusConverted
-                                    )
-                                    reasonsDao.insertInitialRecords(reasonsConverted)
-                                    documentReasonsDao.insertInitialRecords(documentReasonsConverted)
+        try {
+            return suspendCancellableCoroutine { continuation ->
+                try {
+                    val apiService = ApiClient.create(this@SplashActivity)
+                    apiService.getAllMasters().enqueue(object :
+                        Callback<MastersModel> {
+                        override fun onResponse(
+                            call: Call<MastersModel>,
+                            response: Response<MastersModel>
+                        ) {
+                            if (response.isSuccessful) {
+                                if (response.body()?.status.equals("success")) {
+                                    Log.d("mytag", "fetchMastersFromServer:success")
+                                    val skillsConverted =
+                                        mapToSkills(response?.body()?.data?.skills!!)
+                                    val maritalStatusConverted =
+                                        mapToMaritalStatus(response?.body()?.data?.maritalstatus!!)
+                                    val genderConverted =
+                                        mapToMaritalGender(response?.body()?.data?.gender!!)
+                                    val relationConverted =
+                                        mapToRelation(response?.body()?.data?.relation!!)
+                                    val documentTypeConverted =
+                                        mapToDocumentType(response?.body()?.data?.documenttype!!)
+                                    val registrationStatusConverted =
+                                        mapToRegistrationStatus(response?.body()?.data?.registrationstatus!!)
+                                    val reasonsConverted =
+                                        mapToReasons(response?.body()?.data?.reasons!!)
+                                    val documentReasonsConverted =
+                                        mapToDocumentReasons(response?.body()?.data?.documentreasons!!)
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        skillsDao.insertInitialRecords(skillsConverted)
+                                        maritalStatusDao.insertInitialRecords(maritalStatusConverted)
+                                        genderDao.insertInitialRecords(genderConverted)
+                                        relationDao.insertInitialRecords(relationConverted)
+                                        documentTypeDropDownDao.insertInitialRecords(
+                                            documentTypeConverted
+                                        )
+                                        registrationStatusDao.insertInitialRecords(
+                                            registrationStatusConverted
+                                        )
+                                        registrationStatusDao.insertInitialRecords(
+                                            registrationStatusConverted
+                                        )
+                                        reasonsDao.insertInitialRecords(reasonsConverted)
+                                        documentReasonsDao.insertInitialRecords(
+                                            documentReasonsConverted
+                                        )
 
-                                    // Once all operations are done, resume the coroutine with the response
-                                    continuation.resume(true)
+                                        // Once all operations are done, resume the coroutine with the response
+                                        continuation.resume(true)
+                                    }
+                                } else {
+                                    Log.d("mytag", "fetchMastersFromServer:Response Not success")
+                                    Toast.makeText(
+                                        this@SplashActivity,
+                                        resources.getString(R.string.no_records_found),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    continuation.resume(false) // Or you can throw an exception if you want to handle the error differently
                                 }
                             } else {
-                                Log.d("mytag", "fetchMastersFromServer:Response Not success")
+                                Log.d("mytag", "fetchMastersFromServer:Response unsuccessful")
                                 Toast.makeText(
                                     this@SplashActivity,
-                                    resources.getString(R.string.no_records_found),
+                                    resources.getString(R.string.response_unsuccessfull),
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 continuation.resume(false) // Or you can throw an exception if you want to handle the error differently
                             }
-                        } else {
-                            Log.d("mytag", "fetchMastersFromServer:Response unsuccessful")
+                        }
+
+                        override fun onFailure(call: Call<MastersModel>, t: Throwable) {
+                            Log.d("mytag", "fetchMastersFromServer:onFailure ${t.message}")
                             Toast.makeText(
                                 this@SplashActivity,
-                                resources.getString(R.string.response_unsuccessfull),
+                                resources.getString(R.string.error_occured_during_api_call),
                                 Toast.LENGTH_SHORT
                             ).show()
                             continuation.resume(false) // Or you can throw an exception if you want to handle the error differently
                         }
-                    }
-
-                    override fun onFailure(call: Call<MastersModel>, t: Throwable) {
-                        Log.d("mytag", "fetchMastersFromServer:onFailure ${t.message}")
-                        Toast.makeText(
-                            this@SplashActivity,
-                            resources.getString(R.string.error_occured_during_api_call),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        continuation.resume(false) // Or you can throw an exception if you want to handle the error differently
-                    }
-                })
-            } catch (e: Exception) {
-                Log.d("mytag", "SplashActivity: ${e.message}", e)
-                e.printStackTrace()
-                continuation.resume(false) // Or you can throw an exception if you want to handle the error differently
+                    })
+                } catch (e: Exception) {
+                    Log.d("mytag", "SplashActivity: ${e.message}", e)
+                    e.printStackTrace()
+                    continuation.resume(false) // Or you can throw an exception if you want to handle the error differently
+                }
             }
+        } catch (e: Exception) {
+            return false
         }
     }
 
 
     private suspend fun fetchAreaMastersToUpdateFromServer(): Boolean {
-        return suspendCancellableCoroutine { continuation ->
-            try {
-                val apiService = ApiClient.create(this@SplashActivity)
-                apiService.getAreaMastersToUpdate().enqueue(object :
-                    Callback<AreaMastersUpdateModel> {
-                    override fun onResponse(
-                        call: Call<AreaMastersUpdateModel>,
-                        response: Response<AreaMastersUpdateModel>
-                    ) {
-                        if (response.isSuccessful) {
-                            if (response.body()?.status.equals("true")) {
-                                if (response.body()?.data?.size!! > 0) {
-                                    Log.d("mytag", "Update Size =>" + response.body()?.data?.size)
-                                    CoroutineScope(Dispatchers.IO).launch {
-                                        val areaDataConverted =
-                                            mapDataToArea(response?.body()?.data!!)
-                                        areaDataConverted.forEach { entity ->
-                                            val existingEntity =
-                                                areaDao.getAreaByLocationId(entity.location_id)
-                                            if (existingEntity != null) {
-                                                // Update existing entity
-                                                entity.id = existingEntity.id
-                                                areaDao.update(entity)
-                                            } else {
-                                                // Insert new entity
-                                                areaDao.insert(entity)
+        try {
+            return suspendCancellableCoroutine { continuation ->
+                try {
+                    val apiService = ApiClient.create(this@SplashActivity)
+                    apiService.getAreaMastersToUpdate().enqueue(object :
+                        Callback<AreaMastersUpdateModel> {
+                        override fun onResponse(
+                            call: Call<AreaMastersUpdateModel>,
+                            response: Response<AreaMastersUpdateModel>
+                        ) {
+                            if (response.isSuccessful) {
+                                if (response.body()?.status.equals("true")) {
+                                    if (response.body()?.data?.size!! > 0) {
+                                        Log.d("mytag", "Update Size =>" + response.body()?.data?.size)
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val areaDataConverted =
+                                                mapDataToArea(response?.body()?.data!!)
+                                            areaDataConverted.forEach { entity ->
+                                                val existingEntity =
+                                                    areaDao.getAreaByLocationId(entity.location_id)
+                                                if (existingEntity != null) {
+                                                    // Update existing entity
+                                                    entity.id = existingEntity.id
+                                                    areaDao.update(entity)
+                                                } else {
+                                                    // Insert new entity
+                                                    areaDao.insert(entity)
+                                                }
                                             }
+                                            // Notify the caller that the operation is completed successfully
+                                            continuation.resume(true)
                                         }
-                                        // Notify the caller that the operation is completed successfully
-                                        continuation.resume(true)
+                                    } else {
+                                        Log.d(
+                                            "mytag",
+                                            "No records found in area masters update =>" + response.body()?.data?.size
+                                        )
+                                        // Notify the caller that there are no records found
+                                        continuation.resume(false)
                                     }
                                 } else {
                                     Log.d(
                                         "mytag",
-                                        "No records found in area masters update =>" + response.body()?.data?.size
+                                        "fetchAreaMastersToUpdateFromServer:Response Not success"
                                     )
-                                    // Notify the caller that there are no records found
+                                    Toast.makeText(
+                                        this@SplashActivity,
+                                        resources.getString(R.string.no_records_found),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    // Notify the caller about the unsuccessful response
                                     continuation.resume(false)
                                 }
                             } else {
                                 Log.d(
                                     "mytag",
-                                    "fetchAreaMastersToUpdateFromServer:Response Not success"
+                                    "fetchAreaMastersToUpdateFromServer:Response unsuccessful"
                                 )
                                 Toast.makeText(
                                     this@SplashActivity,
-                                    resources.getString(R.string.no_records_found),
+                                    resources.getString(R.string.response_unsuccessfull),
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 // Notify the caller about the unsuccessful response
                                 continuation.resume(false)
                             }
-                        } else {
-                            Log.d(
-                                "mytag",
-                                "fetchAreaMastersToUpdateFromServer:Response unsuccessful"
-                            )
+                        }
+
+                        override fun onFailure(call: Call<AreaMastersUpdateModel>, t: Throwable) {
+                            Log.d("mytag", "fetchAreaMastersToUpdateFromServer:onFailure ${t.message}")
                             Toast.makeText(
                                 this@SplashActivity,
-                                resources.getString(R.string.response_unsuccessfull),
+                                resources.getString(R.string.error_occured_during_api_call),
                                 Toast.LENGTH_SHORT
                             ).show()
-                            // Notify the caller about the unsuccessful response
+                            // Notify the caller about the failure
                             continuation.resume(false)
                         }
-                    }
-
-                    override fun onFailure(call: Call<AreaMastersUpdateModel>, t: Throwable) {
-                        Log.d("mytag", "fetchAreaMastersToUpdateFromServer:onFailure ${t.message}")
-                        Toast.makeText(
-                            this@SplashActivity,
-                            resources.getString(R.string.error_occured_during_api_call),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        // Notify the caller about the failure
-                        continuation.resume(false)
-                    }
-                })
-            } catch (e: Exception) {
-                Log.d("mytag", "SplashActivity: ${e.message}")
-                Log.d("mytag", "SplashActivity: ${e.message}", e)
-                e.printStackTrace()
-                // Notify the caller about the exception
-                continuation.resume(false)
+                    })
+                } catch (e: Exception) {
+                    Log.d("mytag", "SplashActivity: ${e.message}")
+                    Log.d("mytag", "SplashActivity: ${e.message}", e)
+                    e.printStackTrace()
+                    // Notify the caller about the exception
+                    continuation.resume(false)
+                }
             }
+        }catch (e:Exception){
+            return  false;
         }
     }
 

@@ -112,7 +112,7 @@ class OfficerLaboursReceivedForApprovalActivity : AppCompatActivity(),
                         } else {
                             Toast.makeText(
                                 this@OfficerLaboursReceivedForApprovalActivity,
-                                resources.getString(R.string.please_try_again),
+                                response.body()?.message,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

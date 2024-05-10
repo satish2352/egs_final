@@ -204,7 +204,8 @@ class OfficerUploadedDocumentsFragment : Fragment(), MyPaginationAdapter.OnPageN
             addTextWatcher()
             return binding.root
         } catch (e: Exception) {
-
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
         return binding.root
     }

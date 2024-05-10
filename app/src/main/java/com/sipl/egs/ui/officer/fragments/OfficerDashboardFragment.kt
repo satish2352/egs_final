@@ -68,14 +68,10 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
     private var latitude = ""
     private var longitude = ""
     private lateinit var binding: FragmentDashboardOfficerBinding
-    private var markersList = mutableListOf<ProjectMarkerData>()
-    private var labourData = mutableListOf<LabourData>()
-    private var projectData = mutableListOf<ProjectData>()
     lateinit var dialog: CustomProgressDialog
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentLocationMarker: Marker? = null // Reference to the current location marker
-    private var isCurrentMarkerVisible = true
     val bottomSheetDialogFragment = MapTypeBottomSheetDialogFragment()
     private var mapMarkerData = mutableListOf<OfficerDashMapMarkers>()
     private  lateinit var locationEnabledListener:OnLocationStateListener
@@ -120,7 +116,8 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                 bottomSheetDialogFragment.show(childFragmentManager, bottomSheetDialogFragment.tag)
             }
         } catch (e: Exception) {
-            Log.d("mytag", "Exception " + e.message)
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
 
         return binding.root;
@@ -143,23 +140,26 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
             }
     }
     private fun startScanner() {
-        ScannerActivity.startScanner(requireActivity()) { barcodes ->
-            barcodes.forEach { barcode ->
-                when (barcode.valueType) {
-                    Barcode.TYPE_URL -> {
-
-                    }
-                    Barcode.TYPE_CONTACT_INFO -> {
-
-                    }
-                    else -> {
-
-                        getFileDownloadUrl(barcode.rawValue.toString())
-                        Log.d("mytag",""+barcode.rawValue.toString())
-
+        try {
+            ScannerActivity.startScanner(requireActivity()) { barcodes ->
+                barcodes.forEach { barcode ->
+                    when (barcode.valueType) {
+                        Barcode.TYPE_URL -> {
+                            Toast.makeText(requireActivity(),resources.getString(R.string.invalid_content),Toast.LENGTH_LONG).show()
+                        }
+                        Barcode.TYPE_CONTACT_INFO -> {
+                            Toast.makeText(requireActivity(),resources.getString(R.string.invalid_content),Toast.LENGTH_LONG).show()
+                        }
+                        else ->{
+                            getFileDownloadUrl(barcode.rawValue.toString())
+                            Log.d("mytag",""+barcode.rawValue.toString())
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
 
@@ -180,53 +180,59 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
     }
 
     private fun getFileDownloadUrl(fileName: String) {
-        Log.d("mytag","filename ==>"+fileName)
-        val activity = requireActivity()
-        if (activity != null && isAdded && !isDetached) {
-            val dialog = CustomProgressDialog(activity)
-            dialog.show()
-            val apiService = ApiClient.create(activity)
-            val call = apiService.downloadPDF(fileName)
-            call.enqueue(object : Callback<QRDocumentDownloadModel> {
-                override fun onResponse(
-                    call: Call<QRDocumentDownloadModel>,
-                    response: Response<QRDocumentDownloadModel>
-                ) {
-                    dialog.dismiss()
-                    if (response.isSuccessful) {
-                        if (response.body()?.status.equals("true")) {
-                            val url = response.body()?.data?.document_pdf.toString()
-                            Log.d("mytag", url)
-                            val intent = Intent(Intent.ACTION_VIEW)
-                            intent.setDataAndType(Uri.parse(url), "application/pdf")
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            try {
-                                activity.startActivity(intent)
-                            } catch (e: ActivityNotFoundException) {
-                                Toast.makeText(
-                                    requireActivity(),
-                                    getString(R.string.no_pdf_viewer_application_found),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                            //FileDownloader.downloadFile(activity, url, fileName)
-                            Toast.makeText(activity, resources.getString(R.string.file_download_started), Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(activity, response.body()?.message, Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(activity, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
-                    }
-                }
 
-                override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
-                    dialog.dismiss()
-                    Toast.makeText(activity, resources.getString(R.string.error_occured_during_api_call), Toast.LENGTH_SHORT).show()
-                }
-            })
-        } else {
-            // Fragment is not attached to an activity, handle accordingly
-            // For example, log an error or show a message to the user
+        try {
+            Log.d("mytag","filename ==>"+fileName)
+            val activity = requireActivity()
+            if (activity != null && isAdded && !isDetached) {
+                val dialog = CustomProgressDialog(activity)
+                dialog.show()
+                val apiService = ApiClient.create(activity)
+                val call = apiService.downloadPDF(fileName)
+                call.enqueue(object : Callback<QRDocumentDownloadModel> {
+                    override fun onResponse(
+                        call: Call<QRDocumentDownloadModel>,
+                        response: Response<QRDocumentDownloadModel>
+                    ) {
+                        dialog.dismiss()
+                        if (response.isSuccessful) {
+                            if (response.body()?.status.equals("true")) {
+                                val url = response.body()?.data?.document_pdf.toString()
+                                Log.d("mytag", url)
+                                val intent = Intent(Intent.ACTION_VIEW)
+                                intent.setDataAndType(Uri.parse(url), "application/pdf")
+                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                try {
+                                    activity.startActivity(intent)
+                                } catch (e: ActivityNotFoundException) {
+                                    Toast.makeText(
+                                        requireActivity(),
+                                        getString(R.string.no_pdf_viewer_application_found),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                                //FileDownloader.downloadFile(activity, url, fileName)
+                                Toast.makeText(activity, resources.getString(R.string.file_download_started), Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(activity, response.body()?.message, Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(activity, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
+                        dialog.dismiss()
+                        Toast.makeText(activity, resources.getString(R.string.error_occured_during_api_call), Toast.LENGTH_SHORT).show()
+                    }
+                })
+            } else {
+                // Fragment is not attached to an activity, handle accordingly
+                // For example, log an error or show a message to the user
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
 
@@ -298,52 +304,57 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
         map.setInfoWindowAdapter(CustomInfoWindowAdapter(layoutInflater))
     }
     private fun fetchProjectDataFromLatLongNew() {
-        val dialog=CustomProgressDialog(requireContext())
-        val apiService = ApiClient.create(requireContext())
-        apiService.getDashboardProjectListForOfficer()
-            .enqueue(object : Callback<DashboardMapOfficerModel> {
-                override fun onResponse(
-                    call: Call<DashboardMapOfficerModel>, response: Response<DashboardMapOfficerModel>
-                ) {
-                    dialog.dismiss()
-                    if(response.code()!=401){
-                        if (response.isSuccessful) {
-                            Log.d("mytag", Gson().toJson(response.body()))
-                            if (!response.body()?.data.isNullOrEmpty()) {
-                                mapMarkerData = response.body()?.data as MutableList<OfficerDashMapMarkers>
-                                if (mapMarkerData.size > 0) {
-                                   showProjectMarkersNew(mapMarkerData)
+        try {
+            val dialog=CustomProgressDialog(requireContext())
+            val apiService = ApiClient.create(requireContext())
+            apiService.getDashboardProjectListForOfficer()
+                .enqueue(object : Callback<DashboardMapOfficerModel> {
+                    override fun onResponse(
+                        call: Call<DashboardMapOfficerModel>, response: Response<DashboardMapOfficerModel>
+                    ) {
+                        dialog.dismiss()
+                        if(response.code()!=401){
+                            if (response.isSuccessful) {
+                                Log.d("mytag", Gson().toJson(response.body()))
+                                if (!response.body()?.data.isNullOrEmpty()) {
+                                    mapMarkerData = response.body()?.data as MutableList<OfficerDashMapMarkers>
+                                    if (mapMarkerData.size > 0) {
+                                       showProjectMarkersNew(mapMarkerData)
+                                    }
+                                } else {
+                                    Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
+                                        .show()
                                 }
                             } else {
-                                Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
-                                    .show()
+
+                                Toast.makeText(
+                                    requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
+                                ).show()
                             }
-                        } else {
+                        }else{
 
-                            Toast.makeText(
-                                requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
-                            ).show()
+                            val intent= Intent(requireActivity(), LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            requireActivity().finish()
                         }
-                    }else{
 
-                        val intent= Intent(requireActivity(), LoginActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        requireActivity().finish()
                     }
 
-                }
+                    override fun onFailure(call: Call<DashboardMapOfficerModel>, t: Throwable) {
+                        Toast.makeText(
+                            requireActivity(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
+                        ).show()
 
-                override fun onFailure(call: Call<DashboardMapOfficerModel>, t: Throwable) {
-                    Toast.makeText(
-                        requireActivity(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
-                    ).show()
-
-                    Log.d("mytag",t.message.toString())
-                    t.printStackTrace()
-                    dialog.dismiss()
-                }
-            })
+                        Log.d("mytag",t.message.toString())
+                        t.printStackTrace()
+                        dialog.dismiss()
+                    }
+                })
+        } catch (e:Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
+        }
     }
     private fun showProjectMarkersNew(mapData: MutableList<OfficerDashMapMarkers>) {
         map.clear()
@@ -412,6 +423,8 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                 url = "")
             currentMarker?.tag = customMarkerObject
         } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
 
@@ -434,6 +447,8 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
             }
         } catch (e: Exception) {
             Log.d("mytag", "onInfoWindowClick: Exception => " + e.message)
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
 

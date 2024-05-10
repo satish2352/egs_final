@@ -113,7 +113,7 @@ private fun getDataFromServer(currentPage:String) {
                     } else {
                         Toast.makeText(
                             this@OfficersLaboursApprovedListActivity,
-                            resources.getString(R.string.please_try_again),
+                            response.body()?.message,
                             Toast.LENGTH_SHORT
                         ).show()
                     }

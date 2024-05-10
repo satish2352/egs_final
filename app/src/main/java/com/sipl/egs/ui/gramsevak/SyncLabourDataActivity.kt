@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,6 +36,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -102,7 +104,19 @@ class SyncLabourDataActivity : AppCompatActivity() {
             //syncLabourData()
            if(isInternetAvailable){
                CoroutineScope(Dispatchers.IO).launch {
-                   uploadLabourOnline()
+                   var count=0;
+                   val countJob=async { count=labourDao.getLaboursCount() }
+                   countJob.await()
+                   if(count>0)
+                   {
+                       uploadLabourOnline()
+                   }else{
+
+                       withContext(Dispatchers.Main){
+                           Toast.makeText(this@SyncLabourDataActivity,resources.getString(R.string.no_records_found),Toast.LENGTH_LONG).show()
+                       }
+                   }
+
                }
            }else{
                noInternetDialog.showDialog()

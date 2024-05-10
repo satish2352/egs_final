@@ -115,7 +115,7 @@ class OfficerDocsReSubmittedListActivity : AppCompatActivity(),
                         } else {
                             Toast.makeText(
                                 this@OfficerDocsReSubmittedListActivity,
-                                resources.getString(R.string.please_try_again),
+                                response.body()?.message,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

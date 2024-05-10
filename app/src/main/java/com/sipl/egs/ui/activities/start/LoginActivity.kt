@@ -180,6 +180,7 @@ class LoginActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.d("mytag","LoginActivity: ${e.message}",e)
 
+
         }
     }
 
@@ -223,12 +224,11 @@ class LoginActivity : AppCompatActivity() {
             }
         }catch (e:Exception){
             Log.d("mytag","LoginActivity: ${e.message}",e)
-
             return false
         }
     }
-    private fun requestThePermissions() {
-
+    private fun requestThePermissions()
+    {
         PermissionX.init(this@LoginActivity)
             .permissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
             .onExplainRequestReason { scope, deniedList ->

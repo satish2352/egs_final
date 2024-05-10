@@ -51,112 +51,128 @@ class OfficerMainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         binding = ActivityOfficerMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val navView: BottomNavigationView = binding.navView
-         navController = findNavController(R.id.nav_host_fragment_activity_officer_main)
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_officer_home,
-                R.id.navigation_officer_reports,
-                R.id.navigation_officer_attendance,
-                R.id.navigation_officer_documents
+        try {
+            val navView: BottomNavigationView = binding.navView
+            navController = findNavController(R.id.nav_host_fragment_activity_officer_main)
+            val appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.navigation_officer_home,
+                    R.id.navigation_officer_reports,
+                    R.id.navigation_officer_attendance,
+                    R.id.navigation_officer_documents
+                )
             )
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        navView.setOnNavigationItemSelectedListener(this)
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
+            setupActionBarWithNavController(navController, appBarConfiguration)
+            navView.setupWithNavController(navController)
+            navView.setOnNavigationItemSelectedListener(this)
+            onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
 
-                if (!navController.popBackStack()) {
-                    // If there are no more fragments to pop in the back stack,
-                    // show the exit confirmation dialog
-                    AlertDialog.Builder(this@OfficerMainActivity)
-                        .setTitle("Exit")
-                        .setMessage("Are you sure you want to exit App?")
-                        .setPositiveButton("Yes") { _, _ ->
-                            finish()
-                        }
-                        .setNegativeButton("No", null) // If "No" is clicked, do nothing
-                        .show()
+                    if (!navController.popBackStack()) {
+                        // If there are no more fragments to pop in the back stack,
+                        // show the exit confirmation dialog
+                        AlertDialog.Builder(this@OfficerMainActivity)
+                            .setTitle("Exit")
+                            .setMessage("Are you sure you want to exit App?")
+                            .setPositiveButton("Yes") { _, _ ->
+                                finish()
+                            }
+                            .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                            .show()
+                    }
+
                 }
+            })
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-            }
-        })
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        noInternetDialog= NoInternetDialog(this)
-        ReactiveNetwork
-            .observeNetworkConnectivity(applicationContext)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ connectivity: Connectivity ->
-                Log.d("##", "=>" + connectivity.state())
-                if (connectivity.state().toString() == "CONNECTED") {
-                    isInternetAvailable = true
-                    noInternetDialog.hideDialog()
-                } else {
-                    isInternetAvailable = false
-                    noInternetDialog.showDialog()
+            noInternetDialog= NoInternetDialog(this)
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                        noInternetDialog.hideDialog()
+                    } else {
+                        isInternetAvailable = false
+                        noInternetDialog.showDialog()
+                    }
+                }) { throwable: Throwable? -> }
+            builder= AlertDialog.Builder(this@OfficerMainActivity)
+            builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
+                .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
+                    dialog.dismiss()
+                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }.setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss()
+                    // Handle the case when the user refuses to enable location services
+                    Toast.makeText(
+                        this@OfficerMainActivity,
+                        "Unable to retrieve location without enabling location services",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-            }) { throwable: Throwable? -> }
-        builder= AlertDialog.Builder(this@OfficerMainActivity)
-        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
-            .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
-                dialog.dismiss()
-                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }.setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss()
-                // Handle the case when the user refuses to enable location services
-                Toast.makeText(
-                    this@OfficerMainActivity,
-                    "Unable to retrieve location without enabling location services",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        dialogEnableLocation = builder.create()
+            dialogEnableLocation = builder.create()
 
-        if (!isLocationEnabled()) {
-            //showEnableLocationDialog()
-        } else {
-            requestLocationUpdates()
-            dialogEnableLocation.dismiss()
+            if (!isLocationEnabled()) {
+                //showEnableLocationDialog()
+            } else {
+                requestLocationUpdates()
+                dialogEnableLocation.dismiss()
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
     private fun requestLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(this@OfficerMainActivity, Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this@OfficerMainActivity, Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Request location permissions
-            ActivityCompat.requestPermissions(
-                this@OfficerMainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1000
-            )
-            Log.d("mytag", "requestLocationUpdates()  return ")
-            return
-        }
-        Log.d("mytag", "requestLocationUpdates() ")
-
-        // Request last known location
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            location?.let {
-                val currentLatLng = LatLng(it.latitude, it.longitude)
-
-            } ?: run {
-                // Handle case where location is null
-
-                Toast.makeText(
-                    this@OfficerMainActivity, "Unable to retrieve location", Toast.LENGTH_LONG
-                ).show()
-
+        try {
+            if (ActivityCompat.checkSelfPermission(this@OfficerMainActivity, Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this@OfficerMainActivity, Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Request location permissions
+                ActivityCompat.requestPermissions(
+                    this@OfficerMainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1000
+                )
+                Log.d("mytag", "requestLocationUpdates()  return ")
+                return
             }
+            Log.d("mytag", "requestLocationUpdates() ")
+
+            // Request last known location
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    val currentLatLng = LatLng(it.latitude, it.longitude)
+
+                } ?: run {
+                    // Handle case where location is null
+
+                    Toast.makeText(
+                        this@OfficerMainActivity, "Unable to retrieve location", Toast.LENGTH_LONG
+                    ).show()
+
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
     private fun isLocationEnabled(): Boolean {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
+        try {
+            val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER
+            )
+        } catch (e: Exception) {
+            return false;
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
+        }
     }
     private fun showEnableLocationDialog() {
 
@@ -169,39 +185,25 @@ class OfficerMainActivity : AppCompatActivity(),
     }
     private fun requestThePermissions() {
 
-        PermissionX.init(this@OfficerMainActivity)
-            .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
-            .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
-            }
-            .onForwardToSettings { scope, deniedList ->
-                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
-            }
-            .request { allGranted, grantedList, deniedList ->
-                if (allGranted) {
-                    refreshCurrentFragment()
-                } else {
-                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+        try {
+            PermissionX.init(this@OfficerMainActivity)
+                .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
+                .onExplainRequestReason { scope, deniedList ->
+                    scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
                 }
-            }
-    }
-    private fun checkAndPromptGps() {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            // GPS is not enabled, prompt the user to enable it
-            AlertDialog.Builder(this)
-                .setMessage(" Please enable GPS on your device")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    // Open the location settings to enable GPS
-                    startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                    dialog.dismiss()
-
+                .onForwardToSettings { scope, deniedList ->
+                    scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
                 }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                    // Handle the case when the user chooses not to enable GPS
+                .request { allGranted, grantedList, deniedList ->
+                    if (allGranted) {
+                        refreshCurrentFragment()
+                    } else {
+                        Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                    }
                 }
-                .show()
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
     override fun onResume() {
@@ -221,22 +223,27 @@ class OfficerMainActivity : AppCompatActivity(),
         if(item.itemId==R.id.action_logout)
         {
 
-            AlertDialog.Builder(this)
-                .setMessage("Are you sure you want to logout ?")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    // Open the location settings to enable GPS
-                    val mySharedPref= MySharedPref(this@OfficerMainActivity)
-                    mySharedPref.clearAll()
-                    val intent= Intent(this@OfficerMainActivity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    dialog.dismiss()
-                }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                    // Handle the case when the user chooses not to enable GPS
-                }
-                .show()
+            try {
+                AlertDialog.Builder(this)
+                    .setMessage("Are you sure you want to logout ?")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        // Open the location settings to enable GPS
+                        val mySharedPref= MySharedPref(this@OfficerMainActivity)
+                        mySharedPref.clearAll()
+                        val intent= Intent(this@OfficerMainActivity, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                        // Handle the case when the user chooses not to enable GPS
+                    }
+                    .show()
+            } catch (e: Exception) {
+                Log.d("mytag","Exception "+e.message,e);
+                e.printStackTrace()
+            }
 
         }
         return super.onOptionsItemSelected(item)

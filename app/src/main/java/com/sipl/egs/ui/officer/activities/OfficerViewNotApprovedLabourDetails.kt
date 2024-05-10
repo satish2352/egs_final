@@ -103,7 +103,8 @@ class OfficerViewNotApprovedLabourDetails : AppCompatActivity() {
                     }
                 }) { throwable: Throwable? -> }
     } catch (e: Exception) {
-
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
     }
 }
 
@@ -124,7 +125,6 @@ private fun getLabourDetails(mgnregaCardId:String) {
                 if(response.isSuccessful){
                     if(!response.body()?.data.isNullOrEmpty()) {
                         val list=response.body()?.data
-                        Log.d("mytag",""+ Gson().toJson(response.body()));
                         binding.tvFullName.text=list?.get(0)?.full_name
                         binding.tvGender.text=list?.get(0)?.gender_name
                         binding.tvGramsevakName.text=list?.get(0)?.gramsevak_full_name
@@ -185,6 +185,8 @@ private fun getLabourDetails(mgnregaCardId:String) {
             }
         })
     } catch (e: Exception) {
+        Log.d("mytag","Exception "+e.message);
+        e.printStackTrace()
         dialog.dismiss()
         e.printStackTrace()
     }
@@ -218,7 +220,8 @@ private fun showPhotoZoomDialog(uri:String){
             dialog.dismiss()
         }
     } catch (e: Exception) {
-
+        Log.d("mytag","Exception "+e.message);
+        e.printStackTrace()
     }
 }
 

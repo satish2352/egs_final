@@ -44,9 +44,7 @@ import kotlin.coroutines.resume
 
 class LabourUpdateOnline1Activity : AppCompatActivity() {
     private lateinit var binding:ActivityLabourUpdateOnline1Binding
-    private lateinit var districts: List<String>
     private lateinit var labourInputData: LabourInputData
-    private lateinit var registrationViewModel: RegistrationViewModel
     private lateinit var appDatabase: AppDatabase
     private lateinit var labourDao: LabourDao
     private  var isInternetAvailable=false
@@ -93,9 +91,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
         labourDao=appDatabase.labourDao()
         genderDao=appDatabase.genderDao()
         skillsDao=appDatabase.skillsDao()
-
             getDetailsFromServer(mgnregaCardId!!)
-
         districtList=ArrayList<AreaItem>()
         CoroutineScope(Dispatchers.IO).launch {
            val waitingJob=async {  districtList=areaDao.getAllDistrict() }
@@ -140,11 +136,9 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                             Log.d("mytag","after wait"+isMgnregaIdVerified)
                             if(isMgnregaIdVerified)
                             {
-
                                 Log.d("mytag","inside "+isMgnregaIdVerified)
                                 updateInfo()
                             }
-
                         }
 
                 } else {
@@ -200,7 +194,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
             if(!hasFocus){
                 if(isInternetAvailable){
                     CoroutineScope(Dispatchers.IO).launch {
-                        if(binding.etMgnregaIdNumber.text.toString().length>0)
+                        if(binding.etMgnregaIdNumber.text.toString().length==10)
                         {
                             checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
                         }
@@ -535,7 +529,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length >0 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length==10 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {

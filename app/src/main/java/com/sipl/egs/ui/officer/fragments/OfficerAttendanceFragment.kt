@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.sipl.egs.R
 import com.sipl.egs.adapters.ViewAttendanceAdapter
 import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.dao.AreaDao
@@ -309,7 +310,8 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener,
 
         } catch (e: Exception)
         {
-
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
         return binding.root
     }
@@ -350,56 +352,62 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener,
 
     private fun getAttendanceList() {
 
-        fromDate=binding.etStartDate.text.toString()
-        toDate=binding.etEndDate.text.toString()
-        dialog.show()
-        val call=apiService.getAttendanceListForOfficer(selectedProjectId,talukaId,villageId,fromDate,toDate, startPageNumber = currentPage);
-        call.enqueue(object : Callback<AttendanceModel> {
-            override fun onResponse(
-                call: Call<AttendanceModel>,
-                response: Response<AttendanceModel>
-            ) {
-                dialog.dismiss()
-                if(response.isSuccessful)
-                {
-                    attendanceList.clear()
-                    if(response.body()?.status.equals("true"))
+        try {
+            fromDate=binding.etStartDate.text.toString()
+            toDate=binding.etEndDate.text.toString()
+            dialog.show()
+            val call=apiService.getAttendanceListForOfficer(selectedProjectId,talukaId,villageId,fromDate,toDate, startPageNumber = currentPage);
+            call.enqueue(object : Callback<AttendanceModel> {
+                override fun onResponse(
+                    call: Call<AttendanceModel>,
+                    response: Response<AttendanceModel>
+                ) {
+                    dialog.dismiss()
+                    if(response.isSuccessful)
                     {
-                        if(response.body()?.data!=null)
+                        attendanceList.clear()
+                        if(response.body()?.status.equals("true"))
                         {
-                            attendanceList= (response.body()?.data as ArrayList<AttendanceData>?)!!
-                            if(attendanceList.size<1){
-                                Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_SHORT).show()
-                            }
-                            adapter= ViewAttendanceAdapter(attendanceList,this@OfficerAttendanceFragment)
-                            binding.recyclerView.adapter=adapter
-                            adapter.notifyDataSetChanged()
+                            if(response.body()?.data!=null)
+                            {
+                                attendanceList= (response.body()?.data as ArrayList<AttendanceData>?)!!
+                                if(attendanceList.size<1){
+                                    Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_SHORT).show()
+                                }
+                                adapter= ViewAttendanceAdapter(attendanceList,this@OfficerAttendanceFragment)
+                                binding.recyclerView.adapter=adapter
+                                adapter.notifyDataSetChanged()
 
-                            val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerAttendanceFragment)
-                            binding.recyclerViewPageNumbers.adapter=pageAdapter
-                            pageAdapter.notifyDataSetChanged()
-                            paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
+                                val pageAdapter=MyPaginationAdapter(response.body()?.totalPages!!,response.body()?.page_no_to_hilight.toString(),this@OfficerAttendanceFragment)
+                                binding.recyclerViewPageNumbers.adapter=pageAdapter
+                                pageAdapter.notifyDataSetChanged()
+                                paginationLayoutManager.scrollToPosition(Integer.parseInt(response.body()?.page_no_to_hilight.toString())-1)
 
-                        }else{
-                            if(!response.body()?.message.isNullOrEmpty()){
-                                Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
+                            }else{
+                                if(!response.body()?.message.isNullOrEmpty()){
+                                    Toast.makeText(requireActivity(), response.body()?.message, Toast.LENGTH_SHORT).show()
+                                }
+                                paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerAttendanceFragment)
+                                binding.recyclerViewPageNumbers.adapter=paginationAdapter
+                                paginationAdapter.notifyDataSetChanged()
                             }
-                            paginationAdapter= MyPaginationAdapter(0,"0",this@OfficerAttendanceFragment)
-                            binding.recyclerViewPageNumbers.adapter=paginationAdapter
-                            paginationAdapter.notifyDataSetChanged()
+
                         }
-
+                    }else{
+                        Toast.makeText(requireActivity(), resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
                     }
-                }else{
-                    Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
                 }
-            }
 
-            override fun onFailure(call: Call<AttendanceModel>, t: Throwable) {
-                Toast.makeText(requireActivity(), "Error Occurred during api call", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            }
-        })
+                override fun onFailure(call: Call<AttendanceModel>, t: Throwable) {
+                    Toast.makeText(requireActivity(), resources.getString(R.string.error_occured_during_api_call), Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+
+                }
+            })
+        } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
+        }
     }
     private fun getProjectList() {
         try {
@@ -452,6 +460,8 @@ class OfficerAttendanceFragment : Fragment(),AttendanceEditListener,
                 }
             })
         } catch (e: Exception) {
+            Log.d("mytag","Exception "+e.message,e);
+            e.printStackTrace()
         }
     }
 
