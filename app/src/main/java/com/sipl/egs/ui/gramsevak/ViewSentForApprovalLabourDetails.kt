@@ -234,7 +234,10 @@ class ViewSentForApprovalLabourDetails : AppCompatActivity() {
                 dialog.dismiss()
             }
         } catch (e: Exception) {
+            Log.d("mytag","ViewSendForApprovalLabourDetails:",e)
+            e.printStackTrace()
+        }
+
         }
     }
 
-}

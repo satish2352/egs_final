@@ -54,28 +54,36 @@ class SyncOfflineData : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding = FragmentSyncOfflineDataBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        binding.layoutOfflineDocuments.setOnClickListener {
-            val intent=Intent(activity, SyncLandDocumentsActivity::class.java)
-            startActivity(intent)
-        }
-        binding.layoutLabourRegistrationsOffline.setOnClickListener {
-            val intent=Intent(activity, SyncLabourDataActivity::class.java)
-            startActivity(intent)
-        }
-        appDatabase=AppDatabase.getDatabase(requireActivity().applicationContext)
-        labourDao=appDatabase.labourDao()
-        documentDao=appDatabase.documentDao()
-
-        CoroutineScope(Dispatchers.IO).launch{
-            val labourCount=labourDao.getLaboursCount();
-            val documentCount=documentDao.getDocumentsCount();
-            withContext(Dispatchers.Main) {
-                binding.tvRegistrationCount.setText("${labourCount}")
-                binding.tvDocumentsCount.setText("${documentCount}")
+        try {
+            binding.layoutOfflineDocuments.setOnClickListener {
+                val intent=Intent(activity, SyncLandDocumentsActivity::class.java)
+                startActivity(intent)
             }
+            binding.layoutLabourRegistrationsOffline.setOnClickListener {
+                val intent=Intent(activity, SyncLabourDataActivity::class.java)
+                startActivity(intent)
+            }
+            appDatabase=AppDatabase.getDatabase(requireActivity().applicationContext)
+            labourDao=appDatabase.labourDao()
+            documentDao=appDatabase.documentDao()
+        } catch (e: Exception) {
+            Log.d("mytag","SynFragment",e)
+            e.printStackTrace()
+        }
+        try {
+            CoroutineScope(Dispatchers.IO).launch{
+                val labourCount=labourDao.getLaboursCount();
+                val documentCount=documentDao.getDocumentsCount();
+                withContext(Dispatchers.Main) {
+                    binding.tvRegistrationCount.setText("${labourCount}")
+                    binding.tvDocumentsCount.setText("${documentCount}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SynFragment",e)
+            e.printStackTrace()
         }
         return root
     }
@@ -103,13 +111,18 @@ class SyncOfflineData : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d("mytag","OnResume Fragment")
-        CoroutineScope(Dispatchers.IO).launch{
-            val labourCount=labourDao.getLaboursCount();
-            val documentCount=documentDao.getDocumentsCount();
-            withContext(Dispatchers.Main) {
-                binding.tvRegistrationCount.setText("${labourCount}")
-                binding.tvDocumentsCount.setText("${documentCount}")
+        try {
+            CoroutineScope(Dispatchers.IO).launch{
+                val labourCount=labourDao.getLaboursCount();
+                val documentCount=documentDao.getDocumentsCount();
+                withContext(Dispatchers.Main) {
+                    binding.tvRegistrationCount.setText("${labourCount}")
+                    binding.tvDocumentsCount.setText("${documentCount}")
+                }
             }
+        } catch (e: Exception) {
+            Log.d("mytag","SynFragment",e)
+            e.printStackTrace()
         }
     }
 

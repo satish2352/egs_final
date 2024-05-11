@@ -344,45 +344,6 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                 Log.d("mytag", "onFailure : " + it.message)
             }
     }
-    suspend fun downloadPdfAsByteArray(urlStr: String): ByteArray? = withContext(Dispatchers.IO) {
-        var byteArray: ByteArray? = null
-        try {
-            // Create URL object
-            val url = URL(urlStr)
-
-            // Create connection
-            val connection = url.openConnection() as HttpURLConnection
-
-            // Connect to the URL
-            connection.connect()
-
-            // Get input stream from connection
-            val inputStream = connection.inputStream
-
-            // Create ByteArrayOutputStream to hold PDF data
-            val outputStream = ByteArrayOutputStream()
-
-            // Buffer size for reading data
-            val buffer = ByteArray(1024)
-            var len: Int
-            while (inputStream.read(buffer).also { len = it } != -1) {
-                // Write data to ByteArrayOutputStream
-                outputStream.write(buffer, 0, len)
-            }
-
-            // Close streams
-            outputStream.flush()
-            outputStream.close()
-            inputStream.close()
-
-            // Convert ByteArrayOutputStream to ByteArray
-            byteArray = outputStream.toByteArray()
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Log.d("mytag","Exception "+e.message)
-        }
-        byteArray
-    }
     private suspend fun downloadPdfAsByteArrayRetro(urlStr: String): ByteArray? = withContext(Dispatchers.IO) {
         var byteArray: ByteArray? = null
         try {
@@ -532,42 +493,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
 
     }
 
-    suspend fun addImagesToExistingPdf(context: Context, imageUris: List<Uri>, existingPdfFile: File, outputFile: File) {
-        withContext(Dispatchers.IO) {
-            val reader = PdfReader(existingPdfFile)
-            val writer = PdfWriter(FileOutputStream(outputFile))
-            val pdfDocument = PdfDocument(reader, writer)
-            val document = Document(pdfDocument)
 
-            try {
-                // Loop through each image URI
-                for (uri in imageUris) {
-                    // Add a new page for each image
-                    pdfDocument.addNewPage(PageSize.A4)
-                    val currentPage = pdfDocument.getPage(pdfDocument.numberOfPages)
-
-                    // Add image to the new page
-                    val bitmap = BitmapFactory.decodeStream(context.contentResolver.openInputStream(uri))
-                    val scaledBitmap = scaleBitmap(bitmap, PageSize.A4)
-                    val imageData = ImageDataFactory.create(scaledBitmapToByteArray(scaledBitmap))
-                    val image = Image(imageData)
-
-                    // Center the image on the page
-                    image.setHorizontalAlignment(HorizontalAlignment.CENTER)
-
-                    // Add image to the page
-                    document.add(image)
-                    currentPage.flush()
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
-                document.close()
-                pdfDocument.close()
-                reader.close()
-            }
-        }
-    }
     private fun scaleBitmap(bitmap: Bitmap, pageSize: PageSize): Bitmap {
         val maxWidth = pageSize.width - 100
         val maxHeight = pageSize.height - 100

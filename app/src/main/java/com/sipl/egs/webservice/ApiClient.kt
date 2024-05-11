@@ -1,6 +1,7 @@
 package com.sipl.egs.webservice
 
 import android.content.Context
+import com.sipl.egs.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -8,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val BASE_URL = "https://egsfinalupdated.sumagodemo.com/api/"
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     val loggingInterceptor = HttpLoggingInterceptor()
 
@@ -17,7 +18,12 @@ object ApiClient {
     }
 
     fun create(context: Context): ApiService {
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+
+        if(BuildConfig.DEBUG){
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+        }else{
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE)
+        }
         val client = OkHttpClient.Builder()
             .addInterceptor(getAuthInterceptor(context))
             .addInterceptor(loggingInterceptor)

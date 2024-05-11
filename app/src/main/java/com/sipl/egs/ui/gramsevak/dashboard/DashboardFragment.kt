@@ -89,20 +89,15 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     private var suggestionList= mutableListOf<String>()
 
     private var isInternetAvailable=false
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var map: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var currentLocationMarker: Marker? = null // Reference to the current location marker
-    private var isCurrentMarkerVisible = true
     val bottomSheetDialogFragment = MapTypeBottomSheetDialogFragment()
     private lateinit var locationEnabledListener:OnLocationStateListener
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel = ViewModelProvider(this).get(DashboardViewModel::class.java)
         dialog = CustomProgressDialog(requireActivity())
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -241,6 +236,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
             })
         } catch (e: Exception) {
             Log.d("mytag", "Exception " + e.message)
+            e.printStackTrace()
         }
         return root
     }
@@ -283,127 +279,153 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     }
 
     private fun requestLocationUpdates() {
-        if (ActivityCompat.checkSelfPermission(
-                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Request location permissions
-            ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1000
-            )
-            Log.d("mytag", "requestLocationUpdates()  return ")
-            return
-        }
-        Log.d("mytag", "requestLocationUpdates() ")
+        try {
+            if (ActivityCompat.checkSelfPermission(
+                    requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Request location permissions
+                ActivityCompat.requestPermissions(
+                    requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1000
+                )
+                Log.d("mytag", "requestLocationUpdates()  return ")
+                return
+            }
+            Log.d("mytag", "requestLocationUpdates() ")
 
-        // Request last known location
-        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let {
-                    val currentLatLng = LatLng(it.latitude, it.longitude)
-                    latitude
-                } ?: run {
-                    // Handle case where location is null
-                    if (isAdded && view != null) {
-                        Toast.makeText(
-                            requireActivity(), "Unable to retrieve location", Toast.LENGTH_LONG
-                        ).show()
+            // Request last known location
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    location?.let {
+                        val currentLatLng = LatLng(it.latitude, it.longitude)
+                        latitude
+                    } ?: run {
+                        // Handle case where location is null
+                        if (isAdded && view != null) {
+                            Toast.makeText(
+                                requireActivity(), resources.getString(R.string.unable_to_retrive_location), Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
-            }
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
+        }
     }
 
     private fun isLocationEnabled(): Boolean {
-        val locationManager =
-            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
+        try {
+            val locationManager =
+                requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+                LocationManager.NETWORK_PROVIDER
+            )
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
+            return false
+        }
     }
 
     private fun startScanner() {
-        ScannerActivity.startScanner(requireActivity()) { barcodes ->
-            barcodes.forEach { barcode ->
-                when (barcode.valueType) {
-                    Barcode.TYPE_URL -> {}
-                    Barcode.TYPE_CONTACT_INFO -> {}
-                    else -> {
-                        getFileDownloadUrl(barcode.rawValue.toString())
-                        Log.d("mytag", "" + barcode.rawValue.toString())
+        try {
+            ScannerActivity.startScanner(requireActivity()) { barcodes ->
+                barcodes.forEach { barcode ->
+                    when (barcode.valueType) {
+                        Barcode.TYPE_URL -> {}
+                        Barcode.TYPE_CONTACT_INFO -> {}
+                        else -> {
+                            getFileDownloadUrl(barcode.rawValue.toString())
+                            Log.d("mytag", "" + barcode.rawValue.toString())
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
         }
     }
 
     private fun requestThePermissions() {
 
-        PermissionX.init(requireActivity()).permissions(android.Manifest.permission.CAMERA)
-            .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(
-                    deniedList, "Core fundamental are based on these permissions", "OK", "Cancel"
-                )
-            }.onForwardToSettings { scope, deniedList ->
-                scope.showForwardToSettingsDialog(
-                    deniedList,
-                    "You need to allow necessary permissions in Settings manually",
-                    "OK",
-                    "Cancel"
-                )
-            }.request { allGranted, grantedList, deniedList ->
-                if (allGranted) {
+        try {
+            PermissionX.init(requireActivity()).permissions(android.Manifest.permission.CAMERA)
+                .onExplainRequestReason { scope, deniedList ->
+                    scope.showRequestReasonDialog(
+                        deniedList, "Core fundamental are based on these permissions", "OK", "Cancel"
+                    )
+                }.onForwardToSettings { scope, deniedList ->
+                    scope.showForwardToSettingsDialog(
+                        deniedList,
+                        "You need to allow necessary permissions in Settings manually",
+                        "OK",
+                        "Cancel"
+                    )
+                }.request { allGranted, grantedList, deniedList ->
+                    if (allGranted) {
 
-                } else {
+                    } else {
+                    }
                 }
-            }
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
+        }
     }
 
     private fun fetchLabourDataForMarkerById(mgnregaId: String) {
-        dialog.show()
-        val apiService = ApiClient.create(requireActivity())
-        apiService.getLabourDataForMarkerById(mgnregaId)
-            .enqueue(object : Callback<ProjectLabourListForMarker> {
-                override fun onResponse(
-                    call: Call<ProjectLabourListForMarker>,
-                    response: Response<ProjectLabourListForMarker>
-                ) {
-                    dialog.dismiss()
-                    if (response.isSuccessful) {
-                        if (!response.body()?.status.isNullOrEmpty() && response.body()?.status.equals(
-                                "true"
-                            )
-                        ) {
-                            if (!response.body()?.labour_data.isNullOrEmpty()) {
-                                Log.d("mytag", Gson().toJson(response.body()))
-                                labourData = response.body()?.labour_data as MutableList<LabourData>
-                                if (labourData.size > 0) {
-                                    showLabourMarkers(labourData)
+        try {
+            dialog.show()
+            val apiService = ApiClient.create(requireActivity())
+            apiService.getLabourDataForMarkerById(mgnregaId)
+                .enqueue(object : Callback<ProjectLabourListForMarker> {
+                    override fun onResponse(
+                        call: Call<ProjectLabourListForMarker>,
+                        response: Response<ProjectLabourListForMarker>
+                    ) {
+                        dialog.dismiss()
+                        if (response.isSuccessful) {
+                            if (!response.body()?.status.isNullOrEmpty() && response.body()?.status.equals(
+                                    "true"
+                                )
+                            ) {
+                                if (!response.body()?.labour_data.isNullOrEmpty()) {
+                                    Log.d("mytag", Gson().toJson(response.body()))
+                                    labourData = response.body()?.labour_data as MutableList<LabourData>
+                                    if (labourData.size > 0) {
+                                        showLabourMarkers(labourData)
+                                    }
+                                } else {
+                                    Toast.makeText(
+                                        requireActivity(), "No records found", Toast.LENGTH_LONG
+                                    ).show()
                                 }
                             } else {
-                                Toast.makeText(
-                                    requireActivity(), "No records found", Toast.LENGTH_LONG
-                                ).show()
+                                Toast.makeText(requireActivity(), "Please try again", Toast.LENGTH_LONG)
+                                    .show()
                             }
                         } else {
-                            Toast.makeText(requireActivity(), "Please try again", Toast.LENGTH_LONG)
-                                .show()
+                            Toast.makeText(
+                                requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
+                            ).show()
                         }
-                    } else {
-                        Toast.makeText(
-                            requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
-                        ).show()
+
                     }
 
-                }
-
-                override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
-                    Toast.makeText(
-                        requireActivity(), "Error Ocuured during api call", Toast.LENGTH_LONG
-                    ).show()
-                    dialog.dismiss()
-                }
-            })
+                    override fun onFailure(call: Call<ProjectLabourListForMarker>, t: Throwable) {
+                        Toast.makeText(
+                            requireActivity(), "Error Ocuured during api call", Toast.LENGTH_LONG
+                        ).show()
+                        dialog.dismiss()
+                    }
+                })
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
+        }
     }
 
     private fun showLabourMarkers(labourData: MutableList<LabourData>) {
@@ -450,41 +472,46 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
     }
 
     private fun fetchProjectDataForMarkerWhenSearchByName(projectName: String) {
-        dialog.show()
-        val apiService = ApiClient.create(requireActivity())
-        apiService.getProjectListForMarkerByNameSearch(projectName, latitude, longitude)
-            .enqueue(object : Callback<ProjectsFromLatLongModel> {
-                override fun onResponse(
-                    call: Call<ProjectsFromLatLongModel>,
-                    response: Response<ProjectsFromLatLongModel>
-                ) {
-                    dialog.dismiss()
-                    if (response.isSuccessful) {
-                        Log.d("mytag", Gson().toJson(response.body()))
-                        if (!response.body()?.project_data.isNullOrEmpty()) {
-                            projectData =
-                                response.body()?.project_data as MutableList<ProjectDataFromLatLong>
-                            if (projectData.size > 0) {
-                                showProjectMarkersWhenSearchByName(projectData)
+        try {
+            dialog.show()
+            val apiService = ApiClient.create(requireActivity())
+            apiService.getProjectListForMarkerByNameSearch(projectName, latitude, longitude)
+                .enqueue(object : Callback<ProjectsFromLatLongModel> {
+                    override fun onResponse(
+                        call: Call<ProjectsFromLatLongModel>,
+                        response: Response<ProjectsFromLatLongModel>
+                    ) {
+                        dialog.dismiss()
+                        if (response.isSuccessful) {
+                            Log.d("mytag", Gson().toJson(response.body()))
+                            if (!response.body()?.project_data.isNullOrEmpty()) {
+                                projectData =
+                                    response.body()?.project_data as MutableList<ProjectDataFromLatLong>
+                                if (projectData.size > 0) {
+                                    showProjectMarkersWhenSearchByName(projectData)
+                                }
+                            } else {
+                                Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
+                                    .show()
                             }
                         } else {
-                            Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
-                                .show()
+                            Toast.makeText(
+                                requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
+                            ).show()
                         }
-                    } else {
-                        Toast.makeText(
-                            requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
-                        ).show()
                     }
-                }
 
-                override fun onFailure(call: Call<ProjectsFromLatLongModel>, t: Throwable) {
-                    Toast.makeText(
-                        requireActivity(), "Error Ocuured during api call", Toast.LENGTH_LONG
-                    ).show()
-                    dialog.dismiss()
-                }
-            })
+                    override fun onFailure(call: Call<ProjectsFromLatLongModel>, t: Throwable) {
+                        Toast.makeText(
+                            requireActivity(), "Error Ocuured during api call", Toast.LENGTH_LONG
+                        ).show()
+                        dialog.dismiss()
+                    }
+                })
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
+        }
     }
 
     private fun showProjectMarkersWhenSearchByName(projectData: MutableList<ProjectDataFromLatLong>) {
@@ -630,19 +657,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         }
     }
 
-    fun getMarkerIcon(color: Int): BitmapDescriptor {
-        val drawable: Drawable? =
-            ContextCompat.getDrawable(requireActivity(), R.drawable.ic_location)
-        drawable?.setTint(color)
-        val canvas = Canvas()
-        val bitmap: Bitmap = Bitmap.createBitmap(
-            drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
-        )
-        canvas.setBitmap(bitmap)
-        drawable.setBounds(0, 0, drawable.intrinsicWidth, drawable.intrinsicHeight)
-        drawable.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -652,63 +666,68 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
 
     override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-        map.setOnMarkerClickListener(this)
-        map.setOnInfoWindowClickListener(this)
+        try {
+            map = googleMap
+            map.setOnMarkerClickListener(this)
+            map.setOnInfoWindowClickListener(this)
 
-        // Check location permission
-        if (ContextCompat.checkSelfPermission(
-                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            map.isMyLocationEnabled = true
+            // Check location permission
+            if (ContextCompat.checkSelfPermission(
+                    requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                map.isMyLocationEnabled = true
 
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    location?.let {
-                        Log.d("mytag", "addOnSuccessListener => ${it.latitude} ${it.longitude}")
-                        val currentLatLng = LatLng(it.latitude, it.longitude)
-                        var pref = MySharedPref(requireActivity())
-                        pref.setLatitude(it.latitude.toString())
-                        pref.setLongitude(it.longitude.toString())
-                        latitude = it.latitude.toString()
-                        longitude = it.longitude.toString()
-                        // fetchProjectDataFromLatLong(it.latitude.toString(),it.longitude.toString())
-                        fetchProjectDataFromLatLongNew(
-                            it.latitude.toString(), it.longitude.toString()
-                        )
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 13f))
-                        // Add marker for current location
-                        if (currentLocationMarker == null) {
-                            val markerIcon =
-                                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
-                            currentLocationMarker = map.addMarker(
-                                MarkerOptions().position(currentLatLng).title("You are here")
-                                    .icon(markerIcon).snippet("${it.latitude}, ${it.longitude}")
-                            )
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                        location?.let {
+                            Log.d("mytag", "addOnSuccessListener => ${it.latitude} ${it.longitude}")
+                            val currentLatLng = LatLng(it.latitude, it.longitude)
+                            var pref = MySharedPref(requireActivity())
+                            pref.setLatitude(it.latitude.toString())
+                            pref.setLongitude(it.longitude.toString())
                             latitude = it.latitude.toString()
                             longitude = it.longitude.toString()
-                            currentLocationMarker?.showInfoWindow()
-                        } else {
-                            // If marker already exists, update its position
-                            currentLocationMarker?.position = currentLatLng
+                            // fetchProjectDataFromLatLong(it.latitude.toString(),it.longitude.toString())
+                            fetchProjectDataFromLatLongNew(
+                                it.latitude.toString(), it.longitude.toString()
+                            )
+                            map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 13f))
+                            // Add marker for current location
+                            if (currentLocationMarker == null) {
+                                val markerIcon =
+                                    BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)
+                                currentLocationMarker = map.addMarker(
+                                    MarkerOptions().position(currentLatLng).title("You are here")
+                                        .icon(markerIcon).snippet("${it.latitude}, ${it.longitude}")
+                                )
+                                latitude = it.latitude.toString()
+                                longitude = it.longitude.toString()
+                                currentLocationMarker?.showInfoWindow()
+                            } else {
+                                // If marker already exists, update its position
+                                currentLocationMarker?.position = currentLatLng
+                            }
+                            currentLocationMarker?.tag = CustomMarkerObject(
+                                id = "0", type = "current_location", url = "", name = "You Are Here"
+                            )
+                        } ?: run {
+                            Toast.makeText(
+                                requireActivity(), "Unable to retrieve location", Toast.LENGTH_LONG
+                            ).show()
                         }
-                        currentLocationMarker?.tag = CustomMarkerObject(
-                            id = "0", type = "current_location", url = "", name = "You Are Here"
-                        )
-                    } ?: run {
-                        Toast.makeText(
-                            requireActivity(), "Unable to retrieve location", Toast.LENGTH_LONG
-                        ).show()
                     }
-                }
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION
-            )
+            } else {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    REQUEST_LOCATION_PERMISSION
+                )
+            }
+            map.setInfoWindowAdapter(CustomInfoWindowAdapter(layoutInflater))
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
         }
-        map.setInfoWindowAdapter(CustomInfoWindowAdapter(layoutInflater))
     }
 
     companion object {
@@ -720,19 +739,6 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
         return false
     }
 
-    private fun bitmapDescriptorFromVector(
-        drawableId: Int, colorId: Int
-    ): BitmapDescriptor {
-        val drawable = ContextCompat.getDrawable(requireActivity(), drawableId)
-        drawable?.setTint(ContextCompat.getColor(requireActivity(), colorId))
-        val bitmap = Bitmap.createBitmap(
-            drawable!!.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
 
     override fun onInfoWindowClick(marker: Marker) {
 
@@ -767,101 +773,111 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
 
 
     private fun fetchProjectDataFromLatLongNew(latitude: String, longitude: String) {
-        dialog.show()
-        val apiService = ApiClient.create(requireActivity())
-        apiService.getMapsMarkersFromLatLong(latitude, longitude)
-            .enqueue(object : Callback<MapMarkerModel> {
-                override fun onResponse(
-                    call: Call<MapMarkerModel>, response: Response<MapMarkerModel>
-                ) {
-                    dialog.dismiss()
-                    if(response.code()!=401){
-                        if (response.isSuccessful) {
-                            Log.d("mytag", Gson().toJson(response.body()))
-                            if (!response.body()?.map_data.isNullOrEmpty()) {
-                                mapMarkerData = response.body()?.map_data as MutableList<MapData>
-                                if (mapMarkerData.size > 0) {
-                                    showProjectMarkersNew(mapMarkerData)
+        try {
+            dialog.show()
+            val apiService = ApiClient.create(requireActivity())
+            apiService.getMapsMarkersFromLatLong(latitude, longitude)
+                .enqueue(object : Callback<MapMarkerModel> {
+                    override fun onResponse(
+                        call: Call<MapMarkerModel>, response: Response<MapMarkerModel>
+                    ) {
+                        dialog.dismiss()
+                        if(response.code()!=401){
+                            if (response.isSuccessful) {
+                                Log.d("mytag", Gson().toJson(response.body()))
+                                if (!response.body()?.map_data.isNullOrEmpty()) {
+                                    mapMarkerData = response.body()?.map_data as MutableList<MapData>
+                                    if (mapMarkerData.size > 0) {
+                                        showProjectMarkersNew(mapMarkerData)
+                                    }
+                                } else {
+                                    Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
+                                        .show()
                                 }
                             } else {
-                                Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
-                                    .show()
+                                Toast.makeText(
+                                    requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
+                                ).show()
                             }
-                        } else {
-                            Toast.makeText(
-                                requireActivity(), "Response unsuccessful", Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }else{
+                        }else{
 
-                        val intent= Intent(requireActivity(), LoginActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        requireActivity().finish()
+                            val intent= Intent(requireActivity(), LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            requireActivity().finish()
+                        }
+
                     }
 
-                }
+                    override fun onFailure(call: Call<MapMarkerModel>, t: Throwable) {
+                        Toast.makeText(
+                            requireActivity(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
+                        ).show()
 
-                override fun onFailure(call: Call<MapMarkerModel>, t: Throwable) {
-                    Toast.makeText(
-                        requireActivity(), "onFailure Error Occurred during api call", Toast.LENGTH_LONG
-                    ).show()
-
-                    Log.d("mytag",t.message.toString())
-                        t.printStackTrace()
-                    dialog.dismiss()
-                }
-            })
+                        Log.d("mytag",t.message.toString())
+                            t.printStackTrace()
+                        dialog.dismiss()
+                    }
+                })
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
+        }
     }
 
     private fun getFileDownloadUrl(fileName: String) {
 
 
-        val dialog = CustomProgressDialog(requireActivity())
-        dialog.show()
-        val apiService = ApiClient.create(requireActivity())
-        val call = apiService.downloadPDF(fileName)
-        call.enqueue(object : Callback<QRDocumentDownloadModel> {
-            override fun onResponse(
-                call: Call<QRDocumentDownloadModel>, response: Response<QRDocumentDownloadModel>
-            ) {
-                dialog.dismiss()
-                if (response.isSuccessful) {
+        try {
+            val dialog = CustomProgressDialog(requireActivity())
+            dialog.show()
+            val apiService = ApiClient.create(requireActivity())
+            val call = apiService.downloadPDF(fileName)
+            call.enqueue(object : Callback<QRDocumentDownloadModel> {
+                override fun onResponse(
+                    call: Call<QRDocumentDownloadModel>, response: Response<QRDocumentDownloadModel>
+                ) {
+                    dialog.dismiss()
+                    if (response.isSuccessful) {
 
-                    if (response.body()?.status.equals("true")) {
-                        val url = response.body()?.data?.document_pdf.toString()
-                        Log.d("mytag", url)
+                        if (response.body()?.status.equals("true")) {
+                            val url = response.body()?.data?.document_pdf.toString()
+                            Log.d("mytag", url)
 
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        intent.setDataAndType(Uri.parse(url), "application/pdf")
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        try {
-                            startActivity(intent)
-                        } catch (e: ActivityNotFoundException) {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(Uri.parse(url), "application/pdf")
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            try {
+                                startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(
+                                    requireActivity(),
+                                    "No PDF viewer application found",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            //FileDownloader.downloadFile(requireActivity(), url, fileName)
+                        } else {
                             Toast.makeText(
-                                requireActivity(),
-                                "No PDF viewer application found",
-                                Toast.LENGTH_LONG
+                                requireActivity(), response.body()?.message, Toast.LENGTH_LONG
                             ).show()
                         }
-                        //FileDownloader.downloadFile(requireActivity(), url, fileName)
+
                     } else {
-                        Toast.makeText(
-                            requireActivity(), response.body()?.message, Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(requireActivity(), "response unsuccessful", Toast.LENGTH_LONG)
+                            .show()
                     }
-
-                } else {
-                    Toast.makeText(requireActivity(), "response unsuccessful", Toast.LENGTH_LONG)
-                        .show()
                 }
-            }
 
-            override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
-                dialog.dismiss()
-                Toast.makeText(requireActivity(), "response failed", Toast.LENGTH_LONG).show()
-            }
-        })
+                override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
+                    dialog.dismiss()
+                    Toast.makeText(requireActivity(), "response failed", Toast.LENGTH_LONG).show()
+                }
+            })
+        } catch (e: Exception) {
+            Log.d("mytag","DashboardFragment",e)
+            e.printStackTrace()
+        }
 
     }
 

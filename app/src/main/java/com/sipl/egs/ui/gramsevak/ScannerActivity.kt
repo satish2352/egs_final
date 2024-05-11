@@ -66,9 +66,14 @@ class ScannerActivity : AppCompatActivity() {
         private var onScan: ((barcodes: List<Barcode>) -> Unit)? = null
 
         fun startScanner(context: Context, onScan: (barcodes: List<Barcode>) -> Unit) {
-            Companion.onScan = onScan
-            Intent(context, ScannerActivity::class.java).also {
-                context.startActivity(it)
+            try {
+                Companion.onScan = onScan
+                Intent(context, ScannerActivity::class.java).also {
+                    context.startActivity(it)
+                }
+            } catch (e: Exception) {
+                Log.d("mytag","ScannerActivity:",e)
+                e.printStackTrace()
             }
         }
     }
@@ -105,23 +110,28 @@ class ScannerActivity : AppCompatActivity() {
         barcodeScanner: BarcodeScanner,
         imageProxy: ImageProxy
     ) {
-        val inputImage =
-            InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
+        try {
+            val inputImage =
+                InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
 
-        barcodeScanner.process(inputImage)
-            .addOnSuccessListener { barcodes ->
-                if (barcodes.isNotEmpty()) {
-                    onScan?.invoke(barcodes)
-                    onScan = null
-                    finish()
+            barcodeScanner.process(inputImage)
+                .addOnSuccessListener { barcodes ->
+                    if (barcodes.isNotEmpty()) {
+                        onScan?.invoke(barcodes)
+                        onScan = null
+                        finish()
 
+                    }
                 }
-            }
-            .addOnFailureListener {
-                Log.e(TAG, it.message ?: it.toString())
-            }.addOnCompleteListener {
-                imageProxy.close()
-            }
+                .addOnFailureListener {
+                    Log.e(TAG, it.message ?: it.toString())
+                }.addOnCompleteListener {
+                    imageProxy.close()
+                }
+        } catch (e: Exception) {
+            Log.d("mytag","CameraActivity:",e)
+            e.printStackTrace()
+        }
     }
 
     private fun bindCameraPreview() {

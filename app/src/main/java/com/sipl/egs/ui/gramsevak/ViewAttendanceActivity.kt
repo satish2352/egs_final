@@ -95,47 +95,50 @@ class ViewAttendanceActivity : AppCompatActivity(),AttendanceEditListener,
                 }
             }) { throwable: Throwable? -> }
 
-        paginationAdapter= MyPaginationAdapter(0,"0",this)
-        paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
-        binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
-        currentPage="1"
+        try {
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            currentPage="1"
 
-        binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
-        attendanceList=ArrayList()
-        listProject=ArrayList()
-        adapter= ViewAttendanceAdapter(attendanceList,this@ViewAttendanceActivity)
-        binding.recyclerView.adapter=adapter
-        binding.actSelectProject.setOnClickListener {
-            binding.actSelectProject.showDropDown()
-        }
-        binding.actSelectProject.setOnItemClickListener { parent, view, position, id ->
+            binding.recyclerView.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+            attendanceList=ArrayList()
+            listProject=ArrayList()
+            adapter= ViewAttendanceAdapter(attendanceList,this@ViewAttendanceActivity)
+            binding.recyclerView.adapter=adapter
+            binding.actSelectProject.setOnClickListener {
+                binding.actSelectProject.showDropDown()
+            }
+            binding.actSelectProject.setOnItemClickListener { parent, view, position, id ->
 
-            selectedProjectId=listProject.get(position).id.toString()
-            getAttendanceList(selectedProjectId,currentPage)
+                selectedProjectId=listProject.get(position).id.toString()
+                getAttendanceList(selectedProjectId,currentPage)
+            }
+            binding.actSelectProject.setOnFocusChangeListener { v, hasFocus ->
+                binding.actSelectProject.showDropDown()
+            }
+            binding.btnClose.setOnClickListener {
+                binding.actSelectProject.setText("")
+                getAttendanceList(selectedProjectId = "",currentPage)
+            }
+            binding.layoutStartDate.setOnClickListener {
+                showDatePicker(this,binding.etStartDate)
+            }
+            binding.layoutEndDate.setOnClickListener {
+                showDatePicker(this,binding.etEndDate)
+            }
+            binding.btnClearAll.setOnClickListener {
+                binding.etEndDate.setText("")
+                binding.etStartDate.setText("")
+                binding.actSelectProject.setText("")
+                selectedProjectId=""
+            }
+            getProjectList();
+            getAttendanceList(selectedProjectId,currentPage);
+        } catch (e: Exception) {
+            Log.d("mytag","ViewAttendanceActivity:",e)
+            e.printStackTrace()
         }
-        binding.actSelectProject.setOnFocusChangeListener { v, hasFocus ->
-            binding.actSelectProject.showDropDown()
-        }
-        binding.btnClose.setOnClickListener {
-            binding.actSelectProject.setText("")
-            getAttendanceList(selectedProjectId = "",currentPage)
-        }
-        binding.layoutStartDate.setOnClickListener {
-            showDatePicker(this,binding.etStartDate)
-        }
-        binding.layoutEndDate.setOnClickListener {
-            showDatePicker(this,binding.etEndDate)
-        }
-        binding.btnClearAll.setOnClickListener {
-            binding.etEndDate.setText("")
-            binding.etStartDate.setText("")
-            binding.actSelectProject.setText("")
-            selectedProjectId=""
-        }
-        getProjectList();
-        getAttendanceList(selectedProjectId,currentPage);
-
-
 
 
     }

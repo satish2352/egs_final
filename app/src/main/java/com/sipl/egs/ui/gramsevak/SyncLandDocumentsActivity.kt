@@ -186,14 +186,19 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
     }
 
     private fun updateDocumentList() {
-        CoroutineScope(Dispatchers.IO).launch {
-            documentList = documentDao.getAllDocuments()
-            Log.d("mytag", "=>" + documentList.size)
-            adapter = SyncLandDocumentsAdapter(documentList)
-            withContext(Dispatchers.Main) {
-                binding.recyclerViewSyncLandDocuments.adapter = adapter
-                adapter.notifyDataSetChanged()
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                documentList = documentDao.getAllDocuments()
+                Log.d("mytag", "=>" + documentList.size)
+                adapter = SyncLandDocumentsAdapter(documentList)
+                withContext(Dispatchers.Main) {
+                    binding.recyclerViewSyncLandDocuments.adapter = adapter
+                    adapter.notifyDataSetChanged()
+                }
             }
+        } catch (e: Exception) {
+            Log.d("mytag","ScanLandDocumentsActivity:",e)
+            e.printStackTrace()
         }
     }
 

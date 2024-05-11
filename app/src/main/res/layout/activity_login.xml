@@ -135,7 +135,6 @@
                     android:text="@string/login"></Button>
 
                 <ImageView
-                    android:id="@+id/ivHome"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:src="@drawable/login_image"></ImageView>

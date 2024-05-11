@@ -33,8 +33,6 @@ class LabourListByProjectActivity : AppCompatActivity(),
     private var projectId=""
     private lateinit var progressDialog: CustomProgressDialog
     private lateinit var mySharedPref: MySharedPref
-
-
     private var isInternetAvailable=false
     private lateinit var noInternetDialog: NoInternetDialog
 
@@ -48,13 +46,11 @@ class LabourListByProjectActivity : AppCompatActivity(),
         mySharedPref= MySharedPref(this)
         binding.recyclerViewLabourList.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
         projectId= intent.getStringExtra("id").toString()
-
         paginationAdapter= MyPaginationAdapter(0,"0",this)
         paginationLayoutManager=LinearLayoutManager(this, RecyclerView.HORIZONTAL,false)
         binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
         binding.recyclerViewPageNumbers.adapter= paginationAdapter
         currentPage="1"
-
         noInternetDialog= NoInternetDialog(this)
         ReactiveNetwork
             .observeNetworkConnectivity(applicationContext)
@@ -79,8 +75,6 @@ class LabourListByProjectActivity : AppCompatActivity(),
         }
 
     }
-
-
     private fun getLabourDetails(project_id:String,currentPage:String) {
 
         try {
@@ -133,7 +127,6 @@ class LabourListByProjectActivity : AppCompatActivity(),
     }
 
     private fun getLabourDetailsForOfficer(project_id:String,currentPage:String) {
-
         try {
             progressDialog.show()
             val apiService= ApiClient.create(this@LabourListByProjectActivity)

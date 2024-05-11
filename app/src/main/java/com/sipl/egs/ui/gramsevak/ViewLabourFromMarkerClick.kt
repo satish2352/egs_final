@@ -49,47 +49,52 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding= ActivityViewLabourFromMarkerClickBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title=resources.getString(R.string.labour_details)
+        try {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title=resources.getString(R.string.labour_details)
             binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this, RecyclerView.VERTICAL,false)
-        val mgnregaCardId=intent.getStringExtra("id")
-        dialog= CustomProgressDialog(this)
+            val mgnregaCardId=intent.getStringExtra("id")
+            dialog= CustomProgressDialog(this)
 
-        binding.ivAadhar.setOnClickListener {
-            showPhotoZoomDialog(aadharImage)
-        }
-        binding.ivPhoto.setOnClickListener {
-            showPhotoZoomDialog(photo)
-        }
-        binding.ivMnregaCard.setOnClickListener {
-            showPhotoZoomDialog(mgnregaIdImage)
-        }
-        binding.ivVoterId.setOnClickListener {
-            showPhotoZoomDialog(voterIdImage)
-        }
-        noInternetDialog= NoInternetDialog(this)
-        ReactiveNetwork
-            .observeNetworkConnectivity(applicationContext)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ connectivity: Connectivity ->
-                Log.d("##", "=>" + connectivity.state())
-                if (connectivity.state().toString() == "CONNECTED") {
-                    isInternetAvailable = true
-                    noInternetDialog.hideDialog()
-                    binding.scrollView.visibility= View.VISIBLE
-                } else {
-                    isInternetAvailable = false
-                    noInternetDialog.showDialog()
-                    binding.scrollView.visibility= View.GONE
-                }
-            }) { throwable: Throwable? -> }
+            binding.ivAadhar.setOnClickListener {
+                showPhotoZoomDialog(aadharImage)
+            }
+            binding.ivPhoto.setOnClickListener {
+                showPhotoZoomDialog(photo)
+            }
+            binding.ivMnregaCard.setOnClickListener {
+                showPhotoZoomDialog(mgnregaIdImage)
+            }
+            binding.ivVoterId.setOnClickListener {
+                showPhotoZoomDialog(voterIdImage)
+            }
+            noInternetDialog= NoInternetDialog(this)
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                        noInternetDialog.hideDialog()
+                        binding.scrollView.visibility= View.VISIBLE
+                    } else {
+                        isInternetAvailable = false
+                        noInternetDialog.showDialog()
+                        binding.scrollView.visibility= View.GONE
+                    }
+                }) { throwable: Throwable? -> }
 
-        val mySharedPref=MySharedPref(this)
-        if(mySharedPref.getRoleId()==2){
-            getLabourDetailsForOfficer(mgnregaCardId!!)
-        }else{
-            getLabourDetails(mgnregaCardId!!)
+            val mySharedPref=MySharedPref(this)
+            if(mySharedPref.getRoleId()==2){
+                getLabourDetailsForOfficer(mgnregaCardId!!)
+            }else{
+                getLabourDetails(mgnregaCardId!!)
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","ViewLabourFromMarkerClick:",e)
+            e.printStackTrace()
         }
     }
 
@@ -240,7 +245,8 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
                 dialog.dismiss()
             }
         } catch (e: Exception) {
-
+            Log.d("mytag","ViewLabourFromMarkerClick:",e)
+            e.printStackTrace()
         }
     }
 

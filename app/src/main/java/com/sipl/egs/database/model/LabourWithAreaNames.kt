@@ -26,5 +26,7 @@ data class LabourWithAreaNames(
     val genderName: String?,
     val skillName: String?,
     var syncFailedReason:String,
-    var isSyncFailed:Boolean
+    var isSyncFailed:Boolean,
+    var latitude: String,
+    var longitude: String,
 )

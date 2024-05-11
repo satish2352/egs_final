@@ -2,7 +2,6 @@
     <string name="app_name">EGS</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_activity_maps">MapsActivity</string>
     <string name="report">Report</string>
     <string name="upload_document">Upload Document</string>
     <string name="attendence">Attendance</string>
@@ -12,7 +11,6 @@
     <string name="labour_registration_saved_offline">Labour Registration Saved Offline</string>
     <string name="entries_to_sync">Entries To Sync</string>
     <string name="documents_saved_offline">Documents Saved Offline</string>
-    <string name="sync_land_documents">Sync Land Documents</string>
     <string name="sync_labour_data">Sync Labour Data</string>
     <string name="labours_registered_online">Labours Registered Online</string>
     <string name="allocate_work">Allocate Work</string>
@@ -72,7 +70,6 @@
     <string name="view_attendance">View Attendance</string>
     <string name="select_project">Select Project</string>
     <string name="project_name">Project Name</string>
-    <string name="attendance_updated_successfully">Attendance updated successfully</string>
     <string name="attendance_updating_failed">Attendance updating failed</string>
     <string name="error_occured_during_api_call">Error occured during api call</string>
     <string name="select_day">Select Day</string>
@@ -85,10 +82,8 @@
     <string name="sent_for_approval">Sent For Approval</string>
     <string name="not_approved_list">Not Approved Labours list</string>
     <string name="approved_list">Approved Labours List</string>
-    <string name="status">Status</string>
     <string name="remarks">Remarks</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="registrations_received_for_approval">Registrations Received For Approval</string>
     <string name="approved">Approved</string>
     <string name="registration_status">Registration Status</string>
@@ -98,24 +93,14 @@
     <string name="add_remarks">Add Remarks</string>
     <string name="select_all_details">Select All Details</string>
     <string name="labour_registration_approved">Labour registration approved</string>
-    <string name="something_went_wrong_please_try_again">Something went wrong please try again</string>
     <string name="labour_status_upaded">Labour registration status updated</string>
     <string name="reason">Reason</string>
-    <string name="rejected_list">Rejected List</string>
-    <string name="rejected">Rejected</string>
     <string name="start_date">Start date</string>
     <string name="end_date">End Date</string>
     <string name="skills">Skills</string>
-    <string name="labour_details_upaded">Labour details updated successfully</string>
-    <string name="failed_updating_labour">Error while updating labour details please try again</string>
     <string name="failed_updating_labour_response">response unsuccessful please try again</string>
-    <string name="project">Project</string>
     <string name="internet_is_not_available_please_check">Internet is not available please check</string>
     <string name="error_while_updating_information_please_try_again">Error while updating information please try again</string>
-    <string name="date">Date :</string>
-    <string name="remark">Remark :</string>
-    <string name="reason_1">Reason :</string>
-    <string name="status_1">Status :</string>
     <string name="search">Search</string>
     <string name="history">History</string>
     <string name="status_">Status :</string>
@@ -127,7 +112,6 @@
     <string name="satellite">Satellite</string>
     <string name="hybrid">Hybrid</string>
     <string name="no_records_found">No records found</string>
-    <string name="no_records_founds">no_records_found</string>
     <string name="received_for_approval">Received For Approval</string>
     <string name="documents">Documents</string>
     <string name="labour_registrations">Labour Registrations</string>
@@ -153,7 +137,6 @@
     <string name="project_list_not_found">project list not found</string>
     <string name="unable_to_mark_please_try_again">Unable to mark  please try again</string>
     <string name="attendance_marked_successfully">Attendance marked successfully</string>
-    <string name="letter_number_validation_string_with_space">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 </string>
     <string name="no_space_letter_number">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
     <string name="not_approved_documents">Not Approved Documents</string>
     <string name="documents_received_for_approval">Documents Received For Approval</string>
@@ -167,7 +150,6 @@
     <string name="please_enter_mgnrega_id">Please enter MGNREGA Id</string>
     <string name="please_enter_project_name">Please enter project name</string>
     <string name="please_check_internet_connection">Please check internet connection</string>
-    <string name="plese_enter_valid_credentials">Please enter valid credentials</string>
     <string name="image_capture_failed">Image Capture Failed Try Again</string>
     <string name="unknown_request_code">Unknown Request Code</string>
     <string name="numdigits">0123456789</string>
@@ -175,7 +157,7 @@
     <string name="labour_upload_failed">Labour upload failed</string>
     <string name="search_by_project_id_mgnrega_id">Search By Project Id / MGNREGA Id</string>
     <string name="resubmitted_docs">Re-submitted Documents</string>
-    <string name="approved_documents">Approved Docuements</string>
+    <string name="approved_documents">Approved Documents</string>
     <string name="resubmitted_labours">Re-submitted Labours</string>
     <string name="approved_labours">Approved Labours</string>
     <string name="sent_for_approval_labours">Labour Sent For Approval</string>
@@ -189,9 +171,11 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="add_all_required_details_and_documents"><![CDATA[Please add required details & documents]]></string>
-    <string name="unable_to_retrive_location">Unable to retrive location please enable it</string>
+    <string name="unable_to_retrive_location">Unable to retrieve location please enable it</string>
     <string name="enable_location_services_message"><![CDATA[Location services are disabled. App requires location for core features please enable gps & location.?]]></string>
     <string name="labour_information_updated_successfully">Labour information updated successfully</string>
     <string name="labour_details_not_updated_please_try_again">"Labour details not updated please try again "</string>
     <string name="mgnrega_card_id_already_exists_with_another_user">Mgnrega Card Id already exists with another user</string>
+    <string name="please_select_project_area">Please Select Project Area</string>
+    <string name="please_login_again">Please Login Again..</string>
 </resources>

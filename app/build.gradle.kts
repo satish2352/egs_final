@@ -28,7 +28,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -44,6 +45,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig=true
     }
 }
 
@@ -111,6 +113,7 @@ dependencies {
     //compression
 
     implementation ("id.zelory:compressor:3.0.1")
+
 
 
 

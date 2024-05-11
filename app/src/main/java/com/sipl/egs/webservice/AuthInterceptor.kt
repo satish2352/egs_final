@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
+import com.sipl.egs.R
 import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.utils.MySharedPref
 import okhttp3.Interceptor
@@ -47,6 +48,7 @@ class AuthInterceptor(private val context: Context) : Interceptor {
             Log.d("mytag","handleUnauthorizedAccess")
             val mySharedPref=MySharedPref(context)
             mySharedPref.clearAll()
+            Toast.makeText(context,context.resources.getString(R.string.please_login_again),Toast.LENGTH_LONG).show()
             val intent= Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)

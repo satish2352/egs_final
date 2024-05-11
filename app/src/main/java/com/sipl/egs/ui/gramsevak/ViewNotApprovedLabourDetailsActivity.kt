@@ -49,58 +49,62 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding=ActivityViewLabourDetailsNotApprovedBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title=resources.getString(R.string.labour_details)
-        binding.recyclerViewFamilyDetails.layoutManager=
-            LinearLayoutManager(this, RecyclerView.VERTICAL,false)
-        val mgnregaCardId=intent.getStringExtra("id")
-        dialog= CustomProgressDialog(this)
-        getLabourDetails(mgnregaCardId!!)
-        var adapter= RegistrationStatusHistoryAdapter(historyList)
-        binding.recyclerViewHistory.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
-        binding.recyclerViewHistory.adapter=adapter
-        adapter.notifyDataSetChanged()
-        binding.ivAadhar.setOnClickListener {
-            showPhotoZoomDialog(aadharImage)
-        }
-        binding.ivPhoto.setOnClickListener {
-            showPhotoZoomDialog(photo)
-        }
-        binding.ivMnregaCard.setOnClickListener {
-            showPhotoZoomDialog(mgnregaIdImage)
-        }
-        binding.ivVoterId.setOnClickListener {
-            showPhotoZoomDialog(voterIdImage)
-        }
-        noInternetDialog= NoInternetDialog(this)
-        ReactiveNetwork
-            .observeNetworkConnectivity(applicationContext)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ connectivity: Connectivity ->
-                Log.d("##", "=>" + connectivity.state())
-                if (connectivity.state().toString() == "CONNECTED") {
-                    isInternetAvailable = true
-                    noInternetDialog.hideDialog()
-                    binding.scrollView2.visibility=View.VISIBLE
-                } else {
-                    isInternetAvailable = false
-                    noInternetDialog.showDialog()
-                    binding.scrollView2.visibility=View.GONE
-                }
-            }) { throwable: Throwable? -> }
-        binding.fabEdit.setOnClickListener {
-
-            if(isInternetAvailable){
-                val intent= Intent(this, LabourUpdateOnline1Activity::class.java)
-                intent.putExtra("id",mgnregaCardId)
-                startActivity(intent);
-            }else{
-                noInternetDialog.showDialog()
+        try {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            supportActionBar?.title=resources.getString(R.string.labour_details)
+            binding.recyclerViewFamilyDetails.layoutManager=
+                LinearLayoutManager(this, RecyclerView.VERTICAL,false)
+            val mgnregaCardId=intent.getStringExtra("id")
+            dialog= CustomProgressDialog(this)
+            getLabourDetails(mgnregaCardId!!)
+            var adapter= RegistrationStatusHistoryAdapter(historyList)
+            binding.recyclerViewHistory.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
+            binding.recyclerViewHistory.adapter=adapter
+            adapter.notifyDataSetChanged()
+            binding.ivAadhar.setOnClickListener {
+                showPhotoZoomDialog(aadharImage)
             }
+            binding.ivPhoto.setOnClickListener {
+                showPhotoZoomDialog(photo)
+            }
+            binding.ivMnregaCard.setOnClickListener {
+                showPhotoZoomDialog(mgnregaIdImage)
+            }
+            binding.ivVoterId.setOnClickListener {
+                showPhotoZoomDialog(voterIdImage)
+            }
+            noInternetDialog= NoInternetDialog(this)
+            ReactiveNetwork
+                .observeNetworkConnectivity(applicationContext)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ connectivity: Connectivity ->
+                    Log.d("##", "=>" + connectivity.state())
+                    if (connectivity.state().toString() == "CONNECTED") {
+                        isInternetAvailable = true
+                        noInternetDialog.hideDialog()
+                        binding.scrollView2.visibility=View.VISIBLE
+                    } else {
+                        isInternetAvailable = false
+                        noInternetDialog.showDialog()
+                        binding.scrollView2.visibility=View.GONE
+                    }
+                }) { throwable: Throwable? -> }
+            binding.fabEdit.setOnClickListener {
 
+                if(isInternetAvailable){
+                    val intent= Intent(this, LabourUpdateOnline1Activity::class.java)
+                    intent.putExtra("id",mgnregaCardId)
+                    startActivity(intent);
+                }else{
+                    noInternetDialog.showDialog()
+                }
+
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","ViewNotApprovedLabourDetails:",e)
+            e.printStackTrace()
         }
-
 
 
     }
@@ -246,6 +250,8 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
             }
 
         } catch (e: Exception) {
+            Log.d("mytag","ViewNotApprovedLabourActivity:",e)
+            e.printStackTrace()
         }
     }
 

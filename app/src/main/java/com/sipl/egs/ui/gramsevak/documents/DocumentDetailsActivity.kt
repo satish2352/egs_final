@@ -223,16 +223,16 @@ class DocumentDetailsActivity : AppCompatActivity() {
     }
     private fun showEnableLocationDialog() {
         val builder = AlertDialog.Builder(this@DocumentDetailsActivity)
-        builder.setMessage("Location services are disabled. App requires location for core features please enable gps & location.?")
-            .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
+        builder.setMessage(resources.getString(R.string.enable_location_services_message))
+            .setCancelable(false).setPositiveButton(resources.getString(R.string.yes)) { dialog, _ ->
                 dialog.dismiss()
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }.setNegativeButton("No") { dialog, _ ->
+            }.setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                 dialog.dismiss()
                 // Handle the case when the user refuses to enable location services
                 Toast.makeText(
                     this@DocumentDetailsActivity,
-                    "Unable to retrieve location without enabling location services",
+                    resources.getString(R.string.unable_to_retrive_location),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -356,10 +356,7 @@ class DocumentDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun uploadDocumentToServer() {
 
-
-    }
     @SuppressLint("SimpleDateFormat")
     fun formatDate(inputDate: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'")

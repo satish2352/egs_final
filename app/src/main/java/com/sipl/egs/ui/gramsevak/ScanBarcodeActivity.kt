@@ -45,23 +45,27 @@ class ScanBarcodeActivity : AppCompatActivity() {
     }
     private fun requestThePermissions() {
 
-        PermissionX.init(this@ScanBarcodeActivity)
-            .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
-            .onExplainRequestReason { scope, deniedList ->
-                scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
-            }
-            .onForwardToSettings { scope, deniedList ->
-                scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
-            }
-            .request { allGranted, grantedList, deniedList ->
-                if (allGranted) {
-                    //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
-                    //val dashboardFragment=DashboardFragment();
-                    //dashboardFragment.updateMarker()
-                } else {
-                    Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+        try {
+            PermissionX.init(this@ScanBarcodeActivity)
+                .permissions(android.Manifest.permission.ACCESS_FINE_LOCATION,android.Manifest.permission.ACCESS_COARSE_LOCATION ,android.Manifest.permission.CAMERA)
+                .onExplainRequestReason { scope, deniedList ->
+                    scope.showRequestReasonDialog(deniedList, "Core fundamental are based on these permissions", "OK", "Cancel")
                 }
-            }
+                .onForwardToSettings { scope, deniedList ->
+                    scope.showForwardToSettingsDialog(deniedList, "You need to allow necessary permissions in Settings manually", "OK", "Cancel")
+                }
+                .request { allGranted, grantedList, deniedList ->
+                    if (allGranted) {
+                        //Toast.makeText(this, "All permissions are granted", Toast.LENGTH_LONG).show()
+                        //val dashboardFragment=DashboardFragment();
+                        //dashboardFragment.updateMarker()
+                    } else {
+                        Toast.makeText(this, "These permissions are denied: $deniedList", Toast.LENGTH_LONG).show()
+                    }
+                }
+        } catch (e: Exception) {
+            TODO("Not yet implemented")
+        }
     }
     @RequiresApi(Build.VERSION_CODES.M)
     private fun requestCameraAndStartScanner() {
@@ -90,13 +94,11 @@ class ScanBarcodeActivity : AppCompatActivity() {
             barcodes.forEach { barcode ->
                 when (barcode.valueType) {
                     Barcode.TYPE_URL -> {
-                        binding.textViewQrType.text = "URL"
-                        binding.textViewQrContent.text = barcode.url.toString()
+
                     }
 
                     Barcode.TYPE_CONTACT_INFO -> {
-                        binding.textViewQrType.text = "Contact"
-                        binding.textViewQrContent.text = barcode.contactInfo.toString()
+
                     }
 
                     else -> {
@@ -112,44 +114,49 @@ class ScanBarcodeActivity : AppCompatActivity() {
     private fun getFileDownloadUrl(fileName:String){
 
 
-        val dialog=CustomProgressDialog(this@ScanBarcodeActivity)
-        dialog.show()
-        val apiService=ApiClient.create(this@ScanBarcodeActivity)
-        val call=apiService.downloadPDF(fileName)
-        call.enqueue(object :Callback<QRDocumentDownloadModel>{
-            override fun onResponse(call: Call<QRDocumentDownloadModel>, response: Response<QRDocumentDownloadModel>) {
-                dialog.dismiss()
-                if(response.isSuccessful){
+        try {
+            val dialog=CustomProgressDialog(this@ScanBarcodeActivity)
+            dialog.show()
+            val apiService=ApiClient.create(this@ScanBarcodeActivity)
+            val call=apiService.downloadPDF(fileName)
+            call.enqueue(object :Callback<QRDocumentDownloadModel>{
+                override fun onResponse(call: Call<QRDocumentDownloadModel>, response: Response<QRDocumentDownloadModel>) {
+                    dialog.dismiss()
+                    if(response.isSuccessful){
 
-                    if(response.body()?.status.equals("true")){
-                        val url=response.body()?.data?.document_pdf.toString()
-                        Log.d("mytag",url)
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        intent.setDataAndType(Uri.parse(url), "application/pdf")
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        try {
-                            startActivity(intent)
-                        } catch (e: ActivityNotFoundException) {
-                            Toast.makeText(
-                                this@ScanBarcodeActivity,
-                                "No PDF viewer application found",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        if(response.body()?.status.equals("true")){
+                            val url=response.body()?.data?.document_pdf.toString()
+                            Log.d("mytag",url)
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(Uri.parse(url), "application/pdf")
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            try {
+                                startActivity(intent)
+                            } catch (e: ActivityNotFoundException) {
+                                Toast.makeText(
+                                    this@ScanBarcodeActivity,
+                                    "No PDF viewer application found",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                           // FileDownloader.downloadFile(this@ScanBarcodeActivity,url,fileName)
+                        }else{
+                            Toast.makeText(this@ScanBarcodeActivity,"response false",Toast.LENGTH_SHORT).show()
                         }
-                       // FileDownloader.downloadFile(this@ScanBarcodeActivity,url,fileName)
-                    }else{
-                        Toast.makeText(this@ScanBarcodeActivity,"response false",Toast.LENGTH_SHORT).show()
-                    }
 
-                }else{
-                    Toast.makeText(this@ScanBarcodeActivity,"response unsuccessful",Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(this@ScanBarcodeActivity,"response unsuccessful",Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-            override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
-                dialog.dismiss()
-                Toast.makeText(this@ScanBarcodeActivity,"response failed",Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onFailure(call: Call<QRDocumentDownloadModel>, t: Throwable) {
+                    dialog.dismiss()
+                    Toast.makeText(this@ScanBarcodeActivity,"response failed",Toast.LENGTH_SHORT).show()
+                }
+            })
+        } catch (e: Exception) {
+            Log.d("mytag","ScanBarCodeActivity:",e)
+            e.printStackTrace()
+        }
 
     }
 

@@ -91,7 +91,7 @@ class OfficerMainActivity : AppCompatActivity(),
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ connectivity: Connectivity ->
-                    Log.d("##", "=>" + connectivity.state())
+                    //Log.d("##", "=>" + connectivity.state())
                     if (connectivity.state().toString() == "CONNECTED") {
                         isInternetAvailable = true
                         noInternetDialog.hideDialog()

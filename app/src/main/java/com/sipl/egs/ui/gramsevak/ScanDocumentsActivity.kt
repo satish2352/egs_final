@@ -305,49 +305,6 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
         return inputString.replace(" ", "")
     }
 
-    fun bitmapToByteArray(bitmap: Bitmap): ByteArray? {
-        val outputStream = ByteArrayOutputStream()
-        return try {
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            outputStream.toByteArray()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        } finally {
-            outputStream.close()
-        }
-    }
-
-    fun fileToByteArray(file: File): ByteArray? {
-        var fis: FileInputStream? = null
-        return try {
-            fis = FileInputStream(file)
-            val byteArray = ByteArray(file.length().toInt())
-            fis.read(byteArray)
-            byteArray
-        } catch (e: IOException) {
-            e.printStackTrace()
-            null
-        } finally {
-            fis?.close()
-        }
-    }
-
-    suspend fun uriToFileByGlide(context: Context, uri: String): File? {
-        return try {
-            Glide.with(context)
-                .asFile()
-                .load(uri)
-                .apply(RequestOptions.diskCacheStrategyOf(DiskCacheStrategy.NONE))
-                .submit()
-                .get()
-        } catch (e: Exception) {
-            Log.d("mytag", "uriToFile : " + e.message)
-            e.printStackTrace()
-            null
-        }
-    }
-
     private fun requestThePermissions() {
 
         PermissionX.init(this@ScanDocumentsActivity)
@@ -392,77 +349,82 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     }
 
     private fun showDocumentTypeSelectDialog() {
-        val dialog = Dialog(this@ScanDocumentsActivity)
-        dialog.setContentView(R.layout.layout_dialog_select_document_type)
-        val width = ViewGroup.LayoutParams.MATCH_PARENT
-        val height = ViewGroup.LayoutParams.WRAP_CONTENT
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog.window?.setLayout(width, height)
-        dialog.show()
-        actDocumentType = dialog.findViewById<AutoCompleteTextView>(R.id.actDocumentType)
-        ivAddDocument = dialog.findViewById<ImageView>(R.id.ivAddDocument)
-        etDocumentName = dialog.findViewById<EditText>(R.id.etDocumentName)
-        var documentTypeList: List<DocumentTypeDropDown> = ArrayList()
-        CoroutineScope(Dispatchers.IO).launch {
-            documentTypeList = documentTypeDao.getDocuments()
-            Log.d("mytag", "=>" + documentTypeList.size)
-            adapter = DocumentPagesAdapter(documentList, this@ScanDocumentsActivity)
-            adapter.notifyDataSetChanged()
-            var documentNamesList = mutableListOf<String>()
-            for (i in documentTypeList.indices) {
-                documentNamesList.add(documentTypeList[i].documenttype)
-            }
-            withContext(Dispatchers.Main) {
-                // Add the fetched data to the list
-                val documentAdapter = ArrayAdapter(
-                    this@ScanDocumentsActivity,
-                    android.R.layout.simple_list_item_1,
-                    documentNamesList
-                )
-                actDocumentType.setAdapter(documentAdapter)
-                adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
-            }
-        }
-        actDocumentType.setOnFocusChangeListener { abaad, asd ->
-            actDocumentType.showDropDown()
-        }
-
-        actDocumentType.setOnClickListener {
-            actDocumentType.showDropDown()
-        }
-
-        actDocumentType.setOnItemClickListener { parent, view, position, id ->
-            selectedDocumentId=documentTypeList[position].id.toString()
+        try {
+            val dialog = Dialog(this@ScanDocumentsActivity)
+            dialog.setContentView(R.layout.layout_dialog_select_document_type)
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.WRAP_CONTENT
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            dialog.window?.setLayout(width, height)
+            dialog.show()
+            actDocumentType = dialog.findViewById<AutoCompleteTextView>(R.id.actDocumentType)
+            ivAddDocument = dialog.findViewById<ImageView>(R.id.ivAddDocument)
+            etDocumentName = dialog.findViewById<EditText>(R.id.etDocumentName)
+            var documentTypeList: List<DocumentTypeDropDown> = ArrayList()
             CoroutineScope(Dispatchers.IO).launch {
-                val waitJob=async { documentTypeObj=documentTypeDao.getDocumentTypeById(selectedDocumentId) }
-                waitJob.await()
-
-                if(documentTypeObj!=null){
-                    documentColor= documentTypeObj.doc_color.toString()
-                    selectedDocumentTypeName=documentTypeObj.documenttype
+                documentTypeList = documentTypeDao.getDocuments()
+                Log.d("mytag", "=>" + documentTypeList.size)
+                adapter = DocumentPagesAdapter(documentList, this@ScanDocumentsActivity)
+                adapter.notifyDataSetChanged()
+                var documentNamesList = mutableListOf<String>()
+                for (i in documentTypeList.indices) {
+                    documentNamesList.add(documentTypeList[i].documenttype)
+                }
+                withContext(Dispatchers.Main) {
+                    // Add the fetched data to the list
+                    val documentAdapter = ArrayAdapter(
+                        this@ScanDocumentsActivity,
+                        android.R.layout.simple_list_item_1,
+                        documentNamesList
+                    )
+                    actDocumentType.setAdapter(documentAdapter)
+                    adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
                 }
             }
-        }
+            actDocumentType.setOnFocusChangeListener { abaad, asd ->
+                actDocumentType.showDropDown()
+            }
 
-        ivAddDocument.setOnClickListener {
+            actDocumentType.setOnClickListener {
+                actDocumentType.showDropDown()
+            }
 
-            if (validateFields()) {
-                val calendar = Calendar.getInstance()
-                val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
-                if (etDocumentName.text.length > 0 && !etDocumentName.text.isNullOrEmpty()) {
+            actDocumentType.setOnItemClickListener { parent, view, position, id ->
+                selectedDocumentId=documentTypeList[position].id.toString()
+                CoroutineScope(Dispatchers.IO).launch {
+                    val waitJob=async { documentTypeObj=documentTypeDao.getDocumentTypeById(selectedDocumentId) }
+                    waitJob.await()
 
-                    documentName =
-                        "MH_${removeSpaces(userDistrictName).trim()}_${removeSpaces(userTalukaName).trim()}_${removeSpaces(userVillageName).trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${removeSpaces(etDocumentName.text.toString().trim())}_${timeInMillis.trim()}.pdf"
+                    if(documentTypeObj!=null){
+                        documentColor= documentTypeObj.doc_color.toString()
+                        selectedDocumentTypeName=documentTypeObj.documenttype
+                    }
+                }
+            }
+
+            ivAddDocument.setOnClickListener {
+
+                if (validateFields()) {
+                    val calendar = Calendar.getInstance()
+                    val timeInMillis = convertTimeToCustomString(calendar.timeInMillis);
+                    if (etDocumentName.text.length > 0 && !etDocumentName.text.isNullOrEmpty()) {
+
+                        documentName =
+                            "MH_${removeSpaces(userDistrictName).trim()}_${removeSpaces(userTalukaName).trim()}_${removeSpaces(userVillageName).trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${removeSpaces(etDocumentName.text.toString().trim())}_${timeInMillis.trim()}.pdf"
+                    } else {
+                        documentName =
+                            "MH_${removeSpaces(userDistrictName).trim()}_${removeSpaces(userTalukaName).trim()}_${removeSpaces(userVillageName).trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${timeInMillis.trim()}.pdf"
+                    }
+                    Log.d("mytag", "Document Name >$documentName")
+                    launchScanner()
+                    dialog.dismiss()
                 } else {
-                    documentName =
-                        "MH_${removeSpaces(userDistrictName).trim()}_${removeSpaces(userTalukaName).trim()}_${removeSpaces(userVillageName).trim()}_${removeSpaces(actDocumentType.text.toString().trim())}_${timeInMillis.trim()}.pdf"
-                }
-                Log.d("mytag", "Document Name >$documentName")
-                launchScanner()
-                dialog.dismiss()
-            } else {
 
+                }
             }
+        } catch (e: Exception) {
+            Log.d("mytag","ScanDocumentsActivity:",e)
+            e.printStackTrace()
         }
     }
 

@@ -96,12 +96,9 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId==android.R.id.home){
-            //finish()
         }
         if(item.itemId==R.id.navigation_sync){
 
-            //UploadManager.startUploadTask(this@SyncLabourDataActivity)
-            //syncLabourData()
            if(isInternetAvailable){
                CoroutineScope(Dispatchers.IO).launch {
                    var count=0;
@@ -156,33 +153,42 @@ class SyncLabourDataActivity : AppCompatActivity() {
     override fun onRestart() {
         super.onRestart()
         dialog.show()
-        CoroutineScope(Dispatchers.IO).launch{
-            labourList=labourDao.getLabourWithAreaNames()
-            Log.d("mytag","=>"+labourList.size)
+        try {
+            CoroutineScope(Dispatchers.IO).launch{
+                labourList=labourDao.getLabourWithAreaNames()
+                Log.d("mytag","=>"+labourList.size)
 
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                adapter= OfflineLabourListAdapter(labourList)
-                binding.recyclerViewSyncLabourData.adapter=adapter
-                adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
+                withContext(Dispatchers.Main) {
+                    dialog.dismiss()
+                    adapter= OfflineLabourListAdapter(labourList)
+                    binding.recyclerViewSyncLabourData.adapter=adapter
+                    adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
+                }
             }
+        } catch (e: Exception) {
+            Log.d("mytag","SyncLabourActivity:",e)
+            e.printStackTrace()
         }
-        Log.d("mytag",""+labourList.size)
     }
 
     fun fetchUserList(){
-        CoroutineScope(Dispatchers.IO).launch{
-            labourList=labourDao.getLabourWithAreaNames()
-            Log.d("mytag","=>"+labourList.size)
+        try {
+            CoroutineScope(Dispatchers.IO).launch{
+                labourList=labourDao.getLabourWithAreaNames()
+                Log.d("mytag","=>"+labourList.size)
 
-            withContext(Dispatchers.Main) {
-                dialog.dismiss()
-                adapter= OfflineLabourListAdapter(labourList)
-                binding.recyclerViewSyncLabourData.adapter=adapter
-                adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
+                withContext(Dispatchers.Main) {
+                    dialog.dismiss()
+                    adapter= OfflineLabourListAdapter(labourList)
+                    binding.recyclerViewSyncLabourData.adapter=adapter
+                    adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
+                }
             }
+        } catch (e: Exception) {
+            Log.d("mytag","SyncLabourActivity:",e)
+            e.printStackTrace()
         }
-        Log.d("mytag",""+labourList.size)
+
     }
 
 

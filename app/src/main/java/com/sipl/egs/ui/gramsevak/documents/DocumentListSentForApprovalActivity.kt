@@ -159,9 +159,18 @@ override fun onOptionsItemSelected(item: MenuItem): Boolean {
 }
 
     override fun onPageNumberClicked(pageNumber: Int) {
-        currentPage="$pageNumber"
-        getDataFromServer("$pageNumber")
-        paginationAdapter.setSelectedPage(pageNumber)
+        try {
+            if (isInternetAvailable) {
+                currentPage="$pageNumber"
+                getDataFromServer("$pageNumber")
+                paginationAdapter.setSelectedPage(pageNumber)
+            }else{
+                Toast.makeText(this@DocumentListSentForApprovalActivity,resources.getString(R.string.internet_is_not_available_please_check),Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","Exception",e)
+            e.printStackTrace()
+        }
 
     }
 }

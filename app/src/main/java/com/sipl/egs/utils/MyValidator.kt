@@ -28,4 +28,9 @@ object MyValidator {
         return result
     }
 
+    fun isValidMgnregaId(mgnregaId: String): Boolean {
+        return mgnregaId!==null && mgnregaId.isNotEmpty() && mgnregaId.isNotBlank() && mgnregaId.length==10
+
+    }
+
 }

@@ -128,9 +128,14 @@ class ViewUploadedDocumentsActivity : AppCompatActivity(),
     }
 
     override fun onPageNumberClicked(pageNumber: Int) {
-        currentPage="$pageNumber"
-        getPdfListFromServer(currentPage = "$pageNumber")
-        paginationAdapter.setSelectedPage(pageNumber)
+        try {
+            currentPage="$pageNumber"
+            getPdfListFromServer(currentPage = "$pageNumber")
+            paginationAdapter.setSelectedPage(pageNumber)
+        } catch (e: Exception) {
+            Log.d("mytag","ViewUploadedDocumentsActivity:",e)
+            e.printStackTrace()
+        }
 
     }
 }

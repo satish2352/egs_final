@@ -130,7 +130,6 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
 
         binding.projectArea.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
-                Log.d("mytag", "" + position)
                 binding.tvProjectAddress.setText(
                     listProject.get(position).district_name + " -> " + listProject.get(
                         position
@@ -162,7 +161,6 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
     }
 
     private fun searchLabourByMgnregaId(currentPage:String) {
-
         if (validateFields()) {
             progressDialog.show()
             CoroutineScope(Dispatchers.IO).launch {
@@ -178,7 +176,6 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
                                 (labourDataList as ArrayList<LabourInfo>).clear()
                                 if (response.body()?.status.equals("true")) {
                                     labourDataList = (response.body()?.data as ArrayList<LabourInfo>?)!!
-                                    Log.d("mytag", "userListSize=>" + labourDataList.size)
                                     runOnUiThread {
                                         if (labourDataList.size > 0) {
                                             adapter = AttendanceAdapter(
@@ -269,7 +266,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
 
         } else {
             result.add(false)
-            binding.projectArea.error = "Select Project Area"
+            binding.projectArea.error = resources.getString(R.string.please_select_project_area)
         }
         if (binding.etLabourId.text?.length!! > 0) {
 
@@ -278,19 +275,18 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
 
         } else {
             result.add(false)
-            binding.etLabourId.error = "Please enter MGNREGA Id"
+            binding.etLabourId.error = resources.getString(R.string.please_enter_mgnrega_id)
         }
 
         return !result.contains(false);
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.d("mytag","onOptionsItemSelected")
         if (item.itemId == android.R.id.home) {
             finish()
         }
         if (item.itemId == R.id.action_view_attendance) {
-            Log.d("mytag","action_view_attendance")
+
             if(isInternetAvailable){
                 val intent= Intent(this@AllocateWorkActivity, com.sipl.egs.ui.gramsevak.ViewAttendanceActivity::class.java)
                 startActivity(intent)
@@ -341,7 +337,6 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
                             response: Response<MastersModel>
                         ) {
                             progressDialog.dismiss()
-                            Log.d("mytag","showAttendanceDialog : onResponse ");
                             dialog.dismiss()
                             if (response.isSuccessful) {
 
@@ -364,7 +359,6 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
                                     binding.recyclerViewPageNumbers.adapter=paginationAdapter
                                     paginationAdapter.notifyDataSetChanged()
 
-                                    Log.d("mytag","---here")
 
                                 }else{
                                     val toast = Toast.makeText(
@@ -383,7 +377,6 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
                                     paginationAdapter= MyPaginationAdapter(0,"0",this)
                                     binding.recyclerViewPageNumbers.adapter=paginationAdapter
                                     paginationAdapter.notifyDataSetChanged()
-                                    Log.d("mytag","---here also")
                                 }
                             }else{
                                 val toast = Toast.makeText(
@@ -413,7 +406,7 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
 
                 } else {
                     val toast = Toast.makeText(
-                        this@AllocateWorkActivity, "Select Day",
+                        this@AllocateWorkActivity, resources.getString(R.string.select_day),
                         Toast.LENGTH_LONG
                     )
                     toast.show()
@@ -429,17 +422,22 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
 
     override fun markAttendance(labour: LabourInfo) {
         showAttendanceDialog(labour.full_name, labour.profile_image, labour.mgnrega_card_id)
-        (labourList as ArrayList<Labour>).clear()
-        adapter.notifyDataSetChanged()
-        binding.etLabourId.setText("")
-        binding.tvProjectAddress.setText("")
-        binding.projectArea.clearListSelection()
-        binding.projectArea.setText("")
-        binding.tvProjectDuration.setText("")
-        paginationAdapter= MyPaginationAdapter(0,"0",this)
-        paginationLayoutManager=LinearLayoutManager(this@AllocateWorkActivity, RecyclerView.HORIZONTAL,false)
-        binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
-        paginationAdapter.notifyDataSetChanged()
+        try {
+            (labourList as ArrayList<Labour>).clear()
+            adapter.notifyDataSetChanged()
+            binding.etLabourId.setText("")
+            binding.tvProjectAddress.setText("")
+            binding.projectArea.clearListSelection()
+            binding.projectArea.setText("")
+            binding.tvProjectDuration.setText("")
+            paginationAdapter= MyPaginationAdapter(0,"0",this)
+            paginationLayoutManager=LinearLayoutManager(this@AllocateWorkActivity, RecyclerView.HORIZONTAL,false)
+            binding.recyclerViewPageNumbers.layoutManager= paginationLayoutManager
+            paginationAdapter.notifyDataSetChanged()
+        } catch (e: Exception) {
+            Log.d("mytag","AllocateWorkActivity:",e)
+            e.printStackTrace()
+        }
     }
 
     private fun getProjectFromServer()
@@ -500,53 +498,15 @@ class AllocateWorkActivity : AppCompatActivity(), MarkAttendanceListener,
             progressDialog.dismiss()
         }
     }
-
-    private fun getLabourByIdFromServer(mgnregaId: String) {
-
-        val apiService = ApiClient.create(this@AllocateWorkActivity)
-        val call = apiService.getLabourDataByIdForAttendance(mgnregaId)
-        call.enqueue(object : Callback<LabourByMgnregaId> {
-            override fun onResponse(
-                call: Call<LabourByMgnregaId>,
-                response: Response<LabourByMgnregaId>
-            ) {
-                Log.d("mytag", Gson().toJson(response.body()))
-                if (response.isSuccessful) {
-                    if (!response.body()?.data.isNullOrEmpty()) {
-                        labourDataList = (response.body()?.data as ArrayList<LabourInfo>?)!!
-                        adapter.notifyDataSetChanged()
-                    } else {
-                        val toast = Toast.makeText(
-                            this@AllocateWorkActivity, "No data found",
-                            Toast.LENGTH_LONG
-                        )
-                        toast.show()
-
-                    }
-                } else {
-                    Toast.makeText(
-                        this@AllocateWorkActivity,
-                        "response unsuccessful",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-
-            override fun onFailure(call: Call<LabourByMgnregaId>, t: Throwable) {
-                Log.d("mytag", "onFailure getLabourByIdFromServer " + t.message)
-                Toast.makeText(
-                    this@AllocateWorkActivity,
-                    "Error occured during api unsuccessful",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        })
-    }
-
     override fun onPageNumberClicked(pageNumber: Int) {
-        currentPage="$pageNumber"
-        searchLabourByMgnregaId("$pageNumber")
-        paginationAdapter.setSelectedPage(pageNumber)
+        try {
+            currentPage="$pageNumber"
+            searchLabourByMgnregaId("$pageNumber")
+            paginationAdapter.setSelectedPage(pageNumber)
+        } catch (e: Exception) {
+            Log.d("mytag","AllowCateWorkActivity: ",e)
+            e.printStackTrace()
+        }
 
     }
 }

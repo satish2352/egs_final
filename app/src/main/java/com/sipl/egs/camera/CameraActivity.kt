@@ -87,33 +87,37 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun toggleFlash() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+        try {
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
-        cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            cameraProviderFuture.addListener({
+                val cameraProvider = cameraProviderFuture.get()
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            val camera = cameraProvider.bindToLifecycle(this, cameraSelector)
-            val cameraControl = camera.cameraControl
+                val camera = cameraProvider.bindToLifecycle(this, cameraSelector)
+                val cameraControl = camera.cameraControl
 
-            val torchState = camera.cameraInfo.torchState.value ?: TorchState.OFF
+                val torchState = camera.cameraInfo.torchState.value ?: TorchState.OFF
 
-            when (torchState) {
-                TorchState.OFF -> { cameraControl.enableTorch(true)
-                    binding.btnFlash.setImageResource(R.drawable.ic_flash)
+                when (torchState) {
+                    TorchState.OFF -> { cameraControl.enableTorch(true)
+                        binding.btnFlash.setImageResource(R.drawable.ic_flash)
+                    }
+                    TorchState.ON -> { cameraControl.enableTorch(false)
+                        binding.btnFlash.setImageResource(R.drawable.ic_flash_off)
+                    }
                 }
-                TorchState.ON -> { cameraControl.enableTorch(false)
-                    binding.btnFlash.setImageResource(R.drawable.ic_flash_off)
-                }
-            }
-        }, ContextCompat.getMainExecutor(this))
+            }, ContextCompat.getMainExecutor(this))
+        } catch (e: Exception) {
+            Log.d("mytag","CameraActivity:",e)
+            e.printStackTrace()
+        }
     }
 
 
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-
         cameraProviderFuture.addListener({
             // Camera provider is now guaranteed to be available
             val cameraProvider = cameraProviderFuture.get()

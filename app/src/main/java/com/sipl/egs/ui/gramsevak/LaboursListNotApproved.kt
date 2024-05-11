@@ -151,9 +151,13 @@ class LaboursListNotApproved : AppCompatActivity(), MyPaginationAdapter.OnPageNu
         return super.onOptionsItemSelected(item)
     }
     override fun onPageNumberClicked(pageNumber: Int) {
-        currentPage="$pageNumber"
-        getDataFromServer("$pageNumber")
-        paginationAdapter.setSelectedPage(pageNumber)
+        if (isInternetAvailable) {
+            currentPage="$pageNumber"
+            getDataFromServer("$pageNumber")
+            paginationAdapter.setSelectedPage(pageNumber)
+        }else{
+            Toast.makeText(this@LaboursListNotApproved,resources.getString(R.string.internet_is_not_available_please_check),Toast.LENGTH_SHORT).show()
+        }
 
     }
 }
