@@ -1,6 +1,7 @@
 package com.sipl.egs.adapters
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sipl.egs.R
 import com.sipl.egs.model.apis.attendance.AttendanceData
+import com.sipl.egs.ui.gramsevak.ViewLabourFromMarkerClick
 import com.sipl.egs.utils.MySharedPref
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -35,7 +37,7 @@ class OfficerLabourListByProjectIdOfAttendance(var list: List<AttendanceData>?) 
         viewType: Int
     ): OfficerLabourListByProjectIdOfAttendance.ViewHolder {
         pref= MySharedPref(parent.context)
-        val view= LayoutInflater.from(parent.context).inflate(R.layout.activity_officer_labour_list_by_project_id_attendance,parent,false)
+        val view= LayoutInflater.from(parent.context).inflate(R.layout.item_row_labour_list_by_project_with_attendance,parent,false)
         return OfficerLabourListByProjectIdOfAttendance.ViewHolder(view)
     }
 
@@ -58,6 +60,13 @@ class OfficerLabourListByProjectIdOfAttendance(var list: List<AttendanceData>?) 
             }
 
             holder.tvDate.setText(formatDate(list?.get(position)?.updated_at!!))
+
+            holder.itemView.setOnClickListener {
+                    val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
+                    intent.putExtra("id",list?.get(position)?.mgnrega_card_id)
+                    holder.itemView.context?.startActivity(intent)
+
+            }
 
         } catch (e: Exception) {
             Log.d("mytag","OfficerLabourListByProjectIdOfAttendance: ${e.message}",e)

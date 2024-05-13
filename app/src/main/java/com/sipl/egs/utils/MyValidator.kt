@@ -24,13 +24,26 @@ object MyValidator {
     }
 
     fun isValidPassword(password: String): Boolean {
-        var result = password!==null && password.isNotEmpty() && password.isNotBlank() && password.length>=8
-        return result
+        return password!==null && password.isNotEmpty() && password.isNotBlank() && password.length==8
+
+    }
+    fun isValidConfirmPassword(password: String,confirmPassword:String): Boolean {
+        return password!==null && password.isNotEmpty() && password.isNotBlank() && password.length==8 && password.equals(confirmPassword)
+
+    }
+    fun isValidPasswordOld(password: String): Boolean {
+        return password!==null && password.isNotEmpty() && password.isNotBlank() && password.length>=8
+
     }
 
     fun isValidMgnregaId(mgnregaId: String): Boolean {
         return mgnregaId!==null && mgnregaId.isNotEmpty() && mgnregaId.isNotBlank() && mgnregaId.length==10
 
+    }
+
+    fun isValidPasswordPattern(password: String): Boolean {
+        val pattern = Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}$")
+        return pattern.matches(password)
     }
 
 }

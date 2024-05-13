@@ -31,6 +31,7 @@ import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityOfficerMainBinding
 import com.sipl.egs.interfaces.OnLocationStateListener
 import com.sipl.egs.ui.activities.start.LoginActivity
+import com.sipl.egs.ui.registration.ProfileActivity
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.NoInternetDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -244,6 +245,12 @@ class OfficerMainActivity : AppCompatActivity(),
                 Log.d("mytag","Exception "+e.message,e);
                 e.printStackTrace()
             }
+
+        }
+        if(item.itemId==R.id.action_profile)
+        {
+            val intent=Intent(this@OfficerMainActivity,ProfileActivity::class.java)
+            startActivity(intent)
 
         }
         return super.onOptionsItemSelected(item)

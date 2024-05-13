@@ -514,6 +514,16 @@ interface ApiService {
 
 
 
+    @POST("auth/change-password-profile")
+    fun changePassword(
+        @Query("old_password") oldPassword: String,
+        @Query("new_password") newPassword: String,
+    ): Call<LabourListModel>
+
+    @POST("auth/resetPassword")
+    fun resetPassword(
+        @Query("email") email: String
+    ): Call<LabourListModel>
 
 
 

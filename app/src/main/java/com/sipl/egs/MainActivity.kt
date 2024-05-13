@@ -30,6 +30,7 @@ import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.databinding.ActivityMainBinding
 import com.sipl.egs.interfaces.OnLocationStateListener
 import com.sipl.egs.ui.activities.start.LoginActivity
+import com.sipl.egs.ui.registration.ProfileActivity
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.NoInternetDialog
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -234,6 +235,12 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
                     // Handle the case when the user chooses not to enable GPS
                 }
                 .show()
+
+        }
+        if(item.itemId==R.id.action_profile)
+        {
+            val intent=Intent(this@MainActivity, ProfileActivity::class.java)
+            startActivity(intent)
 
         }
         return super.onOptionsItemSelected(item)

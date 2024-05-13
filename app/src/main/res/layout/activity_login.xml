@@ -134,6 +134,20 @@
                     android:fontFamily="@font/poppins"
                     android:text="@string/login"></Button>
 
+
+
+                <TextView
+                    android:id="@+id/tvResetPassword"
+                    android:layout_marginRight="16dp"
+                    android:layout_gravity="end"
+                    android:gravity="end|right"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:text="@string/reset_password_1"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/appBlue"></TextView>
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
