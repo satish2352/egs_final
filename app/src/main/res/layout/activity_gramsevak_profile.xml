@@ -10,6 +10,78 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+        <TableLayout
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="@string/full_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_marginLeft="16dp"
+                    android:id="@+id/tvFullName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+            <TableRow android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="@string/district"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_marginLeft="16dp"
+                    android:id="@+id/tvDistritct"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+            <TableRow android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="@string/taluka"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_marginLeft="16dp"
+                    android:id="@+id/tvTaluka"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+            <TableRow android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="@string/village"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:layout_marginLeft="16dp"
+                    android:id="@+id/tvVillage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+
+            <TableRow android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:text="@string/mobile_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_marginLeft="16dp"
+                    android:id="@+id/tvMobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+        </TableLayout>
+
 
 
         <TextView

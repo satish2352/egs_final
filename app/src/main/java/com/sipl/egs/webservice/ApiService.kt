@@ -13,6 +13,7 @@ import com.sipl.egs.model.apis.mapmarker.MapMarkerModel
 import com.sipl.egs.model.apis.masters.MastersModel
 import com.sipl.egs.model.apis.mastersupdate.AreaMastersUpdateModel
 import com.sipl.egs.model.apis.officermapdash.DashboardMapOfficerModel
+import com.sipl.egs.model.apis.profile.ProfileModel
 import com.sipl.egs.model.apis.projectlist.ProjectsFromLatLongModel
 import com.sipl.egs.model.apis.projectlistforofficermap.ProjectListModel
 import com.sipl.egs.model.apis.projectlistmarker.ProjectLabourListForMarker
@@ -520,7 +521,10 @@ interface ApiService {
         @Query("new_password") newPassword: String,
     ): Call<LabourListModel>
 
-    @POST("auth/resetPassword")
+    @POST("auth/particular-user-profile")
+    fun getUserProfile(): Call<ProfileModel>
+
+    @POST("reset-password-byemail")
     fun resetPassword(
         @Query("email") email: String
     ): Call<LabourListModel>

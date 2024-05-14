@@ -14,6 +14,7 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityGramsevakProfileBinding
 import com.sipl.egs.model.apis.labourlist.LabourListModel
+import com.sipl.egs.model.apis.profile.ProfileModel
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.MyValidator
@@ -57,6 +58,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }) { throwable: Throwable? -> }
 
+        getUserProfile()
         binding.btnSubmit.setOnClickListener {
 
             if(isInternetAvailable){
@@ -74,8 +76,6 @@ class ProfileActivity : AppCompatActivity() {
                         }else{
                             showPasswordExplainDialog()
                         }
-
-
 
                     }else{
                         binding.txLayoutPasswordNewReEnter.setError(resources.getString(R.string.both_password_did_not_match))
@@ -96,8 +96,8 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun showPasswordExplainDialog() {
-
+    private fun showPasswordExplainDialog()
+    {
         val builder=AlertDialog.Builder(this@ProfileActivity)
             .setTitle("Invalid Password")
             .setMessage(resources.getString(R.string.password_text))
@@ -109,10 +109,7 @@ class ProfileActivity : AppCompatActivity() {
         val dialog=builder.create()
         dialog.show()
     }
-
     private fun changePassword(oldPassword: String, newPassword: String, id: Int, roleId: Int) {
-
-
         progressDialog.show()
         val call=apiService.changePassword(
             oldPassword = oldPassword,
@@ -168,6 +165,64 @@ class ProfileActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+    private fun getUserProfile() {
+        try {
+            progressDialog.show()
+            val call=apiService.getUserProfile()
+
+            call.enqueue(object : retrofit2.Callback<ProfileModel> {
+                override fun onResponse(
+                    call: Call<ProfileModel>,
+                    response: Response<ProfileModel>
+                ) {
+                    progressDialog.dismiss()
+                    if(response.isSuccessful)
+                    {
+                        if(response.body()?.status.equals("true")){
+                            runOnUiThread {
+                                progressDialog.dismiss()
+                                val data=response.body()?.data;
+                                binding.tvFullName.setText(data?.get(0)?.gramsevak_full_name ?: "")
+                                binding.tvDistritct.setText(data?.get(0)?.district_name ?: "")
+                                binding.tvTaluka.setText(data?.get(0)?.taluka_name ?: "")
+                                binding.tvVillage.setText(data?.get(0)?.village_name ?: "")
+                                binding.tvMobile.setText(data?.get(0)?.number ?: "")
+
+                            }
+                        }else{
+                            runOnUiThread {
+                                progressDialog.dismiss()
+                                val toast= Toast.makeText(this@ProfileActivity,
+                                    response.body()?.message,
+                                    Toast.LENGTH_LONG)
+                                toast.show()
+                            }
+                        }
+
+                    }else{
+                        runOnUiThread {
+                            progressDialog.dismiss()
+                            val toast= Toast.makeText(this@ProfileActivity,
+                                resources.getString(R.string.response_unsuccessfull),
+                                Toast.LENGTH_LONG)
+                            toast.show()
+                        }
+                    }
+                }
+                override fun onFailure(call: Call<ProfileModel>, t: Throwable) {
+                    runOnUiThread {
+                        progressDialog.dismiss()
+                        val toast= Toast.makeText(this@ProfileActivity,
+                            getString(R.string.error_while_login),
+                            Toast.LENGTH_LONG)
+                        toast.show()
+                    }
+                }
+            })
+        } catch (e: Exception) {
+
+        }
     }
 
     fun  validateFields():Boolean

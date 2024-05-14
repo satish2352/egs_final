@@ -11,11 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -23,14 +19,14 @@ import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.MainActivity
 import com.sipl.egs.R
-import com.sipl.egs.adapters.DocumentPagesAdapter
 import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.dao.UserDao
-import com.sipl.egs.database.entity.DocumentTypeDropDown
 import com.sipl.egs.databinding.ActivityLoginBinding
+import com.sipl.egs.model.apis.error.MyError
 import com.sipl.egs.model.apis.labourlist.LabourListModel
 import com.sipl.egs.model.apis.login.LoginModel
 import com.sipl.egs.ui.officer.OfficerMainActivity
@@ -44,13 +40,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.Calendar
+import retrofit2.Retrofit
 
 
 class LoginActivity : AppCompatActivity() {
@@ -133,7 +127,7 @@ class LoginActivity : AppCompatActivity() {
                                                     if(loginModel?.data?.role_id==2){
                                                         val toast= Toast.makeText(this@LoginActivity,
                                                             getString(R.string.login_successful),
-                                                            Toast.LENGTH_SHORT)
+                                                            Toast.LENGTH_LONG)
                                                         toast.show()
                                                         val intent = Intent(this@LoginActivity, OfficerMainActivity::class.java)
                                                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -142,7 +136,7 @@ class LoginActivity : AppCompatActivity() {
                                                     }else if(loginModel?.data?.role_id==3) {
                                                         val toast= Toast.makeText(this@LoginActivity,
                                                             getString(R.string.login_successful),
-                                                            Toast.LENGTH_SHORT)
+                                                            Toast.LENGTH_LONG)
                                                         toast.show()
                                                         val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -155,7 +149,7 @@ class LoginActivity : AppCompatActivity() {
                                                     customProgressDialog.dismiss()
                                                     val toast= Toast.makeText(this@LoginActivity,
                                                         message,
-                                                        Toast.LENGTH_SHORT)
+                                                        Toast.LENGTH_LONG)
                                                     toast.show()
                                                 }
                                             }
@@ -166,7 +160,7 @@ class LoginActivity : AppCompatActivity() {
                                                 customProgressDialog.dismiss()
                                                 val toast= Toast.makeText(this@LoginActivity,
                                                    response.body()?.message.toString(),
-                                                    Toast.LENGTH_SHORT)
+                                                    Toast.LENGTH_LONG)
                                                 toast.show()
                                             }
                                         }
@@ -176,8 +170,10 @@ class LoginActivity : AppCompatActivity() {
                                             customProgressDialog.dismiss()
                                             val toast= Toast.makeText(this@LoginActivity,
                                                 getString(R.string.error_while_login),
-                                                Toast.LENGTH_SHORT)
+                                                Toast.LENGTH_LONG)
                                             toast.show()
+                                            Log.d("mytag","Exception Inserted : ${t.message}")
+                                            t.printStackTrace()
                                         }
                                     }
                                 })
@@ -352,6 +348,12 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this@LoginActivity,response.body()?.message,Toast.LENGTH_LONG).show()
                         }
                     }else{
+
+                       // Log.d("mytag",return Gson().fromJson(response.errorBody(), MyError::class.java))
+
+
+
+
                         Toast.makeText(this@LoginActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_LONG).show()
                     }
                 }

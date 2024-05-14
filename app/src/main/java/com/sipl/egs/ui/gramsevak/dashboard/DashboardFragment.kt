@@ -37,9 +37,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.gson.Gson
+import com.google.maps.android.clustering.ClusterManager
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
@@ -489,6 +491,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                                     response.body()?.project_data as MutableList<ProjectDataFromLatLong>
                                 if (projectData.size > 0) {
                                     showProjectMarkersWhenSearchByName(projectData)
+                                    //showProjectMarkersWhenSearchByNameWithCluster(projectData)
                                 }
                             } else {
                                 Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_LONG)
@@ -547,6 +550,86 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     )
                 )
                 updateCurrentMarker()
+            } else {
+                // Handle case when projectData is empty
+                Log.d("mytag", "showProjectMarkers: Project data is empty")
+            }
+        } catch (e: Exception) {
+            Log.d("mytag", "showProjectMarkers: Exception " + e.message)
+            e.printStackTrace()
+        }
+    }
+    private fun showProjectMarkersWhenSearchByNameWithCluster(projectData: MutableList<ProjectDataFromLatLong>) {
+        map.clear()
+        val greenHue = 120F
+        try {
+            if (projectData.isNotEmpty()) {
+                // Create a ClusterManager
+                val clusterManager = ClusterManager<ClusterMarkerObject>(context, map)
+
+                // Set custom renderer for clusters
+                val clusterRenderer = CustomClusterRenderer(requireContext(), map, clusterManager)
+                clusterManager.renderer = clusterRenderer
+
+                // Add items to the ClusterManager
+                projectData.forEach { marker ->
+                    val position = LatLng(marker.latitude.toDouble(), marker.longitude.toDouble())
+                    val customMarkerObject = ClusterMarkerObject(
+                        id = marker.id.toString(),
+                        type = "project",
+                        name = marker.project_name,
+                        url = "",
+                        latLng = position,
+                        snippets = "snipp"
+
+                    )
+                    clusterManager.addItem(customMarkerObject)
+                }
+
+                // Set OnClusterItemClickListener to handle individual marker clicks
+                clusterManager.setOnClusterItemClickListener { item ->
+                    // Handle marker click
+                    true
+                }
+
+                // Set OnClusterClickListener to handle cluster clicks
+                clusterManager.setOnClusterClickListener { cluster ->
+                    // Handle cluster click
+                    true
+                }
+
+                // Register ClusterManager with the map
+                map.setOnCameraIdleListener(clusterManager)
+                map.setOnMarkerClickListener(clusterManager)
+
+                // Zoom to the extent of the clustered markers
+                val visibleRegion = map.projection.visibleRegion
+                val builder = LatLngBounds.builder()
+                builder.include(visibleRegion.farLeft)
+                builder.include(visibleRegion.farRight)
+                builder.include(visibleRegion.nearLeft)
+                builder.include(visibleRegion.nearRight)
+                val bounds = builder.build()
+                map.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+                //map.moveCamera(CameraUpdateFactory.newLatLngBounds(clusterManager.algorithm.visibleRegion.latLngBounds, 100))
+                updateCurrentMarker()
+
+                clusterManager.setOnClusterClickListener { cluster ->
+                    val clusterMarkers = cluster.items.toList()
+                    if (clusterMarkers.size == 2) {
+                        // Handle the case where the cluster contains exactly two markers
+                        val firstMarkerData = clusterMarkers[0].name // Assuming ClusterMarkerObject has a 'data' property containing the marker's data
+                        val secondMarkerData = clusterMarkers[1].name
+
+                        Log.d("mytag", "$firstMarkerData")
+                        Log.d("mytag", "$secondMarkerData")
+                        // Now you have the data of the two markers
+                        // Handle the data as needed
+                    } else {
+                        // Handle other cases where the cluster contains more or less than two markers
+                    }
+                    true // Indicate that the click event has been handled
+                }
             } else {
                 // Handle case when projectData is empty
                 Log.d("mytag", "showProjectMarkers: Project data is empty")

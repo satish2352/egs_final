@@ -114,6 +114,8 @@ dependencies {
 
     implementation ("id.zelory:compressor:3.0.1")
 
+    implementation("com.google.maps.android:android-maps-utils:3.8.2")
+
 
 
 
