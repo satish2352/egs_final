@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true"
+    app:cardElevation="1dp"
+    android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:scaleType="fitXY"
+                    android:src="@drawable/document1"
+                    android:id="@+id/ivDocumentThumb"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"></ImageView>
+                <TextView
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/tvPageCount"
+                    android:gravity="center"
+                    android:layout_gravity="end"
+                    android:text="3"
+                    android:background="@drawable/rounded_backgroud_blue"
+                    android:fontFamily="@font/poppins"
+                    android:textColor="@color/white"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"></TextView>
+            </FrameLayout>
+            <LinearLayout
+                android:id="@+id/layoutWrapper"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:id="@+id/tvDocumentName"
+                android:textSize="12dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="start"
+                android:textColor="@color/white"
+                android:fontFamily="@font/poppins"
+                android:text="7 12 Extract"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></TextView>
+
+            <LinearLayout
+                android:gravity="start"
+                android:layout_gravity="start"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:visibility="visible"
+                    android:id="@+id/tvDocumentType"
+                    android:textSize="8dp"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:id="@+id/tvDocumentDate"
+                    android:textSize="8dp"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+</androidx.cardview.widget.CardView>

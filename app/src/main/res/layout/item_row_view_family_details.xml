@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardUseCompatPadding="true"
+    android:layout_height="wrap_content">
+    <FrameLayout
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/imageViewDelete"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/delete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"></ImageView>
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/black"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="Name : "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:textColor="@color/black"
+                    android:id="@+id/tvFullName"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="Vishvambhar Gore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/black"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+
+                    android:text="DOB :"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:textColor="@color/black"
+                    android:id="@+id/tvDob"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+            <LinearLayout
+
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/black"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+
+                    android:text="Gender :"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:id="@+id/tvGender"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/black"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+            <LinearLayout
+
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/black"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+
+                    android:text="Relationship : "
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:id="@+id/tvRelationship"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/black"
+                    android:text="Son"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+            <LinearLayout
+
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/black"
+                    android:text="Marital Status :"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+                <TextView
+                    android:id="@+id/tvMaritalStatus"
+                    android:textSize="11dp"
+                    android:layout_marginLeft="8dp"
+                    android:textColor="@color/black"
+                    android:text="Single"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"></TextView>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.cardview.widget.CardView>

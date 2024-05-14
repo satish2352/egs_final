@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomClickableLayout">
+        <attr name="cornerRadius" format="dimension"/>
+        <attr name="backgroundColorNormal" format="color"/>
+        <attr name="backgroundColorPressed" format="color"/>
+    </declare-styleable>
+</resources>

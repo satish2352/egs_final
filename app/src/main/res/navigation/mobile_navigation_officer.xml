@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@+id/navigation_officer_home">
+
+    <fragment
+        android:id="@+id/navigation_officer_home"
+        android:name="com.sipl.egs.ui.officer.fragments.OfficerDashboardFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_dashboard_officer" />
+    <fragment
+        android:id="@+id/navigation_officer_reports"
+        android:name="com.sipl.egs.ui.officer.fragments.OfficerReportsFragment"
+        android:label="@string/report"
+        tools:layout="@layout/fragment_officer_reports" />
+    <fragment
+        android:id="@+id/navigation_officer_attendance"
+        android:name="com.sipl.egs.ui.officer.fragments.OfficerAttendanceFragment"
+        android:label="@string/attendence"
+        tools:layout="@layout/fragment_officer_attendance" />
+
+    <fragment
+        android:id="@+id/navigation_officer_documents"
+        android:name="com.sipl.egs.ui.officer.fragments.OfficerUploadedDocumentsFragment"
+        android:label="@string/uploaded_documents"
+        tools:layout="@layout/fragment_officer_uploaded_documents" />
+
+
+</navigation>

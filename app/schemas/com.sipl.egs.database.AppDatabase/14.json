@@ -1,0 +1,779 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 14,
+    "identityHash": "4aca345b5d5a2b2c01d753b4b7f1ae6b",
+    "entities": [
+      {
+        "tableName": "labours",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `fullName` TEXT NOT NULL, `gender` TEXT NOT NULL, `dob` TEXT NOT NULL, `district` TEXT NOT NULL, `taluka` TEXT NOT NULL, `village` TEXT NOT NULL, `mobile` TEXT NOT NULL, `landline` TEXT NOT NULL, `mgnregaId` TEXT NOT NULL, `familyDetails` TEXT NOT NULL, `location` TEXT NOT NULL, `aadharImage` TEXT NOT NULL, `mgnregaIdImage` TEXT NOT NULL, `voterIdImage` TEXT NOT NULL, `photo` TEXT NOT NULL, `latitude` TEXT NOT NULL, `longitude` TEXT NOT NULL, `isSynced` INTEGER NOT NULL, `skilled` INTEGER NOT NULL, `skill` TEXT NOT NULL, `syncFailedReason` TEXT, `isSyncFailed` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "fullName",
+            "columnName": "fullName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dob",
+            "columnName": "dob",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "district",
+            "columnName": "district",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taluka",
+            "columnName": "taluka",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "village",
+            "columnName": "village",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mobile",
+            "columnName": "mobile",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "landline",
+            "columnName": "landline",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mgnregaId",
+            "columnName": "mgnregaId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "familyDetails",
+            "columnName": "familyDetails",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "location",
+            "columnName": "location",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "aadharImage",
+            "columnName": "aadharImage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mgnregaIdImage",
+            "columnName": "mgnregaIdImage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "voterIdImage",
+            "columnName": "voterIdImage",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "photo",
+            "columnName": "photo",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "isSynced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "skilled",
+            "columnName": "skilled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "skill",
+            "columnName": "skill",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncFailedReason",
+            "columnName": "syncFailedReason",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isSyncFailed",
+            "columnName": "isSyncFailed",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "documents",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `documentName` TEXT NOT NULL, `documentUri` TEXT NOT NULL, `pageCount` TEXT NOT NULL, `isSynced` INTEGER NOT NULL, `documentId` TEXT NOT NULL, `latitude` TEXT NOT NULL, `longitude` TEXT NOT NULL, `date` TEXT NOT NULL, `doc_color` TEXT NOT NULL DEFAULT '#FCFF00', `documentTypeName` TEXT NOT NULL DEFAULT '')",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "documentName",
+            "columnName": "documentName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "documentUri",
+            "columnName": "documentUri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "pageCount",
+            "columnName": "pageCount",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "isSynced",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "documentId",
+            "columnName": "documentId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "latitude",
+            "columnName": "latitude",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "longitude",
+            "columnName": "longitude",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "doc_color",
+            "columnName": "doc_color",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "'#FCFF00'"
+          },
+          {
+            "fieldPath": "documentTypeName",
+            "columnName": "documentTypeName",
+            "affinity": "TEXT",
+            "notNull": true,
+            "defaultValue": "''"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "users",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `email` TEXT NOT NULL, `password` TEXT NOT NULL, `isActive` INTEGER NOT NULL, `fullName` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "password",
+            "columnName": "password",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isActive",
+            "columnName": "isActive",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fullName",
+            "columnName": "fullName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "area",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `is_active` TEXT NOT NULL, `is_visible` TEXT NOT NULL, `location_id` TEXT NOT NULL, `location_type` TEXT NOT NULL, `name` TEXT NOT NULL, `parent_id` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_visible",
+            "columnName": "is_visible",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "location_id",
+            "columnName": "location_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "location_type",
+            "columnName": "location_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parent_id",
+            "columnName": "parent_id",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "skills",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT NOT NULL, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `skills` TEXT NOT NULL, `updated_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "skills",
+            "columnName": "skills",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "marital_status",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT NOT NULL, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `maritalstatus` TEXT NOT NULL, `updated_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maritalstatus",
+            "columnName": "maritalstatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "relation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT NOT NULL, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `relation_title` TEXT NOT NULL, `updated_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relation_title",
+            "columnName": "relation_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "gender",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT NOT NULL, `gender_name` TEXT NOT NULL, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `updated_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gender_name",
+            "columnName": "gender_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "document_type_dropdown",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT NOT NULL, `documenttype` TEXT NOT NULL, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `is_deleted` INTEGER NOT NULL, `updated_at` TEXT NOT NULL, `doc_color` TEXT DEFAULT '#FCFF00')",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "documenttype",
+            "columnName": "documenttype",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_deleted",
+            "columnName": "is_deleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "doc_color",
+            "columnName": "doc_color",
+            "affinity": "TEXT",
+            "notNull": false,
+            "defaultValue": "'#FCFF00'"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "registration_status",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT NOT NULL, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `is_deleted` INTEGER NOT NULL, `status_name` TEXT NOT NULL, `updated_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_deleted",
+            "columnName": "is_deleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status_name",
+            "columnName": "status_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "reasons",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT NOT NULL, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `is_deleted` TEXT NOT NULL, `reason_name` TEXT NOT NULL, `updated_at` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_deleted",
+            "columnName": "is_deleted",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reason_name",
+            "columnName": "reason_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "document_reasons",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`xid` INTEGER PRIMARY KEY AUTOINCREMENT, `created_at` TEXT, `id` INTEGER NOT NULL, `is_active` INTEGER NOT NULL, `is_deleted` TEXT NOT NULL, `reason_name` TEXT NOT NULL, `updated_at` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "xid",
+            "columnName": "xid",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "created_at",
+            "columnName": "created_at",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_active",
+            "columnName": "is_active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "is_deleted",
+            "columnName": "is_deleted",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "reason_name",
+            "columnName": "reason_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updated_at",
+            "columnName": "updated_at",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "xid"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4aca345b5d5a2b2c01d753b4b7f1ae6b')"
+    ]
+  }
+}
