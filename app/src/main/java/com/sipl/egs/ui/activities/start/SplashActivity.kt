@@ -238,8 +238,8 @@ class SplashActivity : AppCompatActivity() {
                     if (mySharedPref.getAtLeastSingleTimeEntriesAdded() == true) {
                         navigateToNextActivity()
                     }else{
-                        Toast.makeText(this@SplashActivity,
-                            getString(R.string.failed_to_download_data_from_server),Toast.LENGTH_LONG).show()
+                       /* Toast.makeText(this@SplashActivity,
+                            getString(R.string.failed_to_download_data_from_server),Toast.LENGTH_LONG).show()*/
                     }
                 }
                 Log.d("mytag", "After  Await")

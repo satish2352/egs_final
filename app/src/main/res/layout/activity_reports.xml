@@ -553,11 +553,10 @@
                                 android:weightSum="10">
 
                                 <ImageView
-                                    android:scaleType="centerInside"
                                     android:layout_width="60dp"
                                     android:layout_height="50dp"
                                     android:background="@drawable/circle_blue_background"
-                                    android:src="@drawable/img_not_approved"></ImageView>
+                                    android:src="@drawable/ic_user_rejected"></ImageView>
 
                                 <TextView
                                     android:lines="2"

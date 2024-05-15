@@ -9,8 +9,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    //private const val BASE_URL = BuildConfig.BASE_URL
-    private const val BASE_URL = BuildConfig.TEST_URL
+    private const val BASE_URL = BuildConfig.BASE_URL
+    //private const val BASE_URL = BuildConfig.TEST_URL
 
     val loggingInterceptor = HttpLoggingInterceptor()
 
