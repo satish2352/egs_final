@@ -54,6 +54,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
             supportActionBar?.title=resources.getString(R.string.labour_details)
             binding.recyclerViewFamilyDetails.layoutManager=LinearLayoutManager(this, RecyclerView.VERTICAL,false)
             val mgnregaCardId=intent.getStringExtra("id")
+            val labour_id=intent.getIntExtra("labour_id",0)
             dialog= CustomProgressDialog(this)
 
             binding.ivAadhar.setOnClickListener {
@@ -88,7 +89,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
 
             val mySharedPref=MySharedPref(this)
             if(mySharedPref.getRoleId()==2){
-                getLabourDetailsForOfficer(mgnregaCardId!!)
+                getLabourDetailsForOfficer(mgnregaCardId!!,labour_id.toString()!!)
             }else{
                 getLabourDetails(mgnregaCardId!!)
             }
@@ -158,12 +159,12 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
     }
 
 
-    private fun getLabourDetailsForOfficer(mgnregaCardId:String) {
+    private fun getLabourDetailsForOfficer(mgnregaCardId:String,labour_id:String) {
 
         try {
             dialog.show()
             val apiService= ApiClient.create(this@ViewLabourFromMarkerClick)
-            apiService.getLabourDetailsByIdForOfficer(mgnregaCardId).enqueue(object :
+            apiService.getLabourDetailsByIdForOfficer(mgnregaCardId,labour_id).enqueue(object :
                 Callback<LabourByMgnregaId> {
                 override fun onResponse(
                     call: Call<LabourByMgnregaId>,

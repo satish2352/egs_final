@@ -43,6 +43,7 @@ class LabourListByProjectAdapter(var list: List<LabourInfo>?) : RecyclerView.Ada
             holder.itemView.setOnClickListener {
                 val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
                 intent.putExtra("id",list?.get(position)?.mgnrega_card_id)
+                intent.putExtra("labour_id",list?.get(position)?.id)
                 holder.itemView.context?.startActivity(intent)
             }
 

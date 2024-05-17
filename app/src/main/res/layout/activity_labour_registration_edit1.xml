@@ -261,6 +261,7 @@
                 android:layout_weight="1"
                 android:paddingLeft="16dp"
                 android:hint="@string/mobile_number"
+                android:imeOptions="actionNext"
                 android:inputType="phone"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
@@ -294,6 +295,7 @@
                 android:paddingLeft="16dp"
                 android:hint="@string/landline_number"
                 android:inputType="phone"
+                android:imeOptions="actionNext"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"></EditText>
@@ -320,17 +322,20 @@
             android:background="@drawable/rounded_background_light_gray"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
             <EditText
-                android:digits="@string/no_space_letter_number"
                 android:id="@+id/etMgnregaIdNumber"
-                android:layout_weight="1"
-                android:paddingLeft="16dp"
-                android:maxLength="50"
-                android:hint="@string/mgnrega_id_card_number"
-                android:inputType="text"
-                android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="@drawable/rounded_background_light_gray"
+                android:digits="@string/no_space_letter_number"
+                android:hint="@string/mgnrega_id_card_number"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLength="50"
+                android:paddingLeft="16dp"/>
+
             <ImageView
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"

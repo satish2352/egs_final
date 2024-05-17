@@ -56,11 +56,13 @@ class LabourApprovedListAdapter(var labourList: ArrayList<LaboursList>): Recycle
                 if (pref.getRoleId() == 2) {
                     val intent = Intent(holder.itemView.context, OfficerViewNotApprovedLabourDetails::class.java)
                     intent.putExtra("id", labourList.get(position).mgnrega_card_id)
+                    intent.putExtra("labour_id",labourList.get(position).id)
                     holder.itemView.context.startActivity(intent)
                 }
                 if (pref.getRoleId() == 3) {
                     val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
                     intent.putExtra("id",labourList.get(position).mgnrega_card_id)
+                    intent.putExtra("labour_id",labourList.get(position).id)
                     holder.itemView.context.startActivity(intent)
                 }
 

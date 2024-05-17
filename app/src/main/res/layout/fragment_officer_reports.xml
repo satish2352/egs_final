@@ -59,10 +59,11 @@
                             android:weightSum="10">
 
                             <ImageView
+                                android:padding="5dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/ic_upload"></ImageView>
+                                android:src="@drawable/ic_group"></ImageView>
 
                             <TextView
                                 android:lines="2"
@@ -150,10 +151,11 @@
                             android:weightSum="10">
 
                             <ImageView
+                                android:padding="5dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/ic_user_not_approved"></ImageView>
+                                android:src="@drawable/ic_resubmitted1"/>
 
                             <TextView
                                 android:lines="2"
@@ -167,7 +169,7 @@
                                 android:fontFamily="@font/poppins"
                                 android:gravity="center"
                                 android:text="@string/resubmitted"
-                                android:textColor="@color/black"></TextView>
+                                android:textColor="@color/black"/>
                         </LinearLayout>
 
                         <LinearLayout
@@ -189,7 +191,7 @@
                                 android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="32sp"
-                                android:visibility="visible"></TextView>
+                                android:visibility="visible"/>
 
                             <androidx.cardview.widget.CardView
                                 android:layout_width="50dp"
@@ -245,10 +247,11 @@
                             android:weightSum="10">
 
                             <ImageView
+                                android:padding="5dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/ic_user_check"></ImageView>
+                                android:src="@drawable/ic_user_check"/>
 
                             <TextView
                                 android:lines="2"
@@ -262,7 +265,7 @@
                                 android:fontFamily="@font/poppins"
                                 android:gravity="center"
                                 android:text="@string/approved"
-                                android:textColor="@color/black"></TextView>
+                                android:textColor="@color/black"/>
                         </LinearLayout>
 
                         <LinearLayout
@@ -284,7 +287,7 @@
                                 android:text="0"
                                 android:textColor="@color/white"
                                 android:textSize="32sp"
-                                android:visibility="visible"></TextView>
+                                android:visibility="visible"/>
 
                             <androidx.cardview.widget.CardView
                                 android:layout_width="50dp"
@@ -305,7 +308,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center_horizontal"
-                                        android:src="@drawable/arrow_right"></ImageView>
+                                        android:src="@drawable/arrow_right"/>
                                 </LinearLayout>
                             </androidx.cardview.widget.CardView>
                         </LinearLayout>
@@ -338,10 +341,11 @@
                             android:weightSum="10">
 
                             <ImageView
+                                android:padding="5dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/ic_user_not_approved"></ImageView>
+                                android:src="@drawable/ic_user_rejected"></ImageView>
 
                             <TextView
                                 android:lines="2"
@@ -440,10 +444,11 @@
                             android:paddingBottom="8dp"
                             android:weightSum="10">
                             <ImageView
+                                android:padding="8dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/document1"></ImageView>
+                                android:src="@drawable/ic_file1"></ImageView>
                             <TextView
                                 android:lines="2"
                                 android:layout_width="match_parent"
@@ -530,10 +535,11 @@
                             android:weightSum="10">
 
                             <ImageView
+                                android:padding="10dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/document1"></ImageView>
+                                android:src="@drawable/docsresubmit"></ImageView>
 
                             <TextView
                                 android:lines="2"
@@ -627,10 +633,11 @@
                             android:weightSum="10">
 
                             <ImageView
+                                android:padding="7dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/document1"></ImageView>
+                                android:src="@drawable/approved"></ImageView>
 
                             <TextView
                                 android:lines="2"
@@ -718,10 +725,11 @@
                             android:paddingBottom="8dp"
                             android:weightSum="10">
                             <ImageView
+                                android:padding="10dp"
                                 android:layout_width="60dp"
-                                android:layout_height="50dp"
+                                android:layout_height="55dp"
                                 android:background="@drawable/circle_blue_background"
-                                android:src="@drawable/document1"></ImageView>
+                                android:src="@drawable/not_approved_docs"/>
                             <TextView
                                 android:lines="2"
                                 android:layout_width="match_parent"
@@ -734,7 +742,7 @@
                                 android:fontFamily="@font/poppins"
                                 android:gravity="center"
                                 android:text="@string/not_approved"
-                                android:textColor="@color/black"></TextView>
+                                android:textColor="@color/black"/>
                         </LinearLayout>
 
                         <LinearLayout

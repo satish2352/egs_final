@@ -44,7 +44,6 @@ interface ApiService {
     fun getAreaMastersToUpdate(): Call<AreaMastersUpdateModel>
 
 
-
     @POST("login")
     fun loginUser(
         @Query("email") email: String,
@@ -72,8 +71,8 @@ interface ApiService {
     fun getLabourDataByIdForAttendance(
         @Query("mgnrega_card_id") mgnrega_card_id: String,
         @Query("is_approved") param1: String = "approved",
-        @Query("start") startPageNumber: String="1",
-        ): Call<LabourByMgnregaId>
+        @Query("start") startPageNumber: String = "1",
+    ): Call<LabourByMgnregaId>
 
     // changed to particular-labour-details = > list-labour
     @POST("auth/list-labour")
@@ -82,20 +81,19 @@ interface ApiService {
     ): Call<LabourByMgnregaId>
 
 
-
     // changed to list-user-labours=> list-labour
     @POST("auth/list-labour")
     fun getLaboursByProjectId(
         @Query("project_id") project_id: String,
         @Query("is_approved") param1: String = "approved",
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<LabourByMgnregaId>
 
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getLaboursByProjectIdForOfficer(
         @Query("project_id") project_id: String,
         @Query("is_approved") param1: String = "approved",
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<LabourByMgnregaId>
 
     // GET project list for attendance page
@@ -139,7 +137,7 @@ interface ApiService {
     @POST("auth/list-attendance-marked")
     fun getListOfMarkedAttendance(
         @Query("project_id") projectId: String,
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<AttendanceModel>
 
 
@@ -150,17 +148,17 @@ interface ApiService {
         @Query("user_village") villageId: String,
         @Query("from_date") from_date: String,
         @Query("to_date") to_date: String,
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<AttendanceModel>
 
     @POST("auth/list-attendance-marked-visible-for-officer")
     fun getAttendanceListForOfficerById(
         @Query("project_id") projectId: String,
-        @Query("user_taluka") talukaId: String="",
-        @Query("user_village") villageId: String="",
-        @Query("from_date") from_date: String="",
-        @Query("to_date") to_date: String="",
-        @Query("start") startPageNumber: String="1",
+        @Query("user_taluka") talukaId: String = "",
+        @Query("user_village") villageId: String = "",
+        @Query("from_date") from_date: String = "",
+        @Query("to_date") to_date: String = "",
+        @Query("start") startPageNumber: String = "1",
     ): Call<AttendanceModel>
 
 
@@ -170,7 +168,7 @@ interface ApiService {
         @Query("user_village") villageId: String,
         @Query("from_date") from_date: String,
         @Query("to_date") to_date: String,
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<UploadedDocsModel>
 
 
@@ -245,6 +243,7 @@ interface ApiService {
         @Part file3: MultipartBody.Part,
         @Part file4: MultipartBody.Part
     ): Response<MastersModel>
+
     @POST("auth/update-labour-second-form")
     suspend fun updateLabourFormTwoWithoutImage(
         @Query("id") id: String,
@@ -274,7 +273,6 @@ interface ApiService {
     ): Response<MastersModel>
 
 
-
     @POST("auth/autosugg-mgnrega-card-id")
     suspend fun getSuggestionForMgnregaId(
         @Query("mgnrega_card_id") mgnregaId: String
@@ -289,7 +287,7 @@ interface ApiService {
     @POST("auth/list-document")
     fun getUploadedDocumentsList(
         @Query("is_approved") param1: String = "approved",
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<UploadedDocsModel>
 
     // changed to list-send-approved-labour => list-labour
@@ -297,14 +295,14 @@ interface ApiService {
     fun getLaboursListSentForApproval(
         @Query("is_approved") param1: String = "added",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<LabourListModel>
 
     // change to => list-not-approved-labour => list-labour
     @POST("auth/list-labour")
     fun getLaboursListNotApproved(
         @Query("is_approved") param1: String = "not_approved",
-        @Query("start") startPageNumber: String="1",
+        @Query("start") startPageNumber: String = "1",
     ): Call<LabourListModel>
 
     @POST("auth/list-labour-rejected")
@@ -315,14 +313,14 @@ interface ApiService {
     @POST("auth/list-labour")
     fun getLabourListApproved(
         @Query("is_approved") param1: String = "approved",
-        @Query("start") pageNumber: String="1"
+        @Query("start") pageNumber: String = "1"
     ): Call<LabourListModel>
 
     @POST("auth/list-labour")
     fun getLabourListReSubmittedForGramSevak(
         @Query("is_approved") is_approved: String = "resend",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
-        @Query("start") pageNumber: String="1"
+        @Query("start") pageNumber: String = "1"
     ): Call<LabourListModel>
 
     @POST("auth/update-officer-labour-status-approved")
@@ -349,36 +347,39 @@ interface ApiService {
 
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursReceivedForApproval(
-        @Query("is_approved") isApproved: String="received",
-        @Query("is_resubmitted") is_resubmitted: String="resubmitted",
-        @Query("start") pageNumber: String="1",
+        @Query("is_approved") isApproved: String = "received",
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("start") pageNumber: String = "1",
     ): Call<LabourListModel>
 
     // list-labour-approved-by-officer old
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursApprovedByOfficer(
-        @Query("is_approved") isApproved: String="approved",
-        @Query("start") pageNumber: String="1",
-        ): Call<LabourListModel>
+        @Query("is_approved") isApproved: String = "approved",
+        @Query("start") pageNumber: String = "1",
+    ): Call<LabourListModel>
 
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursReSubmittedToOfficer(
-        @Query("is_approved") isApproved: String="resend",
-        @Query("is_resubmitted") is_resubmitted: String="resubmitted",
-        @Query("start") pageNumber: String="1",
+        @Query("is_approved") isApproved: String = "resend",
+        @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
+        @Query("start") pageNumber: String = "1",
     ): Call<LabourListModel>
 
     @POST("auth/list-labour-received-to-officer-for-approval")
     fun getListOfLaboursNotApprovedByOfficer(
-        @Query("is_approved") isApproved: String="not_approved",
-        @Query("start") pageNumber: String="1",
+        @Query("is_approved") isApproved: String = "not_approved",
+        @Query("start") pageNumber: String = "1",
     ): Call<LabourListModel>
 
     @POST("auth/list-labour-rejected-by-officer")
     fun getListOfLaboursRejectedByOfficer(): Call<LabourListModel>
 
     @POST("auth/list-particular-officer-labour-details")
-    fun getLabourDetailsByIdForOfficer(@Query("mgnrega_card_id") mgnrega_card_id: String): Call<LabourByMgnregaId>
+    fun getLabourDetailsByIdForOfficer(
+        @Query("mgnrega_card_id") mgnrega_card_id: String,
+        @Query("labour_id") labour_id: String
+    ): Call<LabourByMgnregaId>
 
     // particular-labour-details-for-update => list-labour
     @POST("auth/list-labour")
@@ -426,68 +427,69 @@ interface ApiService {
     fun getSentForApprovalDocsList(
         @Query("is_approved") param1: String = "added",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
-        @Query("start") pageNumber: String="1",
-        ): Call<MainDocsModel>
+        @Query("start") pageNumber: String = "1",
+    ): Call<MainDocsModel>
 
     @POST("auth/list-document")
     fun getApprovalDocsListForGramsevak(
         @Query("is_approved") param1: String = "approved",
-        @Query("start") pageNumber: String="1",
+        @Query("start") pageNumber: String = "1",
     ): Call<MainDocsModel>
 
     @POST("auth/list-document")
     fun getNotApprovedDocsListForGramsevak(
         @Query("is_approved") param1: String = "not_approved",
-        @Query("start") pageNumber: String="1",
+        @Query("start") pageNumber: String = "1",
     ): Call<MainDocsModel>
 
     @POST("auth/list-document")
     fun getReSubmittedDocsListForGramsevak(
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
         @Query("is_approved") is_approved: String = "resend",
-        @Query("start") pageNumber: String="1",
+        @Query("start") pageNumber: String = "1",
     ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getReSubmittedDocsListForOfficer(
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
         @Query("is_approved") is_approved: String = "resend",
-        @Query("start") pageNumber: String="1",
+        @Query("start") pageNumber: String = "1",
     ): Call<MainDocsModel>
-
 
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsReceivedForApprovalOfficer(
         @Query("is_approved") param1: String = "received",
         @Query("is_resubmitted") is_resubmitted: String = "resubmitted",
-        @Query("start") pageNumber: String="1",
-        ): Call<MainDocsModel>
+        @Query("start") pageNumber: String = "1",
+    ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsNotApprovedOfficer(
         @Query("is_approved") param1: String = "not_approved",
-        @Query("start") pageNumber: String="1",
+        @Query("start") pageNumber: String = "1",
     ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocsApprovedInOfficer(
         @Query("is_approved") param1: String = "approved",
-        @Query("start") pageNumber: String="1",
+        @Query("start") pageNumber: String = "1",
     ): Call<MainDocsModel>
 
     @POST("auth/received-doc-list-for-app-notapp")
     fun getDocumentDetails(
         @Query("gram_document_id") gram_document_id: String,
     ): Call<MainDocsModel>
+
     @POST("auth/update-officer-document-status-approved")
     fun sendApprovedDocToServer(
         @Query("gram_document_id") gram_document_id: String,
-        @Query("is_approved") mgnrega_card_id: String="2",
+        @Query("is_approved") mgnrega_card_id: String = "2",
     ): Call<LabourListModel>
+
     @POST("auth/update-officer-document-status-not-approved")
     fun sendNotApprovedDocToServer(
-        @Query("is_approved") isApproved: String="3",
+        @Query("is_approved") isApproved: String = "3",
         @Query("gram_document_id") gram_document_id: String,
         @Query("reason_doc_id") reason_doc_id: String,
         @Query("other_remark") other_remark: String,
@@ -509,10 +511,7 @@ interface ApiService {
     suspend fun downloadPdf(@Url url: String): Response<ResponseBody>
 
     @POST("auth/list-project-for-officer")
-     fun getDashboardProjectListForOfficer(): Call<DashboardMapOfficerModel>
-
-
-
+    fun getDashboardProjectListForOfficer(): Call<DashboardMapOfficerModel>
 
 
     @POST("auth/change-password-profile")
@@ -528,8 +527,6 @@ interface ApiService {
     fun resetPassword(
         @Query("email") email: String
     ): Call<LabourListModel>
-
-
 
 
 }

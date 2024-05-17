@@ -63,11 +63,18 @@ class LaboursNotApprovedAdapter(var labourList: ArrayList<LaboursList>) :
                 if (pref.getRoleId() == 2) {
                     val intent = Intent(holder.itemView.context, OfficerViewNotApprovedLabourDetails::class.java)
                     intent.putExtra("id", labourList.get(position).mgnrega_card_id)
+                    intent.putExtra("labour_id",labourList.get(position).id)
+
+                    Log.d("mytag","id=>"+labourList.get(position).id);
+                    Log.d("mytag","mgnrega_card_id=>"+labourList.get(position).mgnrega_card_id);
                     holder.itemView.context.startActivity(intent)
                 }
                 if (pref.getRoleId() == 3) {
                     val intent = Intent(holder.itemView.context, ViewNotApprovedLabourDetailsActivity::class.java)
                     intent.putExtra("id", labourList.get(position).mgnrega_card_id)
+                    intent.putExtra("labour_id",labourList.get(position).id)
+                    Log.d("mytag","id=>"+labourList.get(position).id);
+                    Log.d("mytag","mgnrega_card_id=>"+labourList.get(position).mgnrega_card_id);
                     holder.itemView.context.startActivity(intent)
                 }
             }

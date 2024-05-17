@@ -42,7 +42,7 @@
                 android:hint="@string/enter_full_name"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"/>
             <ImageView
                 android:clickable="false"
                 android:layout_marginRight="10dp"
@@ -76,14 +76,14 @@
                 android:hint="@string/select_gender"
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></AutoCompleteTextView>
+                android:layout_height="48dp"/>
             <ImageView
                 android:clickable="false"
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
                 android:src="@drawable/gender"
                 android:layout_width="24dp"
-                android:layout_height="24dp"></ImageView>
+                android:layout_height="24dp"/>
         </LinearLayout>
         <TextView
             android:layout_marginTop="16dp"
@@ -107,7 +107,7 @@
                 android:layout_gravity="center"
                 android:hint="@string/date_of_birth"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"></TextView>
+                android:layout_height="48dp"/>
         <TextView
             android:layout_marginTop="16dp"
             android:layout_width="wrap_content"
@@ -132,14 +132,14 @@
                 android:hint="@string/select_skills"
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></AutoCompleteTextView>
+                android:layout_height="48dp"/>
             <ImageView
                 android:visibility="gone"
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
                 android:src="@drawable/dob"
                 android:layout_width="24dp"
-                android:layout_height="24dp"></ImageView>
+                android:layout_height="24dp"/>
         </LinearLayout>
         <TextView
             android:layout_marginTop="16dp"
@@ -164,14 +164,14 @@
                 android:inputType="none"
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></AutoCompleteTextView>
+                android:layout_height="48dp"/>
             <ImageView
                 android:clickable="false"
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
                 android:src="@drawable/location"
                 android:layout_width="24dp"
-                android:layout_height="24dp"></ImageView>
+                android:layout_height="24dp"/>
         </LinearLayout>
         <TextView
             android:layout_marginTop="16dp"
@@ -196,14 +196,14 @@
                 android:inputType="none"
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></AutoCompleteTextView>
+                android:layout_height="48dp"/>
             <ImageView
                 android:clickable="false"
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
                 android:src="@drawable/location"
                 android:layout_width="24dp"
-                android:layout_height="24dp"></ImageView>
+                android:layout_height="24dp"/>
         </LinearLayout>
         <TextView
             android:layout_marginTop="16dp"
@@ -228,14 +228,14 @@
                 android:hint="@string/village"
                 android:background="@drawable/edittext_background"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></AutoCompleteTextView>
+                android:layout_height="48dp"/>
             <ImageView
                 android:clickable="false"
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
                 android:src="@drawable/location"
                 android:layout_width="24dp"
-                android:layout_height="24dp"></ImageView>
+                android:layout_height="24dp"/>
         </LinearLayout>
         <TextView
             android:layout_marginTop="16dp"
@@ -253,6 +253,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/etMobileNumber"
                 android:lines="1"
                 android:maxLines="1"
@@ -265,7 +266,7 @@
                 android:inputType="phone"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"/>
             <ImageView
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
@@ -290,6 +291,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:imeOptions="actionNext"
                 android:id="@+id/etLandLine"
                 android:layout_weight="1"
                 android:paddingLeft="16dp"
@@ -297,7 +299,7 @@
                 android:inputType="phone"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"/>
             <ImageView
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
@@ -322,6 +324,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <EditText
+                android:imeOptions="actionDone"
                 android:id="@+id/etMgnregaIdNumber"
                 android:layout_weight="1"
                 android:paddingLeft="16dp"
@@ -330,7 +333,7 @@
                 android:digits="@string/no_space_letter_number"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"></EditText>
+                android:layout_height="48dp"/>
             <ImageView
                 android:layout_marginRight="10dp"
                 android:layout_gravity="center"
@@ -364,7 +367,7 @@
                 android:background="@drawable/rounded_background"
                 android:text="Next"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></Button>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
 

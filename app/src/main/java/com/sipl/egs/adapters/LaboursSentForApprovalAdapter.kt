@@ -56,7 +56,10 @@ class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : Re
                 val pref=MySharedPref(holder.itemView.context)
                 if(pref.getRoleId()==2){
                     val intent= Intent(holder.itemView.context, OfficerViewEditReceivedLabourDetails::class.java)
+                    intent.putExtra("labour_id",labourList.get(position).id)
                     intent.putExtra("id",labourList.get(position).mgnrega_card_id)
+                    Log.d("mytag","id=>"+labourList.get(position).id);
+                    Log.d("mytag","mgnrega_card_id=>"+labourList.get(position).mgnrega_card_id);
                     holder.itemView.context.startActivity(intent)
                 }else if(pref.getRoleId()==3)
                 {

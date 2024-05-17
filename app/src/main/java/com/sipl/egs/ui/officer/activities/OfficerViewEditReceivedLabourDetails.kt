@@ -101,8 +101,9 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
             binding.recyclerViewFamilyDetails.layoutManager=
                 LinearLayoutManager(this, RecyclerView.VERTICAL,false)
             val mgnregaCardId=intent.getStringExtra("id")
+            val labourId=intent.getIntExtra("labour_id",0)
             dialog= CustomProgressDialog(this)
-            getLabourDetails(mgnregaCardId!!)
+            getLabourDetails(mgnregaCardId!!,labourId.toString()!!)
             binding.ivAadhar.setOnClickListener {
                 if(isInternetAvailable){
                     showPhotoZoomDialog(aadharImage)
@@ -346,12 +347,12 @@ class OfficerViewEditReceivedLabourDetails : AppCompatActivity() {
         return !list.contains(false)
     }
 
-    private fun getLabourDetails(mgnregaCardId:String) {
+    private fun getLabourDetails(mgnregaCardId:String,labourId:String) {
 
         try {
             dialog.show()
             val apiService= ApiClient.create(this@OfficerViewEditReceivedLabourDetails)
-            apiService.getLabourDetailsByIdForOfficer(mgnregaCardId).enqueue(object :
+            apiService.getLabourDetailsByIdForOfficer(mgnregaCardId,labourId).enqueue(object :
                 Callback<LabourByMgnregaId> {
                 override fun onResponse(
                     call: Call<LabourByMgnregaId>,

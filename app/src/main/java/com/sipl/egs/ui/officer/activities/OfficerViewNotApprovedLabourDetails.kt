@@ -51,8 +51,11 @@ class OfficerViewNotApprovedLabourDetails : AppCompatActivity() {
         binding.recyclerViewFamilyDetails.layoutManager=
             LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         val mgnregaCardId=intent.getStringExtra("id")
+        val labourId=intent.getIntExtra("labour_id",0)
+            Log.d("mytag","=>"+labourId);
+            Log.d("mytag","=>"+mgnregaCardId);
         dialog= CustomProgressDialog(this)
-        getLabourDetails(mgnregaCardId!!)
+        getLabourDetails(mgnregaCardId!!,labourId.toString()!!)
         binding.ivAadhar.setOnClickListener {
 
             if(isInternetAvailable){
@@ -110,12 +113,12 @@ class OfficerViewNotApprovedLabourDetails : AppCompatActivity() {
 
 
 
-private fun getLabourDetails(mgnregaCardId:String) {
+private fun getLabourDetails(mgnregaCardId:String,labourId:String) {
 
     try {
         dialog.show()
         val apiService= ApiClient.create(this@OfficerViewNotApprovedLabourDetails)
-        apiService.getLabourDetailsByIdForOfficer(mgnregaCardId).enqueue(object :
+        apiService.getLabourDetailsByIdForOfficer(mgnregaCardId,labourId).enqueue(object :
             Callback<LabourByMgnregaId> {
             override fun onResponse(
                 call: Call<LabourByMgnregaId>,

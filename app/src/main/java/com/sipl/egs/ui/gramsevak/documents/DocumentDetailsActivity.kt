@@ -144,7 +144,6 @@ class DocumentDetailsActivity : AppCompatActivity() {
             }) { throwable: Throwable? -> }
         val options = GmsDocumentScannerOptions.Builder()
             .setGalleryImportAllowed(false)
-            .setPageLimit(20)
             .setResultFormats(
                 GmsDocumentScannerOptions.RESULT_FORMAT_JPEG,
                 GmsDocumentScannerOptions.RESULT_FORMAT_PDF

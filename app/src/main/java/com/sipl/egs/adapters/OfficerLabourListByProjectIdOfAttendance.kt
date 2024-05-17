@@ -64,7 +64,9 @@ class OfficerLabourListByProjectIdOfAttendance(var list: List<AttendanceData>?) 
             holder.itemView.setOnClickListener {
                     val intent= Intent(holder.itemView.context, ViewLabourFromMarkerClick::class.java)
                     intent.putExtra("id",list?.get(position)?.mgnrega_card_id)
-                    holder.itemView.context?.startActivity(intent)
+                intent.putExtra("labour_id",list?.get(position)?.id)
+
+                holder.itemView.context?.startActivity(intent)
 
             }
 
