@@ -448,7 +448,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         id = marker.mgnrega_card_id.toString(),
                         type = "labour",
                         name = marker.full_name,
-                        url = ""
+                        url =marker.id.toString()
                     )
                     myMarker?.tag = customMarkerObject
                     myMarker?.showInfoWindow()
@@ -844,7 +844,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 }
             } else if (customMarkerObject.type.equals("labour")) {
                 val intent = Intent(context, ViewLabourFromMarkerClick::class.java)
-                intent.putExtra("id", "" + customMarkerObject.id)
+                  intent.putExtra("id", "" + customMarkerObject.id)
+                  intent.putExtra("labour_id", Integer.parseInt(customMarkerObject.url))
                 context?.startActivity(intent)
             } else if (customMarkerObject.type.equals("current_marker")){
 
