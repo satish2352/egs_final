@@ -183,7 +183,7 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
 
         try {
             Log.d("mytag","filename ==>"+fileName)
-            val activity = requireActivity()
+            val activity = requireContext()
             if (activity != null && isAdded && !isDetached) {
                 val dialog = CustomProgressDialog(activity)
                 dialog.show()
@@ -205,19 +205,36 @@ class OfficerDashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMar
                                 try {
                                     activity.startActivity(intent)
                                 } catch (e: ActivityNotFoundException) {
-                                    Toast.makeText(
-                                        requireActivity(),
-                                        getString(R.string.no_pdf_viewer_application_found),
-                                        Toast.LENGTH_LONG
-                                    ).show()
+                                   if(isAdded)
+                                   {
+                                       Toast.makeText(
+                                           requireActivity(),
+                                           getString(R.string.no_pdf_viewer_application_found),
+                                           Toast.LENGTH_LONG
+                                       ).show()
+                                   }
                                 }
                                 //FileDownloader.downloadFile(activity, url, fileName)
-                                Toast.makeText(activity, resources.getString(R.string.file_download_started), Toast.LENGTH_SHORT).show()
+                                if (isAdded) {
+                                    Toast.makeText(activity, resources.getString(R.string.file_download_started), Toast.LENGTH_SHORT).show()
+                                }
                             } else {
-                                Toast.makeText(activity, response.body()?.message, Toast.LENGTH_SHORT).show()
+                                if (isAdded) {
+                                    Toast.makeText(
+                                        activity,
+                                        response.body()?.message,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                         } else {
-                            Toast.makeText(activity, resources.getString(R.string.response_unsuccessfull), Toast.LENGTH_SHORT).show()
+                            if(isAdded) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    resources.getString(R.string.response_unsuccessfull),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
 

@@ -46,7 +46,7 @@ class OfficerDocsNotApprovedListActivity : AppCompatActivity(),
         try {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.title = resources.getString(R.string.not_approved_documents)
-            apiService = ApiClient.create(this)
+            apiService = ApiClient.create(applicationContext)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()
             adapter = OfficerDocsNotApprovedAdapter(documentList)

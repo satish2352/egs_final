@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.Toast
 import com.github.pwittchen.reactivenetwork.library.rx2.Connectivity
@@ -43,7 +45,7 @@ class ReportsActivity : AppCompatActivity() {
             binding = ActivityReportsBinding.inflate(layoutInflater)
             setContentView(binding.root)
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.title=resources.getString(R.string.labours_registered_online)
+            supportActionBar?.title=resources.getString(R.string.report)
             noInternetDialog= NoInternetDialog(this)
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
@@ -121,6 +123,14 @@ class ReportsActivity : AppCompatActivity() {
         if(item.itemId==android.R.id.home){
           //  finish()
         }
+        if(item.itemId==R.id.action_refresh){
+
+            if (isInternetAvailable) {
+              getReportsCount()
+            } else {
+                noInternetDialog.showDialog()
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 
@@ -166,6 +176,11 @@ class ReportsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             dialog.dismiss()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_refresh,menu)
+        return true
     }
 
 }

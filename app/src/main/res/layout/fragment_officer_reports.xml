@@ -20,15 +20,32 @@
             android:layout_marginBottom="16dp"
             android:orientation="vertical">
 
+        <LinearLayout
+            android:layout_marginBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
             <TextView
-                android:layout_marginTop="16dp"
+                android:layout_gravity="start|center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:fontFamily="@font/poppins"
                 android:text="@string/labour_registrations"
                 android:textColor="@color/appBlue"
-                android:textSize="16dp"></TextView>
+                android:textSize="16dp"/>
+            <View
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"></View>
+            <ImageView
+                android:id="@+id/ivRefresh"
+                android:src="@drawable/ic_refresh"
+                android:layout_gravity="right|end"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:tint="@color/appBlue"></ImageView>
+        </LinearLayout>
+
 
 
             <LinearLayout

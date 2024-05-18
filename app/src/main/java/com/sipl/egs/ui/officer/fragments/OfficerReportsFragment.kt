@@ -95,6 +95,10 @@ class OfficerReportsFragment : Fragment() {
             }
             dialog = CustomProgressDialog(requireContext())
             apiService = ApiClient.create(requireContext())
+
+            binding.ivRefresh.setOnClickListener {
+                getReportsCount()
+            }
         } catch (e: Exception) {
             Log.d("mytag","Exception "+e.message,e);
             e.printStackTrace()

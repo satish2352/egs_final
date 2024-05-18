@@ -541,6 +541,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
                     Log.d("mytag","assigning latlong : Inside")
                     val page = pdfDoc.getPage(pageNum)
                     val document = com.itextpdf.layout.Document(pdfDoc, PageSize.A4)
+                    document.setMargins(36f,36f,36f,36f)
                     val paragraph = Paragraph("$latitude,$longitude \n $addressFromLatLong \n $formattedDateTime")
                         .setFontSize(11f)
                         .setFontColor(ColorConstants.RED)
