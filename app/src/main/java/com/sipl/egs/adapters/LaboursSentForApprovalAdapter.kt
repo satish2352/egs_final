@@ -65,7 +65,8 @@ class LaboursSentForApprovalAdapter(var labourList: ArrayList<LaboursList>) : Re
                 {
                 val intent= Intent(holder.itemView.context, ViewSentForApprovalLabourDetails::class.java)
                 intent.putExtra("id",labourList.get(position).mgnrega_card_id)
-                intent.putExtra("type","not_approved")
+                    intent.putExtra("labour_id",labourList.get(position).id)
+                    intent.putExtra("type","not_approved")
                 holder.itemView.context.startActivity(intent)
                 }
 

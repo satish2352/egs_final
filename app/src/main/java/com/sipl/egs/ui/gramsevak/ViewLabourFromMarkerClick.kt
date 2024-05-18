@@ -91,7 +91,7 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
             if(mySharedPref.getRoleId()==2){
                 getLabourDetailsForOfficer(mgnregaCardId!!,labour_id.toString()!!)
             }else{
-                getLabourDetails(mgnregaCardId!!)
+                getLabourDetails(mgnregaCardId!!,labour_id.toString()!!)
             }
         } catch (e: Exception) {
             Log.d("mytag","ViewLabourFromMarkerClick:",e)
@@ -99,12 +99,12 @@ class ViewLabourFromMarkerClick : AppCompatActivity() {
         }
     }
 
-    private fun getLabourDetails(mgnregaCardId:String) {
+    private fun getLabourDetails(mgnregaCardId:String,labourId:String) {
 
         try {
             dialog.show()
             val apiService= ApiClient.create(this@ViewLabourFromMarkerClick)
-            apiService.getLabourDetailsById(mgnregaCardId).enqueue(object :
+            apiService.getLabourDetailsById(mgnregaCardId,labourId).enqueue(object :
                 Callback<LabourByMgnregaId> {
                 override fun onResponse(
                     call: Call<LabourByMgnregaId>,

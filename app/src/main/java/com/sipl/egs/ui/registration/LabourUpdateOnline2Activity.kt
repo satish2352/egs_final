@@ -170,7 +170,8 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
             relationDao=database.relationDao()
             maritalStatusDao=database.martialStatusDao()
             mgnregaId= intent.extras?.getString("id").toString()
-            getDetailsFromServer(mgnregaId!!)
+            val labourIdx= intent.extras?.getString("labour_id")
+            getDetailsFromServer(mgnregaId!!,labourIdx.toString()!!)
             ReactiveNetwork
                 .observeNetworkConnectivity(applicationContext)
                 .subscribeOn(Schedulers.io())
@@ -870,13 +871,13 @@ class LabourUpdateOnline2Activity : AppCompatActivity(), OnDeleteListener {
         }
 
     }
-    private  fun getDetailsFromServer(mgnregaCardId:String){
+    private  fun getDetailsFromServer(mgnregaCardId:String,labourIdx:String){
         Log.d("mytag","getDetailsFromServer")
         try {
             dialog.show()
             val apiService= ApiClient.create(this@LabourUpdateOnline2Activity)
             CoroutineScope(Dispatchers.IO).launch {
-                val response=apiService.getLabourDetailsForUpdate2(mgnregaCardId)
+                val response=apiService.getLabourDetailsForUpdate2(mgnregaCardId,labourIdx)
                 dialog.dismiss()
                 Log.d("mytag","getDetailsFromServer")
                 if(response.isSuccessful){

@@ -78,6 +78,7 @@ interface ApiService {
     @POST("auth/list-labour")
     fun getLabourDetailsById(
         @Query("mgnrega_card_id") mgnrega_card_id: String,
+        @Query("labour_id") labour_id: String
     ): Call<LabourByMgnregaId>
 
 
@@ -383,12 +384,18 @@ interface ApiService {
 
     // particular-labour-details-for-update => list-labour
     @POST("auth/list-labour")
-    suspend fun getLabourDetailsForUpdate(@Query("mgnrega_card_id") mgnrega_card_id: String): Response<LabourUpdateDetails>
+    suspend fun getLabourDetailsForUpdate(
+        @Query("mgnrega_card_id") mgnrega_card_id: String,
+        @Query("labour_id") labourId: String
+    ): Response<LabourUpdateDetails>
 
     // particular-labour-details-for-update => list-labour
 
     @POST("auth/list-labour")
-    suspend fun getLabourDetailsForUpdate2(@Query("mgnrega_card_id") mgnrega_card_id: String): Response<LabourEditDetailsOnline>
+    suspend fun getLabourDetailsForUpdate2(
+        @Query("mgnrega_card_id") mgnrega_card_id: String,
+        @Query("labour_id") labour_id: String,
+    ): Response<LabourEditDetailsOnline>
 
 
     // project-list-lat-log => filter-project-labour-list

@@ -53,8 +53,9 @@ class ViewSentForApprovalLabourDetails : AppCompatActivity() {
         binding.recyclerViewFamilyDetails.layoutManager=
             LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         val mgnregaCardId=intent.getStringExtra("id")
+        val labourId=intent.getIntExtra("labour_id",0)
         dialog= CustomProgressDialog(this)
-        getLabourDetails(mgnregaCardId!!)
+        getLabourDetails(mgnregaCardId!!,labourId.toString()!!)
         var adapter= RegistrationStatusHistoryAdapter(historyList)
         binding.recyclerViewHistory.layoutManager=
             LinearLayoutManager(this, RecyclerView.VERTICAL,false)
@@ -97,13 +98,13 @@ class ViewSentForApprovalLabourDetails : AppCompatActivity() {
                 }
             }) { throwable: Throwable? -> }
     }
-    private fun getLabourDetails(mgnregaCardId:String) {
+    private fun getLabourDetails(mgnregaCardId:String,labourId:String) {
 
 
         try {
             dialog.show()
             val apiService= ApiClient.create(this@ViewSentForApprovalLabourDetails)
-            apiService.getLabourDetailsById(mgnregaCardId).enqueue(object :
+            apiService.getLabourDetailsById(mgnregaCardId,labourId).enqueue(object :
                 Callback<LabourByMgnregaId> {
                 override fun onResponse(
                     call: Call<LabourByMgnregaId>,

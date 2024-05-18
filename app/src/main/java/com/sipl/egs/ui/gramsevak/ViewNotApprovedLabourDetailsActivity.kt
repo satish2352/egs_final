@@ -55,8 +55,9 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
             binding.recyclerViewFamilyDetails.layoutManager=
                 LinearLayoutManager(this, RecyclerView.VERTICAL,false)
             val mgnregaCardId=intent.getStringExtra("id")
+            val labourId=intent.getIntExtra("labour_id",0)
             dialog= CustomProgressDialog(this)
-            getLabourDetails(mgnregaCardId!!)
+            getLabourDetails(mgnregaCardId!!,labourId.toString()!!)
             var adapter= RegistrationStatusHistoryAdapter(historyList)
             binding.recyclerViewHistory.layoutManager=LinearLayoutManager(this,RecyclerView.VERTICAL,false)
             binding.recyclerViewHistory.adapter=adapter
@@ -95,6 +96,7 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
                 if(isInternetAvailable){
                     val intent= Intent(this, LabourUpdateOnline1Activity::class.java)
                     intent.putExtra("id",mgnregaCardId)
+                    intent.putExtra("labour_id",labourId)
                     startActivity(intent);
                 }else{
                     noInternetDialog.showDialog()
@@ -108,13 +110,13 @@ class ViewNotApprovedLabourDetailsActivity : AppCompatActivity() {
 
 
     }
-    private fun getLabourDetails(mgnregaCardId:String) {
+    private fun getLabourDetails(mgnregaCardId:String,labourId:String) {
 
 
         try {
             dialog.show()
             val apiService= ApiClient.create(this@ViewNotApprovedLabourDetailsActivity)
-            apiService.getLabourDetailsById(mgnregaCardId).enqueue(object :
+            apiService.getLabourDetailsById(mgnregaCardId,labourId).enqueue(object :
                 Callback<LabourByMgnregaId> {
                 override fun onResponse(
                     call: Call<LabourByMgnregaId>,

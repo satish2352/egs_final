@@ -295,7 +295,7 @@
             android:hint="( Optional )Landline Number"
             android:inputType="phone"
             android:maxLines="1"
-            android:maxLength="11"
+            android:maxLength="@integer/landline_no_max_length"
             android:lines="1"
             android:imeOptions="actionNext"
             android:digits="@string/numdigits"
@@ -333,12 +333,13 @@
             android:layout_weight="1"
             android:maxLines="1"
             android:lines="1"
+            android:maxLength="@integer/mgnrega_id_max_length"
             android:imeOptions="actionDone"
             android:background="@drawable/rounded_background_light_gray"
             android:digits="@string/no_space_letter_number"
             android:hint="MGNREGA Id Card  Number"
             android:inputType="text"
-            android:paddingLeft="16dp"></EditText>
+            android:paddingLeft="16dp"/>
 
         <ImageView
             android:layout_marginRight="10dp"

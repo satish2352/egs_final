@@ -52,8 +52,6 @@ class OfficerViewNotApprovedLabourDetails : AppCompatActivity() {
             LinearLayoutManager(this, RecyclerView.VERTICAL,false)
         val mgnregaCardId=intent.getStringExtra("id")
         val labourId=intent.getIntExtra("labour_id",0)
-            Log.d("mytag","=>"+labourId);
-            Log.d("mytag","=>"+mgnregaCardId);
         dialog= CustomProgressDialog(this)
         getLabourDetails(mgnregaCardId!!,labourId.toString()!!)
         binding.ivAadhar.setOnClickListener {

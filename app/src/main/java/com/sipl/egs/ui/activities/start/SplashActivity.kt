@@ -495,7 +495,6 @@ class SplashActivity : AppCompatActivity() {
                         }
                     })
                 } catch (e: Exception) {
-                    Log.d("mytag", "SplashActivity: ${e.message}")
                     Log.d("mytag", "SplashActivity: ${e.message}", e)
                     e.printStackTrace()
                     // Notify the caller about the exception
@@ -508,117 +507,171 @@ class SplashActivity : AppCompatActivity() {
     }
 
     fun mapDataToArea(apiResponseList: List<AreaMaster>): List<AreaItem> {
-        return apiResponseList.map { apiResponse ->
-            AreaItem(
-                parent_id = apiResponse.parent_id.toString(),
-                is_active = apiResponse.is_active,
-                is_visible = apiResponse.is_visible,
-                location_id = apiResponse.location_id.toString(),
-                location_type = apiResponse.location_type,
-                name = apiResponse.name
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                AreaItem(
+                    parent_id = apiResponse.parent_id.toString(),
+                    is_active = "0",
+                    is_visible = "0",
+                    location_id = apiResponse.location_id.toString(),
+                    location_type = apiResponse.location_type,
+                    name = apiResponse.name
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapDataToArea ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
 
     fun mapToSkills(apiResponseList: List<Skill>): List<Skills> {
-        return apiResponseList.map { apiResponse ->
-            Skills(
-                id = apiResponse.id,
-                skills = apiResponse.skills,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                Skills(
+                    id = apiResponse.id,
+                    skills = apiResponse.skills,
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToSkills ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
     fun mapToMaritalStatus(apiResponseList: List<Maritalstatu>): List<MaritalStatus> {
-        return apiResponseList.map { apiResponse ->
-            MaritalStatus(
-                id = apiResponse.id,
-                maritalstatus = apiResponse.maritalstatus,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                MaritalStatus(
+                    id = apiResponse.id,
+                    maritalstatus = apiResponse.maritalstatus,
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToMaritalStatus ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
     fun mapToMaritalGender(apiResponseList: List<Gender>): List<com.sipl.egs.database.entity.Gender> {
-        return apiResponseList.map { apiResponse ->
-            com.sipl.egs.database.entity.Gender(
-                id = apiResponse.id,
-                gender_name = apiResponse.gender_name,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                com.sipl.egs.database.entity.Gender(
+                    id = apiResponse.id,
+                    gender_name = apiResponse.gender_name,
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToMaritalGender ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
     fun mapToRelation(apiResponseList: List<Relation>): List<com.sipl.egs.database.entity.Relation> {
-        return apiResponseList.map { apiResponse ->
-            com.sipl.egs.database.entity.Relation(
-                id = apiResponse.id,
-                relation_title = apiResponse.relation_title,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                com.sipl.egs.database.entity.Relation(
+                    id = apiResponse.id,
+                    relation_title = apiResponse.relation_title,
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = ""
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToRelation ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
     fun mapToDocumentType(apiResponseList: List<Documenttype>): List<com.sipl.egs.database.entity.DocumentTypeDropDown> {
-        return apiResponseList.map { apiResponse ->
-            com.sipl.egs.database.entity.DocumentTypeDropDown(
-                id = apiResponse.id,
-                documenttype = apiResponse.document_type_name,
-                is_deleted = apiResponse.is_deleted,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at,
-                doc_color = apiResponse.doc_color
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                com.sipl.egs.database.entity.DocumentTypeDropDown(
+                    id = apiResponse.id,
+                    documenttype = apiResponse.document_type_name,
+                    is_deleted = 0,
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = "",
+                    doc_color = apiResponse.doc_color
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToDocumentType ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
     fun mapToRegistrationStatus(apiResponseList: List<RegistrationStatus>): List<com.sipl.egs.database.entity.RegistrationStatus> {
-        return apiResponseList.map { apiResponse ->
-            com.sipl.egs.database.entity.RegistrationStatus(
-                id = apiResponse.id,
-                is_deleted = apiResponse.is_deleted,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at,
-                status_name = apiResponse.status_name
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                com.sipl.egs.database.entity.RegistrationStatus(
+                    id = apiResponse.id,
+                    is_deleted = 0,
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = "",
+                    status_name = apiResponse.status_name
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToRegistrationStatus ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
     fun mapToReasons(apiResponseList: List<Reasons>): List<com.sipl.egs.database.entity.Reasons> {
-        return apiResponseList.map { apiResponse ->
-            com.sipl.egs.database.entity.Reasons(
-                id = apiResponse.id,
-                is_deleted = apiResponse.is_deleted,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at,
-                reason_name = apiResponse.reason_name
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                com.sipl.egs.database.entity.Reasons(
+                    id = apiResponse.id,
+                    is_deleted = "0",
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = "",
+                    reason_name = apiResponse.reason_name
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToReasons ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 
     fun mapToDocumentReasons(apiResponseList: List<Reasons>): List<com.sipl.egs.database.entity.DocumentReasons> {
-        return apiResponseList.map { apiResponse ->
-            com.sipl.egs.database.entity.DocumentReasons(
-                id = apiResponse.id,
-                is_deleted = apiResponse.is_deleted,
-                is_active = apiResponse.is_active,
-                created_at = apiResponse.created_at,
-                updated_at = apiResponse.updated_at,
-                reason_name = apiResponse.reason_name
-            )
+        try {
+            return apiResponseList.map { apiResponse ->
+                com.sipl.egs.database.entity.DocumentReasons(
+                    id = apiResponse.id,
+                    is_deleted = "0",
+                    is_active = 0,
+                    created_at = "",
+                    updated_at = "",
+                    reason_name = apiResponse.reason_name
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","SplashActivity: mapToDocumentReasons ${e.message}",e)
+            e.printStackTrace()
+            return emptyList()
         }
     }
 

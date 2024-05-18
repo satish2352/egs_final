@@ -293,6 +293,7 @@
                 android:id="@+id/etLandLine"
                 android:layout_weight="1"
                 android:paddingLeft="16dp"
+                android:maxLength="@integer/landline_no_max_length"
                 android:hint="@string/landline_number"
                 android:inputType="phone"
                 android:imeOptions="actionNext"
@@ -328,12 +329,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:layout_weight="1"
+                android:maxLength="@integer/mgnrega_id_max_length"
                 android:background="@drawable/rounded_background_light_gray"
                 android:digits="@string/no_space_letter_number"
                 android:hint="@string/mgnrega_id_card_number"
                 android:imeOptions="actionDone"
                 android:inputType="text"
-                android:maxLength="50"
                 android:paddingLeft="16dp"/>
 
             <ImageView

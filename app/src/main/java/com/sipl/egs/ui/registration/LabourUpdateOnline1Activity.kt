@@ -88,10 +88,11 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
         appDatabase=AppDatabase.getDatabase(this)
         areaDao=appDatabase.areaDao()
         var mgnregaCardId=intent.extras?.getString("id")
+        var labourIdx=intent.extras?.getInt("labour_id",0)
         labourDao=appDatabase.labourDao()
         genderDao=appDatabase.genderDao()
         skillsDao=appDatabase.skillsDao()
-            getDetailsFromServer(mgnregaCardId!!)
+            getDetailsFromServer(mgnregaCardId!!,labourIdx.toString()!!)
         districtList=ArrayList<AreaItem>()
         CoroutineScope(Dispatchers.IO).launch {
            val waitingJob=async {  districtList=areaDao.getAllDistrict() }
@@ -240,6 +241,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                     withContext(Dispatchers.Main){
                         val intent = Intent(this@LabourUpdateOnline1Activity, LabourUpdateOnline2Activity::class.java)
                         intent.putExtra("id",mgnregaCardId)
+                        intent.putExtra("labour_id",labourId)
                         intent.putExtra("LabourInputData", labourInputData)
                         startActivity(intent)
                         Toast.makeText(this@LabourUpdateOnline1Activity,response.body()?.message,Toast.LENGTH_LONG).show()
@@ -568,13 +570,13 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
         datePickerDialog.datePicker.maxDate = eighteenYearsAgo.timeInMillis //
         datePickerDialog.show()
     }
-    private  fun getDetailsFromServer(mgnregaCardId:String){
+    private  fun getDetailsFromServer(mgnregaCardId:String,labourIdx:String){
         Log.d("mytag","getDetailsFromServer")
         try {
             dialog.show()
             val apiService= ApiClient.create(this@LabourUpdateOnline1Activity)
             CoroutineScope(Dispatchers.IO).launch {
-                val response=apiService.getLabourDetailsForUpdate(mgnregaCardId)
+                val response=apiService.getLabourDetailsForUpdate(mgnregaCardId,labourIdx)
                 dialog.dismiss()
                 Log.d("mytag","getDetailsFromServer")
                 if(response.isSuccessful){

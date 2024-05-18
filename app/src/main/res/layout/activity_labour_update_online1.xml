@@ -146,7 +146,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
-            android:text="@string/district"
+            android:text="@string/select_district"
             android:textSize="10dp"
             android:textColor="@color/appBlue"
             />
@@ -178,7 +178,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
-            android:text="@string/taluka"
+            android:text="@string/select_taluka"
             android:textSize="10dp"
             android:textColor="@color/appBlue"
             />
@@ -210,7 +210,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/poppins"
-            android:text="@string/village"
+            android:text="@string/select_village"
             android:textSize="10dp"
             android:textColor="@color/appBlue"
             />
@@ -297,6 +297,7 @@
                 android:paddingLeft="16dp"
                 android:hint="@string/landline_number"
                 android:inputType="phone"
+                android:maxLength="@integer/landline_no_max_length"
                 android:background="@drawable/rounded_background_light_gray"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"/>
@@ -327,7 +328,8 @@
                 android:imeOptions="actionDone"
                 android:id="@+id/etMgnregaIdNumber"
                 android:layout_weight="1"
-                android:paddingLeft="16dp"
+                android:maxLength="@integer/mgnrega_id_max_length"
+                android:paddingStart="16dp"
                 android:hint="@string/mgnrega_id_card_number"
                 android:inputType="text"
                 android:digits="@string/no_space_letter_number"
