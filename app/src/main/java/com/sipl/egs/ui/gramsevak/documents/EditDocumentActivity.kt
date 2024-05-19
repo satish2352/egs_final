@@ -194,7 +194,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                         // If "Yes" is clicked, exit the app
                         finish()
                     }
-                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .setNegativeButton(resources.getString(R.string.no),null)  // If "No" is clicked, do nothing
                     .show()
 
             }
@@ -230,7 +230,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
             .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
                 dialog.dismiss()
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }.setNegativeButton("No") { dialog, _ ->
+            }.setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                 dialog.dismiss()
                 // Handle the case when the user refuses to enable location services
                 Toast.makeText(
@@ -327,7 +327,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                     // If "Yes" is clicked, exit the app
                     finish()
                 }
-                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .setNegativeButton(resources.getString(R.string.no),null)  // If "No" is clicked, do nothing
                 .show()
         }
 
@@ -587,7 +587,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                     // Open the location settings to enable GPS
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
-                .setNegativeButton("No") { dialog, _ ->
+                .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
                     // Handle the case when the user chooses not to enable GPS
                 }

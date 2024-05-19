@@ -450,6 +450,9 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         name = marker.full_name,
                         url =marker.id.toString()
                     )
+                    Log.d("mytag","=>mnrega" +
+                            "||=>"+customMarkerObject.id)
+                    Log.d("mytag","=>id=>"+customMarkerObject.url)
                     myMarker?.tag = customMarkerObject
                     myMarker?.showInfoWindow()
                 }
@@ -676,11 +679,13 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                             MarkerOptions().icon(markerIcon).position(position).title(marker.name)
                         )
                         var customMarkerObject = CustomMarkerObject(
-                            id = marker.id.toString(),
-                            type = marker.type,
+                            id = marker.mgnrega_card_id.toString(),
+                            type = "labour",
                             name = marker.name,
-                            url = ""
+                            url =marker.id.toString()
                         )
+
+
                         myMarker?.tag = customMarkerObject
                         myMarker?.showInfoWindow()
                     } else if (marker.type.equals("document")) {
@@ -843,15 +848,18 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     ).show()
                 }
             } else if (customMarkerObject.type.equals("labour")) {
+                Log.d("mytag",customMarkerObject.id.toString())
+                Log.d("mytag",customMarkerObject.url)
                 val intent = Intent(context, ViewLabourFromMarkerClick::class.java)
-                  intent.putExtra("id", "" + customMarkerObject.id)
+                  intent.putExtra("id", customMarkerObject.id.toString())
                   intent.putExtra("labour_id", Integer.parseInt(customMarkerObject.url))
                 context?.startActivity(intent)
             } else if (customMarkerObject.type.equals("current_marker")){
 
             }
         } catch (e: Exception) {
-            Log.d("mytag", "onInfoWindowClick: Exception => " + e.message)
+            Log.d("mytag", "onInfoWindowClick: Exception => " + e.message,e)
+                e.printStackTrace()
         }
     }
 

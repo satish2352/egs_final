@@ -349,7 +349,7 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
                     // If "Yes" is clicked, exit the app
                     finish()
                 }
-                .setNegativeButton(resources.getString(R.string.yes), null) // If "No" is clicked, do nothing
+                .setNegativeButton(resources.getString(R.string.no), null) // If "No" is clicked, do nothing
                 .show()
         }
         return super.onOptionsItemSelected(item)

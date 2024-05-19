@@ -248,7 +248,7 @@ class OfficerDocsEditActivity : AppCompatActivity() {
             dialog.dismiss()
         }
 
-        alertDialogBuilder.setNegativeButton("No") { dialog, which ->
+        alertDialogBuilder.setNegativeButton(resources.getString(R.string.no)) { dialog, which ->
 
             dialog.dismiss()
         }

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">EGS</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
@@ -194,4 +194,5 @@
     <string name="password_text">Password must contains at least\n1 Uppercase letter\n1 Lowercase letter\n1 Digit\n1 Special character</string>
     <string name="okay">Okay</string>
     <string name="failed_to_download_data_from_server">Failed to download data from server</string>
+    <string name="are_you_sure_you_want_to_exit_app" tools:ignore="ExtraTranslation">Are you sure you want to exit App?</string>
 </resources>

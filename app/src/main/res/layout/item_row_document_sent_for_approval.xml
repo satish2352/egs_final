@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardUseCompatPadding="true"
     app:cardCornerRadius="1dp"
+    android:background="@android:color/transparent"
     android:layout_height="wrap_content">
     <LinearLayout
         android:background="@color/appBlue"

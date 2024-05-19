@@ -567,7 +567,7 @@ class DocumentDetailsActivity : AppCompatActivity() {
                     // Open the location settings to enable GPS
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
-                .setNegativeButton("No") { dialog, _ ->
+                .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
                     // Handle the case when the user chooses not to enable GPS
                 }

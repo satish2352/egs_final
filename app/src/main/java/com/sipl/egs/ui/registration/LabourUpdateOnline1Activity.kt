@@ -167,7 +167,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                         // If "Yes" is clicked, exit the app
                         finish()
                     }
-                    .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                    .setNegativeButton(resources.getString(R.string.no),null)  // If "No" is clicked, do nothing
                     .show()
 
             }
@@ -339,7 +339,7 @@ class LabourUpdateOnline1Activity : AppCompatActivity() {
                     // If "Yes" is clicked, exit the app
                     finish()
                 }
-                .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                .setNegativeButton(resources.getString(R.string.no),null)  // If "No" is clicked, do nothing
                 .show()
         }
         return super.onOptionsItemSelected(item)

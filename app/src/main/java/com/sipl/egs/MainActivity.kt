@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
                             .setPositiveButton("Yes") { _, _ ->
                                 finish()
                             }
-                            .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                            .setNegativeButton(resources.getString(R.string.no),null)  // If "No" is clicked, do nothing
                             .show()
                     }
                 }
@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
                 .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
                     dialog.dismiss()
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                }.setNegativeButton("No") { dialog, _ ->
+                }.setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
                     // Handle the case when the user refuses to enable location services
                     Toast.makeText(
@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                     dialog.dismiss()
                 }
-                .setNegativeButton("No") { dialog, _ ->
+                .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
                     // Handle the case when the user chooses not to enable GPS
                 }
@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity(),OnLocationStateListener{
                     startActivity(intent)
                     dialog.dismiss()
                 }
-                .setNegativeButton("No") { dialog, _ ->
+                .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
                     // Handle the case when the user chooses not to enable GPS
                 }

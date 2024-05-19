@@ -73,12 +73,12 @@ class OfficerMainActivity : AppCompatActivity(),
                         // If there are no more fragments to pop in the back stack,
                         // show the exit confirmation dialog
                         AlertDialog.Builder(this@OfficerMainActivity)
-                            .setTitle("Exit")
-                            .setMessage("Are you sure you want to exit App?")
-                            .setPositiveButton("Yes") { _, _ ->
+                            .setTitle(resources.getString(R.string.exit))
+                            .setMessage(getString(R.string.are_you_sure_you_want_to_exit_app))
+                            .setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
                                 finish()
                             }
-                            .setNegativeButton("No", null) // If "No" is clicked, do nothing
+                            .setNegativeButton(resources.getString(R.string.no),null)  // If "No" is clicked, do nothing
                             .show()
                     }
 
@@ -106,7 +106,7 @@ class OfficerMainActivity : AppCompatActivity(),
                 .setCancelable(false).setPositiveButton("Yes") { dialog, _ ->
                     dialog.dismiss()
                     startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                }.setNegativeButton("No") { dialog, _ ->
+                }.setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                     dialog.dismiss()
                     // Handle the case when the user refuses to enable location services
                     Toast.makeText(
@@ -236,7 +236,7 @@ class OfficerMainActivity : AppCompatActivity(),
                         startActivity(intent)
                         dialog.dismiss()
                     }
-                    .setNegativeButton("No") { dialog, _ ->
+                    .setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
                         dialog.dismiss()
                         // Handle the case when the user chooses not to enable GPS
                     }

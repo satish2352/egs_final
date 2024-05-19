@@ -7,15 +7,13 @@
     android:background="@color/appBlue"
     android:orientation="vertical"
     tools:context=".ui.activities.start.LoginActivity">
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="72dp"
         android:text=""
-        android:textColor="@color/white"></TextView>
-
+        android:textColor="@color/white"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +22,7 @@
         android:fontFamily="@font/poppins"
         android:text="EGS"
         android:textColor="@color/white"
-        android:textSize="30dp"></TextView>
+        android:textSize="30dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -44,14 +42,14 @@
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:background="@drawable/round_circle_white"
-                android:src="@drawable/gom"></ImageView>
+                android:src="@drawable/gom"/>
 
             <TextView
                 android:visibility="gone"
                 android:text="Government of Maharashtra"
                 android:textColor="@color/black"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"></TextView>
+                android:layout_height="match_parent"/>
         </LinearLayout>
 
 
@@ -119,7 +117,7 @@
                         android:singleLine="true"
                         android:imeOptions="actionDone"
                         android:background="@drawable/rounded_background_light_green"
-                        android:paddingLeft="16dp"></com.google.android.material.textfield.TextInputEditText>
+                        android:paddingLeft="16dp"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
@@ -132,11 +130,9 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginRight="16dp"
                     android:fontFamily="@font/poppins"
-                    android:text="@string/login"></Button>
-
-
-
+                    android:text="@string/login"/>
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/tvResetPassword"
                     android:layout_marginRight="16dp"
                     android:layout_gravity="end"
@@ -147,20 +143,13 @@
                     android:textSize="14sp"
                     android:text="@string/reset_password_1"
                     android:fontFamily="@font/poppins"
-                    android:textColor="@color/appBlue"></TextView>
+                    android:textColor="@color/appBlue"/>
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/login_image"></ImageView>
-
+                    android:src="@drawable/login_image"/>
             </LinearLayout>
-
-
-
-
         </androidx.cardview.widget.CardView>
-
-
     </RelativeLayout>
 
 
