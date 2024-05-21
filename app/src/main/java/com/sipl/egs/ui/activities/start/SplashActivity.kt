@@ -511,8 +511,8 @@ class SplashActivity : AppCompatActivity() {
             return apiResponseList.map { apiResponse ->
                 AreaItem(
                     parent_id = apiResponse.parent_id.toString(),
-                    is_active = "0",
-                    is_visible = "0",
+                    is_active = apiResponse.is_active,
+                    is_visible = apiResponse.is_visible,
                     location_id = apiResponse.location_id.toString(),
                     location_type = apiResponse.location_type,
                     name = apiResponse.name
@@ -532,9 +532,9 @@ class SplashActivity : AppCompatActivity() {
                 Skills(
                     id = apiResponse.id,
                     skills = apiResponse.skills,
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = ""
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                 )
             }
         } catch (e: Exception) {
@@ -550,9 +550,9 @@ class SplashActivity : AppCompatActivity() {
                 MaritalStatus(
                     id = apiResponse.id,
                     maritalstatus = apiResponse.maritalstatus,
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = ""
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                 )
             }
         } catch (e: Exception) {
@@ -568,9 +568,9 @@ class SplashActivity : AppCompatActivity() {
                 com.sipl.egs.database.entity.Gender(
                     id = apiResponse.id,
                     gender_name = apiResponse.gender_name,
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = ""
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                 )
             }
         } catch (e: Exception) {
@@ -586,9 +586,9 @@ class SplashActivity : AppCompatActivity() {
                 com.sipl.egs.database.entity.Relation(
                     id = apiResponse.id,
                     relation_title = apiResponse.relation_title,
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = ""
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                 )
             }
         } catch (e: Exception) {
@@ -604,10 +604,10 @@ class SplashActivity : AppCompatActivity() {
                 com.sipl.egs.database.entity.DocumentTypeDropDown(
                     id = apiResponse.id,
                     documenttype = apiResponse.document_type_name,
-                    is_deleted = 0,
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = "",
+                    is_deleted = apiResponse.is_deleted,
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                     doc_color = apiResponse.doc_color
                 )
             }
@@ -623,10 +623,10 @@ class SplashActivity : AppCompatActivity() {
             return apiResponseList.map { apiResponse ->
                 com.sipl.egs.database.entity.RegistrationStatus(
                     id = apiResponse.id,
-                    is_deleted = 0,
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = "",
+                    is_deleted = apiResponse.is_deleted,
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                     status_name = apiResponse.status_name
                 )
             }
@@ -642,10 +642,10 @@ class SplashActivity : AppCompatActivity() {
             return apiResponseList.map { apiResponse ->
                 com.sipl.egs.database.entity.Reasons(
                     id = apiResponse.id,
-                    is_deleted = "0",
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = "",
+                    is_deleted = apiResponse.is_deleted,
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                     reason_name = apiResponse.reason_name
                 )
             }
@@ -661,10 +661,10 @@ class SplashActivity : AppCompatActivity() {
             return apiResponseList.map { apiResponse ->
                 com.sipl.egs.database.entity.DocumentReasons(
                     id = apiResponse.id,
-                    is_deleted = "0",
-                    is_active = 0,
-                    created_at = "",
-                    updated_at = "",
+                    is_deleted = apiResponse.is_deleted,
+                    is_active = apiResponse.is_active,
+                    created_at = apiResponse.created_at,
+                    updated_at = apiResponse.updated_at,
                     reason_name = apiResponse.reason_name
                 )
             }

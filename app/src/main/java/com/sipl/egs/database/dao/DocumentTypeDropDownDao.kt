@@ -19,15 +19,15 @@ interface DocumentTypeDropDownDao {
         deleteAllDocuementTypes()
         insertAll(items)
     }
-    @Query("SELECT COUNT(*) FROM document_type_dropdown")
+    @Query("SELECT COUNT(*) FROM document_type_dropdown WHERE is_active=1")
     suspend fun getRowCount(): Int
-    @Query("SELECT * FROM document_type_dropdown")
+    @Query("SELECT * FROM document_type_dropdown WHERE is_active=1")
     suspend fun getAllDocumentsType(): List<DocumentTypeDropDown>
 
-    @Query("SELECT * FROM document_type_dropdown WHERE id = :id")
+    @Query("SELECT * FROM document_type_dropdown WHERE id = :id AND is_active=1")
     suspend fun getDocumentTypeById(id: String): DocumentTypeDropDown
 
-    @Query("SELECT * FROM document_type_dropdown ORDER BY documenttype ASC")
+    @Query("SELECT * FROM document_type_dropdown WHERE is_active=1 ORDER BY documenttype ASC")
     suspend fun getDocuments(): List<DocumentTypeDropDown>
 
 }

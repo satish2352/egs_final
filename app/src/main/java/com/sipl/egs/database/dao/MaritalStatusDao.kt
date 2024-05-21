@@ -21,11 +21,11 @@ interface MaritalStatusDao {
         insertAll(items)
     }
 
-    @Query("SELECT COUNT(*) FROM marital_status")
+    @Query("SELECT COUNT(*) FROM marital_status WHERE  is_active=1")
     suspend fun getRowCount(): Int
-    @Query("SELECT * FROM marital_status ORDER BY id ASC")
+    @Query("SELECT * FROM marital_status WHERE  is_active=1 ORDER BY id ASC")
     suspend fun getAllMaritalStatus(): List<MaritalStatus>
 
-    @Query("SELECT * FROM marital_status WHERE id = :id")
+    @Query("SELECT * FROM marital_status WHERE id = :id AND is_active=1")
     suspend fun getMaritalStatusById(id: String): MaritalStatus
 }

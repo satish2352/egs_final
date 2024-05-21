@@ -21,10 +21,10 @@ interface ReasonsDao {
         deleteAllReasons()
         insertAll(items)
     }
-    @Query("SELECT COUNT(*) FROM reasons")
+    @Query("SELECT COUNT(*) FROM reasons WHERE  is_active=1")
     suspend fun getRowCount(): Int
-    @Query("SELECT * FROM reasons ORDER BY id ASC")
+    @Query("SELECT * FROM reasons WHERE  is_active=1 ORDER BY id ASC")
     suspend fun getAllReasons(): List<Reasons>
-    @Query("SELECT * FROM reasons WHERE id = :id")
+    @Query("SELECT * FROM reasons WHERE id = :id AND is_active=1")
     suspend fun getReasonById(id: String): Reasons
 }

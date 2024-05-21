@@ -15,7 +15,7 @@ interface GenderDao {
     @Query("DELETE FROM gender")
     suspend fun deleteAllGenders()
 
-    @Query("SELECT COUNT(*) FROM gender")
+    @Query("SELECT COUNT(*) FROM gender WHERE is_active=1")
     suspend fun getRowCount(): Int
     @Transaction
     suspend fun insertInitialRecords(items: List<Gender>) {
@@ -23,10 +23,10 @@ interface GenderDao {
         insertAll(items)
     }
 
-    @Query("SELECT * FROM gender ORDER BY id ASC")
+    @Query("SELECT * FROM gender WHERE is_active=1 ORDER BY id ASC")
     suspend fun getAllGenders(): List<Gender>
 
-    @Query("SELECT * FROM gender WHERE id = :id")
+    @Query("SELECT * FROM gender WHERE id = :id AND is_active=1")
     suspend fun getGenderById(id: String): Gender
 
 }

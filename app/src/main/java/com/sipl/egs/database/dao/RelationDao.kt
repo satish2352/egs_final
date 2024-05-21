@@ -21,12 +21,12 @@ interface RelationDao {
         insertAll(items)
     }
 
-    @Query("SELECT COUNT(*) FROM relation")
+    @Query("SELECT COUNT(*) FROM relation WHERE  is_active=1")
     suspend fun getRowCount(): Int
 
-    @Query("SELECT * FROM relation ORDER BY id ASC")
+    @Query("SELECT * FROM relation WHERE  is_active=1 ORDER BY id ASC")
     suspend fun getAllRelation(): List<Relation>
 
-    @Query("SELECT * FROM relation WHERE id = :id")
+    @Query("SELECT * FROM relation WHERE id = :id AND is_active=1")
     suspend fun getRelationById(id: String): Relation
 }
