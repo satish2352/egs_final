@@ -120,7 +120,7 @@ class SplashActivity : AppCompatActivity() {
                 // userDao.insertInitialRecords()
                 checkAllCounts();
                 if (!mySharedPref.getAllAreaEntries()) {
-                    if (areaDao.getAllArea().size < 44342) {
+                    if (areaDao.getAllArea().size < 44340) {
                         val areaEnteriesJob = async {
                             val items = readJsonFromAssets(this@SplashActivity, "address.json")
                             areaDao.insertInitialRecords(items)
