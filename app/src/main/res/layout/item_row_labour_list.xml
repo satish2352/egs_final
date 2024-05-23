@@ -19,7 +19,7 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/ivPhoto"
                 android:layout_width="50dp"
-                android:layout_height="75dp"
+                android:layout_height="match_parent"
                 android:src="@drawable/profile" />
             <LinearLayout
                 android:layout_gravity="center"
@@ -39,7 +39,7 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"/>
                     <TextView
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         android:maxLines="1"
                         android:lines="1"
                         android:ellipsize="end"
@@ -51,13 +51,6 @@
                         android:text="Shubham Shinde"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"></TextView>
-                    <ImageView
-                        android:layout_gravity="end"
-                        android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_edit"
-                        android:id="@+id/ivEdit"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"></ImageView>
                 </LinearLayout>
                 <LinearLayout
                     android:layout_marginTop="3dp"
@@ -72,7 +65,7 @@
                         android:layout_weight="1"
                         android:layout_gravity="center"
                         android:id="@+id/tvMobile"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:layout_marginLeft="8dp"
                         android:textColor="@color/black"
                         android:fontFamily="@font/poppins_regular"
@@ -92,7 +85,7 @@
                         android:layout_height="16dp"/>
                     <TextView
                         android:layout_weight="1"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:layout_gravity="center"
                         android:maxLines="1"
                         android:singleLine="true"
@@ -105,14 +98,10 @@
                         android:text="Maharashtra- Thane - Dahisar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"></TextView>
-                    <ImageView
-                        android:layout_marginRight="10dp"
-                        android:src="@drawable/ic_view"
-                        android:id="@+id/ivView"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"></ImageView>
+
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:visibility="gone"
                     android:layout_marginBottom="10dp"
@@ -142,10 +131,45 @@
 
         </LinearLayout>
         <LinearLayout
+            android:layout_marginBottom="5dp"
+            android:id="@+id/layoutIcons"
+            android:gravity="center"
+            android:visibility="visible"
+            android:orientation="horizontal"
+            android:layout_below="@id/layoutMain"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_weight="1"
+                android:layout_gravity="end"
+                android:src="@drawable/ic_delete"
+                android:id="@+id/ivDelete"
+                android:layout_width="36dp"
+                android:layout_height="36dp"></ImageView>
+            <ImageView
+                android:layout_weight="1"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_view"
+                android:id="@+id/ivView"
+                android:layout_width="36dp"
+                android:layout_height="36dp"></ImageView>
+
+            <ImageView
+                android:layout_weight="1"
+                android:layout_gravity="end"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_edit"
+                android:id="@+id/ivEdit"
+                android:layout_width="36dp"
+                android:layout_height="36dp"></ImageView>
+
+
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/layoutSyncFailed"
             android:gravity="center"
             android:visibility="gone"
-            android:layout_below="@id/layoutMain"
+            android:layout_below="@id/layoutIcons"
             android:background="@color/myred"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

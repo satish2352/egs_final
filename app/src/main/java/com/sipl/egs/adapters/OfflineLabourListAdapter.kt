@@ -12,10 +12,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sipl.egs.R
 import com.sipl.egs.database.model.LabourWithAreaNames
+import com.sipl.egs.interfaces.OnDocumentItemDeleteListener
 import com.sipl.egs.ui.gramsevak.OfflineViewLabourDetailsActivity
 import com.sipl.egs.ui.registration.LabourRegistrationEdit1
 
-class OfflineLabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerView.Adapter<OfflineLabourListAdapter.ViewHolder>() {
+class OfflineLabourListAdapter(var list: List<LabourWithAreaNames>,var onDocumentItemDeleteListener: OnDocumentItemDeleteListener) : RecyclerView.Adapter<OfflineLabourListAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val tvFullName=itemView.findViewById<TextView>(R.id.tvFullName)
@@ -25,6 +26,7 @@ class OfflineLabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerVi
         val ivEdit=itemView.findViewById<ImageView>(R.id.ivEdit)
         val tvMgnregaId=itemView.findViewById<TextView>(R.id.tvMgnregaId)
         val ivView=itemView.findViewById<ImageView>(R.id.ivView)
+        val ivDelete=itemView.findViewById<ImageView>(R.id.ivDelete)
         val layoutSyncFailed=itemView.findViewById<LinearLayout>(R.id.layoutSyncFailed)
     }
 
@@ -61,6 +63,10 @@ class OfflineLabourListAdapter(var list: List<LabourWithAreaNames>) : RecyclerVi
                 val intent= Intent(holder.itemView.context, OfflineViewLabourDetailsActivity::class.java)
                 intent.putExtra("id",list[position].id.toString())
                 holder.itemView.context.startActivity(intent)
+            }
+
+            holder.ivDelete.setOnClickListener {
+                onDocumentItemDeleteListener.onItemDelete(list[position])
             }
         } catch (e: Exception) {
             Log.d("mytag","OfflineLabourListAdapter: ${e.message}",e)

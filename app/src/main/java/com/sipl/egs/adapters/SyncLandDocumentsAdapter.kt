@@ -22,20 +22,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sipl.egs.R
 import com.sipl.egs.database.entity.Document
+import com.sipl.egs.interfaces.OnDocumentItemDeleteListener
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.Adapter<SyncLandDocumentsAdapter.ViewHolder>() {
+class SyncLandDocumentsAdapter(var documentList: List<Document>,var onItemDeleteListener: OnDocumentItemDeleteListener) : RecyclerView.Adapter<SyncLandDocumentsAdapter.ViewHolder>() {
+
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvPageCount=itemView.findViewById<TextView>(R.id.tvPageCount)
         val tvDocumentDate=itemView.findViewById<TextView>(R.id.tvDocumentDate)
         val tvDocumentName=itemView.findViewById<TextView>(R.id.tvDocumentName)
         val tvDocumentType=itemView.findViewById<TextView>(R.id.tvDocumentType)
         val ivDocumentThumb=itemView.findViewById<ImageView>(R.id.ivDocumentThumb)
+        val ivDelete=itemView.findViewById<ImageView>(R.id.ivDelete)
         val layoutWrapper=itemView.findViewById<LinearLayout>(R.id.layoutWrapper)
     }
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -59,6 +62,9 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
             }
             val bitmap=generateThumbnailFromPDF(documentList[position].documentUri,holder.itemView.context)
             Glide.with(holder.itemView.context).load(bitmap).into(holder.ivDocumentThumb)
+            holder.ivDelete.setOnClickListener {
+                onItemDeleteListener.onItemDelete(documentList[position])
+            }
         } catch (e: Exception) {
             Log.d("mytag","Exception : onBindViewHolder "+e.message)
             Log.d("mytag","SyncLandDocumentsAdapter: ${e.message}",e)
@@ -131,7 +137,6 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>) : RecyclerView.
     fun formatDate(inputDate: String): String {
         val inputFormat = SimpleDateFormat("dd-MM-yyyy hh:mm")
         val outputFormat = SimpleDateFormat("dd-MM-yyyy hh:mm a")
-
         return try {
             val date: Date = inputFormat.parse(inputDate)
             outputFormat.format(date)

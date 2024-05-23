@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,7 @@ import com.sipl.egs.database.dao.DocumentDao
 import com.sipl.egs.database.entity.Document
 import com.sipl.egs.databinding.ActivitySyncLandDocumentsBinding
 import com.sipl.egs.adapters.SyncLandDocumentsAdapter
+import com.sipl.egs.interfaces.OnDocumentItemDeleteListener
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.NoInternetDialog
 import com.sipl.egs.webservice.ApiClient
@@ -34,7 +36,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 
-class SyncLandDocumentsActivity : AppCompatActivity() {
+class SyncLandDocumentsActivity : AppCompatActivity(),OnDocumentItemDeleteListener {
     private lateinit var binding: ActivitySyncLandDocumentsBinding
     private lateinit var appDatabase: AppDatabase
     private lateinit var documentDao: DocumentDao
@@ -50,7 +52,7 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
         val layoutManager = GridLayoutManager(this, 3, RecyclerView.VERTICAL, false)
         binding.recyclerViewSyncLandDocuments.layoutManager = layoutManager
         documentList = ArrayList<Document>()
-        adapter = SyncLandDocumentsAdapter(documentList as ArrayList<Document>)
+        adapter = SyncLandDocumentsAdapter(documentList as ArrayList<Document>,this)
         binding.recyclerViewSyncLandDocuments.adapter = adapter
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = resources.getString(R.string.sync_documents)
@@ -187,13 +189,15 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
 
     private fun updateDocumentList() {
         try {
+            runOnUiThread { dialog.show() }
             CoroutineScope(Dispatchers.IO).launch {
                 documentList = documentDao.getAllDocuments()
                 Log.d("mytag", "=>" + documentList.size)
-                adapter = SyncLandDocumentsAdapter(documentList)
+                adapter = SyncLandDocumentsAdapter(documentList,this@SyncLandDocumentsActivity)
                 withContext(Dispatchers.Main) {
                     binding.recyclerViewSyncLandDocuments.adapter = adapter
                     adapter.notifyDataSetChanged()
+                    runOnUiThread { dialog.dismiss() }
                 }
             }
         } catch (e: Exception) {
@@ -242,5 +246,40 @@ class SyncLandDocumentsActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.d("mytag", "Failed to delete file: ${e.message}")
         }
+    }
+
+    override fun onItemDelete(item: Any) {
+        val document: Document? = item as? Document
+        if (document != null) {
+
+            val builder = AlertDialog.Builder(this@SyncLandDocumentsActivity)
+            builder.setTitle(getString(R.string.delete))
+                .setIcon(R.drawable.ic_delete)
+                .setMessage(getString(R.string.are_you_sure_you_want_to_delete_document))
+                .setPositiveButton(getString(R.string.yes)) { xx, yy ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            documentDao.deleteDocument(document)
+                            val list= mutableListOf<Uri>()
+                            list.add(Uri.parse(document.documentUri))
+                            deleteFilesFromFolder(list)
+                            updateDocumentList()
+                        } catch (e: Exception) {
+                            Log.d("mytag","Exception => $e",e)
+                            e.printStackTrace()
+                        }
+
+                    }
+                }
+                .setNegativeButton(getString(R.string.no), null) // If "No" is clicked, do nothing
+                .show()
+            CoroutineScope(Dispatchers.IO).launch {
+
+            }
+
+        } else {
+            // Handle the case where the object is not a Document
+        }
+
     }
 }

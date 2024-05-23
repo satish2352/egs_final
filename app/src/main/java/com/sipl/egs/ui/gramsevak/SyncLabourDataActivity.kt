@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toFile
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +28,8 @@ import com.sipl.egs.database.entity.Labour
 import com.sipl.egs.database.model.LabourWithAreaNames
 import com.sipl.egs.databinding.ActivitySyncLabourDataBinding
 import com.sipl.egs.adapters.OfflineLabourListAdapter
+import com.sipl.egs.database.entity.Document
+import com.sipl.egs.interfaces.OnDocumentItemDeleteListener
 import com.sipl.egs.model.FamilyDetails
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.NoInternetDialog
@@ -47,7 +50,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Calendar
 
-class SyncLabourDataActivity : AppCompatActivity() {
+class SyncLabourDataActivity : AppCompatActivity(),OnDocumentItemDeleteListener {
     private lateinit var binding:ActivitySyncLabourDataBinding
     private lateinit var database: AppDatabase
     private lateinit var labourDao: LabourDao
@@ -70,7 +73,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
         database= AppDatabase.getDatabase(this)
         labourDao=database.labourDao()
         labourList=ArrayList<LabourWithAreaNames>()
-        adapter= OfflineLabourListAdapter(labourList)
+        adapter= OfflineLabourListAdapter(labourList,this)
         adapter.notifyDataSetChanged()
 
         noInternetDialog= NoInternetDialog(this)
@@ -138,7 +141,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
             }
             withContext(Dispatchers.Main) {
                 dialog.dismiss()
-                adapter= OfflineLabourListAdapter(labourList)
+                adapter= OfflineLabourListAdapter(labourList,this@SyncLabourDataActivity)
                 binding.recyclerViewSyncLabourData.adapter=adapter
                 adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
             }
@@ -160,7 +163,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
                     dialog.dismiss()
-                    adapter= OfflineLabourListAdapter(labourList)
+                    adapter= OfflineLabourListAdapter(labourList,this@SyncLabourDataActivity)
                     binding.recyclerViewSyncLabourData.adapter=adapter
                     adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
                 }
@@ -179,7 +182,7 @@ class SyncLabourDataActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
                     dialog.dismiss()
-                    adapter= OfflineLabourListAdapter(labourList)
+                    adapter= OfflineLabourListAdapter(labourList,this@SyncLabourDataActivity)
                     binding.recyclerViewSyncLabourData.adapter=adapter
                     adapter.notifyDataSetChanged() // Notify the adapter that the data has changed
                 }
@@ -357,6 +360,44 @@ class SyncLabourDataActivity : AppCompatActivity() {
         }
     }
 
+    override fun onItemDelete(item: Any) {
+        val labour: LabourWithAreaNames? = item as? LabourWithAreaNames
+        if (labour != null) {
+            val builder = AlertDialog.Builder(this@SyncLabourDataActivity)
+            builder.setTitle(getString(R.string.delete))
+                .setIcon(R.drawable.ic_delete)
+                .setMessage(getString(R.string.are_you_sure_you_want_to_delete_this_labour))
+                .setPositiveButton(getString(R.string.yes)) { xx, yy ->
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            var labourObj=labour.id?.let { labourDao.getLabourById(it) }
+                            val list= mutableListOf<Uri>()
+                            list.add(Uri.parse(labour.photo))
+                            list.add(Uri.parse(labour.mgnregaIdImage))
+                            list.add(Uri.parse(labour.voterIdImage))
+                            list.add(Uri.parse(labour.aadharImage))
+                            if (labourObj != null) {
+                                labourDao.deleteLabour(labourObj)
+                            }
+                            deleteFilesFromFolder(list)
+                           fetchUserList()
+                        } catch (e: Exception) {
+                            Log.d("mytag","Exception => $e",e)
+                            e.printStackTrace()
+                        }
+
+                    }
+                }
+                .setNegativeButton(getString(R.string.no), null) // If "No" is clicked, do nothing
+                .show()
+            CoroutineScope(Dispatchers.IO).launch {
+
+            }
+
+        } else {
+            Log.d("mytag","Exception => ")
+        }
+    }
 
 
 }
