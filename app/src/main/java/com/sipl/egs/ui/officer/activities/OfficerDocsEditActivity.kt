@@ -1,8 +1,12 @@
 package com.sipl.egs.ui.officer.activities
 
 import android.annotation.SuppressLint
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -26,12 +30,15 @@ import com.sipl.egs.database.dao.RegistrationStatusDao
 import com.sipl.egs.database.entity.DocumentReasons
 import com.sipl.egs.database.entity.RegistrationStatus
 import com.sipl.egs.databinding.ActivityOfficerDocsEditBinding
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.getlabour.HistoryDetailsItem
 import com.sipl.egs.model.apis.labourlist.LabourListModel
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.DownloadUtils
 import com.sipl.egs.utils.FileDownloader
 import com.sipl.egs.utils.NoInternetDialog
+import com.sipl.egs.utils.XFileDownloader
 import com.sipl.egs.webservice.ApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -45,7 +52,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class OfficerDocsEditActivity : AppCompatActivity() {
+class OfficerDocsEditActivity : AppCompatActivity(),OnDownloadDocumentClickListener {
 
     private lateinit var binding: ActivityOfficerDocsEditBinding
     private lateinit var dialog: CustomProgressDialog
@@ -63,6 +70,9 @@ class OfficerDocsEditActivity : AppCompatActivity() {
     val reasonsNames = mutableListOf<String>()
     private var isInternetAvailable = false
     private lateinit var noInternetDialog: NoInternetDialog
+
+    private var downloadId: Long = -1
+    private lateinit var downloadReceiver: BroadcastReceiver
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOfficerDocsEditBinding.inflate(layoutInflater)
@@ -94,90 +104,99 @@ class OfficerDocsEditActivity : AppCompatActivity() {
                     noInternetDialog.showDialog()
                 }
             }) { throwable: Throwable? -> }
-        CoroutineScope(Dispatchers.IO).launch {
-            reasonsList =
-                documentReasonsDao.getAllReasons() as ArrayList<DocumentReasons>;
-            registrationStatusList =
-                registrationStatusDao.getAllRegistrationStatus() as ArrayList<RegistrationStatus>;
-            withContext(Dispatchers.Main) {
-                Log.d("mytag", reasonsList.size.toString())
-                Log.d("mytag", registrationStatusList.size.toString())
-                binding.recyclerViewHistory.adapter = adapter
 
-                for (reason in reasonsList) {
+        try {
+            CoroutineScope(Dispatchers.IO).launch {
+                reasonsList =
+                    documentReasonsDao.getAllReasons() as ArrayList<DocumentReasons>;
+                registrationStatusList =
+                    registrationStatusDao.getAllRegistrationStatus() as ArrayList<RegistrationStatus>;
+                withContext(Dispatchers.Main) {
+                    Log.d("mytag", reasonsList.size.toString())
+                    Log.d("mytag", registrationStatusList.size.toString())
+                    binding.recyclerViewHistory.adapter = adapter
 
-                    reasonsNames.add(reason.reason_name)
-                    Log.d("mytag", reason.reason_name)
+                    for (reason in reasonsList) {
+
+                        reasonsNames.add(reason.reason_name)
+                        Log.d("mytag", reason.reason_name)
+                    }
+                    for (status in registrationStatusList) {
+
+                        statusNames.add(status.status_name)
+                        Log.d("mytag", status.status_name)
+                    }
+                    //registrationStatusNames.add("Approved")
+                    //registrationStatusNames.add("Not Approved")
+                    val reasonsAdapter = ArrayAdapter(
+                        this@OfficerDocsEditActivity,
+                        android.R.layout.simple_list_item_1,
+                        reasonsNames
+                    )
+                    val statusAdapter = ArrayAdapter(
+                        this@OfficerDocsEditActivity,
+                        android.R.layout.simple_list_item_1,
+                        statusNames
+                    )
+                    binding.actSelectReason.visibility = View.GONE
+                    binding.etRemarks.visibility = View.GONE
+                    binding.etRemarkslayout.visibility = View.GONE
+                    binding.tvReason.visibility = View.GONE
+
+                    binding.actSelectReason.setAdapter(reasonsAdapter)
+                    binding.actSelectDocumentStatus.setAdapter(statusAdapter)
                 }
-                for (status in registrationStatusList) {
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${e.message}",e)
+        }
 
-                    statusNames.add(status.status_name)
-                    Log.d("mytag", status.status_name)
+        try {
+            binding.actSelectDocumentStatus.setOnFocusChangeListener { v, hasFocus ->
+                binding.actSelectDocumentStatus.showDropDown()
+            }
+            binding.actSelectDocumentStatus.setOnClickListener {
+                binding.actSelectDocumentStatus.showDropDown()
+            }
+            binding.actSelectDocumentStatus.setOnItemClickListener { parent, view, position, id ->
+                selectedStatusId = registrationStatusList[position].id.toString()
+                if (registrationStatusList[position].id == 2) {
+                    //approved
+                    binding.actSelectReason.visibility = View.GONE
+                    binding.etRemarks.visibility = View.GONE
+                    binding.etRemarkslayout.visibility = View.GONE
+                    binding.tvReason.visibility = View.GONE
+
+                } else if (registrationStatusList[position].id == 3) {
+                    // not approved
+                    binding.tvReason.visibility = View.VISIBLE
+                    binding.actSelectReason.visibility = View.VISIBLE
+                } else if (registrationStatusList[position].id == 4) {
+                    // rejected
+                    binding.tvReason.visibility = View.GONE
+                    binding.actSelectReason.visibility = View.GONE
+                    binding.etRemarks.visibility = View.GONE
+                    binding.etRemarkslayout.visibility = View.GONE
                 }
-                //registrationStatusNames.add("Approved")
-                //registrationStatusNames.add("Not Approved")
-                val reasonsAdapter = ArrayAdapter(
-                    this@OfficerDocsEditActivity,
-                    android.R.layout.simple_list_item_1,
-                    reasonsNames
-                )
-                val statusAdapter = ArrayAdapter(
-                    this@OfficerDocsEditActivity,
-                    android.R.layout.simple_list_item_1,
-                    statusNames
-                )
-                binding.actSelectReason.visibility = View.GONE
-                binding.etRemarks.visibility = View.GONE
-                binding.etRemarkslayout.visibility = View.GONE
-                binding.tvReason.visibility = View.GONE
-
-                binding.actSelectReason.setAdapter(reasonsAdapter)
-                binding.actSelectDocumentStatus.setAdapter(statusAdapter)
             }
-        }
-
-        binding.actSelectDocumentStatus.setOnFocusChangeListener { v, hasFocus ->
-            binding.actSelectDocumentStatus.showDropDown()
-        }
-        binding.actSelectDocumentStatus.setOnClickListener {
-            binding.actSelectDocumentStatus.showDropDown()
-        }
-        binding.actSelectDocumentStatus.setOnItemClickListener { parent, view, position, id ->
-            selectedStatusId = registrationStatusList[position].id.toString()
-            if (registrationStatusList[position].id == 2) {
-                //approved
-                binding.actSelectReason.visibility = View.GONE
-                binding.etRemarks.visibility = View.GONE
-                binding.etRemarkslayout.visibility = View.GONE
-                binding.tvReason.visibility = View.GONE
-
-            } else if (registrationStatusList[position].id == 3) {
-                // not approved
-                binding.tvReason.visibility = View.VISIBLE
-                binding.actSelectReason.visibility = View.VISIBLE
-            } else if (registrationStatusList[position].id == 4) {
-                // rejected
-                binding.tvReason.visibility = View.GONE
-                binding.actSelectReason.visibility = View.GONE
-                binding.etRemarks.visibility = View.GONE
-                binding.etRemarkslayout.visibility = View.GONE
+            binding.actSelectReason.setOnFocusChangeListener { v, hasFocus ->
+                binding.actSelectReason.showDropDown()
             }
-        }
-        binding.actSelectReason.setOnFocusChangeListener { v, hasFocus ->
-            binding.actSelectReason.showDropDown()
-        }
-        binding.actSelectReason.setOnClickListener {
-            binding.actSelectReason.showDropDown()
-        }
-        binding.actSelectReason.setOnItemClickListener { parent, view, position, id ->
-            selectedReasonsId = reasonsList[position].id.toString()
-            if (selectedReasonsId.equals("1001")) {
-                binding.etRemarks.visibility = View.VISIBLE
-                binding.etRemarkslayout.visibility = View.VISIBLE
-            } else {
-                binding.etRemarks.visibility = View.GONE
-                binding.etRemarkslayout.visibility = View.GONE
+            binding.actSelectReason.setOnClickListener {
+                binding.actSelectReason.showDropDown()
             }
+            binding.actSelectReason.setOnItemClickListener { parent, view, position, id ->
+                selectedReasonsId = reasonsList[position].id.toString()
+                if (selectedReasonsId.equals("1001")) {
+                    binding.etRemarks.visibility = View.VISIBLE
+                    binding.etRemarkslayout.visibility = View.VISIBLE
+                } else {
+                    binding.etRemarks.visibility = View.GONE
+                    binding.etRemarkslayout.visibility = View.GONE
+                }
+            }
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${e.message}",e)
         }
 
         binding.btnSubmit.setOnClickListener {
@@ -192,6 +211,26 @@ class OfficerDocsEditActivity : AppCompatActivity() {
             }
         }
 
+        try {
+            downloadReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    val action = intent.action
+                    if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == action) {
+                        val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        if (id == downloadId) {
+                            DownloadUtils.handleDownloadCompletion(this@OfficerDocsEditActivity,id,dialog)
+                        }
+                    }
+                }
+            }
+            registerReceiver(downloadReceiver,
+                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                AppCompatActivity.RECEIVER_EXPORTED)
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${e.message}",e)
+
+        }
+
     }
 
     override fun onResume() {
@@ -201,59 +240,70 @@ class OfficerDocsEditActivity : AppCompatActivity() {
 
     private fun validateFields(): Boolean {
         var list = mutableListOf<Boolean>()
-        if (binding.actSelectDocumentStatus.enoughToFilter()) {
-            list.add(true)
-            binding.actSelectDocumentStatus.error = null
-        } else {
-            binding.actSelectDocumentStatus.error = resources.getString(R.string.select_status)
-            list.add(false)
-        }
-        if (selectedStatusId.equals("3")) {
-            if (binding.actSelectReason.enoughToFilter()) {
+
+        try {
+            if (binding.actSelectDocumentStatus.enoughToFilter()) {
                 list.add(true)
-                binding.actSelectReason.error = null
+                binding.actSelectDocumentStatus.error = null
             } else {
-                binding.actSelectReason.error = resources.getString(R.string.select_reason)
+                binding.actSelectDocumentStatus.error = resources.getString(R.string.select_status)
                 list.add(false)
             }
-            if (binding.etRemarks.isVisible) {
-
-                if (!binding.etRemarks.text.isNullOrEmpty() && binding.etRemarks.text.toString().length > 0) {
+            if (selectedStatusId.equals("3")) {
+                if (binding.actSelectReason.enoughToFilter()) {
                     list.add(true)
-                    binding.etRemarks.error = null
-                    remarks = binding.etRemarks.text.toString()
+                    binding.actSelectReason.error = null
                 } else {
-                    binding.etRemarks.error = resources.getString(R.string.add_remarks)
-                    remarks = ""
+                    binding.actSelectReason.error = resources.getString(R.string.select_reason)
                     list.add(false)
                 }
+                if (binding.etRemarks.isVisible) {
+
+                    if (!binding.etRemarks.text.isNullOrEmpty() && binding.etRemarks.text.toString().length > 0) {
+                        list.add(true)
+                        binding.etRemarks.error = null
+                        remarks = binding.etRemarks.text.toString()
+                    } else {
+                        binding.etRemarks.error = resources.getString(R.string.add_remarks)
+                        remarks = ""
+                        list.add(false)
+                    }
+                }
             }
+            return !list.contains(false)
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${e.message}",e)
+            return false
         }
-        return !list.contains(false)
     }
 
     private fun showConfirmationDialog(status: String) {
-        val alertDialogBuilder = AlertDialog.Builder(this@OfficerDocsEditActivity)
+        try {
+            val alertDialogBuilder = AlertDialog.Builder(this@OfficerDocsEditActivity)
 
-        // Set the dialog title, message, and buttons
-        alertDialogBuilder.setTitle("$status")
-        alertDialogBuilder.setMessage("Please confirm your action")
+            // Set the dialog title, message, and buttons
+            alertDialogBuilder.setTitle("$status")
+            alertDialogBuilder.setMessage("Please confirm your action")
 
-        alertDialogBuilder.setPositiveButton("Yes") { dialog, which ->
-            if (selectedStatusId.equals("2")) {
-                sendApprovedToServer()
-            } else if (selectedStatusId.equals("3")) {
-                sendNotApprovedToServer()
+            alertDialogBuilder.setPositiveButton("Yes") { dialog, which ->
+                if (selectedStatusId.equals("2")) {
+                    sendApprovedToServer()
+                } else if (selectedStatusId.equals("3")) {
+                    sendNotApprovedToServer()
+                }
+                dialog.dismiss()
             }
-            dialog.dismiss()
-        }
 
-        alertDialogBuilder.setNegativeButton(resources.getString(R.string.no)) { dialog, which ->
+            alertDialogBuilder.setNegativeButton(resources.getString(R.string.no)) { dialog, which ->
 
-            dialog.dismiss()
+                dialog.dismiss()
+            }
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${e.message}",e)
+
         }
-        val alertDialog = alertDialogBuilder.create()
-        alertDialog.show()
     }
 
     private fun getDocumentDetailsFromServer(gram_document_id: String) {
@@ -349,7 +399,9 @@ class OfficerDocsEditActivity : AppCompatActivity() {
         } catch (e: Exception) {
             dialog.dismiss()
             e.printStackTrace()
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${e.message}",e)
         } catch (t: Throwable) {
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${t.message}",t)
 
         }
     }
@@ -479,5 +531,16 @@ class OfficerDocsEditActivity : AppCompatActivity() {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+    override fun onDownloadDocumentClick(url: String, fileName: String) {
+
+        try {
+            downloadId = XFileDownloader.downloadFile(this@OfficerDocsEditActivity, url, fileName)
+            Log.d("mytag","$downloadId")
+            dialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsEditActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()
+        }
     }
 }

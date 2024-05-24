@@ -2,9 +2,12 @@ package com.sipl.egs.ui.gramsevak.documents
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -56,11 +59,14 @@ import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.adapters.RegistrationStatusHistoryAdapter
 import com.sipl.egs.databinding.ActivityDocumentUpdateBinding
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.getlabour.HistoryDetailsItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.DownloadUtils
 import com.sipl.egs.utils.FileDownloader
 import com.sipl.egs.utils.NoInternetDialog
+import com.sipl.egs.utils.XFileDownloader
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.FileInfo
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -84,7 +90,7 @@ import java.util.Date
 import java.util.Hashtable
 import java.util.Locale
 
-class DocumentDetailsActivity : AppCompatActivity() {
+class DocumentDetailsActivity : AppCompatActivity(),OnDownloadDocumentClickListener {
     private lateinit var binding:ActivityDocumentUpdateBinding
     private lateinit var scannerLauncher: ActivityResultLauncher<IntentSenderRequest>
     private lateinit var scanner: GmsDocumentScanner
@@ -108,6 +114,9 @@ class DocumentDetailsActivity : AppCompatActivity() {
 
     private var isInternetAvailable=false
     private lateinit var noInternetDialog: NoInternetDialog
+
+    private var downloadId: Long = -1
+    private lateinit var downloadReceiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -193,11 +202,7 @@ class DocumentDetailsActivity : AppCompatActivity() {
             }else{noInternetDialog.showDialog()}
 
         }
-        binding.ivDownloadDocument.setOnClickListener {
-            if(isInternetAvailable){
-                FileDownloader.downloadFile(this,pdfUrl,prevFileName)
-            }else{noInternetDialog.showDialog()}
-        }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (!isLocationEnabled()) {
             showEnableLocationDialog()
@@ -218,6 +223,28 @@ class DocumentDetailsActivity : AppCompatActivity() {
             }else{noInternetDialog.showDialog()}
 
 
+        }
+
+        downloadReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                val action = intent.action
+                if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == action) {
+                    val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                    if (id == downloadId) {
+                        DownloadUtils.handleDownloadCompletion(this@DocumentDetailsActivity,id,dialog)
+                    }
+                }
+            }
+        }
+        registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+            AppCompatActivity.RECEIVER_EXPORTED)
+        binding.ivDownloadDocument.setOnClickListener {
+            if(isInternetAvailable){
+                //FileDownloader.downloadFile(this,pdfUrl,prevFileName)
+                downloadId=XFileDownloader.downloadFile(this,pdfUrl,prevFileName)
+
+
+            }else{noInternetDialog.showDialog()}
         }
     }
     private fun showEnableLocationDialog() {
@@ -735,5 +762,16 @@ class DocumentDetailsActivity : AppCompatActivity() {
     private fun String.toFile(): File? {
         val uri = Uri.parse(this)
         return uri.toFile()
+    }
+    override fun onDownloadDocumentClick(url: String, fileName: String) {
+
+        try {
+            downloadId = XFileDownloader.downloadFile(this@DocumentDetailsActivity, url, fileName)
+            Log.d("mytag","$downloadId")
+            dialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag","DocumentDetailsActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()
+        }
     }
 }

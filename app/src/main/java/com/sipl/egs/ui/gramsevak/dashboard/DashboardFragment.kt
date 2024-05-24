@@ -150,6 +150,8 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                 childFragmentManager.findFragmentById(R.id.map_container) as SupportMapFragment
             mapFragment.getMapAsync(this)
             binding.layoutByProjectId.setOnClickListener {
+                binding.layoutByProjectId.backgroundTintList = resources.getColorStateList(R.color.appBlue)
+                binding.layoutByLabourId.backgroundTintList = resources.getColorStateList(R.color.lightblue)
                 if(isInternetAvailable){
                     if(!binding.etInput.text.isNullOrEmpty())
                     {
@@ -168,10 +170,16 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                         requireActivity(), requireActivity().resources.getString(R.string.internet_is_not_available_please_check), Toast.LENGTH_LONG
                     ).show()
                 }
-
-
             }
+
+
+
+            binding.layoutByLabourId.backgroundTintList = resources.getColorStateList(R.color.appBlue)
+            binding.layoutByProjectId.backgroundTintList = resources.getColorStateList(R.color.lightblue)
+
             binding.layoutByLabourId.setOnClickListener {
+                binding.layoutByLabourId.backgroundTintList = resources.getColorStateList(R.color.appBlue)
+                binding.layoutByProjectId.backgroundTintList = resources.getColorStateList(R.color.lightblue)
                 if(isInternetAvailable){
                     if(!binding.etInput.text.isNullOrEmpty())
                     {
@@ -764,7 +772,7 @@ class DashboardFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClic
                     requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                map.isMyLocationEnabled = true
+                map.isMyLocationEnabled = false
 
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                         location?.let {

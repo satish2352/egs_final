@@ -364,10 +364,10 @@ class LabourRegistrationEdit1 : AppCompatActivity() {
             binding.etLandLine.setText(labour.landline)
             binding.etMgnregaIdNumber.setText(labour.mgnregaId)
             genderId=prevSelectedGender.id.toString()
-            villageId=prevSelectedVillage.id.toString()
+            villageId=prevSelectedVillage.location_id.toString()
             skillId=prevSelectedSkill.id.toString()
-            districtId=prevselectedDistrict.id.toString()
-            talukaId=prevSelectedTaluka.id.toString()
+            districtId=prevselectedDistrict.location_id.toString()
+            talukaId=prevSelectedTaluka.location_id.toString()
             binding.actGender.setOnFocusChangeListener { abaad, asd ->
                 binding.actGender.showDropDown()
             }

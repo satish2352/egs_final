@@ -1,7 +1,13 @@
 package com.sipl.egs.ui.officer.fragments
 
 import android.app.DatePickerDialog
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +19,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.registerReceiver
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -22,11 +32,13 @@ import com.sipl.egs.database.AppDatabase
 import com.sipl.egs.database.dao.AreaDao
 import com.sipl.egs.database.entity.AreaItem
 import com.sipl.egs.databinding.FragmentOfficerUploadedDocumentsBinding
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.uploadeddocs.UploadedDocsModel
 import com.sipl.egs.model.apis.uploadeddocs.UploadedDocument
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.MySharedPref
+import com.sipl.egs.utils.XFileDownloader
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +48,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -75,6 +88,9 @@ class OfficerUploadedDocumentsFragment : Fragment(), MyPaginationAdapter.OnPageN
     private lateinit var paginationAdapter: MyPaginationAdapter
     private var currentPage="1"
     private lateinit var paginationLayoutManager : LinearLayoutManager
+
+
+    private lateinit var onDownloadDocumentClickListener: OnDownloadDocumentClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -291,7 +307,7 @@ class OfficerUploadedDocumentsFragment : Fragment(), MyPaginationAdapter.OnPageN
                     dialog.dismiss()
                     if(response.isSuccessful)
                     { listDocuments.clear()
-                        adapter= OfficerUploadedDocsAdapter(listDocuments)
+                        adapter= OfficerUploadedDocsAdapter(listDocuments,onDownloadDocumentClickListener)
                         binding.recyclerView.adapter=adapter
                         adapter.notifyDataSetChanged()
                         if(response.body()?.status.equals("true")){
@@ -300,7 +316,7 @@ class OfficerUploadedDocumentsFragment : Fragment(), MyPaginationAdapter.OnPageN
                                 if(listDocuments.size<1){
                                     Toast.makeText(requireActivity(), "No records found", Toast.LENGTH_SHORT).show()
                                 }
-                                adapter= OfficerUploadedDocsAdapter(listDocuments)
+                                adapter= OfficerUploadedDocsAdapter(listDocuments,onDownloadDocumentClickListener)
                                 binding.recyclerView.adapter=adapter
                                 adapter.notifyDataSetChanged()
 
@@ -357,4 +373,14 @@ class OfficerUploadedDocumentsFragment : Fragment(), MyPaginationAdapter.OnPageN
         getDocumentsList()
 
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnDownloadDocumentClickListener) {
+            onDownloadDocumentClickListener = context
+        } else {
+            throw RuntimeException("$context must implement OnItemClickListener")
+        }
+    }
+
 }

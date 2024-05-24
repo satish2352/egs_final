@@ -1,10 +1,16 @@
 package com.sipl.egs.ui.officer
 
 import android.Manifest
+import android.app.DownloadManager
+import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -13,9 +19,9 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -26,19 +32,24 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.permissionx.guolindev.PermissionX
 import com.sipl.egs.R
 import com.sipl.egs.databinding.ActivityOfficerMainBinding
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.interfaces.OnLocationStateListener
 import com.sipl.egs.ui.activities.start.LoginActivity
 import com.sipl.egs.ui.registration.ProfileActivity
+import com.sipl.egs.utils.CustomProgressDialog
 import com.sipl.egs.utils.MySharedPref
 import com.sipl.egs.utils.NoInternetDialog
+import com.sipl.egs.utils.XFileDownloader
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.io.File
 
 class OfficerMainActivity : AppCompatActivity(),
-    BottomNavigationView.OnNavigationItemSelectedListener,OnLocationStateListener {
+    BottomNavigationView.OnNavigationItemSelectedListener,OnLocationStateListener,OnDownloadDocumentClickListener {
 
     private lateinit var binding: ActivityOfficerMainBinding
     private lateinit var navController: NavController
@@ -48,10 +59,15 @@ class OfficerMainActivity : AppCompatActivity(),
     private lateinit var builder:AlertDialog.Builder
     private lateinit var dialogEnableLocation:AlertDialog
 
+    private var downloadId: Long = -1
+    private lateinit var downloadReceiver: BroadcastReceiver
+    private lateinit var progressDialog: CustomProgressDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOfficerMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        progressDialog= CustomProgressDialog(this)
         try {
             val navView: BottomNavigationView = binding.navView
             navController = findNavController(R.id.nav_host_fragment_activity_officer_main)
@@ -123,6 +139,23 @@ class OfficerMainActivity : AppCompatActivity(),
                 requestLocationUpdates()
                 dialogEnableLocation.dismiss()
             }
+
+            downloadReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    val action = intent.action
+                    if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == action) {
+                        Log.d("mytag","onReceive : Complete")
+                        val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        if (id == downloadId) {
+                            handleDownloadCompletion(id)
+                        }
+                    }
+                }
+            }
+
+            // Register the BroadcastReceiver
+            registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                AppCompatActivity.RECEIVER_EXPORTED)
         } catch (e: Exception) {
             Log.d("mytag","Exception "+e.message,e);
             e.printStackTrace()
@@ -284,5 +317,81 @@ class OfficerMainActivity : AppCompatActivity(),
         }else{
             dialogEnableLocation.dismiss()
         }
+    }
+    private fun handleDownloadCompletion(downloadId: Long) {
+        try {
+            val downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val query = DownloadManager.Query().setFilterById(downloadId)
+            val cursor: Cursor = downloadManager.query(query)
+            if (cursor.moveToFirst()) {
+                val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
+                if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                    // File download successful
+                    val uriString = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI))
+                    val uri = Uri.parse(uriString)
+                    val file = File(uri.path!!)
+                    val fileUri = FileProvider.getUriForFile(this, "${packageName}.provider", file)
+
+                    // Example action: open the downloaded file
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(fileUri, "application/pdf")
+                        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NO_HISTORY
+                        val chooserIntent = Intent.createChooser(intent, "Open PDF with")
+                        startActivity(chooserIntent)
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(this@OfficerMainActivity,resources.getString(R.string.no_app_available_to_view_pdf),Toast.LENGTH_LONG).show()
+                    }catch (e:Exception){
+                        Toast.makeText(this@OfficerMainActivity,resources.getString(R.string.error_while_opening_pdf),Toast.LENGTH_LONG).show()
+                    }
+                } else {
+                    val reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON))
+                    showDownloadFailedDialog(reason)
+                }
+            }
+            progressDialog.dismiss()
+            cursor.close()
+        } catch (e: Exception) {
+            Log.d("mytag","ViewUploadedDocsActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()
+        }
+    }
+    private fun showDownloadFailedDialog(reason: Int) {
+        try {
+            val message = when (reason) {
+                DownloadManager.ERROR_CANNOT_RESUME -> "Download cannot resume."
+                DownloadManager.ERROR_DEVICE_NOT_FOUND -> "Device not found."
+                DownloadManager.ERROR_FILE_ALREADY_EXISTS -> "File already exists."
+                DownloadManager.ERROR_FILE_ERROR -> "File error."
+                DownloadManager.ERROR_HTTP_DATA_ERROR -> "HTTP data error."
+                DownloadManager.ERROR_INSUFFICIENT_SPACE -> "Insufficient space."
+                DownloadManager.ERROR_TOO_MANY_REDIRECTS -> "Too many redirects."
+                DownloadManager.ERROR_UNHANDLED_HTTP_CODE -> "Unhandled HTTP code."
+                DownloadManager.ERROR_UNKNOWN -> "Unknown error."
+                else -> "Download failed."
+            }
+            AlertDialog.Builder(this@OfficerMainActivity)
+                .setTitle("Download Failed")
+                .setMessage(message)
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerMainActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()        }
+    }
+
+
+    override fun onDownloadDocumentClick(url: String,fileName:String) {
+        try {
+            downloadId = XFileDownloader.downloadFile(this@OfficerMainActivity, url, fileName)
+            Log.d("mytag","$downloadId")
+            progressDialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerMainActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()
+        }
+
     }
 }

@@ -15,12 +15,13 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.sipl.egs.R
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
 import com.sipl.egs.utils.FileDownloader
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class OfficerDocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
+class OfficerDocsNotApprovedAdapter  (var list:MutableList<DocumentItem>,var onDownloadDocumentClickListener: OnDownloadDocumentClickListener):
     RecyclerView.Adapter<OfficerDocsNotApprovedAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -70,7 +71,8 @@ class OfficerDocsNotApprovedAdapter  (var list:MutableList<DocumentItem>):
                 }
             }
             holder.ivDownloadDocument.setOnClickListener {
-                FileDownloader.downloadFile(holder.itemView.context,list.get(position).document_pdf,list.get(position).document_name)
+                onDownloadDocumentClickListener.onDownloadDocumentClick(list.get(position).document_pdf,list.get(position).document_name)
+                //FileDownloader.downloadFile(holder.itemView.context,list.get(position).document_pdf,list.get(position).document_name)
             }
         } catch (e: Exception) {
             Log.d("mytag","OfficerDocsNotApprovedAdapter: ${e.message}",e)

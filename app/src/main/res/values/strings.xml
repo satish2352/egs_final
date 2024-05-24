@@ -147,18 +147,18 @@
     <string name="labour_added_successfully">Labour added successfully</string>
     <string name="labour_not_added_please_try_again">Labour not added please try again</string>
     <string name="sync_documents">Sync Documents</string>
-    <string name="please_enter_mgnrega_id">Please enter MGNREGA Id</string>
-    <string name="please_enter_project_name">Please enter project name</string>
+    <string name="please_enter_mgnrega_id">Please Enter  MGNREGA Id</string>
+    <string name="please_enter_project_name">Please Enter project name</string>
     <string name="please_check_internet_connection">Please check internet connection</string>
     <string name="image_capture_failed">Image Capture Failed Try Again</string>
     <string name="unknown_request_code">Unknown Request Code</string>
     <string name="numdigits">0123456789</string>
     <string name="enter_valid_landline_number">Enter valid 11-digit landline Number</string>
     <string name="labour_upload_failed">Labour upload failed</string>
-    <string name="search_by_project_id_mgnrega_id">Search By Project Id / MGNREGA Id</string>
+    <string name="search_by_project_id_mgnrega_id">Project Name / MGNREGA Id</string>
     <string name="resubmitted_docs">Re-submitted Documents</string>
     <string name="approved_documents">Approved Documents</string>
-    <string name="resubmitted_labours">Re-submitted Labours</string>
+    <string name="resubmitted_labours">Re-Submitted Labours</string>
     <string name="approved_labours">Approved Labours</string>
     <string name="sent_for_approval_labours">Labour Sent For Approval</string>
     <string name="not_approved_labours">Not Approved Labours</string>
@@ -198,4 +198,7 @@
     <string name="delete">Delete</string>
     <string name="are_you_sure_you_want_to_delete_document">Are you sure you want to delete document ?</string>
     <string name="are_you_sure_you_want_to_delete_this_labour">Are you sure you want to delete this labour ?</string>
+    <string name="project">Project</string>
+    <string name="no_app_available_to_view_pdf">No app available to view PDF</string>
+    <string name="error_while_opening_pdf">Unable to open pdf</string>
 </resources>

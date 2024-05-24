@@ -27,13 +27,45 @@
             android:imeOptions="actionDone"
             android:background="@drawable/rounded_background"
             android:id="@+id/etInput"
-            android:textSize="11dp"
+            android:textSize="11sp"
+            android:paddingRight="5dp"
+            android:drawableEnd="@drawable/ic_search1"
             android:hint="@string/search_by_project_id_mgnrega_id"
-            android:paddingLeft="16dp"
+            android:paddingLeft="5dp"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="48dp"></AutoCompleteTextView>
+
+        <com.google.android.material.button.MaterialButtonToggleGroup
+            android:layout_width="wrap_content"
+            app:singleSelection="true"
+            android:layout_height="wrap_content">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/layoutByProjectId"
+                app:strokeColor="@color/appBlue"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:text="@string/project"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
+                android:paddingLeft="0dp"
+                android:paddingRight="0dp"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></com.google.android.material.button.MaterialButton>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/layoutByLabourId"
+                app:strokeColor="@color/appBlue"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:text="@string/mgnrega_id"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:foregroundTint="@color/appBlue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></com.google.android.material.button.MaterialButton>
+        </com.google.android.material.button.MaterialButtonToggleGroup>
         <LinearLayout
+            android:visibility="gone"
             android:layout_marginLeft="16dp"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
@@ -47,7 +79,7 @@
                 android:background="@drawable/rounded_backgroud_blue"
                 android:orientation="horizontal">
                 <LinearLayout
-                    android:id="@+id/layoutByProjectId"
+                    android:id="@+id/layoutByProjectId1"
                     android:background="#4529C9"
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"
@@ -82,7 +114,7 @@
                 android:background="@drawable/rounded_backgroud_blue"
                 android:orientation="horizontal">
                 <LinearLayout
-                    android:id="@+id/layoutByLabourId"
+                    android:id="@+id/layoutByLabourId1"
                     android:background="#4529C9"
                     android:layout_gravity="center"
                     android:layout_width="wrap_content"

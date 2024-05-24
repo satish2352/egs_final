@@ -151,20 +151,24 @@ class SyncLandDocumentsActivity : AppCompatActivity(),OnDocumentItemDeleteListen
                             updateDocumentList()
                         } else {
                             updateDocumentList()
+                            runOnUiThread {
+                                Toast.makeText(
+                                    this@SyncLandDocumentsActivity,
+                                    resources.getString(R.string.response_unsuccessfull),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    } else {
+                        updateDocumentList()
+                        Log.d("mytag", "Document upload failed  " + document.id)
+                        runOnUiThread {
                             Toast.makeText(
                                 this@SyncLandDocumentsActivity,
                                 resources.getString(R.string.response_unsuccessfull),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
-                    } else {
-                        updateDocumentList()
-                        Log.d("mytag", "Document upload failed  " + document.id)
-                        Toast.makeText(
-                            this@SyncLandDocumentsActivity,
-                            resources.getString(R.string.response_unsuccessfull),
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
                 dialog.dismiss()
@@ -172,11 +176,13 @@ class SyncLandDocumentsActivity : AppCompatActivity(),OnDocumentItemDeleteListen
                 updateDocumentList()
                 dialog.dismiss()
                 Log.d("mytag", "Upload Document Online Exception " + e.message)
-                Toast.makeText(
-                    this@SyncLandDocumentsActivity,
-                    resources.getString(R.string.error_occured_during_api_call),
-                    Toast.LENGTH_SHORT
-                ).show()
+                runOnUiThread {
+                    Toast.makeText(
+                        this@SyncLandDocumentsActivity,
+                        resources.getString(R.string.error_occured_during_api_call),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
 

@@ -11,12 +11,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sipl.egs.R
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.uploadeddocs.UploadedDocument
 import com.sipl.egs.utils.FileDownloader
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : RecyclerView.Adapter<UploadedPdfListAdapter.ViewHolder>() {
+class UploadedPdfListAdapter(var documentList:List<UploadedDocument>,var onDownloadDocumentClickListener: OnDownloadDocumentClickListener) : RecyclerView.Adapter<UploadedPdfListAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
         val tvDownload=itemView.findViewById<TextView>(R.id.tvDownload)
         val tvDocumentDate=itemView.findViewById<TextView>(R.id.tvDocumentDate)
@@ -42,7 +43,8 @@ class UploadedPdfListAdapter(var documentList:List<UploadedDocument>) : Recycler
             holder.tvDocumentDate.text= documentList[position]?.updated_at?.let { formatDate(it) }
             holder.tvDocumentType.setText(documentList.get(position).document_type_name)
             holder.tvDownload.setOnClickListener {
-                FileDownloader.downloadFile(holder.itemView.context,documentList.get(position).document_pdf,documentList.get(position).document_name)
+                onDownloadDocumentClickListener.onDownloadDocumentClick(documentList.get(position).document_pdf,documentList.get(position).document_name)
+                //FileDownloader.downloadFile(holder.itemView.context,documentList.get(position).document_pdf,documentList.get(position).document_name)
                 Log.d("mytag","UploadedPdfListAdapter=>"+documentList.get(position).document_pdf)
             }
         } catch (e: Exception) {

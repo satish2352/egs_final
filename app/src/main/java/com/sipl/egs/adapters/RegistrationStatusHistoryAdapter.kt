@@ -41,8 +41,8 @@ class RegistrationStatusHistoryAdapter(var list:ArrayList<HistoryDetailsItem>):R
             if(!list[position].other_remark.equals("null"))
             {
                 holder.tvRemark.text=list[position].other_remark
-                holder.tvRemark.visibility=View.VISIBLE
-                holder.tvLabelRemarks.visibility=View.VISIBLE
+                holder.tvRemark.visibility=View.GONE
+                holder.tvLabelRemarks.visibility=View.GONE
             }
             if(list[position].other_remark==null){
 

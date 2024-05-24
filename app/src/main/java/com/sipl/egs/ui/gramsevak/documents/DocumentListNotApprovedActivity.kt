@@ -1,5 +1,10 @@
 package com.sipl.egs.ui.gramsevak.documents
 
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,11 +17,14 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.adapters.DocsNotApprovedAdapter
 import com.sipl.egs.databinding.ActivityDocumentListNotApprovedBinding
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.DownloadUtils
 import com.sipl.egs.utils.NoInternetDialog
+import com.sipl.egs.utils.XFileDownloader
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,7 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class DocumentListNotApprovedActivity : AppCompatActivity(),
-    MyPaginationAdapter.OnPageNumberClickListener {
+    MyPaginationAdapter.OnPageNumberClickListener,OnDownloadDocumentClickListener {
     private lateinit var binding:ActivityDocumentListNotApprovedBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
@@ -39,6 +47,9 @@ class DocumentListNotApprovedActivity : AppCompatActivity(),
     private lateinit var paginationLayoutManager : LinearLayoutManager
     private var isInternetAvailable=false
     private lateinit var noInternetDialog: NoInternetDialog
+    private var downloadId: Long = -1
+    private lateinit var downloadReceiver: BroadcastReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDocumentListNotApprovedBinding.inflate(layoutInflater)
@@ -49,7 +60,7 @@ class DocumentListNotApprovedActivity : AppCompatActivity(),
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()
-            adapter = DocsNotApprovedAdapter(documentList)
+            adapter = DocsNotApprovedAdapter(documentList,this)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -77,6 +88,21 @@ class DocumentListNotApprovedActivity : AppCompatActivity(),
                         noInternetDialog.showDialog()
                     }
                 }) { throwable: Throwable? -> }
+
+            downloadReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    val action = intent.action
+                    if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == action) {
+                        val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        if (id == downloadId) {
+                            DownloadUtils.handleDownloadCompletion(this@DocumentListNotApprovedActivity,id,dialog)
+                        }
+                    }
+                }
+            }
+            registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                AppCompatActivity.RECEIVER_EXPORTED)
+
         } catch (e: Exception) {
             Log.d("mytag","@DocumentListNotApprovedActivity : onCreate : Exception => " + e.message)
             e.printStackTrace()
@@ -101,7 +127,7 @@ class DocumentListNotApprovedActivity : AppCompatActivity(),
                             if (!response?.body()?.data.isNullOrEmpty()) {
                                 documentList =
                                     (response?.body()?.data as MutableList<DocumentItem>?)!!
-                                adapter = DocsNotApprovedAdapter(documentList)
+                                adapter = DocsNotApprovedAdapter(documentList,this@DocumentListNotApprovedActivity)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
 
@@ -113,7 +139,7 @@ class DocumentListNotApprovedActivity : AppCompatActivity(),
                             } else {
                                 documentList =
                                     (response?.body()?.data as MutableList<DocumentItem>?)!!
-                                adapter = DocsNotApprovedAdapter(documentList)
+                                adapter = DocsNotApprovedAdapter(documentList,this@DocumentListNotApprovedActivity)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
 
@@ -181,5 +207,16 @@ class DocumentListNotApprovedActivity : AppCompatActivity(),
             Toast.makeText(this@DocumentListNotApprovedActivity,resources.getString(R.string.internet_is_not_available_please_check),Toast.LENGTH_SHORT).show()
         }
 
+    }
+    override fun onDownloadDocumentClick(url: String, fileName: String) {
+
+        try {
+            downloadId = XFileDownloader.downloadFile(this@DocumentListNotApprovedActivity, url, fileName)
+            Log.d("mytag","$downloadId")
+            dialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag","DocumentListNotApprovedActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()
+        }
     }
 }

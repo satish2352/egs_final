@@ -1,5 +1,10 @@
 package com.sipl.egs.ui.gramsevak.documents
 
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,11 +17,14 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.adapters.DocsSentForApprovalAdapter
 import com.sipl.egs.databinding.ActivityDocumentReSubmittedBinding
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.DownloadUtils
 import com.sipl.egs.utils.NoInternetDialog
+import com.sipl.egs.utils.XFileDownloader
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,7 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class DocumentReSubmittedActivity : AppCompatActivity(),
-    MyPaginationAdapter.OnPageNumberClickListener {
+    MyPaginationAdapter.OnPageNumberClickListener,OnDownloadDocumentClickListener {
     private lateinit var binding: ActivityDocumentReSubmittedBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
@@ -39,6 +47,9 @@ class DocumentReSubmittedActivity : AppCompatActivity(),
 
     private var isInternetAvailable=false
     private lateinit var noInternetDialog: NoInternetDialog
+    private var downloadId: Long = -1
+    private lateinit var downloadReceiver: BroadcastReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDocumentReSubmittedBinding.inflate(layoutInflater)
@@ -49,7 +60,7 @@ class DocumentReSubmittedActivity : AppCompatActivity(),
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()
-            adapter = DocsSentForApprovalAdapter(documentList)
+            adapter = DocsSentForApprovalAdapter(documentList,this)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager =
                 LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -76,6 +87,20 @@ class DocumentReSubmittedActivity : AppCompatActivity(),
                     }
                 }) { throwable: Throwable? -> }
             //getDataFromServer()
+
+            downloadReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    val action = intent.action
+                    if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == action) {
+                        val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        if (id == downloadId) {
+                            DownloadUtils.handleDownloadCompletion(this@DocumentReSubmittedActivity,id,dialog)
+                        }
+                    }
+                }
+            }
+            registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                AppCompatActivity.RECEIVER_EXPORTED)
         } catch (e: Exception) {
             Log.d("mytag","@DocumentReSubmittedActivity : onCreate : Exception => " + e.message)
             e.printStackTrace()
@@ -115,7 +140,7 @@ class DocumentReSubmittedActivity : AppCompatActivity(),
                             if (!response?.body()?.data.isNullOrEmpty()) {
                                 documentList =
                                     (response?.body()?.data as MutableList<DocumentItem>?)!!
-                                adapter = DocsSentForApprovalAdapter(documentList)
+                                adapter = DocsSentForApprovalAdapter(documentList,this@DocumentReSubmittedActivity)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
 
@@ -128,7 +153,7 @@ class DocumentReSubmittedActivity : AppCompatActivity(),
                             } else {
                                 documentList =
                                     (response?.body()?.data as MutableList<DocumentItem>?)!!
-                                adapter = DocsSentForApprovalAdapter(documentList)
+                                adapter = DocsSentForApprovalAdapter(documentList,this@DocumentReSubmittedActivity)
                                 binding.recyclerView.adapter = adapter
                                 adapter.notifyDataSetChanged()
 
@@ -185,5 +210,16 @@ class DocumentReSubmittedActivity : AppCompatActivity(),
             finish()
         }
         return super.onOptionsItemSelected(item)
+    }
+    override fun onDownloadDocumentClick(url: String, fileName: String) {
+
+        try {
+            downloadId = XFileDownloader.downloadFile(this@DocumentReSubmittedActivity, url, fileName)
+            Log.d("mytag","$downloadId")
+            dialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag","DocumentListApprovedActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()
+        }
     }
 }

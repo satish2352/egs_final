@@ -258,7 +258,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
                         pdfPageAdapter = PdfPageAdapter(this@EditDocumentActivity, tempPdfFile!!,this@EditDocumentActivity,this@EditDocumentActivity)
                         binding.recyclerView.layoutManager = GridLayoutManager(
                             this@EditDocumentActivity,
-                            3
+                            2
                         ) // Adjust number of columns as needed
                         binding.recyclerView.adapter = pdfPageAdapter
                         tempPdfFile?.let { it1 -> saveFileToStorage(it1) };

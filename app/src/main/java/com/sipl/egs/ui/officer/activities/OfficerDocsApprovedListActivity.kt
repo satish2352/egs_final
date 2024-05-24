@@ -1,5 +1,10 @@
 package com.sipl.egs.ui.officer.activities
 
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,11 +17,14 @@ import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork
 import com.sipl.egs.R
 import com.sipl.egs.adapters.OfficerDocsApprovedAdapter
 import com.sipl.egs.databinding.ActivityOfficerDocsApprovedListBinding
+import com.sipl.egs.interfaces.OnDownloadDocumentClickListener
 import com.sipl.egs.model.apis.maindocsmodel.DocumentItem
 import com.sipl.egs.model.apis.maindocsmodel.MainDocsModel
 import com.sipl.egs.pagination.MyPaginationAdapter
 import com.sipl.egs.utils.CustomProgressDialog
+import com.sipl.egs.utils.DownloadUtils
 import com.sipl.egs.utils.NoInternetDialog
+import com.sipl.egs.utils.XFileDownloader
 import com.sipl.egs.webservice.ApiClient
 import com.sipl.egs.webservice.ApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -26,7 +34,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class OfficerDocsApprovedListActivity : AppCompatActivity(),
-    MyPaginationAdapter.OnPageNumberClickListener {
+    MyPaginationAdapter.OnPageNumberClickListener, OnDownloadDocumentClickListener {
     private lateinit var binding: ActivityOfficerDocsApprovedListBinding
     private lateinit var apiService: ApiService
     private lateinit var dialog: CustomProgressDialog
@@ -37,7 +45,8 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
     private var currentPage="1"
     private lateinit var paginationLayoutManager : LinearLayoutManager
     private lateinit var noInternetDialog: NoInternetDialog
-
+    private var downloadId: Long = -1
+    private lateinit var downloadReceiver: BroadcastReceiver
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityOfficerDocsApprovedListBinding.inflate(layoutInflater)
@@ -48,7 +57,7 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
             apiService = ApiClient.create(this)
             dialog = CustomProgressDialog(this)
             documentList = ArrayList()
-            adapter = OfficerDocsApprovedAdapter(documentList)
+            adapter = OfficerDocsApprovedAdapter(documentList,this)
             binding.recyclerView.adapter = adapter
             binding.recyclerView.layoutManager = LinearLayoutManager(
                 this,
@@ -76,6 +85,20 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
                         noInternetDialog.showDialog()
                     }
                 }) { throwable: Throwable? -> }
+            downloadReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    val action = intent.action
+                    if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == action) {
+                        Log.d("mytag","onReceive : Complete")
+                        val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        if (id == downloadId) {
+                            DownloadUtils.handleDownloadCompletion(this@OfficerDocsApprovedListActivity,id,dialog)
+                        }
+                    }
+                }
+            }
+            registerReceiver(downloadReceiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                AppCompatActivity.RECEIVER_EXPORTED)
         } catch (e: Exception) {
 
         }
@@ -99,7 +122,7 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
                     if (response.isSuccessful) {
                         if (response.body()?.status.equals("true")) {
                             documentList = (response?.body()?.data as MutableList<DocumentItem>?)!!
-                            adapter = OfficerDocsApprovedAdapter(documentList)
+                            adapter = OfficerDocsApprovedAdapter(documentList,this@OfficerDocsApprovedListActivity)
                             binding.recyclerView.adapter = adapter
                             adapter.notifyDataSetChanged()
 
@@ -161,5 +184,16 @@ class OfficerDocsApprovedListActivity : AppCompatActivity(),
         getDataFromServer("$pageNumber")
         paginationAdapter.setSelectedPage(pageNumber)
 
+    }
+    override fun onDownloadDocumentClick(url: String, fileName: String) {
+
+        try {
+            downloadId = XFileDownloader.downloadFile(this@OfficerDocsApprovedListActivity, url, fileName)
+            Log.d("mytag","$downloadId")
+            dialog.show()
+        } catch (e: Exception) {
+            Log.d("mytag","OfficerDocsApprovedListActivity: => Exception => ${e.message}",e)
+            e.printStackTrace()
+        }
     }
 }
