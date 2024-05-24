@@ -7,83 +7,87 @@
     tools:context=".ui.activities.gramsevak.dashboard.DashboardFragment">
 
     <fragment
-        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/map_container"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/searchLayout"
-        android:layout_margin="10dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
 
         <AutoCompleteTextView
-            android:maxLines="1"
-            android:lines="1"
-            android:singleLine="true"
-            android:imeOptions="actionDone"
-            android:background="@drawable/rounded_background"
             android:id="@+id/etInput"
-            android:textSize="11sp"
-            android:paddingRight="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/rounded_background"
             android:drawableEnd="@drawable/ic_search1"
             android:hint="@string/search_by_project_id_mgnrega_id"
-            android:paddingLeft="5dp"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"></AutoCompleteTextView>
+            android:imeOptions="actionDone"
+            android:lines="1"
+            android:maxLines="1"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:singleLine="true"
+            android:textSize="11sp" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
             android:layout_width="wrap_content"
-            app:singleSelection="true"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:singleSelection="true">
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/layoutByProjectId"
-                app:strokeColor="@color/appBlue"
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:text="@string/project"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                android:paddingLeft="0dp"
-                android:paddingRight="0dp"
-                android:textSize="14sp"
-                android:textColor="@color/white"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></com.google.android.material.button.MaterialButton>
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingLeft="0dp"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp"
+                android:text="@string/project"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:strokeColor="@color/appBlue" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/layoutByLabourId"
-                app:strokeColor="@color/appBlue"
                 style="@style/Widget.Material3.Button.OutlinedButton"
-                android:text="@string/mgnrega_id"
-                android:textSize="14sp"
-                android:textColor="@color/white"
-                android:foregroundTint="@color/appBlue"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"></com.google.android.material.button.MaterialButton>
+                android:layout_height="wrap_content"
+                android:foregroundTint="@color/appBlue"
+                android:text="@string/mgnrega_id"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                app:strokeColor="@color/appBlue" />
         </com.google.android.material.button.MaterialButtonToggleGroup>
+
         <LinearLayout
-            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="16dp"
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:visibility="gone">
+
             <LinearLayout
-                android:visibility="visible"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:background="@drawable/rounded_backgroud_blue"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="visible">
+
                 <LinearLayout
                     android:id="@+id/layoutByProjectId1"
-                    android:background="#4529C9"
-                    android:layout_gravity="center"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="#4529C9">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -91,34 +95,37 @@
                         android:gravity="center"
                         android:text="@string/project_name"
                         android:textColor="@color/white"
-                        android:textSize="10dp"></TextView>
+                        android:textSize="10dp" />
                 </LinearLayout>
+
                 <TextView
-                    android:visibility="gone"
-                    android:background="#4529C9"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
+                    android:background="#4529C9"
                     android:gravity="center"
                     android:text=" | "
                     android:textColor="@color/white"
-                    ></TextView>
+                    android:visibility="gone" />
             </LinearLayout>
+
             <LinearLayout
-                android:layout_marginLeft="16dp"
-                android:visibility="visible"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
                 android:background="@drawable/rounded_backgroud_blue"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:visibility="visible">
+
                 <LinearLayout
                     android:id="@+id/layoutByLabourId1"
-                    android:background="#4529C9"
-                    android:layout_gravity="center"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="#4529C9">
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -131,77 +138,82 @@
         </LinearLayout>
 
     </LinearLayout>
+
     <ImageView
-        android:layout_marginRight="16dp"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/searchLayout"
         android:id="@+id/ivMapType"
-        android:background="@drawable/circle_white_background"
-        android:src="@drawable/ic_map_type"
         android:layout_width="42dp"
-        android:layout_height="42dp"></ImageView>
+        android:layout_height="42dp"
+        android:layout_below="@id/searchLayout"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/circle_white_background"
+        android:src="@drawable/ic_map_type"></ImageView>
 
     <LinearLayout
-        android:paddingRight="13dp"
-        android:paddingLeft="8dp"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:gravity="center"
-        android:background="@drawable/rounded_one_side"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/rounded_one_side"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingTop="16dp"
+        android:paddingRight="13dp"
+        android:paddingBottom="16dp">
+
         <LinearLayout
-            android:orientation="vertical"
+            android:id="@+id/layoutScanQR"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/layoutScanQR">
+            android:orientation="vertical">
 
-        <ImageView
-            android:src="@drawable/scan_me"
-            android:layout_width="24dp"
-            android:layout_height="24dp"></ImageView>
-        <TextView
-            android:layout_marginTop="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Scan QR \n Code"
-            android:textColor="@color/white"
-            android:textSize="8dp"></TextView>
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/scan_me"></ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="Scan QR \n Code"
+                android:textColor="@color/white"
+                android:textSize="8dp"></TextView>
         </LinearLayout>
+
         <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/white"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"></View>
-<LinearLayout
-    android:clickable="true"
-    android:id="@+id/layoutRegisterLabour"
-    android:orientation="vertical"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-        <ImageView
-            android:src="@drawable/profile"
-            android:layout_width="24dp"
-            android:layout_height="24dp"></ImageView>
+            android:background="@color/white"></View>
 
-        <TextView
-            android:layout_marginTop="5dp"
+        <LinearLayout
+            android:id="@+id/layoutRegisterLabour"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="Register \n Labour"
-            android:textColor="@color/white"
-            android:textSize="8dp"></TextView>
-</LinearLayout>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:orientation="vertical">
 
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/profile"></ImageView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:text="Register \n Labour"
+                android:textColor="@color/white"
+                android:textSize="8dp"></TextView>
+        </LinearLayout>
+    </LinearLayout>
 
 
 </RelativeLayout>

@@ -100,6 +100,7 @@
             android:clickable="true"
             android:inputType="none"
             android:id="@+id/etDob"
+            android:textColor="@color/black"
             android:drawableEnd="@drawable/calendar"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"

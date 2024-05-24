@@ -45,8 +45,8 @@
                         android:id="@+id/ivPhoto"
                         android:layout_gravity="center"
                         android:src="@drawable/user_icon"
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"></de.hdodenhof.circleimageview.CircleImageView>
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"></de.hdodenhof.circleimageview.CircleImageView>
                     <LinearLayout
                         android:layout_marginTop="16dp"
                         android:orientation="horizontal"
@@ -301,7 +301,7 @@
                             app:cardElevation="3dp"
                             app:cardUseCompatPadding="true"
                             app:cardPreventCornerOverlap="true"
-                            app:cardCornerRadius="16dp"
+                            app:cardCornerRadius="8dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <LinearLayout
@@ -310,7 +310,7 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="center"                                    android:id="@+id/ivVoterId"
+                                    android:scaleType="centerCrop"                                    android:id="@+id/ivVoterId"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
                                     android:layout_width="match_parent"
@@ -330,7 +330,7 @@
                             app:cardElevation="3dp"
                             app:cardUseCompatPadding="true"
                             app:cardPreventCornerOverlap="true"
-                            app:cardCornerRadius="16dp"
+                            app:cardCornerRadius="8dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <LinearLayout
@@ -339,7 +339,7 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="center"
+                                    android:scaleType="centerCrop"
                                     android:id="@+id/ivAadhar"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
@@ -361,7 +361,7 @@
                             app:cardElevation="3dp"
                             app:cardUseCompatPadding="true"
                             app:cardPreventCornerOverlap="true"
-                            app:cardCornerRadius="16dp"
+                            app:cardCornerRadius="8dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
                             <LinearLayout
@@ -370,7 +370,7 @@
                                 android:orientation="vertical">
                                 <ImageView
                                     android:layout_weight="1"
-                                    android:scaleType="center"                                    android:id="@+id/ivMnregaCard"
+                                    android:scaleType="centerCrop"                                    android:id="@+id/ivMnregaCard"
                                     android:layout_gravity="center"
                                     android:src="@drawable/document"
                                     android:layout_width="match_parent"

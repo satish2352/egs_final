@@ -44,7 +44,7 @@
         </LinearLayout>
         <androidx.recyclerview.widget.RecyclerView
             android:layout_below="@id/layoutOne"
-            android:layout_margin="16dp"
+            android:layout_margin="5dp"
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>

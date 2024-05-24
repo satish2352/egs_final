@@ -1,6 +1,7 @@
 package com.sipl.egs.adapters
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,7 +20,7 @@ import java.util.Date
 
 class OfficerUploadedDocsAdapter(var documentList:List<UploadedDocument>,var onDownloadDocumentClickListener: OnDownloadDocumentClickListener):RecyclerView.Adapter<OfficerUploadedDocsAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView) {
-        val tvDownload=itemView.findViewById<TextView>(R.id.tvDownload)
+        val tvDownload=itemView.findViewById<ImageView>(R.id.tvDownload)
         val tvDocumentDate=itemView.findViewById<TextView>(R.id.tvDocumentDate)
         val tvDocumentType=itemView.findViewById<TextView>(R.id.tvDocumentType)
         val tvDocumentName=itemView.findViewById<TextView>(R.id.tvDocumentName)
@@ -39,6 +40,7 @@ class OfficerUploadedDocsAdapter(var documentList:List<UploadedDocument>,var onD
 
     override fun onBindViewHolder(holder: OfficerUploadedDocsAdapter.ViewHolder, position: Int) {
         try {
+            holder.tvDownload.imageTintList= ColorStateList.valueOf(Color.parseColor(documentList[position].doc_color))
             holder.layoutWrapper.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
             holder.tvDocumentName.text=documentList[position].document_name
             holder.itemView.setOnClickListener {

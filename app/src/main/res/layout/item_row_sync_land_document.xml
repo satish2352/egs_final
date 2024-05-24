@@ -21,22 +21,21 @@
                     android:src="@drawable/document1"
                     android:id="@+id/ivDocumentThumb"
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"></ImageView>
+                    android:layout_height="120dp"></ImageView>
                 <ImageView
-                    android:background="#AEAEAE"
-                    android:scaleType="fitXY"
+                    android:background="@drawable/rounded_background_light_gray"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_delete"
                     android:id="@+id/ivDelete"
+                    android:padding="3dp"
                     android:layout_width="30dp"
                     android:layout_height="30dp"></ImageView>
                 <TextView
-                    android:layout_marginRight="5dp"
-                    android:layout_marginTop="5dp"
                     android:id="@+id/tvPageCount"
                     android:gravity="center"
                     android:layout_gravity="end"
                     android:text="3"
-                    android:background="@drawable/rounded_backgroud_blue"
+                    android:background="@drawable/round_circle_blue"
                     android:fontFamily="@font/poppins"
                     android:textColor="@color/white"
                     android:layout_width="24dp"
@@ -53,7 +52,7 @@
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:id="@+id/tvDocumentName"
-                android:textSize="13sp"
+                android:textSize="11sp"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="start"
                 android:textColor="@color/white"

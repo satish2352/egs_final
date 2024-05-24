@@ -52,6 +52,7 @@ class SyncLandDocumentsAdapter(var documentList: List<Document>,var onItemDelete
         try {
             holder.layoutWrapper.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
             holder.tvPageCount.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
+            holder.ivDelete.setBackgroundColor(Color.parseColor(documentList[position].doc_color))
             holder.tvDocumentName.text=documentList[position].documentName
             holder.tvDocumentDate.text=formatDate(documentList[position].date)
             holder.tvPageCount.text=documentList[position].pageCount

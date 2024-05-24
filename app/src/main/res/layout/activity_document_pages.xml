@@ -13,7 +13,6 @@
         android:orientation="vertical">
         <androidx.cardview.widget.CardView
             android:id="@+id/cardOfflineDocs"
-            android:layout_marginTop="36dp"
             app:cardCornerRadius="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

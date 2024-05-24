@@ -36,8 +36,8 @@
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/ivPhoto"
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
                         android:layout_gravity="center"
                         android:src="@drawable/user_icon"></de.hdodenhof.circleimageview.CircleImageView>
                     <LinearLayout
@@ -333,7 +333,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@color/white"
-                            app:cardCornerRadius="16dp"
+                            app:cardCornerRadius="8dp"
                             app:cardElevation="3dp"
                             app:cardPreventCornerOverlap="true"
                             app:cardUseCompatPadding="true">
@@ -349,7 +349,7 @@
                                     android:layout_height="120dp"
                                     android:layout_gravity="center"
                                     android:layout_weight="1"
-                                    android:scaleType="center"
+                                    android:scaleType="centerCrop"
                                     android:src="@drawable/document"></ImageView>
 
                                 <TextView
@@ -367,7 +367,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@color/white"
-                            app:cardCornerRadius="16dp"
+                            app:cardCornerRadius="8dp"
                             app:cardElevation="3dp"
                             app:cardPreventCornerOverlap="true"
                             app:cardUseCompatPadding="true">
@@ -383,7 +383,7 @@
                                     android:layout_height="120dp"
                                     android:layout_gravity="center"
                                     android:layout_weight="1"
-                                    android:scaleType="center"
+                                    android:scaleType="centerCrop"
                                     android:src="@drawable/document"></ImageView>
 
                                 <TextView
@@ -400,7 +400,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:background="@color/white"
-                            app:cardCornerRadius="16dp"
+                            app:cardCornerRadius="8dp"
                             app:cardElevation="3dp"
                             app:cardPreventCornerOverlap="true"
                             app:cardUseCompatPadding="true">
@@ -416,7 +416,7 @@
                                     android:layout_height="120dp"
                                     android:layout_gravity="center"
                                     android:layout_weight="1"
-                                    android:scaleType="center"
+                                    android:scaleType="centerCrop"
                                     android:src="@drawable/document"></ImageView>
 
                                 <TextView

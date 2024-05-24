@@ -191,7 +191,7 @@
     <string name="please_enter_at_least_8_digit_password">"Please enter at least 8 digit password "</string>
     <string name="please_enter_valid_email">Please Enter Valid Email Id</string>
     <string name="both_password_did_not_match">Entered Both Password Did Not Match</string>
-    <string name="password_text">Password must contains at least\n1 Uppercase letter\n1 Lowercase letter\n1 Digit\n1 Special character</string>
+    <string name="password_text">Password must contains at least\n\n1 Uppercase letter\n1 Lowercase letter\n1 Digit\n1 Special character</string>
     <string name="okay">Okay</string>
     <string name="failed_to_download_data_from_server">Failed to download data from server</string>
     <string name="are_you_sure_you_want_to_exit_app" tools:ignore="ExtraTranslation">Are you sure you want to exit App?</string>
@@ -201,4 +201,5 @@
     <string name="project">Project</string>
     <string name="no_app_available_to_view_pdf">No app available to view PDF</string>
     <string name="error_while_opening_pdf">Unable to open pdf</string>
+    <string name="scan_qr_code">Scan QR Code</string>
 </resources>

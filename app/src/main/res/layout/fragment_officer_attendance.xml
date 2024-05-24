@@ -280,7 +280,7 @@
            android:textStyle="normal" />
    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_margin="16dp"
+        android:layout_margin="5dp"
         android:layout_marginTop="24dp"
         android:layout_width="match_parent"
         android:layout_weight="1"
