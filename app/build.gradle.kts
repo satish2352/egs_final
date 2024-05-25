@@ -25,7 +25,14 @@ android {
             }
         }
     }
-
+    signingConfigs {
+        create("release") {
+            keyAlias = "key0"
+            keyPassword = "SuMaGo@123"
+            storeFile = file("D:\\AppKeys\\egsmain\\egsmain.jks")
+            storePassword = "SuMaGo@123"
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -34,8 +41,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            getByName("release") {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

@@ -142,11 +142,12 @@ class SyncLandDocumentsActivity : AppCompatActivity(),OnDocumentItemDeleteListen
                         Log.d("mytag", "" + response.body()?.message)
                         Log.d("mytag", "" + response.body()?.status)
                         if (response.body()?.status.equals("true")) {
-                            document.isSynced = true
-                            documentDao.updateDocument(document)
                             val filesList = mutableListOf<Uri>()
                             filesList.add(Uri.parse(document.documentUri))
                             deleteFilesFromFolder(filesList)
+                            document.isSynced = true
+                            documentDao.updateDocument(document)
+                            documentDao.deleteDocument(document)
                             Log.d("mytag", "Document upload successful  " + document.id)
                             updateDocumentList()
                         } else {

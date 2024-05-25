@@ -131,13 +131,18 @@ class ScanBarcodeActivity : AppCompatActivity() {
                             intent.setDataAndType(Uri.parse(url), "application/pdf")
                             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             try {
-                                startActivity(intent)
+                                val chooserIntent =
+                                    Intent.createChooser(intent, "Open PDF with")
+                                startActivity(chooserIntent)
                             } catch (e: ActivityNotFoundException) {
                                 Toast.makeText(
                                     this@ScanBarcodeActivity,
                                     "No PDF viewer application found",
                                     Toast.LENGTH_SHORT
                                 ).show()
+                            }catch (e:Exception){
+                                Log.d("mytag","ScanBarCodeActivity:",e)
+                                e.printStackTrace()
                             }
                            // FileDownloader.downloadFile(this@ScanBarcodeActivity,url,fileName)
                         }else{
@@ -153,6 +158,7 @@ class ScanBarcodeActivity : AppCompatActivity() {
                     Toast.makeText(this@ScanBarcodeActivity,"response failed",Toast.LENGTH_SHORT).show()
                 }
             })
+            dialog.dismiss()
         } catch (e: Exception) {
             Log.d("mytag","ScanBarCodeActivity:",e)
             e.printStackTrace()

@@ -296,14 +296,14 @@ class SyncLabourDataActivity : AppCompatActivity(),OnDocumentItemDeleteListener 
 
                         if(response.isSuccessful){
                             if(response.body()?.status.equals("true")){
-                                labour.isSynced=true
-                                labourDao.updateLabour(labour)
                                 val filesList= mutableListOf<Uri>()
                                 filesList.add(Uri.parse(labour.aadharImage))
                                 filesList.add(Uri.parse(labour.photo))
                                 filesList.add(Uri.parse(labour.voterIdImage))
                                 filesList.add(Uri.parse(labour.mgnregaIdImage))
                                 deleteFilesFromFolder(filesList)
+                                labour.isSynced=true
+                                labourDao.deleteLabour(labour)
                             }else{
                                 labour.isSyncFailed=true
                                 labour.syncFailedReason=response.body()?.message
