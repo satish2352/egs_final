@@ -173,6 +173,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun navigateToNextActivity() {
+
         val mySharedPref = MySharedPref(this@SplashActivity)
         runOnUiThread {
             if (mySharedPref.getIsLoggedIn() && mySharedPref.getRoleId() == 3) {
