@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.sipl.egs" />
+                  <option name="mobileSdkAppId" value="1:748013830996:android:7deee8887c9007bb693ec1" />
+                  <option name="projectId" value="egs-main" />
+                  <option name="projectNumber" value="748013830996" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
