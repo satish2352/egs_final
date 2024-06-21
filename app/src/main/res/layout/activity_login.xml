@@ -132,7 +132,7 @@
                     android:fontFamily="@font/poppins"
                     android:text="@string/login"/>
                 <TextView
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:id="@+id/tvResetPassword"
                     android:layout_marginRight="16dp"
                     android:layout_gravity="end"

@@ -302,15 +302,11 @@ class LoginActivity : AppCompatActivity() {
             val txLayoutEmail = dialog.findViewById<TextInputLayout>(R.id.txLayoutEmail)
             dialog.show()
             btnResetPassword.setOnClickListener {
-
                 if(isInternetAvailable){
-
                     if(MyValidator.isValidEmail(etEmail.text.toString().trim()))
                     {
                         txLayoutEmail.error=null
-
                         resetPassword(etEmail.text.toString().trim(),dialog)
-
                     }else{
                         txLayoutEmail.error=resources.getString(R.string.enter_valid_email)
                     }
@@ -319,8 +315,6 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this@LoginActivity,resources.getString(R.string.internet_is_not_available_please_check),Toast.LENGTH_LONG).show()
                 }
             }
-
-
         } catch (e: Exception) {
             Log.d("mytag","ScanDocumentsActivity:",e)
             e.printStackTrace()
@@ -348,11 +342,6 @@ class LoginActivity : AppCompatActivity() {
                             Toast.makeText(this@LoginActivity,response.body()?.message,Toast.LENGTH_LONG).show()
                         }
                     }else{
-
-                       // Log.d("mytag",return Gson().fromJson(response.errorBody(), MyError::class.java))
-
-
-
 
                         Toast.makeText(this@LoginActivity,resources.getString(R.string.response_unsuccessfull),Toast.LENGTH_LONG).show()
                     }
