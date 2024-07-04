@@ -10,15 +10,15 @@ plugins {
 }
 
 android {
-    namespace = "com.sipl.egs"
+    namespace = "com.sipl.egs2"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.sipl.egs"
+        applicationId = "com.sipl.egs2"
         minSdk = 21
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 6
+        versionName = "6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         kapt {

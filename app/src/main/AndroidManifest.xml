@@ -252,7 +252,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.sipl.egs.provider"
+            android:authorities="com.sipl.egs2.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

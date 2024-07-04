@@ -1,0 +1,31 @@
+package com.sipl.egs2.model.apis.update
+
+data class LabourUpdateInfo(
+    val aadhar_image: String,
+    val date_of_birth: String,
+    val district_id: Int,
+    val district_name: String,
+    val family_details: List<Any>,
+    val full_name: String,
+    val gender_id: Int,
+    val gender_name: Any,
+    val id: Int,
+    val landline_number: String,
+    val latitude: String,
+    val longitude: String,
+    val mgnrega_card_id: String,
+    val mgnrega_image: String,
+    val mobile_number: String,
+    val other_remark: String,
+    val profile_image: String,
+    val reason_id: Any,
+    val reason_name: Any,
+    val skill_id: Int,
+    val skills: String,
+    val status_name: String,
+    val taluka_id: Int,
+    val taluka_name: String,
+    val village_id: Int,
+    val village_name: String,
+    val voter_image: String
+)

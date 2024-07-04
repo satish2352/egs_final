@@ -132,8 +132,8 @@
 
 #keep model class
 
--keep class com.sipl.egs.model.** { *; }
--keep class com.sipl.egs.database.** { *; }
+-keep class com.sipl.egs2.model.** { *; }
+-keep class com.sipl.egs2.database.** { *; }
 
 
 -keep class androidx.camera.camera2.**{*;}
