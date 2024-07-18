@@ -98,7 +98,7 @@ class LabourRegistration1Activity : AppCompatActivity() {
             if(!hasFocus){
                 if(isInternetAvailable){
                     CoroutineScope(Dispatchers.IO).launch {
-                        if(binding.etMgnregaIdNumber.text.toString().length==10)
+                        if(binding.etMgnregaIdNumber.text.toString().length==16)
                         {
                             checkIfMgnregaIdExists(binding.etMgnregaIdNumber.text.toString())
                         }
@@ -473,7 +473,7 @@ class LabourRegistration1Activity : AppCompatActivity() {
             binding.etMobileNumber.error = resources.getString(R.string.enter_valid_mobile)
             validationResults.add(false)
         }
-        if (binding.etMgnregaIdNumber.text.toString().length ==10 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
+        if (binding.etMgnregaIdNumber.text.toString().length ==16 && !binding.etMgnregaIdNumber.text.isNullOrBlank()) {
             binding.etMgnregaIdNumber.error = null
             validationResults.add(true)
         } else {

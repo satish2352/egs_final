@@ -122,7 +122,7 @@ class LaborUploadWorker(
                 // Create a temporary file to store the bitmap
                 val file = File(context.cacheDir, "$time.jpg")// Create a temporary file to store the bitmap
                 val outputStream = FileOutputStream(file)
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream)
                 outputStream.flush()
                 outputStream.close()
 

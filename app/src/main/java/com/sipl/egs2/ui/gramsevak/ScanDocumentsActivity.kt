@@ -743,7 +743,7 @@ class ScanDocumentsActivity : AppCompatActivity(), UpdateDocumentTypeListener {
     private fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it) }
             outputStream?.flush()
             outputStream?.close()
         } catch (e: Exception) {

@@ -498,7 +498,7 @@ class EditDocumentActivity : AppCompatActivity(),PdfPageAdapter.OnDeletePageList
 
     private fun scaledBitmapToByteArray(bitmap: Bitmap): ByteArray {
         val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream)
         return stream.toByteArray()
     }
 

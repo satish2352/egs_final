@@ -435,7 +435,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
     private suspend fun saveBitmapToFile(context: Context, bitmap: Bitmap, uri: Uri) {
         try {
             val outputStream = context.contentResolver.openOutputStream(uri)
-            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+            outputStream?.let { bitmap.compress(Bitmap.CompressFormat.JPEG, 50, it) }
             outputStream?.flush()
             outputStream?.close()
            val imageFile=bitmapToFile(context,bitmap)
@@ -444,7 +444,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
                     format(Bitmap.CompressFormat.JPEG)
                     resolution(780,1360)
                     quality(100)
-                    size(500000) // 500 KB
+                    size(1_097_152) // 500 KB
                 }
             }
             compressedImageFile?.let { compressedFile:File ->
@@ -476,7 +476,7 @@ class LabourRegistration2Activity : AppCompatActivity(),OnDeleteListener {
 
         try {
             val fos = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos)
             fos.flush()
             fos.close()
             return file

@@ -573,7 +573,7 @@ class DocumentDetailsActivity : AppCompatActivity(),OnDownloadDocumentClickListe
 
             // Convert Bitmap to byte array
             val outputStream = ByteArrayOutputStream()
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            bmp.compress(Bitmap.CompressFormat.PNG, 50, outputStream)
             return outputStream.toByteArray()
         } catch (e: Exception) {
             e.printStackTrace()
